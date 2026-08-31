@@ -1,6 +1,8 @@
 // Media converters use the browser's MediaRecorder, Canvas, and Web Audio APIs
 // For more complex conversions, we use ffmpeg.wasm loaded on demand
 
+import { runtimeAssetUrl } from '../runtime/runtimeAssets'
+
 let ffmpegInstance = null
 let ffmpegReady = false
 let ffmpegLoadPromise = null
@@ -27,7 +29,7 @@ async function getFFmpeg() {
     const { toBlobURL } = await import('@ffmpeg/util')
     const ffmpeg = new FFmpeg()
 
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm'
+    const baseURL = runtimeAssetUrl('vendor/ffmpeg')
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),

@@ -1,8 +1,8 @@
 {
-  "name": "Convert Everything",
-  "short_name": "Convert",
-  "description": "Convert everything to everything — text, data, images, media, and more. No ads, no tracking, 100% local.",
-  "start_url": "/convert-everything/",
+  "name": "Folkkit",
+  "short_name": "Folkkit",
+  "description": "Folkkit verarbeitet Dateien lokal in deinem Browser.",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#faf8f5",

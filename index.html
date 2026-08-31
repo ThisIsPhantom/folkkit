@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -9,28 +9,19 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="description" content="Convert everything to everything — text, data, images, media, and more. No ads, no tracking, 100% local." />
-    <meta property="og:title" content="Convert Everything" />
-    <meta property="og:description" content="Convert everything to everything — text, data, images, media, and more. No ads, no tracking, 100% local." />
+    <meta name="description" content="Folkkit verarbeitet Dateien lokal in deinem Browser." />
+    <meta name="google-adsense-account" content="ca-pub-7877827162675091">
+    <meta property="og:title" content="Folkkit" />
+    <meta property="og:description" content="Folkkit verarbeitet Dateien lokal in deinem Browser." />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Convert Everything" />
+    <meta property="og:site_name" content="Folkkit" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Convert Everything" />
-    <meta name="twitter:description" content="200+ converters for text, data, images, media, and more. Free, private, 100% local." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <title>Convert Everything</title>
+    <meta name="twitter:title" content="Folkkit" />
+    <meta name="twitter:description" content="Folkkit verarbeitet Dateien lokal in deinem Browser." />
+    <script src="/theme-init.js"></script>
+    <title>Folkkit</title>
   </head>
   <body>
-    <script>
-      // Prevent flash of wrong theme
-      (function() {
-        var t = localStorage.getItem('theme');
-        if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', t);
-      })();
-    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
