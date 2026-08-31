@@ -55,14 +55,13 @@ function App() {
 
   const [showHelp, setShowHelp] = useState(false)
   const [pageDragging, setPageDragging] = useState(false)
-  const [showTip, setShowTip] = useState(() => !localStorage.getItem('convert-everything-tip-seen'))
+  const [showTip, setShowTip] = useState(true)
   const [installPrompt, setInstallPrompt] = useState(null)
   const dragCountRef = useRef(0)
   const reuseRequestIdRef = useRef(0)
 
   const dismissTip = useCallback(() => {
     setShowTip(false)
-    localStorage.setItem('convert-everything-tip-seen', '1')
   }, [])
 
   // Capture PWA install prompt

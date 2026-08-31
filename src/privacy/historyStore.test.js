@@ -126,6 +126,7 @@ describe('historyStore', () => {
     window.addEventListener('folkkit:history-change', listener)
     historyStore.setEnabled(true)
     historyStore.append({ from: 'text', to: 'base64', input: 'secret', output: 'c2VjcmV0', timestamp: 1 })
+    localStorage.setItem('convert-everything-history', JSON.stringify([{ input: 'legacy secret' }]))
 
     historyStore.clear({ revokeConsent: true })
 
@@ -133,6 +134,7 @@ describe('historyStore', () => {
     expect(historyStore.list()).toEqual([])
     expect(localStorage.getItem(preferenceKeys.historyEnabled)).toBeNull()
     expect(localStorage.getItem(preferenceKeys.contentHistory)).toBeNull()
+    expect(localStorage.getItem('convert-everything-history')).toBeNull()
     expect(listener).toHaveBeenCalled()
     window.removeEventListener('folkkit:history-change', listener)
   })
@@ -140,11 +142,13 @@ describe('historyStore', () => {
   test('deleting consent immediately removes previously stored content', () => {
     historyStore.setEnabled(true)
     historyStore.append({ from: 'text', to: 'base64', input: 'secret', output: 'c2VjcmV0', timestamp: 1 })
+    localStorage.setItem('convert-everything-history', JSON.stringify([{ input: 'legacy secret' }]))
 
     historyStore.setEnabled(false)
 
     expect(historyStore.isEnabled()).toBe(false)
     expect(historyStore.list()).toEqual([])
     expect(localStorage.getItem(preferenceKeys.contentHistory)).toBeNull()
+    expect(localStorage.getItem('convert-everything-history')).toBeNull()
   })
 })

@@ -8,10 +8,16 @@ import {
 
 const MAX_ENTRIES = 30
 const MAX_PREVIEW_LENGTH = 120
+const LEGACY_HISTORY_KEY = 'convert-everything-history'
 export const HISTORY_CHANGE_EVENT = 'folkkit:history-change'
 
 function notifyChange() {
   window.dispatchEvent(new Event(HISTORY_CHANGE_EVENT))
+}
+
+function clearStoredHistory() {
+  clearContentHistory()
+  localStorage.removeItem(LEGACY_HISTORY_KEY)
 }
 
 function normalizeEntry(entry) {
@@ -48,7 +54,7 @@ export const historyStore = Object.freeze({
   },
 
   setEnabled(enabled) {
-    if (enabled !== true) clearContentHistory()
+    if (enabled !== true) clearStoredHistory()
     setHistoryEnabled(enabled)
     notifyChange()
   },
@@ -81,7 +87,7 @@ export const historyStore = Object.freeze({
   },
 
   clear({ revokeConsent = false } = {}) {
-    clearContentHistory()
+    clearStoredHistory()
     if (revokeConsent) setHistoryEnabled(false)
     notifyChange()
   },
