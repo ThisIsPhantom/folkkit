@@ -142,6 +142,10 @@ function App() {
     setReuseRequest({ id: ++reuseRequestIdRef.current, value: item.input })
   }, [activeConverter])
 
+  const handleReuseConsumed = useCallback((id) => {
+    setReuseRequest(current => current?.id === id ? null : current)
+  }, [])
+
   const handleCloseHelp = useCallback(() => setShowHelp(false), [])
 
   // Sync URL when state changes
@@ -334,6 +338,7 @@ function App() {
               onFromChange={setConvertFrom}
               onToChange={setConvertTo}
               reuseRequest={reuseRequest}
+              onReuseConsumed={handleReuseConsumed}
               activeConverter={activeConverter}
               onConverterChange={handleConverterChange}
             />

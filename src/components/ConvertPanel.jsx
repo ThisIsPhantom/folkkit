@@ -113,7 +113,7 @@ const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
 function getFavPairs() { try { return JSON.parse(localStorage.getItem(FAV_PAIRS_KEY)) || [] } catch { return [] } }
 function saveFavPairs(pairs) { localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(pairs)) }
 
-function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '' }) {
+function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed }) {
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
   const [batchMode, setBatchMode] = useState(false)
@@ -165,6 +165,17 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const multipleFiles = isToolMode && !!activeConverter.multipleFiles
   // Text-to-text tool: has convert function, no file input, not generator
   const isTextTool = isToolMode && !acceptsFile && !isGenerator
+
+  useEffect(() => {
+    if (reuseRequestId == null) return
+    let cancelled = false
+    Promise.resolve().then(() => {
+      if (cancelled) return
+      inputRef.current?.focus()
+      onReuseConsumed?.(reuseRequestId)
+    })
+    return () => { cancelled = true }
+  }, [reuseRequestId, onReuseConsumed])
 
   useEffect(() => {
     activeConverterIdRef.current = activeConverter?.id || null
@@ -1225,7 +1236,15 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   )
 }
 
-export default function ConvertPanel(props) {
-  const sessionKey = props.activeConverter?.id ?? `format:${props.reuseRequest?.id ?? 0}`
-  return <ConvertPanelSession key={sessionKey} {...props} initialInput={props.reuseRequest?.value ?? ''} />
+export default function ConvertPanel({ activeConverter, reuseRequest, onReuseConsumed, ...props }) {
+  const [consumedReuseRequestId, setConsumedReuseRequestId] = useState(null)
+  const pendingReuseRequest = activeConverter || reuseRequest?.id === consumedReuseRequestId
+    ? null
+    : reuseRequest
+  const handleReuseConsumed = useCallback((id) => {
+    setConsumedReuseRequestId(current => current === id ? current : id)
+    onReuseConsumed?.(id)
+  }, [onReuseConsumed])
+  const sessionKey = activeConverter?.id ?? `format:${pendingReuseRequest?.id ?? consumedReuseRequestId ?? 0}`
+  return <ConvertPanelSession key={sessionKey} {...props} activeConverter={activeConverter} initialInput={pendingReuseRequest?.value ?? ''} reuseRequestId={pendingReuseRequest?.id} onReuseConsumed={handleReuseConsumed} />
 }

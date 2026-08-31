@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, test } from 'vitest'
@@ -30,6 +31,35 @@ function panelProps(overrides = {}) {
     ...overrides,
   }
 }
+
+function ReuseRoundTripHarness() {
+  const [activeConverter, setActiveConverter] = useState(null)
+  const [reuseRequest, setReuseRequest] = useState({ id: 1, value: 'from history' })
+
+  return (
+    <>
+      <button onClick={() => setActiveConverter(uppercaseTool)}>Select tool</button>
+      <button onClick={() => setActiveConverter(null)}>Return to formats</button>
+      <ConvertPanel
+        {...panelProps({ activeConverter, reuseRequest })}
+        onReuseConsumed={(id) => {
+          setReuseRequest(current => current?.id === id ? null : current)
+        }}
+      />
+    </>
+  )
+}
+
+test('does not reapply a consumed reuse request after returning from a tool', async () => {
+  const user = userEvent.setup()
+  renderWithProviders(<ReuseRoundTripHarness />)
+
+  expect(screen.getByRole('textbox', { name: 'Input text' })).toHaveValue('from history')
+  await user.click(screen.getByRole('button', { name: 'Select tool' }))
+  await user.click(screen.getByRole('button', { name: 'Return to formats' }))
+
+  expect(screen.getByRole('textbox', { name: 'Input text' })).toHaveValue('')
+})
 
 test('changing the selected tool clears the previous tool session input', async () => {
   const user = userEvent.setup()
