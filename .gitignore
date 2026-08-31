@@ -31,3 +31,6 @@ dist-ssr
 
 # Coverage
 coverage
+
+# Local visual brainstorming artifacts
+.superpowers/
