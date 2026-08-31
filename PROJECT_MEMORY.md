@@ -11,6 +11,7 @@
 - 2026-08-31: Content history is off by default and may be enabled only by explicit local opt-in.
 - 2026-08-31: The approved visual direction is `Warm Shell / Dark Workbench`, without violet-blue AI glow, neon, or generic AI decoration.
 - 2026-08-31: Hosttech is the intended static host. `main` is full source and `plesk` must be generated as hosting-only. No live deployment is authorized or performed.
+- 2026-09-01: Add `<meta name="google-adsense-account" content="ca-pub-7877827162675091">` to Folkkit's production head for possible future ownership verification. The tag is passive metadata only; no AdSense scripts, ads, cookies, tracking, Google verification action, or monetization is authorized.
 
 ## Current authority
 

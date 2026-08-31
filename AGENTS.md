@@ -17,6 +17,7 @@
 
 - User file contents must not leave the browser for conversion, editing, preview, history, diagnostics, or analytics.
 - Production runtime assets must be same-origin and self-hosted. Do not add external CDNs, remote fonts, telemetry, advertising, crash reporting, or hidden network fallbacks.
+- The passive Google AdSense ownership meta tag for account `ca-pub-7877827162675091` is allowed. It must not be accompanied by AdSense scripts, ads, cookies, tracking, or a verification claim without separate authorization.
 - Session memory is the default for content. A content-bearing local history may exist only after explicit opt-in and must have a complete delete action.
 - German and English are first-class. New user-visible strings must use the shared localization system.
 - The homepage prioritizes PDF, QR, and everyday conversion. The advanced catalog exposes only tools that pass their release gate.
