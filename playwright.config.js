@@ -1,18 +1,14 @@
 import { defineConfig } from '@playwright/test'
 
-const bun = process.execPath
-const bunDirectory = bun.slice(0, bun.lastIndexOf('\\'))
-
 export default defineConfig({
   testDir: './tests/e2e',
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: 'http://127.0.0.1:4173/convert-everything/',
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'bun run dev -- --host 127.0.0.1 --port 4173',
-    env: { PATH: `${bunDirectory};${process.env.PATH}` },
-    url: 'http://127.0.0.1:4173',
+    command: 'node ./node_modules/vite/bin/vite.js --host 127.0.0.1 --port 4173',
+    url: 'http://127.0.0.1:4173/convert-everything/',
     reuseExistingServer: !process.env.CI,
   },
 })

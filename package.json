@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "node ./node_modules/playwright/cli.js test",
     "verify": "bun run lint && bun run test:run && bun run build"
   },
   "dependencies": {
