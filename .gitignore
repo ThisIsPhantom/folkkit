@@ -34,3 +34,6 @@ coverage
 
 # Local visual brainstorming artifacts
 .superpowers/
+
+# Local isolated implementation worktrees
+.worktrees/
