@@ -108,6 +108,7 @@ No file content, filename, preview, or converted result is sent to Hosttech, Git
 - Tool-specific limits fail before unsafe allocation. Limits are release configuration backed by stress tests, not unsupported marketing promises.
 - Malformed and hostile files produce stable content-free errors. Raw payloads, filenames, stack traces, and document text are never logged.
 - Version 1 has no telemetry and therefore no telemetry consent path.
+- The production head contains exactly one passive ownership tag: `<meta name="google-adsense-account" content="ca-pub-7877827162675091">`. It causes no network request. AdSense scripts, ads, cookies, tracking, and Google-side verification remain outside version 1 without separate authorization.
 - The privacy page distinguishes local file processing from unavoidable static-host access logs according to the actual Hosttech configuration.
 
 ## 8. Visual and interaction design
