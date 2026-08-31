@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import ToolPicker from './ToolPicker'
 import { useToast } from '../hooks/useToast'
 import { formats, getTargets, getConvertFn, getFormatById } from '../formats'
-import { addHistoryEntry } from '../history'
+import { historyStore } from '../privacy/historyStore'
 import { onFFmpegLoad } from '../converters/media'
 import { rgbToHex, parseRgb, parseHsl, hslToRgb, hsvToRgb, parseHsv } from '../utils/color'
 import './ConvertPanel.css'
@@ -237,7 +237,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
       if (runId !== formatRunIdRef.current || isToolMode) return
       setOutput(result)
       if (result && result !== '(conversion error)') {
-        addHistoryEntry(from, to, input.slice(0, 120), result.slice(0, 120))
+        historyStore.append({ from, to, input, output: result, timestamp: Date.now() })
       }
     } catch {
       if (runId === formatRunIdRef.current && !isToolMode) {

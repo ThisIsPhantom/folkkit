@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { converters } from './converters'
-import { formats, getTargets, getFormatById } from './formats'
+import { getFormatById } from './formats'
 import { useTheme } from './hooks/useTheme'
 import ConvertPanel from './components/ConvertPanel'
 import History from './components/History'
 import KeyboardHelp from './components/KeyboardHelp'
 import ErrorBoundary from './components/ErrorBoundary'
+import { readUrlState } from './routing/urlState'
 
 // Map MIME types to converter IDs for auto-routing
 function getConverterForFile(file) {
@@ -16,26 +17,6 @@ function getConverterForFile(file) {
   if (type.startsWith('image/')) return 'image-resize'
   if (type.startsWith('video/')) return 'video-to-audio'
   if (type.startsWith('audio/')) return 'audio-to-mp3'
-  return null
-}
-
-// Read from/to from URL params, validate against format IDs
-function readUrlParams() {
-  const params = new URLSearchParams(window.location.search)
-  const allFromIds = formats.filter(f => getTargets(f.id).length > 0).map(f => f.id)
-  const urlFrom = params.get('from')
-  const urlTo = params.get('to')
-  const urlTool = params.get('tool')
-  const from = allFromIds.includes(urlFrom) ? urlFrom : 'text'
-  const targets = getTargets(from)
-  const to = targets.includes(urlTo) ? urlTo : (targets[0] || 'base64')
-  return { from, to, tool: urlTool || null }
-}
-
-// Parse hash for backward compat with #tool/ID
-function readHashTool() {
-  const hash = window.location.hash.replace('#', '')
-  if (hash.startsWith('tool/')) return hash.slice(5)
   return null
 }
 
@@ -62,15 +43,13 @@ function ensureCanonical() {
 function App() {
   const { theme, toggle } = useTheme()
 
-  const [convertFrom, setConvertFrom] = useState(() => readUrlParams().from)
-  const [convertTo, setConvertTo] = useState(() => readUrlParams().to)
+  const [convertFrom, setConvertFrom] = useState(() => readUrlState(window.location.search, window.location.hash).from)
+  const [convertTo, setConvertTo] = useState(() => readUrlState(window.location.search, window.location.hash).to)
   const [reuseRequest, setReuseRequest] = useState(null)
   const [activeConverter, setActiveConverter] = useState(() => {
     // Check ?tool= param first, then #tool/ hash for backward compat
-    const { tool } = readUrlParams()
-    if (tool) return converters.find(cv => cv.id === tool) || null
-    const hashTool = readHashTool()
-    if (hashTool) return converters.find(cv => cv.id === hashTool) || null
+    const { toolId } = readUrlState(window.location.search, window.location.hash)
+    if (toolId) return converters.find(cv => cv.id === toolId) || null
     return null
   })
 
@@ -167,9 +146,7 @@ function App() {
   // Handle browser back/forward
   useEffect(() => {
     const handlePop = () => {
-      const { from, to, tool } = readUrlParams()
-      const hashTool = readHashTool()
-      const toolId = tool || hashTool
+      const { from, to, toolId } = readUrlState(window.location.search, window.location.hash)
       if (toolId) {
         const c = converters.find(cv => cv.id === toolId)
         if (c) {
