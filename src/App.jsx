@@ -25,12 +25,11 @@ function readUrlParams() {
   const allFromIds = formats.filter(f => getTargets(f.id).length > 0).map(f => f.id)
   const urlFrom = params.get('from')
   const urlTo = params.get('to')
-  const urlInput = params.get('input')
   const urlTool = params.get('tool')
   const from = allFromIds.includes(urlFrom) ? urlFrom : 'text'
   const targets = getTargets(from)
   const to = targets.includes(urlTo) ? urlTo : (targets[0] || 'base64')
-  return { from, to, input: urlInput || null, tool: urlTool || null }
+  return { from, to, tool: urlTool || null }
 }
 
 // Parse hash for backward compat with #tool/ID
@@ -65,7 +64,7 @@ function App() {
 
   const [convertFrom, setConvertFrom] = useState(() => readUrlParams().from)
   const [convertTo, setConvertTo] = useState(() => readUrlParams().to)
-  const [reuseInput, setReuseInput] = useState(() => readUrlParams().input)
+  const [reuseRequest, setReuseRequest] = useState(null)
   const [activeConverter, setActiveConverter] = useState(() => {
     // Check ?tool= param first, then #tool/ hash for backward compat
     const { tool } = readUrlParams()
@@ -80,6 +79,7 @@ function App() {
   const [showTip, setShowTip] = useState(() => !localStorage.getItem('convert-everything-tip-seen'))
   const [installPrompt, setInstallPrompt] = useState(null)
   const dragCountRef = useRef(0)
+  const reuseRequestIdRef = useRef(0)
 
   const dismissTip = useCallback(() => {
     setShowTip(false)
@@ -139,10 +139,9 @@ function App() {
     if (activeConverter) setActiveConverter(null)
     setConvertFrom(item.from)
     setConvertTo(item.to)
-    setReuseInput(item.input)
+    setReuseRequest({ id: ++reuseRequestIdRef.current, value: item.input })
   }, [activeConverter])
 
-  const handleReuseConsumed = useCallback(() => setReuseInput(null), [])
   const handleCloseHelp = useCallback(() => setShowHelp(false), [])
 
   // Sync URL when state changes
@@ -334,8 +333,7 @@ function App() {
               to={convertTo}
               onFromChange={setConvertFrom}
               onToChange={setConvertTo}
-              reuseInput={reuseInput}
-              onReuseConsumed={handleReuseConsumed}
+              reuseRequest={reuseRequest}
               activeConverter={activeConverter}
               onConverterChange={handleConverterChange}
             />

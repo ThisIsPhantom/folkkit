@@ -113,8 +113,8 @@ const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
 function getFavPairs() { try { return JSON.parse(localStorage.getItem(FAV_PAIRS_KEY)) || [] } catch { return [] } }
 function saveFavPairs(pairs) { localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(pairs)) }
 
-function ConvertPanel({ from, to, onFromChange, onToChange, reuseInput, onReuseConsumed, activeConverter, onConverterChange }) {
-  const [input, setInput] = useState('')
+function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '' }) {
+  const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
   const [batchMode, setBatchMode] = useState(false)
   const [wrapOutput, setWrapOutput] = useState(true)
@@ -183,38 +183,20 @@ function ConvertPanel({ from, to, onFromChange, onToChange, reuseInput, onReuseC
     }
   }, [])
 
-  // Reset tool state when converter changes
-  useEffect(() => {
-    if (activeConverter) {
-      setInput('')
-      setOutput('')
-      setMediaResult(null)
-      setProcessing(false)
-      setProgress(0)
-      setError(null)
-      setSelectedFiles([])
-      setTextParam('')
-    }
-  }, [activeConverter])
-
   // When "from" changes, auto-select first available "to" and focus input
   useEffect(() => {
     if (isToolMode) return
-    const newTargets = getTargets(from)
-    if (!newTargets.includes(to) && newTargets.length > 0) {
-      setTo(newTargets[0])
-    }
-    inputRef.current?.focus()
-  }, [from, to, isToolMode, setTo])
-
-  // Handle reuse from history
-  useEffect(() => {
-    if (reuseInput != null) {
-      setInput(reuseInput)
-      onReuseConsumed?.()
+    let cancelled = false
+    Promise.resolve().then(() => {
+      if (cancelled) return
+      const newTargets = getTargets(from)
+      if (!newTargets.includes(to) && newTargets.length > 0) {
+        setTo(newTargets[0])
+      }
       inputRef.current?.focus()
-    }
-  }, [reuseInput, onReuseConsumed])
+    })
+    return () => { cancelled = true }
+  }, [from, to, isToolMode, setTo])
 
   // Format-pair conversion
   const runFormatConvert = useCallback(async () => {
@@ -254,7 +236,12 @@ function ConvertPanel({ from, to, onFromChange, onToChange, reuseInput, onReuseC
   }, [input, from, to, batchMode, isToolMode])
 
   useEffect(() => {
-    if (!isToolMode) runFormatConvert()
+    if (isToolMode) return
+    let cancelled = false
+    Promise.resolve().then(() => {
+      if (!cancelled) runFormatConvert()
+    })
+    return () => { cancelled = true }
   }, [runFormatConvert, isToolMode])
 
   // Tool text conversion
@@ -279,11 +266,21 @@ function ConvertPanel({ from, to, onFromChange, onToChange, reuseInput, onReuseC
   }, [activeConverter, isGenerator])
 
   useEffect(() => {
-    if (isTextTool && !isMedia) runToolConvert(input)
+    if (!isTextTool || isMedia) return
+    let cancelled = false
+    Promise.resolve().then(() => {
+      if (!cancelled) runToolConvert(input)
+    })
+    return () => { cancelled = true }
   }, [input, runToolConvert, isTextTool, isMedia])
 
   useEffect(() => {
-    if (isGenerator) runToolConvert('')
+    if (!isGenerator) return
+    let cancelled = false
+    Promise.resolve().then(() => {
+      if (!cancelled) runToolConvert('')
+    })
+    return () => { cancelled = true }
   }, [isGenerator, runToolConvert])
 
   // FFmpeg status
@@ -428,7 +425,6 @@ function ConvertPanel({ from, to, onFromChange, onToChange, reuseInput, onReuseC
       return
     }
     const params = new URLSearchParams({ from, to })
-    if (input && input.length <= 500) params.set('input', input)
     const url = window.location.origin + window.location.pathname + '?' + params.toString()
     if (navigator.share) {
       try { await navigator.share({ title: `${getFormatById(from)?.name} → ${getFormatById(to)?.name}`, url }) } catch { /* cancelled */ }
@@ -682,26 +678,20 @@ function ConvertPanel({ from, to, onFromChange, onToChange, reuseInput, onReuseC
 
   // ToolPicker handlers
   const handleFromSelectFormat = useCallback((id) => {
+    setFromPickerOpen(false)
     if (activeConverter) onConverterChange(null)
     setFrom(id)
-  }, [activeConverter, onConverterChange, setFrom])
+  }, [activeConverter, onConverterChange, setFrom, setFromPickerOpen])
 
   const handleFromSelectConverter = useCallback((converter) => {
+    setFromPickerOpen(false)
     onConverterChange(converter)
-  }, [onConverterChange])
+  }, [onConverterChange, setFromPickerOpen])
 
   const handleToSelectFormat = useCallback((id) => {
-    setTo(id)
-  }, [setTo])
-
-  useEffect(() => {
-    if (isToolMode) setToPickerOpen(false)
-  }, [isToolMode])
-
-  useEffect(() => {
-    setFromPickerOpen(false)
     setToPickerOpen(false)
-  }, [activeConverter, from, to])
+    setTo(id)
+  }, [setTo, setToPickerOpen])
 
   const toggleFromPicker = useCallback(() => {
     setFromPickerOpen(open => {
@@ -1235,4 +1225,7 @@ function ConvertPanel({ from, to, onFromChange, onToChange, reuseInput, onReuseC
   )
 }
 
-export default ConvertPanel
+export default function ConvertPanel(props) {
+  const sessionKey = props.activeConverter?.id ?? `format:${props.reuseRequest?.id ?? 0}`
+  return <ConvertPanelSession key={sessionKey} {...props} initialInput={props.reuseRequest?.value ?? ''} />
+}
