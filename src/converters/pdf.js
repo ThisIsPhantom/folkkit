@@ -1,6 +1,6 @@
 // Lazy-load pdf-lib only when a PDF converter is used
 
-import { TOOL_LIMITS } from '../runtime/limits'
+import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits'
 
 async function loadPdfLib() {
   const { PDFDocument } = await import('pdf-lib')
@@ -14,7 +14,7 @@ export const pdfConverters = [
     category: 'document',
     description: 'Combine multiple images into a single PDF — drop or select image files',
     acceptsFile: true,
-    acceptTypes: 'image/*',
+    acceptTypes: IMAGE_ACCEPT_TYPES,
     multipleFiles: true,
     isMediaConverter: true,
     fileConvert: async (files) => {

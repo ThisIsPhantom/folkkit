@@ -79,11 +79,16 @@ function normalizeResult(value) {
   if (!value || typeof value !== 'object') throw runtimeError('conversion_failed')
   if (value.info !== undefined && typeof value.info !== 'string') throw runtimeError('conversion_failed')
   const info = value.info === undefined ? {} : { info: value.info }
-  if (value.kind === 'text' && typeof value.text === 'string') {
+  if (
+    value.kind === 'text'
+    && hasExactResultKeys(value, ['kind', 'text', 'info'], ['kind', 'text'])
+    && typeof value.text === 'string'
+  ) {
     return { kind: 'text', text: value.text, ...info }
   }
   if (
     (value.kind === 'download' || value.kind === 'image')
+    && hasExactResultKeys(value, ['kind', 'blob', 'filename', 'info'], ['kind', 'blob', 'filename'])
     && value.blob instanceof Blob
     && typeof value.filename === 'string'
     && value.filename.trim()
@@ -91,6 +96,12 @@ function normalizeResult(value) {
     return { kind: value.kind, blob: value.blob, filename: value.filename, ...info }
   }
   throw runtimeError('conversion_failed')
+}
+
+function hasExactResultKeys(value, allowedKeys, requiredKeys) {
+  const ownKeys = Reflect.ownKeys(value)
+  return requiredKeys.every(key => Object.hasOwn(value, key))
+    && ownKeys.every(key => typeof key === 'string' && allowedKeys.includes(key))
 }
 
 function mapFailure(error, tool) {

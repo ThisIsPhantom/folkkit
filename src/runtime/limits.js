@@ -1,5 +1,6 @@
 export const MIB = 1024 * 1024
 export const TEXT_LIMIT = 5 * MIB
+export const IMAGE_ACCEPT_TYPES = 'image/png,image/jpeg,.png,.jpg,.jpeg'
 
 function tiers(lowMemory, standard) {
   return Object.freeze({
@@ -69,15 +70,23 @@ function imageKindFromName(name) {
   return null
 }
 
-function hasConflictingImageMetadata(file) {
+function hasInvalidImageMetadata(tool, file) {
+  if (tool?.limits !== TOOL_LIMITS.images) return false
+  const mime = String(file.type || '').toLowerCase()
+  const name = String(file.name || '').toLowerCase()
   const mimeKind = imageKindFromMime(String(file.type || '').toLowerCase())
-  const extensionKind = imageKindFromName(String(file.name || '').toLowerCase())
-  return mimeKind && extensionKind && mimeKind !== extensionKind
+  const extensionKind = imageKindFromName(name)
+  const dot = name.lastIndexOf('.')
+  const hasExtension = dot >= 0 && dot < name.length - 1
+  if (mime && !mimeKind) return true
+  if (hasExtension && !extensionKind) return true
+  if (!mimeKind && !extensionKind) return true
+  return Boolean(mimeKind && extensionKind && mimeKind !== extensionKind)
 }
 
 export function validateFiles(tool, files, environment = globalThis) {
   const selected = Array.from(files || [])
-  if (selected.some((file) => hasConflictingImageMetadata(file) || !acceptsFile(file, tool?.acceptTypes))) {
+  if (selected.some((file) => hasInvalidImageMetadata(tool, file) || !acceptsFile(file, tool?.acceptTypes))) {
     return validationErrors.unsupported_type
   }
 

@@ -117,18 +117,18 @@ describe('executeTool', () => {
 
   test.each([
     {
-      value: { kind: 'text', text: 'safe', info: 'details', filename: 'leak.txt', extra: 'drop' },
+      value: { kind: 'text', text: 'safe', info: 'details' },
       expected: { kind: 'text', text: 'safe', info: 'details' },
     },
     {
-      value: { kind: 'download', blob: new Blob(['download']), filename: 'result.bin', info: 'details', text: 'drop', url: 'drop' },
+      value: { kind: 'download', blob: new Blob(['download']), filename: 'result.bin', info: 'details' },
       expected: { kind: 'download', blob: expect.any(Blob), filename: 'result.bin', info: 'details' },
     },
     {
-      value: { kind: 'image', blob: new Blob(['image']), filename: 'result.png', payload: 'drop' },
+      value: { kind: 'image', blob: new Blob(['image']), filename: 'result.png' },
       expected: { kind: 'image', blob: expect.any(Blob), filename: 'result.png' },
     },
-  ])('returns only declared fields for $value.kind results', async ({ value, expected }) => {
+  ])('accepts the exact declared fields for $value.kind results', async ({ value, expected }) => {
     await expect(executeTool({ tool: { convert: async () => value }, text: 'input' })).resolves.toEqual(expected)
   })
 
@@ -140,6 +140,9 @@ describe('executeTool', () => {
     { kind: 'text', text: 'safe', info: 42 },
     { kind: 'unknown', text: 'safe' },
     { blob: new Blob(['legacy']), filename: 'legacy.bin' },
+    { kind: 'text', text: 'safe', filename: 'extra.txt' },
+    { kind: 'download', blob: new Blob(['x']), filename: 'result.bin', url: 'blob:extra' },
+    { kind: 'image', blob: new Blob(['x']), filename: 'result.png', payload: 'extra' },
   ])('rejects malformed ToolResult %#', async (value) => {
     await expect(executeTool({ tool: { convert: async () => value }, text: 'input' }))
       .rejects.toMatchObject({ code: 'conversion_failed', messageKey: 'errors.conversionFailed' })
@@ -226,15 +229,56 @@ test.each([
   const tool = pdfConverters.find((entry) => entry.id === 'images-to-pdf')
 
   if (failDraw) {
-    await expect(executeTool({ tool, files: [file] })).rejects.toMatchObject({ code: 'conversion_failed' })
+    await expect(tool.fileConvert([file])).rejects.toThrow('draw failed')
   } else {
-    await expect(executeTool({ tool, files: [file] })).resolves.toMatchObject({
+    await expect(tool.fileConvert([file])).resolves.toMatchObject({
       kind: 'download',
       filename: 'combined.pdf',
     })
   }
   expect(closeCount).toBe(1)
 })
+
+test.each([
+  new File(['not a webp'], 'invalid.webp', { type: 'image/webp' }),
+  new File([
+    new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+  ], 'mismatch.png', { type: 'image/webp' }),
+])('released QR rejects unsupported or mismatched WebP before decoding', async (file) => {
+  let bitmapCalls = 0
+  vi.stubGlobal('createImageBitmap', async () => {
+    bitmapCalls += 1
+    return { close() {} }
+  })
+  vi.stubGlobal('BarcodeDetector', class {
+    async detect() { return [{ rawValue: 'must not decode' }] }
+  })
+  const tool = qrConverters.find((entry) => entry.id === 'qr-to-text')
+
+  await expect(executeTool({ tool, files: [file] })).rejects.toMatchObject({ code: 'unsupported_type' })
+  expect(bitmapCalls).toBe(0)
+})
+
+test('released images-to-PDF accepts real PNG and JPEG fixtures', async () => {
+  const png = bytesFromBase64('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQmcAAAAASUVORK5CYII=')
+  const jpeg = bytesFromBase64('/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKpAB//Z')
+  const tool = pdfConverters.find((entry) => entry.id === 'images-to-pdf')
+
+  const result = await executeTool({
+    tool,
+    files: [
+      new File([png], 'one.png', { type: 'image/png' }),
+      new File([jpeg], 'two.jpg', { type: 'image/jpeg' }),
+    ],
+  })
+
+  expect(result).toMatchObject({ kind: 'download', filename: 'combined.pdf' })
+  expect((await PDFDocument.load(await result.blob.arrayBuffer())).getPageCount()).toBe(2)
+})
+
+function bytesFromBase64(value) {
+  return Uint8Array.from(atob(value), character => character.charCodeAt(0))
+}
 
 test('a newer run suppresses a late older result and revokes its previous URL', async () => {
   const first = deferred()
@@ -288,11 +332,16 @@ test('manual presentation enforces and sanitizes the exact ToolResult union', ()
 
   expect(() => runtime.present({ kind: 'download', blob: new Blob(['x']), filename: '' }))
     .toThrow(expect.objectContaining({ code: 'conversion_failed' }))
+  expect(() => runtime.present({
+    kind: 'download',
+    blob: new Blob(['x']),
+    filename: 'extra.txt',
+    payload: 'undeclared',
+  })).toThrow(expect.objectContaining({ code: 'conversion_failed' }))
   expect(runtime.present({
     kind: 'download',
     blob: new Blob(['safe']),
     filename: 'safe.txt',
-    payload: 'drop',
   }).result).toEqual({
     kind: 'download',
     blob: expect.any(Blob),

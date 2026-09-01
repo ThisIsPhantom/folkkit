@@ -1,4 +1,4 @@
-import { TOOL_LIMITS } from '../runtime/limits'
+import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits'
 
 function qrFailure(code) {
   const error = new Error(code)
@@ -39,7 +39,7 @@ export const qrConverters = [
     category: 'encode',
     description: 'Read text from a QR code image — drop or upload a QR code',
     acceptsFile: true,
-    acceptTypes: 'image/*',
+    acceptTypes: IMAGE_ACCEPT_TYPES,
     limits: TOOL_LIMITS.images,
     isMediaConverter: true,
     fileConvert: async (files) => {

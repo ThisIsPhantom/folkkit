@@ -85,4 +85,10 @@ describe('released catalog', () => {
       expect(tool.limits).toBe(expectedLimits)
     }
   })
+
+  it('releases image inputs only for the signature-checked PNG and JPEG contract', () => {
+    for (const id of ['images-to-pdf', 'qr-to-text']) {
+      expect(findReleasedTool(id, 'de')?.acceptTypes).toBe('image/png,image/jpeg,.png,.jpg,.jpeg')
+    }
+  })
 })
