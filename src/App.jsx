@@ -4,9 +4,21 @@ import AppShell from './components/shell/AppShell'
 import { useI18n } from './i18n'
 import CatalogPage from './pages/CatalogPage'
 import HomePage from './pages/HomePage'
+import PendingLegalPage from './pages/PendingLegalPage'
 import WorkspacePage from './pages/WorkspacePage'
+import { getNavigationScrollBehavior } from './utils/motion'
+
+const legalRoutes = Object.freeze({
+  '/privacy': 'privacy',
+  '/open-source': 'openSource',
+  '/licenses': 'licenses',
+  '/terms': 'terms',
+  '/contact': 'contact',
+})
 
 function readRoute() {
+  const legalPageKey = legalRoutes[window.location.pathname]
+  if (legalPageKey) return `legal:${legalPageKey}`
   if (window.location.pathname === '/tools') return 'catalog'
   if (window.location.pathname === '/workspace' || window.location.search || window.location.hash.startsWith('#tool/')) return 'workspace'
   return 'home'
@@ -16,6 +28,7 @@ export default function App() {
   const { locale, setLocale } = useI18n()
   const [route, setRoute] = useState(readRoute)
   const releasedTools = useMemo(() => getReleasedTools(locale), [locale])
+  const shellRoute = route.startsWith('legal:') ? 'legal' : route
 
   useEffect(() => {
     document.documentElement.lang = locale
@@ -31,7 +44,7 @@ export default function App() {
     const target = new URL(href, window.location.origin)
     history.pushState(null, '', `${target.pathname}${target.search}${target.hash}`)
     setRoute(readRoute())
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: getNavigationScrollBehavior() })
   }, [])
 
   const openCore = (kind) => {
@@ -49,10 +62,13 @@ export default function App() {
   }
 
   return (
-    <AppShell locale={locale} onLocaleChange={setLocale} route={route} onNavigate={navigate}>
+    <AppShell locale={locale} onLocaleChange={setLocale} route={shellRoute} onNavigate={navigate}>
       {route === 'home' && <HomePage onOpenCore={openCore} onOpenCatalog={() => navigate('/tools')} />}
       {route === 'catalog' && <CatalogPage entries={releasedTools} onSelect={selectCatalogEntry} />}
       {route === 'workspace' && <WorkspacePage />}
+      {route.startsWith('legal:') && (
+        <PendingLegalPage pageKey={route.slice('legal:'.length)} path={window.location.pathname} />
+      )}
     </AppShell>
   )
 }

@@ -1,6 +1,6 @@
 import { useI18n } from '../../i18n'
 
-export default function Footer() {
+export default function Footer({ onNavigate }) {
   const { t } = useI18n()
   const links = [
     ['privacy', '/privacy'],
@@ -16,7 +16,11 @@ export default function Footer() {
         <p>{t('shell.footerNote')}</p>
         <nav aria-label="Footer">
           <ul role="list" className="site-footer__links">
-            {links.map(([key, href]) => <li key={key}><a href={href}>{t(`shell.${key}`)}</a></li>)}
+            {links.map(([key, href]) => (
+              <li key={key}>
+                <a href={href} onClick={(event) => { event.preventDefault(); onNavigate(href) }}>{t(`shell.${key}`)}</a>
+              </li>
+            ))}
             <li><a href="https://github.com/ThisIsPhantom/folkkit">{t('shell.source')}</a></li>
           </ul>
         </nav>

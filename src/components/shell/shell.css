@@ -45,6 +45,7 @@
   min-height: 2.75rem;
   color: var(--ink);
   font-size: 1.75rem;
+  font-weight: 600;
   line-height: 2.75rem;
   text-decoration: none;
 }

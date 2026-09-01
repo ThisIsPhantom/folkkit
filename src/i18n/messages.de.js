@@ -5,8 +5,7 @@ const messagesDe = Object.freeze({
     tools: 'Werkzeuge',
     privacyStatus: 'Lokale Verarbeitung',
     localeLabel: 'Sprache wählen',
-    themeLight: 'Helles Design',
-    themeDark: 'Dunkles Design',
+    themeToggle: 'Dunkles Design',
     menuOpen: 'Menü öffnen',
     menuClose: 'Menü schliessen',
     mobileNavigation: 'Mobile Navigation',
@@ -18,6 +17,12 @@ const messagesDe = Object.freeze({
     contact: 'Kontakt',
     source: 'Quellcode',
     footerNote: 'Folkkit verarbeitet Dateiinhalte lokal in deinem Browser.',
+  }),
+  legalPending: Object.freeze({
+    eyebrow: 'Noch nicht verfügbar',
+    message: 'Diese Seite ist in diesem privaten Build noch nicht enthalten.',
+    detail: 'Hier werden noch keine endgültigen rechtlichen oder Kontaktinformationen bereitgestellt.',
+    pathLabel: 'Pfad',
   }),
   home: Object.freeze({
     eyebrow: 'Werkzeuge für den Alltag',

@@ -24,6 +24,11 @@ test('navigates the German shell, switches language, and restores routes', async
   await page.getByRole('button', { name: 'English' }).click()
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
   await expect(page.getByRole('heading', { name: 'All released tools' })).toBeVisible()
+
+  await page.getByRole('link', { name: 'Privacy' }).click()
+  await expect(page).toHaveURL(/\/privacy$/)
+  await expect(page.getByRole('heading', { name: 'Privacy' })).toBeVisible()
+  await expect(page.getByText('This page is not part of this private build yet.')).toBeVisible()
 })
 
 test('keeps keyboard focus visible and exposes mobile navigation', async ({ page }) => {
@@ -50,7 +55,7 @@ test('keeps the theme usable when reduced motion is requested', async ({ page })
   await page.getByRole('button', { name: 'Dunkles Design' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
 
-  const transitionDuration = await page.getByRole('button', { name: 'Helles Design' }).evaluate((element) => (
+  const transitionDuration = await page.getByRole('button', { name: 'Dunkles Design' }).evaluate((element) => (
     Number.parseFloat(getComputedStyle(element).transitionDuration)
   ))
   expect(transitionDuration).toBeLessThanOrEqual(0.00001)

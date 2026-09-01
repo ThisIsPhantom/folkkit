@@ -45,7 +45,7 @@ export default function Header({ route, onNavigate, locale, onLocaleChange, them
             <button type="button" aria-pressed={locale === 'en'} onClick={() => onLocaleChange('en')}>English</button>
           </div>
           <button className="theme-button" type="button" aria-pressed={theme === 'dark'} onClick={onThemeToggle}>
-            {theme === 'light' ? t('shell.themeDark') : t('shell.themeLight')}
+            {t('shell.themeToggle')}
           </button>
           <button
             className="menu-button"

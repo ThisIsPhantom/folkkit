@@ -35,7 +35,7 @@ export default function AppShell({ locale, onLocaleChange, route, onNavigate, ch
       <main id="main-content" className={`shell__main shell__main--${route}`} tabIndex="-1">
         {children}
       </main>
-      <Footer />
+      <Footer onNavigate={onNavigate} />
     </div>
   )
 }

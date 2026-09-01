@@ -7,6 +7,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import History from '../components/History'
 import KeyboardHelp from '../components/KeyboardHelp'
 import { readUrlState } from '../routing/urlState'
+import { getNavigationScrollBehavior } from '../utils/motion'
 
 function getConverterForFile(file) {
   const type = file.type || ''
@@ -95,7 +96,7 @@ export default function WorkspacePage() {
       : new URLSearchParams({ from: convertFrom, to: convertTo })
     history.pushState(null, '', `${window.location.pathname}?${params}`)
     setActiveToolId(converter?.id || null)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: getNavigationScrollBehavior() })
   }, [convertFrom, convertTo])
 
   const handleHistorySelect = useCallback((item) => {
