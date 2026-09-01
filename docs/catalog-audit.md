@@ -39,3 +39,15 @@ Current audited total: 499 raw converters, 63 released converters, 436 hidden co
 `tests/e2e/catalog.spec.js` checks the derived count, proves that selecting Base64 loads `text.js` without loading `data.js` or `media.js`, and verifies real PNG-to-JPEG and JPEG-to-PNG downloads by file signatures. `tests/e2e/network.spec.js` converts a generated valid PCM WAV fixture to MP3, observes both pinned same-origin FFmpeg assets, and rejects cross-origin or content-bearing requests. Its cancellation case delays the same-origin WASM request, cancels the active runtime, and verifies that the native file input is enabled and empty afterwards.
 
 No other `image` or `imageFormat` entry is presented as released behavior. The remaining hidden entries retain their exact raw IDs and documented module reason.
+
+## Final verification snapshot
+
+The final local Task 7 gate produced these results on 2026-09-01:
+
+- Portable Bun audit: 499 converters, 63 released, 436 hidden, and 223 formats.
+- Full Vitest run: 23 files and 412 tests passed.
+- ESLint: exit 0 with no findings.
+- Vite production build: 330 modules transformed; converter implementations emitted as separate lazy chunks.
+- Runtime artifact check: same-origin paths only.
+- Serial Playwright run on `FOLKKIT_E2E_PORT=4177`: 16 tests passed, including catalog count, owner-only lazy loading, Canvas downloads, PDF/QR journeys, media conversion, media cancellation, and network privacy.
+- Port cleanup: no listener remained on port 4177. Port 4173 was not inspected, reused, or stopped.
