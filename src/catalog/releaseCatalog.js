@@ -38,6 +38,10 @@ const hiddenReasons = Object.freeze({
   pdf: 'Hidden pending PDF runtime evidence.',
 })
 
+const hiddenReasonOverrides = Object.freeze({
+  'qr-to-text': 'Hidden until a real successful decode fixture passes in a supported browser.',
+})
+
 function released({
   module,
   category = moduleCategories[module],
@@ -201,19 +205,6 @@ const releaseMetadata = Object.freeze({
     showsPreview: true,
     placeholderKey: 'tools.textToQr.placeholder',
   }),
-  'qr-to-text': released({
-    module: 'qr',
-    tier: 'experimental',
-    translationKey: 'qrToText',
-    runtimeClass: 'browser-api',
-    inputLimitClass: 'image-device',
-    outputNaming: 'inline-text',
-    evidenceId: 'tool:qr-to-text',
-    acceptsFile: true,
-    acceptTypes: 'image/png,image/jpeg,.png,.jpg,.jpeg',
-    limits: TOOL_LIMITS.images,
-    isMediaConverter: true,
-  }),
   'images-to-pdf': released({
     module: 'pdf',
     tier: 'core',
@@ -335,7 +326,7 @@ export const releaseCatalog = Object.freeze(
       category: moduleCategories[module],
       tier: 'hidden',
       translationKey: id,
-      hiddenReason: hiddenReasons[module],
+      hiddenReason: hiddenReasonOverrides[id] || hiddenReasons[module],
     })
   })),
 )

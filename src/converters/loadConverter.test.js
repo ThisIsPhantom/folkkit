@@ -60,7 +60,7 @@ describe('lazy converter loading', () => {
     expect(data).not.toHaveBeenCalled()
   })
 
-  it.each(['unknown-tool', '__proto__', '../media', 'random-password'])('does not import hidden or unknown ID %s', async (id) => {
+  it.each(['unknown-tool', '__proto__', '../media', 'random-password', 'qr-to-text'])('does not import hidden or unknown ID %s', async (id) => {
     const moduleLoader = vi.fn(async () => ({ textConverters: [] }))
     const loader = createConverterLoader(new Map([['text', moduleLoader]]))
 

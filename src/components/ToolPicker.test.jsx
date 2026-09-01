@@ -69,8 +69,8 @@ describe('ToolPicker', () => {
   })
 
   it.each([
-    ['de', 'QR-Code lesen', 'Experimentell'],
-    ['en', 'Read QR code', 'Experimental'],
+    ['de', 'Audio in MP3', 'Experimentell'],
+    ['en', 'Audio to MP3', 'Experimental'],
   ])('labels experimental search results in %s', async (locale, toolName, tierLabel) => {
     const user = userEvent.setup()
     render(
@@ -107,9 +107,9 @@ describe('ToolPicker', () => {
       />,
     )
 
-    await user.click(screen.getByRole('button', { name: 'QR und Codierung' }))
+    await user.click(screen.getByRole('button', { name: 'Audio und Video' }))
 
-    expect(screen.getByText('QR-Code lesen')).toBeInTheDocument()
+    expect(screen.getByText('Audio in MP3')).toBeInTheDocument()
     expect(screen.getByText('Experimentell')).toBeInTheDocument()
   })
 })

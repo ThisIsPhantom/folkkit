@@ -61,28 +61,6 @@ const evidenceExecutors = Object.freeze({
       else delete globalThis.document
     }
   },
-  'tool-qr-read': async (evidence, state, dependencies) => {
-    const converter = await dependencies.loadConverter(evidence.subjectId)
-    assertion(state, converter?.id === evidence.subjectId, `${evidence.evidenceId} did not load its subject`)
-    const previousDetector = globalThis.BarcodeDetector
-    const previousCreateImageBitmap = globalThis.createImageBitmap
-    let closed = false
-    globalThis.BarcodeDetector = class {
-      async detect() { return [{ rawValue: evidence.expected }] }
-    }
-    globalThis.createImageBitmap = async () => ({ close: () => { closed = true } })
-    try {
-      const result = await converter.fileConvert(new File([new Uint8Array([1])], 'qr.png', { type: 'image/png' }))
-      assertion(state, result?.kind === 'text', `${evidence.evidenceId} did not return text`, { behavior: true })
-      assertion(state, result?.text === evidence.expected, `${evidence.evidenceId} literal output mismatch`, { behavior: true })
-      assertion(state, closed, `${evidence.evidenceId} did not close its bitmap`, { behavior: true })
-    } finally {
-      if (previousDetector === undefined) delete globalThis.BarcodeDetector
-      else globalThis.BarcodeDetector = previousDetector
-      if (previousCreateImageBitmap === undefined) delete globalThis.createImageBitmap
-      else globalThis.createImageBitmap = previousCreateImageBitmap
-    }
-  },
   'tool-pdf-behavior': async (evidence, state, dependencies) => {
     const { PDFDocument } = await import('pdf-lib')
     const source = await PDFDocument.create()

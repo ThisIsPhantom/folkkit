@@ -172,10 +172,6 @@ const messagesEn = Object.freeze({
       description: 'Create a QR code from text or a link',
       placeholder: 'Type text or a link',
     }),
-    qrToText: Object.freeze({
-      name: 'Read QR code',
-      description: 'Read text from a QR code image',
-    }),
     imagesToPdf: Object.freeze({
       name: 'Images to PDF',
       description: 'Combine several images into one PDF',

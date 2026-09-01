@@ -59,7 +59,6 @@ const expectedReleasedIds = [
   'bmi-calc',
   'png-to-jpg',
   'jpg-to-png',
-  'qr-to-text',
   'audio-to-mp3',
 ]
 
@@ -72,6 +71,7 @@ describe('released catalog', () => {
     expect(getReleasedTools('de').map(tool => tool.id)).toEqual(expectedReleasedIds)
     expect(findReleasedTool('merge-pdf', 'en')).toMatchObject({ id: 'merge-pdf', tier: 'core' })
     expect(findReleasedTool('unreleased-tool', 'de')).toBeNull()
+    expect(findReleasedTool('qr-to-text', 'de')).toBeNull()
   })
 
   it('derives the released count from unique catalog metadata', () => {
@@ -129,8 +129,15 @@ describe('released catalog', () => {
   })
 
   it('releases image inputs only for the signature-checked PNG and JPEG contract', () => {
-    for (const id of ['images-to-pdf', 'qr-to-text']) {
+    for (const id of ['images-to-pdf']) {
       expect(findReleasedTool(id, 'de')?.acceptTypes).toBe('image/png,image/jpeg,.png,.jpg,.jpeg')
     }
+  })
+
+  it('records the unsupported successful-decode evidence gap for the hidden QR reader', () => {
+    expect(releaseCatalog.find(tool => tool.id === 'qr-to-text')).toMatchObject({
+      tier: 'hidden',
+      hiddenReason: 'Hidden until a real successful decode fixture passes in a supported browser.',
+    })
   })
 })

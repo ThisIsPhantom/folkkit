@@ -181,7 +181,6 @@ const adviceEvidence = [
 
 const contractEvidence = [
   toolEvidence('text-to-qr', 'tool-qr-generate', { input: 'Folkkit evidence', expectedFilename: 'folkkit-qr.svg' }),
-  toolEvidence('qr-to-text', 'tool-qr-read', { expected: 'Folkkit QR evidence' }),
   toolEvidence('merge-pdf', 'tool-pdf-behavior', { operation: 'merge' }),
   toolEvidence('pdf-page-count', 'tool-pdf-behavior', { operation: 'page-count' }),
   toolEvidence('pdf-split', 'tool-pdf-behavior', { operation: 'split' }),

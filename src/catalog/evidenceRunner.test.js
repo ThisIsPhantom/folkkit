@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { catalogEvidenceRegistry } from './evidenceRegistry'
+import { catalogEvidenceRegistry, toolEvidenceRegistry } from './evidenceRegistry'
 import { evidenceRunErrors, runEvidenceRegistry } from './evidenceRunner'
 
 describe('catalog evidence execution', () => {
@@ -32,6 +32,10 @@ describe('catalog evidence execution', () => {
       assertions: 0,
       error: 'Missing evidence executor: fabricated-executor',
     })
+  })
+
+  it('does not register mocked successful-decode evidence for the QR reader', () => {
+    expect(toolEvidenceRegistry.find(evidence => evidence.subjectId === 'qr-to-text')).toBeUndefined()
   })
 
   it('rejects empty cases and metadata-only contracts as behavioral evidence', async () => {

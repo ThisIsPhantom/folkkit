@@ -15,7 +15,7 @@ The raw format graph contains 223 unique IDs in 34 groups. Eighteen IDs remain e
 | Module | Raw | Released now | Hidden now | Decision and evidence |
 | --- | ---: | ---: | ---: | --- |
 | `text` | 55 | 14 | 41 | Released linear Base64, URL, HTML entity, hex, binary, Unicode, ROT13, and Atbash operations after literal fixtures. Other tools remain hidden pending bounded-output fixtures and localized copy. |
-| `qr` | 2 | 2 | 0 | Kept the Task 4 core generator and experimental reader. Existing Blob, capability, and browser fixture tests remain the release evidence. |
+| `qr` | 2 | 1 | 1 | Kept `text-to-qr` core with real SVG evidence. `qr-to-text` remains implemented but hidden until a real successful decode fixture passes in a supported browser. Unsupported capability handling is not successful decode evidence. |
 | `image` | 3 | 0 | 3 | Hidden pending exact PNG/JPEG signatures, Blob result normalization, and image fixtures. |
 | `hash` | 6 | 1 | 5 | Released SHA-256 as a checksum with a literal digest fixture and copy that does not claim password or security validation. Other hashes remain hidden pending the same review. |
 | `crypto` | 13 | 0 | 13 | Hidden because password, randomness, HMAC, XOR, and cryptographic claims require a separate security review. |
@@ -28,7 +28,7 @@ The raw format graph contains 223 unique IDs in 34 groups. Eighteen IDs remain e
 | `media` | 14 | 1 | 13 | Kept only `audio-to-mp3` experimental because it has a real WAV-to-MP3 browser fixture with non-trivial MP3 bytes, a valid ID3 or MPEG frame signature, same-origin FFmpeg JavaScript/WASM, no request leakage, and cancellation evidence. The other 13 IDs remain hidden. |
 | `pdf` | 8 | 8 | 0 | Kept the Task 4 core PDF set with Task 6 PDF/image limits, signature checks, exact Blob results, and checked-in PDF/image fixtures. |
 
-Current audited total: 499 raw converters, 50 released converters, 449 hidden converters, 18 released format IDs, and 205 hidden format IDs. The UI tool count is `releasedToolCount`, derived from the 50 non-hidden converter entries. Format graph choices are intentionally not added to that tool-card count.
+Current audited total: 499 raw converters, 49 released converters, 450 hidden converters, 18 released format IDs, and 205 hidden format IDs. The UI tool count is `releasedToolCount`, derived from the 49 non-hidden converter entries. Format graph choices are intentionally not added to that tool-card count.
 
 ## Lazy-loading boundary
 
@@ -42,11 +42,11 @@ No other `image` or `imageFormat` entry is presented as released behavior. The r
 
 ## Executable evidence and bounds
 
-`src/catalog/evidenceRegistry.js` is the independent source for 18 format fixtures, the canonical released-pair allowlist, and 50 tool evidence records. `src/catalog/evidenceRunner.js` executes every non-browser fixture and records infrastructure and behavioral assertions separately. Released non-browser evidence needs at least one behavioral assertion. The auditor rejects fabricated references, duplicate or missing registry entries, missing executors, empty cases, fixtures that do not run, and fixtures with zero behavioral assertions. It does not grep test source.
+`src/catalog/evidenceRegistry.js` is the independent source for 18 format fixtures, the canonical released-pair allowlist, and 49 tool evidence records. `src/catalog/evidenceRunner.js` executes every non-browser fixture and records infrastructure and behavioral assertions separately. Released non-browser evidence needs at least one behavioral assertion. The auditor rejects fabricated references, duplicate or missing registry entries, missing executors, empty cases, fixtures that do not run, and fixtures with zero behavioral assertions. It does not grep test source.
 
 Browser-only evidence is configured in `src/catalog/browserEvidence.js`. Each browser evidence ID maps to an executable shared runner. Actual Playwright tests import and call those runners with real PDF, JPEG, PNG, or MP3 bytes. The runner must consume every configured claim, including filenames, minimum byte counts, signatures, and media network/privacy flags. Missing, uncalled, no-op, or partially consuming runners fail their contracts.
 
-The canonical pair allowlist is checked at URL restoration, picker targets, favourite loading and selection, history loading and selection, chain suggestions, and single or batch execution. A hidden pair such as `petabytes→terabytes`, or a non-audited edge between individually released IDs such as `text→url`, cannot reach `getConvertFn`. Persisted content history is filtered non-destructively so invalid entries are neither displayed nor reusable.
+The canonical pair allowlist is checked at URL restoration, picker targets, favourite loading and selection, history loading and selection, chain suggestions, and single or batch execution. A hidden pair such as `petabytes→terabytes`, or a non-audited edge between individually released IDs such as `text→url`, cannot reach `getConvertFn`. History loading does not immediately rewrite invalid entries, but later append or remove actions may rewrite the filtered stored list under the existing history semantics.
 
 The released text utilities were reviewed for obvious input-driven loops. `loan-calc` now rejects non-finite values, principal above 1 trillion, annual rates outside 0 to 100, and integer terms outside 1 to 100 years before its amortization loop. Base58 rejects text above 64 KiB before either conversion function runs. Other released text operations are fixed-output or linear behind the five MiB text limit; no additional released entry required hiding in this bounded review. The percentage parser accepts both `15% of 200` and `15% von 200` with exact literal evidence.
 
@@ -54,8 +54,8 @@ The released text utilities were reviewed for obvious input-driven loops. `loan-
 
 The final local Task 7 gate produced these results on 2026-09-01:
 
-- Portable Bun audit: 499 converters with 50 released and 449 hidden; 223 formats with 18 released and 205 hidden.
-- Full Vitest run: 25 files and 237 tests passed.
+- Portable Bun audit: 499 converters with 49 released and 450 hidden; 223 formats with 18 released and 205 hidden.
+- Full Vitest run: 25 files and 240 tests passed.
 - ESLint: exit 0 with no findings.
 - Vite production build: 331 modules transformed; converter implementations emitted as separate lazy chunks.
 - Runtime artifact check: same-origin paths only.

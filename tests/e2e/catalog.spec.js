@@ -6,9 +6,10 @@ import { runBrowserEvidence } from '../../src/catalog/browserEvidence'
 test('shows the derived released count and excludes hidden entries', async ({ page }) => {
   await page.goto('./tools')
 
-  await expect(page.getByText('50 Werkzeuge')).toBeVisible()
-  await expect(page.locator('.catalog-list > li')).toHaveCount(50)
+  await expect(page.getByText('49 Werkzeuge')).toBeVisible()
+  await expect(page.locator('.catalog-list > li')).toHaveCount(49)
   await expect(page.getByText('Random Password', { exact: true })).toHaveCount(0)
+  await expect(page.getByText('QR-Code lesen', { exact: true })).toHaveCount(0)
 })
 
 test('loads only the owning converter module after released metadata selection', async ({ page }) => {
