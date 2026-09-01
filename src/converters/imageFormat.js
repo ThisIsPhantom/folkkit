@@ -1,4 +1,5 @@
 // Image format conversions using Canvas API — zero external dependencies
+import { assertImageDimensionBudget, getImageDimensionLimits } from '../runtime/workBudgets'
 
 const nativeCreateImageBitmap = typeof globalThis.createImageBitmap === 'function'
   ? globalThis.createImageBitmap.bind(globalThis)
@@ -56,7 +57,14 @@ async function createImageBitmap(source, ...rest) {
   if (!nativeCreateImageBitmap) {
     throw missingApiError('Image conversion', 'createImageBitmap')
   }
-  return nativeCreateImageBitmap(source, ...rest)
+  const bitmap = await nativeCreateImageBitmap(source, ...rest)
+  try {
+    assertImageDimensionBudget({ width: bitmap.width, height: bitmap.height }, getImageDimensionLimits())
+    return bitmap
+  } catch (error) {
+    bitmap.close?.()
+    throw error
+  }
 }
 
 async function convertImage(file, outputType, quality) {

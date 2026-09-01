@@ -1,3 +1,5 @@
+import { assertCsvBudget } from '../runtime/workBudgets'
+
 function utf8ToBase64(input) {
   const bytes = new TextEncoder().encode(input)
   let binary = ''
@@ -70,8 +72,6 @@ export const dataConverters = [
     description: 'Convert CSV to a JSON array of objects',
     convert: (input) => {
       try {
-        const lines = input.trim().split('\n')
-        if (lines.length < 2) return '(need at least a header row and one data row)'
         const parseRow = (line) => {
           const result = []
           let current = ''
@@ -101,15 +101,17 @@ export const dataConverters = [
           result.push(current)
           return result
         }
-        const headers = parseRow(lines[0])
-        const rows = lines.slice(1).map((line) => {
-          const vals = parseRow(line)
+        const parsedRows = assertCsvBudget(input, parseRow)
+        if (parsedRows.length < 2) return '(need at least a header row and one data row)'
+        const headers = parsedRows[0]
+        const rows = parsedRows.slice(1).map((vals) => {
           const obj = {}
           headers.forEach((h, i) => { obj[h] = vals[i] ?? '' })
           return obj
         })
         return JSON.stringify(rows, null, 2)
-      } catch {
+      } catch (error) {
+        if (error?.code === 'resource_limit') throw error
         return '(invalid CSV)'
       }
     },

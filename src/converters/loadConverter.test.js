@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { createConverterLoader, loadConverter } from './loadConverter'
 import { findReleasedTool } from '../catalog/releaseCatalog'
 import { TOOL_LIMITS } from '../runtime/limits'
+import { CSV_LIMITS, PDF_TEXT_LIMITS, QR_TEXT_LIMIT_BYTES } from '../runtime/workBudgets'
 
 const NON_FINITE_LOAN_INPUT = '99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 5% 30'
 
@@ -77,6 +78,15 @@ describe('lazy converter loading', () => {
 
     expect(converter, `${id} is not released`).not.toBeNull()
     expect(await converter.convert(input)).toEqual({ kind: 'text', text: expected })
+  })
+
+  it.each([
+    ['csv-to-json', Array.from({ length: CSV_LIMITS.maxRows + 1 }, () => 'a,b').join('\n')],
+    ['text-to-qr', 'x'.repeat(QR_TEXT_LIMIT_BYTES + 1)],
+    ['text-to-pdf', Array.from({ length: PDF_TEXT_LIMITS.maxLogicalLines + 1 }, () => 'line').join('\n')],
+  ])('rejects excessive %s input with a stable resource code before expensive work', async (id, input) => {
+    const converter = await loadConverter(id)
+    await expect(converter.convert(input)).rejects.toMatchObject({ code: 'resource_limit' })
   })
 
   it.each([

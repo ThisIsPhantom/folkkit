@@ -175,7 +175,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const fileRunIdRef = useRef(0)
   const activeConverterIdRef = useRef(activeConverter?.id || null)
   const runtimeRef = useRef(null)
-  if (!runtimeRef.current) runtimeRef.current = createToolRuntime()
+  if (runtimeRef.current == null) runtimeRef.current = createToolRuntime()
   const swappedTimeoutRef = useRef(null)
   const autoDetectTimeoutRef = useRef(null)
 
@@ -185,6 +185,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const targets = getReleasedTargets(from)
   const pairPolicy = useMemo(() => resolvePairPolicy(from, to), [from, to, resolvePairPolicy])
   const pairKey = `${from}→${to}`
+  const activeConfirmedPairKey = confirmedPairKey === pairKey ? confirmedPairKey : null
 
   // Determine mode
   const isToolMode = !!activeConverter
@@ -216,10 +217,6 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   useEffect(() => {
     formatRunIdRef.current += 1
   }, [isToolMode])
-
-  useEffect(() => {
-    setConfirmedPairKey(null)
-  }, [from, to, isToolMode])
 
   useEffect(() => {
     return () => {
@@ -266,7 +263,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
       }
       return
     }
-    if (!canExecuteFormatPair(pairPolicy, confirmedPairKey)) {
+    if (!canExecuteFormatPair(pairPolicy, activeConfirmedPairKey)) {
       runtimeRef.current.cancel()
       if (runId === formatRunIdRef.current) {
         setOutput('')
@@ -315,7 +312,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
         setError(runtimeFailure)
       }
     }
-  }, [input, from, to, batchMode, isToolMode, resolveConvertFn, pairPolicy, confirmedPairKey])
+  }, [input, from, to, batchMode, isToolMode, resolveConvertFn, pairPolicy, activeConfirmedPairKey])
 
   useEffect(() => {
     if (isToolMode) return
@@ -1254,7 +1251,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
           <label>
             <input
               type="checkbox"
-              checked={confirmedPairKey === pairKey}
+              checked={activeConfirmedPairKey === pairKey}
               onChange={(event) => setConfirmedPairKey(event.target.checked ? pairKey : null)}
             />
             <span>{t('formatCompatibility.confirmation')}</span>

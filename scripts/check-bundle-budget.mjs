@@ -2,6 +2,7 @@ import { gzipSync } from 'node:zlib'
 import { readFile, readdir } from 'node:fs/promises'
 import { posix, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { parse } from 'acorn'
 
 export const INITIAL_JS_LIMIT = 200 * 1024
 export const LAZY_JS_LIMIT = 220 * 1024
@@ -57,6 +58,36 @@ async function listJavaScriptFiles(directory, prefix = '') {
   return files
 }
 
+function staticImportSources(contents) {
+  const ast = parse(contents, { ecmaVersion: 'latest', sourceType: 'module' })
+  return ast.body
+    .filter(node => node.type === 'ImportDeclaration' && typeof node.source?.value === 'string')
+    .map(node => node.source.value)
+}
+
+async function collectHostingInitialFiles(distDir) {
+  const html = await readFile(resolve(distDir, 'index.html'), 'utf8')
+  const roots = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
+    .map(match => normalizeBuildPath(match[1].replace(/^\//, '')))
+    .filter(file => file.endsWith('.js'))
+  if (roots.length === 0) throw new Error('Hosting-ready dist has no module script entry.')
+  const selected = new Set()
+  const visit = async file => {
+    if (selected.has(file)) return
+    selected.add(file)
+    const contents = await readFile(resolve(distDir, file), 'utf8')
+    for (const source of staticImportSources(contents)) {
+      if (!source.startsWith('.')) continue
+      const imported = normalizeBuildPath(posix.join(posix.dirname(file), source))
+      if (imported.startsWith('../') || !imported.endsWith('.js')) throw new Error(`Initial JavaScript import escapes the hosting tree: ${source}`)
+      await visit(imported)
+    }
+  }
+  for (const root of roots) await visit(root)
+  selected.add('theme-init.js')
+  return [...selected]
+}
+
 function formatKiB(bytes) {
   return `${(bytes / 1024).toFixed(1)} KiB gzip`
 }
@@ -67,11 +98,15 @@ export async function checkBundleBudget(options = {}) {
     throw new Error(`Unsupported budget option: ${unsupportedOptions.join(', ')}`)
   }
   const distDir = options.distDir || resolve('dist')
-  const manifest = JSON.parse(await readFile(resolve(distDir, '.vite', 'manifest.json'), 'utf8'))
-  const initialKeys = collectInitialKeys(manifest)
-  const initialFiles = [...new Set([...initialKeys]
-    .map(key => manifest[key].file)
-    .filter(file => file?.endsWith('.js')).concat('theme-init.js'))]
+  let manifest = null
+  try {
+    manifest = JSON.parse(await readFile(resolve(distDir, '.vite', 'manifest.json'), 'utf8'))
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error
+  }
+  const initialFiles = manifest
+    ? [...new Set([...collectInitialKeys(manifest)].map(key => manifest[key].file).filter(file => file?.endsWith('.js')).concat('theme-init.js'))]
+    : await collectHostingInitialFiles(distDir)
   const initialMeasurements = await Promise.all(initialFiles.map(async file => ({
     file,
     gzipBytes: await gzipFileSize(distDir, file),
@@ -84,9 +119,11 @@ export async function checkBundleBudget(options = {}) {
 
   const initialFileSet = new Set(initialFiles)
   const ffmpegFiles = new Set([TRUSTED_VENDOR_CORE_FILE])
-  for (const [key, chunk] of Object.entries(manifest)) {
-    if (isTrustedFfmpegPackageSource(chunk.src) || isTrustedFfmpegPackageSource(key)) {
-      ffmpegFiles.add(normalizeBuildPath(chunk.file))
+  if (manifest) {
+    for (const [key, chunk] of Object.entries(manifest)) {
+      if (isTrustedFfmpegPackageSource(chunk.src) || isTrustedFfmpegPackageSource(key)) {
+        ffmpegFiles.add(normalizeBuildPath(chunk.file))
+      }
     }
   }
   const lazyChunks = []

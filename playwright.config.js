@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test'
 
 const port = Number.parseInt(process.env.FOLKKIT_E2E_PORT || '4175', 10)
 const baseURL = `http://127.0.0.1:${port}/`
@@ -8,6 +8,18 @@ export default defineConfig({
   testDir: './tests/e2e',
   testIgnore: hostingHeaders ? [] : ['hosting-csp.spec.js'],
   workers: 1,
+  projects: hostingHeaders ? [
+    { name: 'chromium-hosting', use: { ...devices['Desktop Chrome'] } },
+  ] : [
+    { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox-desktop', grep: /@matrix/, use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit-desktop', grep: /@matrix/, use: { ...devices['Desktop Safari'] } },
+    {
+      name: 'chromium-mobile-390x844',
+      grep: /@matrix/,
+      use: { ...devices['Pixel 5'], viewport: { width: 390, height: 844 } },
+    },
+  ],
   use: {
     baseURL,
     launchOptions: {

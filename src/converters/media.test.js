@@ -1,5 +1,6 @@
-import { expect, test } from 'vitest'
-import { attachMediaProgress, createFFmpegRuntime, createMediaDownloadResult } from './media'
+import { expect, test, vi } from 'vitest'
+import { attachMediaProgress, createFFmpegRuntime, createMediaDownloadResult, executeFfmpegWithBudget, preflightMediaFile } from './media'
+import { MEDIA_LIMITS } from '../runtime/workBudgets'
 
 function deferred() {
   let resolve
@@ -35,6 +36,30 @@ test('media progress stops reaching the UI after its detach function runs', () =
   for (const listener of listeners) listener({ progress: 0.9 })
 
   expect(progress).toEqual([40])
+})
+
+test('reliable WAV metadata rejects excessive duration before FFmpeg work', async () => {
+  const bytes = new Uint8Array(44)
+  const view = new DataView(bytes.buffer)
+  bytes.set(new TextEncoder().encode('RIFF'), 0)
+  bytes.set(new TextEncoder().encode('WAVE'), 8)
+  bytes.set(new TextEncoder().encode('fmt '), 12)
+  view.setUint32(16, 16, true)
+  view.setUint16(20, 1, true)
+  view.setUint16(22, 1, true)
+  view.setUint32(24, 8000, true)
+  view.setUint32(28, 16000, true)
+  bytes.set(new TextEncoder().encode('data'), 36)
+  view.setUint32(40, Math.ceil(16000 * (MEDIA_LIMITS.maxDurationSeconds + 1)), true)
+
+  await expect(preflightMediaFile(new File([bytes], 'long.wav', { type: 'audio/wav' }))).rejects.toMatchObject({ code: 'resource_limit' })
+})
+
+test('FFmpeg work budget adds a CPU backstop and hard-terminates a stalled execution', async () => {
+  const ffmpeg = { exec: vi.fn(() => new Promise(() => {})), terminate: vi.fn() }
+  await expect(executeFfmpegWithBudget(ffmpeg, ['-i', 'input.wav', 'output.mp3'], { maxElapsedMs: 5 })).rejects.toMatchObject({ code: 'resource_limit' })
+  expect(ffmpeg.exec).toHaveBeenCalledWith(['-timelimit', '120', '-i', 'input.wav', 'output.mp3'])
+  expect(ffmpeg.terminate).toHaveBeenCalledTimes(1)
 })
 
 test('ffmpeg loads the core module and WASM directly from same-origin URLs', async () => {

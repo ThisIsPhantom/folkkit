@@ -59,7 +59,7 @@ textarea:focus-visible {
   --text: var(--ink);
   --text-secondary: var(--ink-muted);
   --shadow: rgba(37, 50, 49, 0.18);
-  --error: #b35c45;
+  --error: #873e2d;
   --error-bg: #f5ebe7;
   --focus-ring: var(--focus);
 

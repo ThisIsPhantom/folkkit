@@ -302,6 +302,22 @@ test('released images-to-PDF accepts real PNG and JPEG fixtures', async () => {
   expect((await PDFDocument.load(await result.blob.arrayBuffer())).getPageCount()).toBe(2)
 })
 
+test('released images-to-PDF rejects excessive declared dimensions before calling the converter', async () => {
+  const bytes = new Uint8Array(24)
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52])
+  new DataView(bytes.buffer).setUint32(16, 50000)
+  new DataView(bytes.buffer).setUint32(20, 50000)
+  const original = pdfConverters.find((entry) => entry.id === 'images-to-pdf')
+  const fileConvert = vi.fn(original.fileConvert)
+
+  await expect(executeTool({
+    tool: { ...original, fileConvert },
+    files: [new File([bytes], 'oversized.png', { type: 'image/png' })],
+    environment: { deviceMemory: 4, viewportWidth: 390 },
+  })).rejects.toMatchObject({ code: 'resource_limit' })
+  expect(fileConvert).not.toHaveBeenCalled()
+})
+
 function bytesFromBase64(value) {
   return Uint8Array.from(atob(value), character => character.charCodeAt(0))
 }

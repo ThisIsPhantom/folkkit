@@ -7,6 +7,7 @@ import {
   PDF_TEXT_LIMITS,
   QR_TEXT_LIMIT_BYTES,
   assertCsvBudget,
+  assertImageDimensionBudget,
   assertOutputBudget,
   assertTextPdfBudget,
   parseImageDimensions,
@@ -32,6 +33,12 @@ function jpegDimensions(width, height) {
 test('parses PNG IHDR and JPEG SOF dimensions from bounded prefixes', () => {
   expect(parseImageDimensions(pngDimensions(1200, 800))).toEqual({ kind: 'png', width: 1200, height: 800 })
   expect(parseImageDimensions(jpegDimensions(640, 480))).toEqual({ kind: 'jpeg', width: 640, height: 480 })
+})
+
+test('rejects decoded image dimensions before canvas allocation', () => {
+  const limits = { maxWidth: 8192, maxHeight: 8192, maxPixels: 24_000_000 }
+  expect(() => assertImageDimensionBudget({ width: 1200, height: 800 }, limits)).not.toThrow()
+  expect(() => assertImageDimensionBudget({ width: 50000, height: 50000 }, limits)).toThrow(/resource_limit/)
 })
 
 test('CSV budget rejects excessive rows, columns and cells before row conversion', () => {

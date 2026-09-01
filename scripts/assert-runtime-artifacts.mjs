@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parse } from 'acorn'
 
 const forbiddenTestServiceWorker = /(?:__folkkit-test__|folkkit-app-test-old)/i
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -14,16 +15,61 @@ const automaticSinkPatterns = Object.freeze({
     new RegExp(String.raw`<(?:script|img|iframe|source|video|audio|link|object|embed)\b[^>]*(?:src|href|data)\s*=\s*['"]${externalOrigin}`, 'i'),
     new RegExp(String.raw`<form\b[^>]*action\s*=\s*['"]${externalOrigin}`, 'i'),
   ],
-  javascript: [
-    new RegExp(String.raw`(?:fetch|import|importScripts|navigator\.sendBeacon|new\s+(?:Worker|SharedWorker))\s*\(\s*['"]${externalOrigin}`, 'i'),
-    new RegExp(String.raw`\.open\s*\(\s*['"][A-Z]+['"]\s*,\s*['"]${externalOrigin}`, 'i'),
-    new RegExp(String.raw`(?:src|href)\s*=\s*['"]${externalOrigin}`, 'i'),
-  ],
   svg: [
     new RegExp(String.raw`<(?:image|script|use)\b[^>]*(?:href|xlink:href)\s*=\s*['"]${externalOrigin}`, 'i'),
     new RegExp(String.raw`url\(\s*['"]?${externalOrigin}`, 'i'),
   ],
 })
+
+function staticString(node) {
+  if (node?.type === 'Literal' && typeof node.value === 'string') return node.value
+  if (node?.type === 'TemplateLiteral' && node.expressions.length === 0) return node.quasis.map(part => part.value.cooked || '').join('')
+  if (node?.type === 'BinaryExpression' && node.operator === '+') {
+    const left = staticString(node.left)
+    const right = staticString(node.right)
+    return left !== null && right !== null ? left + right : null
+  }
+  return null
+}
+
+function isExternalNode(node) {
+  const value = staticString(node)
+  return typeof value === 'string' && /^(?:https?:)?\/\//i.test(value)
+}
+
+function propertyName(node) {
+  if (!node || node.type !== 'MemberExpression') return null
+  if (!node.computed && node.property.type === 'Identifier') return node.property.name
+  return staticString(node.property)
+}
+
+function hasExternalJavaScriptSink(contents) {
+  let ast
+  try {
+    ast = parse(contents, { ecmaVersion: 'latest', sourceType: 'module', allowHashBang: true })
+  } catch (error) {
+    throw new Error(`JavaScript runtime artifact could not be parsed: ${error.message}`)
+  }
+  let found = false
+  const visit = node => {
+    if (found || !node || typeof node !== 'object') return
+    if (node.type === 'ImportExpression' && isExternalNode(node.source)) found = true
+    if (node.type === 'CallExpression') {
+      const name = node.callee?.type === 'Identifier' ? node.callee.name : propertyName(node.callee)
+      if (['fetch', 'importScripts', 'sendBeacon'].includes(name) && isExternalNode(node.arguments[0])) found = true
+      if (name === 'open' && isExternalNode(node.arguments[1])) found = true
+    }
+    if (node.type === 'NewExpression' && node.callee?.type === 'Identifier' && ['Worker', 'SharedWorker'].includes(node.callee.name) && isExternalNode(node.arguments[0])) found = true
+    if (node.type === 'AssignmentExpression' && ['src', 'href'].includes(propertyName(node.left)) && isExternalNode(node.right)) found = true
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'start' || key === 'end' || key === 'loc') continue
+      if (Array.isArray(value)) value.forEach(visit)
+      else if (value && typeof value === 'object') visit(value)
+    }
+  }
+  visit(ast)
+  return found
+}
 
 function hasExternalManifestSink(contents) {
   let value
@@ -49,8 +95,9 @@ export function assertNoExternalRuntimeOrigins(artifactName, contents) {
         ? automaticSinkPatterns.svg
         : lowerName.endsWith('.json')
           ? []
-          : automaticSinkPatterns.javascript
-  if (patterns.some(pattern => pattern.test(contents)) || (lowerName.endsWith('.json') && hasExternalManifestSink(contents))) {
+          : []
+  const javascriptSink = (lowerName.endsWith('.js') || lowerName.endsWith('.mjs')) && hasExternalJavaScriptSink(contents)
+  if (patterns.some(pattern => pattern.test(contents)) || javascriptSink || (lowerName.endsWith('.json') && hasExternalManifestSink(contents))) {
     throw new Error(`${artifactName} contains an external runtime origin in an automatic sink.`)
   }
   if (forbiddenTestServiceWorker.test(contents)) {

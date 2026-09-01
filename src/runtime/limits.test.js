@@ -26,6 +26,14 @@ describe('validateFiles', () => {
     expect(result).toEqual({ ok: false, code: 'unsupported_type', messageKey: 'errors.unsupportedType' })
   })
 
+  test('rejects a double-extension PDF even when the supplied MIME claims PDF', () => {
+    expect(validateFiles(
+      { acceptTypes: 'application/pdf,.pdf', limits: TOOL_LIMITS.pdf },
+      [fileOfSize('invoice.pdf.exe', 'application/pdf', 128)],
+      { deviceMemory: 8, viewportWidth: 1280 },
+    )).toEqual({ ok: false, code: 'unsupported_type', messageKey: 'errors.unsupportedType' })
+  })
+
   test('uses the low-memory PDF per-file limit at four GiB of device memory', () => {
     const result = validateFiles(
       { acceptTypes: 'application/pdf,.pdf', limits: TOOL_LIMITS.pdf },

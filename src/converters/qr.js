@@ -1,4 +1,5 @@
 import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits'
+import { QR_TEXT_LIMIT_BYTES, resourceLimitError } from '../runtime/workBudgets'
 
 function qrFailure(code) {
   const error = new Error(code)
@@ -14,6 +15,7 @@ export const qrConverters = [
     description: 'Generate a QR code from any text or URL',
     convert: async (input) => {
       if (!input.trim()) return ''
+      if (new TextEncoder().encode(input).byteLength > QR_TEXT_LIMIT_BYTES) throw resourceLimitError()
       const QRCode = (await import('qrcode')).default
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
       const svg = await QRCode.toString(input, {

@@ -43,16 +43,7 @@ export default function FileDropZone({ accept = '*', multiple = false, files = [
       }}
       onDragLeave={() => setDragging(false)}
       onClick={openPicker}
-      role="button"
-      tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled}
-      aria-label={t(multiple ? 'workspaceTools.dropFiles' : 'workspaceTools.dropFile')}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          openPicker()
-        }
-      }}
     >
       <input
         ref={inputRef}

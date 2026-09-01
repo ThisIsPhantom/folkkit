@@ -3,6 +3,7 @@
 
 import { runtimeAssetUrl } from '../runtime/runtimeAssets'
 import { TOOL_LIMITS } from '../runtime/limits'
+import { MEDIA_LIMITS, readWavDurationSeconds, resourceLimitError } from '../runtime/workBudgets'
 
 let ffmpegLoadListeners = []
 let ffmpegTempFileCounter = 0
@@ -134,6 +135,38 @@ export function terminateMediaExecution() {
   ffmpegRuntime.terminate()
 }
 
+export async function preflightMediaFile(file) {
+  const type = String(file?.type || '').toLowerCase()
+  const name = String(file?.name || '').toLowerCase()
+  if (type === 'audio/wav' || type === 'audio/wave' || name.endsWith('.wav')) {
+    const prefix = new Uint8Array(await file.slice(0, 44).arrayBuffer())
+    const duration = readWavDurationSeconds(prefix)
+    if (duration !== null && duration > MEDIA_LIMITS.maxDurationSeconds) throw resourceLimitError()
+    return { durationSeconds: duration, reliable: duration !== null }
+  }
+  return { durationSeconds: null, reliable: false }
+}
+
+export async function executeFfmpegWithBudget(ffmpeg, args, {
+  maxElapsedMs = MEDIA_LIMITS.maxElapsedMs,
+  onTimeout = () => ffmpeg.terminate?.(),
+} = {}) {
+  let timer
+  try {
+    return await Promise.race([
+      ffmpeg.exec(['-timelimit', '120', ...args]),
+      new Promise((_resolve, reject) => {
+        timer = setTimeout(() => {
+          try { onTimeout() } catch { /* best effort */ }
+          reject(resourceLimitError())
+        }, maxElapsedMs)
+      }),
+    ])
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 async function getFFmpeg() {
   return ffmpegRuntime.get()
 }
@@ -152,6 +185,7 @@ async function safeDeleteTempFile(ffmpeg, filename) {
 }
 
 async function convertMedia(file, outputExt, mimeType, onProgress) {
+  await preflightMediaFile(file)
   const ffmpeg = await getFFmpeg()
 
   const inputName = createTempFileName('input', getExtension(file.name))
@@ -164,10 +198,12 @@ async function convertMedia(file, outputExt, mimeType, onProgress) {
     const detachProgress = attachMediaProgress(ffmpeg, onProgress)
 
     try {
-      await ffmpeg.exec(['-i', inputName, outputName])
+      await executeFfmpegWithBudget(ffmpeg, ['-i', inputName, outputName], { onTimeout: terminateMediaExecution })
 
       const data = await ffmpeg.readFile(outputName)
-      return new Blob([data], { type: mimeType })
+      const blob = new Blob([data], { type: mimeType })
+      if (blob.size > MEDIA_LIMITS.maxOutputBytes) throw resourceLimitError()
+      return blob
     } finally {
       detachProgress()
     }

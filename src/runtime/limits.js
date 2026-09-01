@@ -51,7 +51,17 @@ function acceptsFile(file, acceptTypes) {
   if (!acceptTypes || acceptTypes === '*') return true
   const mime = String(file.type || '').toLowerCase()
   const name = String(file.name || '').toLowerCase()
-  return acceptTypes.split(',').some((rawToken) => {
+  const tokens = acceptTypes.split(',').map(token => token.trim().toLowerCase()).filter(Boolean)
+  const extensionTokens = tokens.filter(token => token.startsWith('.'))
+  const mimeTokens = tokens.filter(token => !token.startsWith('.'))
+  const extensionAccepted = extensionTokens.some(token => name.endsWith(token))
+  const mimeAccepted = mimeTokens.some((token) => {
+    if (token.endsWith('/*')) return mime.startsWith(token.slice(0, -1))
+    return mime === token
+  })
+  if (extensionTokens.length > 0 && name.includes('.') && !extensionAccepted) return false
+  if (mime && mimeTokens.length > 0 && !mimeAccepted) return false
+  return tokens.some((rawToken) => {
     const token = rawToken.trim().toLowerCase()
     if (!token) return false
     if (token.startsWith('.')) return name.endsWith(token)

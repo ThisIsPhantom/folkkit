@@ -1120,10 +1120,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </details>
 
-### react 19.2.4
+### react 19.2.8
 
 - License: `MIT`
-- Source: [https://github.com/facebook/react](https://github.com/facebook/react)
+- Source: [https://github.com/react/react](https://github.com/react/react)
 
 <details>
 <summary>LICENSE</summary>
@@ -1154,10 +1154,10 @@ SOFTWARE.
 
 </details>
 
-### react-dom 19.2.4
+### react-dom 19.2.8
 
 - License: `MIT`
-- Source: [https://github.com/facebook/react](https://github.com/facebook/react)
+- Source: [https://github.com/react/react](https://github.com/react/react)
 
 <details>
 <summary>LICENSE</summary>

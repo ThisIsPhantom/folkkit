@@ -64,8 +64,8 @@ async function readFilePrefix(file, length) {
   })
 }
 
-async function validateSignatures(tool, files) {
-  const dimensionLimits = getImageDimensionLimits()
+async function validateSignatures(tool, files, environment) {
+  const dimensionLimits = getImageDimensionLimits(environment)
   let aggregatePixels = 0
   for (const file of files) {
     if (hasPdfContract(tool)) {
@@ -177,7 +177,7 @@ export async function executeTool({ tool, files = [], text = '', signal, onProgr
   }
 
   try {
-    await validateSignatures(tool, selectedFiles)
+    await validateSignatures(tool, selectedFiles, environment)
     throwIfAborted(signal)
     let conversion
     if (typeof tool?.fileConvert === 'function') {

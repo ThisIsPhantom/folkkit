@@ -246,6 +246,21 @@ describe('bundle budget', () => {
     ])
   })
 
+  test('revalidates a hosting-ready dist after the private Vite manifest was removed', async () => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/index.html', '<script type="module" src="/assets/app.js"></script>')
+    await writeFixture('dist/assets/app.js', 'import "./shared.js"; export default 1')
+    await writeFixture('dist/assets/shared.js', 'export const shared = true')
+    await writeFixture('dist/assets/lazy.js', 'export const lazy = true')
+    await writeThemeInit()
+
+    const report = await checkBundleBudget({ distDir })
+
+    expect(report.initialFiles.map(item => item.file).sort()).toEqual(['assets/app.js', 'assets/shared.js', 'theme-init.js'])
+    expect(report.lazyChunks.map(item => item.file)).toEqual(['assets/lazy.js'])
+  })
+
   test('recognizes hashed FFmpeg wrapper files through their manifest source keys', async () => {
     const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
     const distDir = resolve(fixtureRoot, 'dist')

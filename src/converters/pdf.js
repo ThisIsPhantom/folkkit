@@ -1,10 +1,19 @@
 // Lazy-load pdf-lib only when a PDF converter is used
 
 import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits'
+import { assertTextPdfBudget } from '../runtime/workBudgets'
+import { runPdfWorkerTask, terminatePdfWorkers } from '../runtime/pdfWorkerClient'
 
 async function loadPdfLib() {
   const { PDFDocument } = await import('pdf-lib')
   return PDFDocument
+}
+
+function pdfWorkerConverter(operation, hasTextInput = false) {
+  if (hasTextInput) {
+    return (files, textInput, context) => runPdfWorkerTask({ operation, files: Array.isArray(files) ? files : [files], textInput, signal: context?.signal })
+  }
+  return (files, _onProgress, context) => runPdfWorkerTask({ operation, files: Array.isArray(files) ? files : [files], signal: context?.signal })
 }
 
 export const pdfConverters = [
@@ -69,23 +78,7 @@ export const pdfConverters = [
     acceptTypes: 'application/pdf,.pdf',
     multipleFiles: true,
     isMediaConverter: true,
-    fileConvert: async (files) => {
-      if (!files || files.length === 0) throw new Error('No files')
-      const PDFDocument = await loadPdfLib()
-
-      const merged = await PDFDocument.create()
-
-      for (const file of files) {
-        const bytes = await file.arrayBuffer()
-        const pdf = await PDFDocument.load(bytes)
-        const pages = await merged.copyPages(pdf, pdf.getPageIndices())
-        pages.forEach((page) => merged.addPage(page))
-      }
-
-      const pdfBytes = await merged.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      return { kind: 'download', blob, filename: 'merged.pdf' }
-    },
+    fileConvert: pdfWorkerConverter('merge'),
   },
   {
     id: 'pdf-page-count',
@@ -95,14 +88,7 @@ export const pdfConverters = [
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     isMediaConverter: true,
-    fileConvert: async (files) => {
-      const PDFDocument = await loadPdfLib()
-      const file = Array.isArray(files) ? files[0] : files
-      const bytes = await file.arrayBuffer()
-      const pdf = await PDFDocument.load(bytes)
-      const count = pdf.getPageCount()
-      return { kind: 'text', text: `${file.name}: ${count} page${count !== 1 ? 's' : ''}` }
-    },
+    fileConvert: pdfWorkerConverter('page-count'),
   },
   {
     id: 'pdf-split',
@@ -114,26 +100,7 @@ export const pdfConverters = [
     isMediaConverter: true,
     hasTextInput: true,
     textPlaceholder: 'Page number (e.g. 1)',
-    fileConvert: async (files, textInput) => {
-      const PDFDocument = await loadPdfLib()
-      const file = Array.isArray(files) ? files[0] : files
-      const pageNum = parseInt(textInput) || 1
-      const bytes = await file.arrayBuffer()
-      const src = await PDFDocument.load(bytes)
-      const total = src.getPageCount()
-
-      if (pageNum < 1 || pageNum > total) {
-        throw new Error(`Page ${pageNum} doesn't exist (PDF has ${total} pages)`)
-      }
-
-      const newPdf = await PDFDocument.create()
-      const [page] = await newPdf.copyPages(src, [pageNum - 1])
-      newPdf.addPage(page)
-      const pdfBytes = await newPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const name = file.name.replace(/\.pdf$/i, '') + `_page${pageNum}.pdf`
-      return { kind: 'download', blob, filename: name, info: `Extracted page ${pageNum} of ${total}` }
-    },
+    fileConvert: pdfWorkerConverter('split', true),
   },
   {
     id: 'pdf-extract-range',
@@ -145,40 +112,7 @@ export const pdfConverters = [
     isMediaConverter: true,
     hasTextInput: true,
     textPlaceholder: 'Page range (e.g. 1-5 or 1,3,5)',
-    fileConvert: async (files, textInput) => {
-      const PDFDocument = await loadPdfLib()
-      const file = Array.isArray(files) ? files[0] : files
-      const bytes = await file.arrayBuffer()
-      const src = await PDFDocument.load(bytes)
-      const total = src.getPageCount()
-      const range = textInput.trim() || '1'
-
-      // Parse page range
-      const pages = new Set()
-      for (const part of range.split(',')) {
-        const trimmed = part.trim()
-        if (trimmed.includes('-')) {
-          const [start, end] = trimmed.split('-').map(Number)
-          for (let i = start; i <= end && i <= total; i++) {
-            if (i >= 1) pages.add(i - 1)
-          }
-        } else {
-          const n = parseInt(trimmed)
-          if (n >= 1 && n <= total) pages.add(n - 1)
-        }
-      }
-
-      if (pages.size === 0) throw new Error('No valid pages in range')
-      const indices = [...pages].sort((a, b) => a - b)
-
-      const newPdf = await PDFDocument.create()
-      const copied = await newPdf.copyPages(src, indices)
-      copied.forEach(page => newPdf.addPage(page))
-      const pdfBytes = await newPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const name = file.name.replace(/\.pdf$/i, '') + `_pages.pdf`
-      return { kind: 'download', blob, filename: name, info: `Extracted ${indices.length} page(s) from ${total}` }
-    },
+    fileConvert: pdfWorkerConverter('extract-range', true),
   },
   {
     id: 'text-to-pdf',
@@ -187,6 +121,7 @@ export const pdfConverters = [
     description: 'Convert plain text into a simple PDF document',
     convert: async (input) => {
       if (!input.trim()) return ''
+      assertTextPdfBudget(input)
       const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib')
       const pdfDoc = await PDFDocument.create()
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -246,27 +181,7 @@ export const pdfConverters = [
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     isMediaConverter: true,
-    fileConvert: async (files) => {
-      const PDFDocument = await loadPdfLib()
-      const file = Array.isArray(files) ? files[0] : files
-      const bytes = await file.arrayBuffer()
-      const pdf = await PDFDocument.load(bytes)
-      const info = [
-        `File: ${file.name}`,
-        `Pages: ${pdf.getPageCount()}`,
-        `Title: ${pdf.getTitle() || '(none)'}`,
-        `Author: ${pdf.getAuthor() || '(none)'}`,
-        `Subject: ${pdf.getSubject() || '(none)'}`,
-        `Creator: ${pdf.getCreator() || '(none)'}`,
-        `Producer: ${pdf.getProducer() || '(none)'}`,
-        `Created: ${pdf.getCreationDate()?.toISOString() || '(unknown)'}`,
-        `Modified: ${pdf.getModificationDate()?.toISOString() || '(unknown)'}`,
-      ]
-      const page1 = pdf.getPage(0)
-      const { width, height } = page1.getSize()
-      info.push(`Page 1 size: ${Math.round(width)} x ${Math.round(height)} pts`)
-      return { kind: 'text', text: info.join('\n') }
-    },
+    fileConvert: pdfWorkerConverter('metadata'),
   },
   {
     id: 'pdf-rotate',
@@ -278,24 +193,10 @@ export const pdfConverters = [
     isMediaConverter: true,
     hasTextInput: true,
     textPlaceholder: 'Degrees: 90, 180, or 270',
-    fileConvert: async (files, textInput) => {
-      const PDFDocument = await loadPdfLib()
-      const { degrees } = await import('pdf-lib')
-      const file = Array.isArray(files) ? files[0] : files
-      const deg = parseInt(textInput) || 90
-      const bytes = await file.arrayBuffer()
-      const pdf = await PDFDocument.load(bytes)
-      const pages = pdf.getPages()
-      for (const page of pages) {
-        page.setRotation(degrees(page.getRotation().angle + deg))
-      }
-      const pdfBytes = await pdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const name = file.name.replace(/\.pdf$/i, '') + `_rotated${deg}.pdf`
-      return { kind: 'download', blob, filename: name, info: `Rotated ${pages.length} pages by ${deg} degrees` }
-    },
+    fileConvert: pdfWorkerConverter('rotate', true),
   },
 ].map((converter) => ({
   ...converter,
   limits: converter.id === 'images-to-pdf' ? TOOL_LIMITS.images : TOOL_LIMITS.pdf,
+  ...(converter.id.startsWith('pdf-') || converter.id === 'merge-pdf' ? { terminate: terminatePdfWorkers } : {}),
 }))
