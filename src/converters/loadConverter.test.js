@@ -3,6 +3,8 @@ import { createConverterLoader, loadConverter } from './loadConverter'
 import { findReleasedTool } from '../catalog/releaseCatalog'
 import { TOOL_LIMITS } from '../runtime/limits'
 
+const NON_FINITE_LOAN_INPUT = '99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 5% 30'
+
 const pureFixtures = [
   ['base64-encode', 'Folkkit', 'Rm9sa2tpdA=='],
   ['base64-decode', 'Rm9sa2tpdA==', 'Folkkit'],
@@ -38,6 +40,7 @@ const pureFixtures = [
   ['char-count', 'one two', 'Characters:  7\nWords:       2\nLines:       1\nBytes:       7'],
   ['reverse-text', 'Folkkit', 'tikkloF'],
   ['percentage-calc', '15% of 200', '15% of 200 = 30'],
+  ['percentage-calc', '15% von 200', '15% von 200 = 30'],
   ['aspect-ratio', '1920x1080', 'Dimensions: 1920 x 1080\nRatio:      16:9\nDecimal:    1.7778\n\nNearest common: 16:9 (Widescreen / HD)\n\n-- Common sizes at this ratio --\n  853 x 480\n  1280 x 720\n  1920 x 1080\n  2560 x 1440\n  3840 x 2160'],
 ]
 
@@ -96,11 +99,8 @@ describe('lazy converter loading', () => {
   })
 
   it.each([
-    'video-to-audio', 'video-to-wav', 'audio-to-mp3', 'audio-to-wav',
-    'audio-to-ogg', 'video-to-mp4', 'video-to-webm', 'video-to-gif',
-    'audio-to-aac', 'audio-to-flac', 'video-to-audio-ogg', 'audio-to-m4a',
-    'video-trim', 'audio-trim',
-  ])('exposes audited experimental media contract: %s', async (id) => {
+    'audio-to-mp3',
+  ])('exposes audited real-fixture media contract: %s', async (id) => {
     const converter = await loadConverter(id)
 
     expect(converter).toMatchObject({
@@ -112,5 +112,33 @@ describe('lazy converter loading', () => {
     expect(converter.fileConvert).toEqual(expect.any(Function))
     expect(converter.terminate).toEqual(expect.any(Function))
     expect(converter.onRuntimeStatus).toEqual(expect.any(Function))
+  })
+
+  it.each([
+    'video-to-audio', 'video-to-wav', 'audio-to-wav', 'audio-to-ogg',
+    'video-to-mp4', 'video-to-webm', 'video-to-gif', 'audio-to-aac',
+    'audio-to-flac', 'video-to-audio-ogg', 'audio-to-m4a', 'video-trim',
+    'audio-trim',
+  ])('keeps media without a real conversion fixture hidden: %s', async (id) => {
+    await expect(loadConverter(id)).resolves.toBeNull()
+  })
+
+  it.each([
+    ['1000 5% 0', '(invalid values)'],
+    ['1000 5% 101', '(invalid values)'],
+    ['1000000000001 5% 30', '(invalid values)'],
+    ['1000 101% 30', '(invalid values)'],
+    [NON_FINITE_LOAN_INPUT, '(invalid values)'],
+  ])('rejects unsafe bounded loan input %s', async (input, expected) => {
+    const converter = await loadConverter('loan-calc')
+    expect(await converter.convert(input)).toEqual({ kind: 'text', text: expected })
+  })
+
+  it.each([
+    ['1000 0% 1', 'Term:            1 years (12 payments)'],
+    ['1000 0% 100', 'Term:            100 years (1200 payments)'],
+  ])('accepts the literal loan year boundary %s', async (input, expected) => {
+    const converter = await loadConverter('loan-calc')
+    expect((await converter.convert(input)).text).toContain(expected)
   })
 })

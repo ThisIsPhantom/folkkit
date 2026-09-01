@@ -2,9 +2,11 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { converterModuleIds } from '../src/converters/index.js'
 import { formatAuditCatalog, releaseCatalog } from '../src/catalog/releaseCatalog.js'
-import { formats, getTargets } from '../src/formats.js'
+import { formats } from '../src/formats.js'
 import messagesDe from '../src/i18n/messages.de.js'
 import messagesEn from '../src/i18n/messages.en.js'
+import { catalogEvidenceRegistry } from '../src/catalog/evidenceRegistry.js'
+import { evidenceRunErrors, runEvidenceRegistry } from '../src/catalog/evidenceRunner.js'
 
 const requiredReleasedFields = Object.freeze([
   'category',
@@ -12,7 +14,7 @@ const requiredReleasedFields = Object.freeze([
   'runtimeClass',
   'inputLimitClass',
   'outputNaming',
-  'testName',
+  'evidenceId',
 ])
 
 function readMessage(messages, key) {
@@ -36,6 +38,8 @@ export function auditCatalogData({
   formatAuditCatalog: formatAudit,
   messagesDe: de,
   messagesEn: en,
+  evidenceRegistry = [],
+  evidenceRunResults = [],
 }) {
   const errors = []
 
@@ -43,6 +47,9 @@ export function auditCatalogData({
   for (const id of duplicateIds(rawFormats)) errors.push(`Duplicate raw format ID: ${id}`)
   for (const id of duplicateIds(toolAudit)) errors.push(`Duplicate release catalog ID: ${id}`)
   for (const id of duplicateIds(formatAudit)) errors.push(`Duplicate format audit ID: ${id}`)
+  for (const id of duplicateIds(evidenceRegistry.map(entry => ({ id: entry.evidenceId })))) {
+    errors.push(`Duplicate evidence registry ID: ${id}`)
+  }
 
   const rawConverterIds = new Set(rawConverters.map(item => item.id))
   const auditedConverterIds = new Set(toolAudit.map(item => item.id))
@@ -90,6 +97,12 @@ export function auditCatalogData({
   }
 
   for (const entry of formatAudit) {
+    if (entry.tier === 'hidden') {
+      if (typeof entry.hiddenReason !== 'string' || !entry.hiddenReason.trim()) {
+        errors.push(`Undocumented hidden format: ${entry.id}`)
+      }
+      continue
+    }
     for (const field of requiredReleasedFields) {
       if (typeof entry[field] !== 'string' || !entry[field].trim()) {
         errors.push(`Missing ${field} for released format: ${entry.id}`)
@@ -101,6 +114,30 @@ export function auditCatalogData({
       }
     }
   }
+
+  const evidenceById = new Map(evidenceRegistry.map(entry => [entry.evidenceId, entry]))
+  const releasedSubjects = [
+    ...toolAudit.filter(entry => entry.tier !== 'hidden').map(entry => ({ kind: 'tool', entry })),
+    ...formatAudit.filter(entry => entry.tier !== 'hidden').map(entry => ({ kind: 'format', entry })),
+  ]
+  const referencedEvidenceIds = new Set()
+  for (const { kind, entry } of releasedSubjects) {
+    const evidence = evidenceById.get(entry.evidenceId)
+    if (!evidence) {
+      errors.push(`Missing evidence registry entry for released ${kind}: ${entry.id} (${entry.evidenceId})`)
+      continue
+    }
+    referencedEvidenceIds.add(entry.evidenceId)
+    if (evidence.subjectKind !== kind || evidence.subjectId !== entry.id) {
+      errors.push(`Evidence subject mismatch for released ${kind}: ${entry.id} (${entry.evidenceId})`)
+    }
+  }
+  for (const evidence of evidenceRegistry) {
+    if (!referencedEvidenceIds.has(evidence.evidenceId)) {
+      errors.push(`Unreferenced evidence registry entry: ${evidence.evidenceId}`)
+    }
+  }
+  errors.push(...evidenceRunErrors(evidenceRegistry, evidenceRunResults))
 
   return errors
 }
@@ -143,11 +180,8 @@ async function loadRawConverters() {
 
 export async function runCatalogAudit() {
   const rawConverters = await loadRawConverters()
-  const rawFormats = formats.map(format => ({
-    id: format.id,
-    hasConversion: getTargets(format.id).length > 0
-      || formats.some(source => getTargets(source.id).includes(format.id)),
-  }))
+  const rawFormats = formats.map(format => ({ id: format.id }))
+  const evidenceRunResults = await runEvidenceRegistry()
   const errors = auditCatalogData({
     rawConverters,
     rawFormats,
@@ -155,6 +189,8 @@ export async function runCatalogAudit() {
     formatAuditCatalog,
     messagesDe,
     messagesEn,
+    evidenceRegistry: catalogEvidenceRegistry,
+    evidenceRunResults,
   })
 
   for (const converter of rawConverters) {
@@ -163,10 +199,6 @@ export async function runCatalogAudit() {
       errors.push(`Released converter has no callable behavior: ${converter.id}`)
     }
   }
-  for (const format of rawFormats) {
-    if (!format.hasConversion) errors.push(`Released format has no conversion edge: ${format.id}`)
-  }
-
   if (errors.length) {
     for (const error of errors) console.error(error)
     return { ok: false, errors }
@@ -174,8 +206,10 @@ export async function runCatalogAudit() {
 
   const releasedTools = releaseCatalog.filter(entry => entry.tier !== 'hidden').length
   const hiddenTools = releaseCatalog.length - releasedTools
-  console.log(`Catalog audit passed: ${rawConverters.length} converters (${releasedTools} released, ${hiddenTools} hidden), ${rawFormats.length} formats.`)
-  return { ok: true, errors: [], rawConverterCount: rawConverters.length, rawFormatCount: rawFormats.length, releasedTools, hiddenTools }
+  const releasedFormats = formatAuditCatalog.filter(entry => entry.tier !== 'hidden').length
+  const hiddenFormats = formatAuditCatalog.length - releasedFormats
+  console.log(`Catalog audit passed: ${rawConverters.length} converters (${releasedTools} released, ${hiddenTools} hidden), ${rawFormats.length} formats (${releasedFormats} released, ${hiddenFormats} hidden).`)
+  return { ok: true, errors: [], rawConverterCount: rawConverters.length, rawFormatCount: rawFormats.length, releasedTools, hiddenTools, releasedFormats, hiddenFormats }
 }
 
 const invokedPath = process.argv[1] ? resolve(process.argv[1]) : ''

@@ -2,6 +2,7 @@
 // This powers the "Apple Translate" style UI where you pick From → To
 import { objToYaml, yamlToJson, parseToml } from './utils/parsers'
 import { hexToRgb, rgbToHsl, hslToRgb, parseRgb, parseHsl, rgbToHsv, hsvToRgb, parseHsv } from './utils/color'
+import { releasedFormatIds } from './catalog/evidenceRegistry'
 
 export const formats = [
   { id: 'text', name: 'Text', group: 'Text', placeholder: 'Type or paste text...' },
@@ -241,8 +242,10 @@ export const formats = [
   { id: 'twip', name: 'Twip (1/1440 in)', group: 'Typography', placeholder: '1440' },
 ]
 
-// The complete inherited conversion graph remains available through Convert.
-export const releasedFormats = formats
+const releasedFormatIdSet = new Set(releasedFormatIds)
+
+// Raw formats remain preserved; only independently evidenced formats are exposed.
+export const releasedFormats = formats.filter(format => releasedFormatIdSet.has(format.id))
 
 // Hash helper
 async function digest(algo, input) {
@@ -2210,6 +2213,11 @@ export function getTargets(fromId) {
     }
   }
   return Array.from(targets)
+}
+
+export function getReleasedTargets(fromId) {
+  if (!releasedFormatIdSet.has(fromId)) return []
+  return getTargets(fromId).filter(id => releasedFormatIdSet.has(id))
 }
 
 export function getConvertFn(fromId, toId) {

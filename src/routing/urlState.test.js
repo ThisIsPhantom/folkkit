@@ -25,4 +25,12 @@ describe('readUrlState', () => {
       toolId: 'pdf-page-count',
     })
   })
+
+  test('falls back from a raw format that lacks independent release evidence', () => {
+    expect(readUrlState('?from=petabytes&to=terabytes', '')).toEqual({
+      from: 'text',
+      to: 'base64',
+      toolId: null,
+    })
+  })
 })

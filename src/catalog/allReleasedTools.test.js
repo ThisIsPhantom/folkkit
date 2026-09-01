@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { formats, getConvertFn, getTargets } from '../formats'
+import { formats, getConvertFn, releasedFormats } from '../formats'
+import { formatEvidenceRegistry } from './evidenceRegistry'
 import * as catalog from './releaseCatalog'
 
 const requiredReleasedFields = [
@@ -8,20 +9,22 @@ const requiredReleasedFields = [
   'runtimeClass',
   'inputLimitClass',
   'outputNaming',
-  'testName',
+  'evidenceId',
 ]
 
 describe('full inherited catalog audit', () => {
-  it('accounts for every raw converter and format ID', () => {
+  it('accounts for every raw converter and only independently evidenced formats', () => {
     expect(catalog.releaseCatalog).toHaveLength(499)
-    expect(catalog.formatAuditCatalog).toHaveLength(223)
     expect(formats).toHaveLength(223)
+    expect(catalog.formatAuditCatalog).toHaveLength(223)
+    expect(catalog.formatAuditCatalog.filter(entry => entry.tier !== 'hidden')).toHaveLength(18)
+    expect(releasedFormats).toHaveLength(18)
   })
 
   it('gives every released entry the complete execution and evidence contract', () => {
     const released = [
       ...catalog.releaseCatalog,
-      ...(catalog.formatAuditCatalog || []),
+      ...catalog.formatAuditCatalog,
     ].filter((entry) => entry.tier !== 'hidden')
 
     expect(released.length).toBeGreaterThan(0)
@@ -40,19 +43,29 @@ describe('full inherited catalog audit', () => {
     }
   })
 
-  const formatFixtures = formats.map((format) => {
-    const outgoing = getTargets(format.id)[0]
-    if (outgoing) return { id: format.id, from: format.id, to: outgoing, input: format.placeholder || 'Folkkit' }
-    const source = formats.find(candidate => getTargets(candidate.id).includes(format.id))
-    return { id: format.id, from: source.id, to: format.id, input: source.placeholder || 'Folkkit' }
+  it('maps every exposed format to one explicit independent evidence fixture', () => {
+    const evidenceById = new Map(formatEvidenceRegistry.map(evidence => [evidence.evidenceId, evidence]))
+    expect(evidenceById.size).toBe(formatEvidenceRegistry.length)
+
+    for (const entry of catalog.formatAuditCatalog.filter(item => item.tier !== 'hidden')) {
+      const evidence = evidenceById.get(entry.evidenceId)
+      expect(evidence, `missing evidence for ${entry.id}`).toMatchObject({
+        formatId: entry.id,
+        from: expect.any(String),
+        to: expect.any(String),
+        input: expect.any(String),
+        expected: expect.any(String),
+        inputLimitClass: entry.inputLimitClass,
+      })
+    }
   })
 
-  it.each(formatFixtures)('format graph fixture: $id', async ({ from, to, input }) => {
-    const convert = getConvertFn(from, to)
+  it.each(formatEvidenceRegistry)('$evidenceId executes the literal real edge', async (evidence) => {
+    const convert = getConvertFn(evidence.from, evidence.to)
 
     expect(convert).toEqual(expect.any(Function))
-    const output = await convert(input)
-    expect(typeof output === 'string' || typeof output === 'number').toBe(true)
-    expect(String(output)).not.toBe('')
+    const output = String(await convert(evidence.input))
+    expect(output).toBe(evidence.expected)
+    expect(output).not.toMatch(/^\([^\n]*\)$/)
   })
 })

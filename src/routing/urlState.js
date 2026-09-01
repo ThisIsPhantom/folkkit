@@ -1,4 +1,4 @@
-import { formats, getTargets } from '../formats'
+import { getReleasedTargets, releasedFormats } from '../formats'
 
 const DEFAULT_FROM = 'text'
 const DEFAULT_TO = 'base64'
@@ -10,12 +10,12 @@ function readHashTool(hash) {
 
 export function readUrlState(search, hash) {
   const params = new URLSearchParams(search)
-  const availableFromIds = formats
-    .filter(format => getTargets(format.id).length > 0)
+  const availableFromIds = releasedFormats
+    .filter(format => getReleasedTargets(format.id).length > 0)
     .map(format => format.id)
   const requestedFrom = params.get('from')
   const from = availableFromIds.includes(requestedFrom) ? requestedFrom : DEFAULT_FROM
-  const targets = getTargets(from)
+  const targets = getReleasedTargets(from)
   const requestedTo = params.get('to')
   const to = targets.includes(requestedTo) ? requestedTo : (targets[0] || DEFAULT_TO)
   const toolId = params.get('tool') || readHashTool(hash || '')

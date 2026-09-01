@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import ToolPicker from './ToolPicker'
 import { useToast } from '../hooks/useToast'
-import { formats, getTargets, getConvertFn, getFormatById } from '../formats'
+import { releasedFormats as defaultReleasedFormats, getReleasedTargets, getConvertFn, getFormatById } from '../formats'
+import { getFormatPairTextLimit } from '../catalog/evidenceRegistry'
 import { useI18n } from '../i18n'
 import { historyStore } from '../privacy/historyStore'
 import { createToolRuntime } from '../runtime/toolRuntime'
@@ -113,7 +114,7 @@ const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
 function getFavPairs() { try { return JSON.parse(localStorage.getItem(FAV_PAIRS_KEY)) || [] } catch { return [] } }
 function saveFavPairs(pairs) { localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(pairs)) }
 
-function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = formats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn }) {
+function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = defaultReleasedFormats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn }) {
   const { t } = useI18n()
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
@@ -154,7 +155,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const setFrom = onFromChange
   const setTo = onToChange
 
-  const targets = getTargets(from)
+  const targets = getReleasedTargets(from)
 
   // Determine mode
   const isToolMode = !!activeConverter
@@ -201,7 +202,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     let cancelled = false
     Promise.resolve().then(() => {
       if (cancelled) return
-      const newTargets = getTargets(from)
+      const newTargets = getReleasedTargets(from)
       if (!newTargets.includes(to) && newTargets.length > 0) {
         setTo(newTargets[0])
       }
@@ -235,6 +236,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     setError(null)
     try {
       const tool = {
+        textLimit: getFormatPairTextLimit(from, to),
         convert: async (value, context) => {
           if (!batchMode) return { kind: 'text', text: String(await fn(value, context)) }
           const results = await Promise.all(value.split('\n').map(async (line) => (
@@ -479,7 +481,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const handleUseAsInput = () => {
     if (!output || output === '(conversion error)') return
     const detected = detectFormat(output)
-    if (detected && detected !== from && getTargets(detected).length > 0) {
+    if (detected && detected !== from && getReleasedTargets(detected).length > 0) {
       setFrom(detected)
     }
     setInput(output)
@@ -506,7 +508,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     const text = e.clipboardData?.getData('text')
     if (!text || input.trim()) return
     const detected = detectFormat(text)
-    if (detected && detected !== from && getTargets(detected).length > 0) {
+    if (detected && detected !== from && getReleasedTargets(detected).length > 0) {
       setFrom(detected)
       setAutoDetected(true)
       if (autoDetectTimeoutRef.current) clearTimeout(autoDetectTimeoutRef.current)
@@ -528,8 +530,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   }, [pairKey])
 
   const allFromIds = useMemo(() => {
-    return formats.filter(f => getTargets(f.id).length > 0).map(f => f.id)
-  }, [])
+    return releasedFormats.filter(f => getReleasedTargets(f.id).length > 0).map(f => f.id)
+  }, [releasedFormats])
   const toIds = targets.length > 0 ? targets : []
 
   const fromFmt = getFormatById(from)
@@ -594,9 +596,10 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   // Chain hints
   const chainTargets = useMemo(() => {
     if (isToolMode) return []
-    const next = getTargets(to).filter(t => t !== from)
+    const releasedIds = new Set(releasedFormats.map(format => format.id))
+    const next = getReleasedTargets(to).filter(t => t !== from && releasedIds.has(t))
     return next.slice(0, 4).map(t => getFormatById(t)).filter(Boolean)
-  }, [to, from, isToolMode])
+  }, [to, from, isToolMode, releasedFormats])
 
   // Scroll sync for line number gutter
   const handleOutputScroll = useCallback(() => {

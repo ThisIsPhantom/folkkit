@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import { fixtureFile, onePagePdfBase64, secondOnePagePdfBase64, tinyWavFixture } from '../fixtures/coreFixtures'
 
@@ -67,6 +68,15 @@ test('converts real media with same-origin FFmpeg assets and no input leakage', 
   await page.getByRole('link', { name: 'Herunterladen' }).click()
   const download = await downloadPromise
   expect(download.suggestedFilename()).toBe('network-private.mp3')
+  const outputBytes = await readFile(await download.path())
+  const hasId3 = outputBytes.subarray(0, 3).toString('ascii') === 'ID3'
+  const hasMpegFrame = outputBytes.some((byte, index) => (
+    byte === 0xff
+    && index + 1 < outputBytes.length
+    && (outputBytes[index + 1] & 0xe0) === 0xe0
+  ))
+  expect(outputBytes.length).toBeGreaterThan(100)
+  expect(hasId3 || hasMpegFrame).toBe(true)
 
   expect(observedRequests.some(request => request.url.includes('/vendor/ffmpeg/ffmpeg-core.js'))).toBe(true)
   expect(observedRequests.some(request => request.url.includes('/vendor/ffmpeg/ffmpeg-core.wasm'))).toBe(true)

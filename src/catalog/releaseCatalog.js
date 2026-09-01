@@ -2,6 +2,7 @@ import { categories, converterModuleIds } from '../converters'
 import { formats } from '../formats'
 import { getMessages, normalizeLocale, translate } from '../i18n'
 import { TOOL_LIMITS } from '../runtime/limits'
+import { getFormatEvidence } from './evidenceRegistry'
 
 export const releaseTiers = Object.freeze(['core', 'advanced', 'experimental', 'hidden'])
 
@@ -45,7 +46,7 @@ function released({
   runtimeClass,
   inputLimitClass,
   outputNaming,
-  testName,
+  evidenceId,
   ...toolMetadata
 }) {
   return Object.freeze({
@@ -56,7 +57,7 @@ function released({
     runtimeClass,
     inputLimitClass,
     outputNaming,
-    testName,
+    evidenceId,
     ...toolMetadata,
   })
 }
@@ -70,7 +71,7 @@ function pureTool(id, module, translationKey, options = {}) {
     runtimeClass: options.runtimeClass || 'main-thread',
     inputLimitClass: 'text-5-mib',
     outputNaming: 'inline-text',
-    testName: `runs audited pure fixture: ${id}`,
+    evidenceId: `tool:${id}`,
     placeholderKey: options.placeholderKey,
     noticeKey: options.noticeKey,
   })
@@ -84,7 +85,7 @@ function experimentalMedia(id, translationKey, acceptTypes, options = {}) {
     runtimeClass: 'ffmpeg-wasm',
     inputLimitClass: 'media-device',
     outputNaming: 'converter-filename',
-    testName: `exposes audited experimental media contract: ${id}`,
+    evidenceId: `tool:${id}`,
     acceptsFile: true,
     acceptTypes,
     isMediaConverter: true,
@@ -103,7 +104,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'main-thread',
     inputLimitClass: 'text-5-mib',
     outputNaming: 'inline-text',
-    testName: 'runs audited pure fixture: base64-encode',
+    evidenceId: 'tool:base64-encode',
     placeholderKey: 'tools.base64Encode.placeholder',
   }),
   'base64-decode': pureTool('base64-decode', 'text', 'base64Decode'),
@@ -147,7 +148,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'main-thread',
     inputLimitClass: 'text-5-mib',
     outputNaming: 'inline-text',
-    testName: 'runs audited advice-scoped fixture: loan-calc',
+    evidenceId: 'tool:loan-calc',
     placeholderKey: 'tools.loanCalc.placeholder',
     noticeKey: 'tools.loanCalc.notice',
   }),
@@ -158,7 +159,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'main-thread',
     inputLimitClass: 'text-5-mib',
     outputNaming: 'inline-text',
-    testName: 'runs audited advice-scoped fixture: bmi-calc',
+    evidenceId: 'tool:bmi-calc',
     placeholderKey: 'tools.bmiCalc.placeholder',
     noticeKey: 'tools.bmiCalc.notice',
   }),
@@ -169,7 +170,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'canvas',
     inputLimitClass: 'image-device',
     outputNaming: 'converter-filename',
-    testName: 'converts a real PNG fixture to a runtime-owned JPEG download',
+    evidenceId: 'tool:png-to-jpg',
     acceptsFile: true,
     acceptTypes: 'image/png,.png',
     isMediaConverter: true,
@@ -182,32 +183,13 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'canvas',
     inputLimitClass: 'image-device',
     outputNaming: 'converter-filename',
-    testName: 'converts a real JPEG fixture to a runtime-owned PNG download',
+    evidenceId: 'tool:jpg-to-png',
     acceptsFile: true,
     acceptTypes: 'image/jpeg,.jpg,.jpeg',
     isMediaConverter: true,
     limits: TOOL_LIMITS.images,
   }),
-  'video-to-audio': experimentalMedia('video-to-audio', 'videoToAudio', 'video/*'),
-  'video-to-wav': experimentalMedia('video-to-wav', 'videoToWav', 'video/*'),
   'audio-to-mp3': experimentalMedia('audio-to-mp3', 'audioToMp3', 'audio/*'),
-  'audio-to-wav': experimentalMedia('audio-to-wav', 'audioToWav', 'audio/*'),
-  'audio-to-ogg': experimentalMedia('audio-to-ogg', 'audioToOgg', 'audio/*'),
-  'video-to-mp4': experimentalMedia('video-to-mp4', 'videoToMp4', 'video/*'),
-  'video-to-webm': experimentalMedia('video-to-webm', 'videoToWebm', 'video/*'),
-  'video-to-gif': experimentalMedia('video-to-gif', 'videoToGif', 'video/*'),
-  'audio-to-aac': experimentalMedia('audio-to-aac', 'audioToAac', 'audio/*'),
-  'audio-to-flac': experimentalMedia('audio-to-flac', 'audioToFlac', 'audio/*'),
-  'video-to-audio-ogg': experimentalMedia('video-to-audio-ogg', 'videoToAudioOgg', 'video/*'),
-  'audio-to-m4a': experimentalMedia('audio-to-m4a', 'audioToM4a', 'audio/*'),
-  'video-trim': experimentalMedia('video-trim', 'videoTrim', 'video/*', {
-    hasTextInput: true,
-    parameterPlaceholderKey: 'tools.videoTrim.parameterPlaceholder',
-  }),
-  'audio-trim': experimentalMedia('audio-trim', 'audioTrim', 'audio/*', {
-    hasTextInput: true,
-    parameterPlaceholderKey: 'tools.audioTrim.parameterPlaceholder',
-  }),
   'text-to-qr': released({
     module: 'qr',
     tier: 'core',
@@ -215,7 +197,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'main-thread',
     inputLimitClass: 'text-5-mib',
     outputNaming: 'generated-image',
-    testName: 'the released QR generator returns an image Blob rather than an unmanaged URL',
+    evidenceId: 'tool:text-to-qr',
     showsPreview: true,
     placeholderKey: 'tools.textToQr.placeholder',
   }),
@@ -226,7 +208,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'browser-api',
     inputLimitClass: 'image-device',
     outputNaming: 'inline-text',
-    testName: 'reads the checked-in QR fixture where BarcodeDetector is supported',
+    evidenceId: 'tool:qr-to-text',
     acceptsFile: true,
     acceptTypes: 'image/png,image/jpeg,.png,.jpg,.jpeg',
     limits: TOOL_LIMITS.images,
@@ -239,7 +221,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'image-device',
     outputNaming: 'converter-filename',
-    testName: 'released images-to-PDF accepts real PNG and JPEG fixtures',
+    evidenceId: 'tool:images-to-pdf',
     acceptsFile: true,
     acceptTypes: 'image/png,image/jpeg,.png,.jpg,.jpeg',
     multipleFiles: true,
@@ -253,7 +235,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'pdf-device',
     outputNaming: 'converter-filename',
-    testName: 'merges two checked-in PDF fixtures into a two-page download',
+    evidenceId: 'tool:merge-pdf',
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     multipleFiles: true,
@@ -267,7 +249,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'pdf-device',
     outputNaming: 'inline-text',
-    testName: 'released PDF converters return reusable Blob results',
+    evidenceId: 'tool:pdf-page-count',
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     isMediaConverter: true,
@@ -280,7 +262,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'pdf-device',
     outputNaming: 'converter-filename',
-    testName: 'extracts the first page and rotates a PDF through the released workspaces',
+    evidenceId: 'tool:pdf-split',
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     isMediaConverter: true,
@@ -295,7 +277,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'pdf-device',
     outputNaming: 'converter-filename',
-    testName: 'released PDF converters return reusable Blob results',
+    evidenceId: 'tool:pdf-extract-range',
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     isMediaConverter: true,
@@ -310,7 +292,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'text-5-mib',
     outputNaming: 'converter-filename',
-    testName: 'released PDF converters return reusable Blob results',
+    evidenceId: 'tool:text-to-pdf',
     placeholderKey: 'tools.textToPdf.placeholder',
   }),
   'pdf-metadata': released({
@@ -320,7 +302,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'pdf-device',
     outputNaming: 'inline-text',
-    testName: 'released PDF converters return reusable Blob results',
+    evidenceId: 'tool:pdf-metadata',
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     isMediaConverter: true,
@@ -333,7 +315,7 @@ const releaseMetadata = Object.freeze({
     runtimeClass: 'pdf-lib',
     inputLimitClass: 'pdf-device',
     outputNaming: 'converter-filename',
-    testName: 'extracts the first page and rotates a PDF through the released workspaces',
+    evidenceId: 'tool:pdf-rotate',
     acceptsFile: true,
     acceptTypes: 'application/pdf,.pdf',
     isMediaConverter: true,
@@ -358,20 +340,32 @@ export const releaseCatalog = Object.freeze(
   })),
 )
 
-export const formatAuditCatalog = Object.freeze(formats.map((format) => Object.freeze({
-  id: format.id,
-  kind: 'format',
-  category: 'format',
-  tier: 'advanced',
-  runtimeClass: 'main-thread',
-  inputLimitClass: 'text-5-mib',
-  outputNaming: 'inline-text',
-  testName: `format graph fixture: ${format.id}`,
-  nameDe: format.name,
-  nameEn: format.name,
-  descriptionDe: `${format.name} lokal im Browser umwandeln.`,
-  descriptionEn: `Convert ${format.name} locally in the browser.`,
-})))
+export const formatAuditCatalog = Object.freeze(formats.map((format) => {
+  const evidence = getFormatEvidence(format.id)
+  if (!evidence) {
+    return Object.freeze({
+      id: format.id,
+      kind: 'format',
+      category: 'format',
+      tier: 'hidden',
+      hiddenReason: 'Hidden pending an independent literal fixture with exact output and a defensible input limit.',
+    })
+  }
+  return Object.freeze({
+    id: format.id,
+    kind: 'format',
+    category: evidence.category,
+    tier: evidence.tier,
+    runtimeClass: evidence.runtimeClass,
+    inputLimitClass: evidence.inputLimitClass,
+    outputNaming: evidence.outputNaming,
+    evidenceId: evidence.evidenceId,
+    nameDe: evidence.nameDe,
+    nameEn: evidence.nameEn,
+    descriptionDe: evidence.descriptionDe,
+    descriptionEn: evidence.descriptionEn,
+  })
+}))
 
 export const releasedToolCount = releaseCatalog.filter(tool => tool.tier !== 'hidden').length
 

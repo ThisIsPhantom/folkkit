@@ -1951,10 +1951,11 @@ export const utilityConverters = [
       const s = input.trim()
       if (!s) return '(enter: "15% of 200", "30 is what % of 150", or "100 to 150 % change")'
       const fmt = (n) => parseFloat(n.toFixed(6)).toString()
-      let m = s.match(/^([\d.]+)%\s*of\s*([\d.]+)$/i)
+      let m = s.match(/^([\d.]+)%\s*(of|von)\s*([\d.]+)$/i)
       if (m) {
-        const pct = parseFloat(m[1]), total = parseFloat(m[2])
-        return `${pct}% of ${total} = ${fmt((pct / 100) * total)}`
+        const pct = parseFloat(m[1]), connector = m[2].toLowerCase(), total = parseFloat(m[3])
+        if (![pct, total].every(Number.isFinite)) return '(invalid values)'
+        return `${pct}% ${connector} ${total} = ${fmt((pct / 100) * total)}`
       }
       m = s.match(/^([\d.]+)\s+is\s+what\s+%\s+of\s+([\d.]+)$/i)
       if (m) {
@@ -1988,7 +1989,17 @@ export const utilityConverters = [
       const principal = parseFloat(m[1].replace(/,/g, ''))
       const annualRate = parseFloat(m[2])
       const years = parseInt(m[3], 10)
-      if (isNaN(principal) || isNaN(annualRate) || isNaN(years) || principal <= 0 || annualRate < 0 || years <= 0) return '(invalid values)'
+      if (
+        !Number.isFinite(principal)
+        || !Number.isFinite(annualRate)
+        || !Number.isInteger(years)
+        || principal <= 0
+        || principal > 1_000_000_000_000
+        || annualRate < 0
+        || annualRate > 100
+        || years < 1
+        || years > 100
+      ) return '(invalid values)'
       const n = years * 12
       const r = annualRate / 100 / 12
       const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -1999,6 +2010,7 @@ export const utilityConverters = [
       const monthly = principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
       const totalPaid = monthly * n
       const totalInterest = totalPaid - principal
+      if (![monthly, totalPaid, totalInterest].every(Number.isFinite)) return '(invalid values)'
       // Amortization milestones
       let balance = principal
       let interestPaid = 0

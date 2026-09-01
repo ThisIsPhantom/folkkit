@@ -126,7 +126,11 @@ export async function executeTool({ tool, files = [], text = '', signal, onProgr
   const selectedFiles = Array.from(files || [])
   const validation = validateFiles(tool, selectedFiles, environment)
   if (!validation.ok) throw runtimeError(validation.code)
-  if (new TextEncoder().encode(String(text || '')).byteLength > TEXT_LIMIT) throw runtimeError('too_large')
+  const configuredTextLimit = Number(tool?.textLimit)
+  const textLimit = Number.isFinite(configuredTextLimit) && configuredTextLimit > 0
+    ? Math.min(TEXT_LIMIT, Math.floor(configuredTextLimit))
+    : TEXT_LIMIT
+  if (new TextEncoder().encode(String(text || '')).byteLength > textLimit) throw runtimeError('too_large')
 
   let acceptsProgress = true
   let terminated = false

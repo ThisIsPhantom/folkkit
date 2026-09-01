@@ -1,5 +1,6 @@
 export const MIB = 1024 * 1024
 export const TEXT_LIMIT = 5 * MIB
+export const BASE58_TEXT_LIMIT = 64 * 1024
 export const IMAGE_ACCEPT_TYPES = 'image/png,image/jpeg,.png,.jpg,.jpeg'
 
 function tiers(lowMemory, standard) {

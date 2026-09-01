@@ -5,8 +5,8 @@ import { fixtureFile, onePixelJpegBase64, onePixelPngBase64 } from '../fixtures/
 test('shows the derived released count and excludes hidden entries', async ({ page }) => {
   await page.goto('./tools')
 
-  await expect(page.getByText('63 Werkzeuge')).toBeVisible()
-  await expect(page.locator('.catalog-list > li')).toHaveCount(63)
+  await expect(page.getByText('50 Werkzeuge')).toBeVisible()
+  await expect(page.locator('.catalog-list > li')).toHaveCount(50)
   await expect(page.getByText('Random Password', { exact: true })).toHaveCount(0)
 })
 

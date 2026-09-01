@@ -7,6 +7,7 @@ import { TEXT_LIMIT } from '../runtime/limits'
 import { renderWithProviders } from '../test/renderWithProviders'
 
 const noop = () => {}
+const BASE58_TEXT_LIMIT = 64 * 1024
 
 function panelProps(activeConverter, overrides = {}) {
   return {
@@ -134,6 +135,25 @@ test('format conversion rejects text above five MiB before calling the converter
   expect(await screen.findByRole('alert')).toHaveTextContent('Die ausgewählte Datei ist für dieses Gerät zu gross.')
   expect(conversionCalls).toBe(0)
   expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('')
+})
+
+test.each([
+  ['text', 'base58'],
+  ['base58', 'text'],
+])('format conversion rejects %s to %s above 64 KiB before calling the converter', async (from, to) => {
+  let conversionCalls = 0
+  const resolveConvertFn = () => () => {
+    conversionCalls += 1
+    return 'must not run'
+  }
+  renderWithProviders(<ConvertPanel {...panelProps(null, { from, to, resolveConvertFn })} />)
+
+  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+    target: { value: 'x'.repeat(BASE58_TEXT_LIMIT + 1) },
+  })
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('Die ausgewählte Datei ist für dieses Gerät zu gross.')
+  expect(conversionCalls).toBe(0)
 })
 
 test('format conversion maps thrown payloads to a stable localized error', async () => {

@@ -124,9 +124,16 @@ export const textConverters = [
     category: 'encode',
     description: 'Unescape HTML entities',
     convert: (input) => {
-      const el = document.createElement('textarea')
-      el.innerHTML = input
-      return el.value
+      const named = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }
+      return input.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (match, entity) => {
+        const normalized = entity.toLowerCase()
+        if (named[normalized]) return named[normalized]
+        const codePoint = normalized.startsWith('#x')
+          ? Number.parseInt(normalized.slice(2), 16)
+          : Number.parseInt(normalized.slice(1), 10)
+        if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff) return match
+        return String.fromCodePoint(codePoint)
+      })
     },
   },
   {

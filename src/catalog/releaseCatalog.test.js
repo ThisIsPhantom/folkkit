@@ -60,20 +60,7 @@ const expectedReleasedIds = [
   'png-to-jpg',
   'jpg-to-png',
   'qr-to-text',
-  'video-to-audio',
-  'video-to-wav',
   'audio-to-mp3',
-  'audio-to-wav',
-  'audio-to-ogg',
-  'video-to-mp4',
-  'video-to-webm',
-  'video-to-gif',
-  'audio-to-aac',
-  'audio-to-flac',
-  'video-to-audio-ogg',
-  'audio-to-m4a',
-  'video-trim',
-  'audio-trim',
 ]
 
 function readMessage(messages, key) {

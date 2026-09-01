@@ -10,7 +10,7 @@ const released = {
   runtimeClass: 'main-thread',
   inputLimitClass: 'text-5-mib',
   outputNaming: 'inline-text',
-  testName: 'safe tool fixture',
+  evidenceId: 'tool:safe-tool',
 }
 
 const messages = {
@@ -26,6 +26,17 @@ function run(overrides = {}) {
     formatAuditCatalog: [],
     messagesDe: messages,
     messagesEn: messages,
+    evidenceRegistry: [{
+      evidenceId: 'tool:safe-tool',
+      subjectKind: 'tool',
+      subjectId: 'safe-tool',
+      executor: 'tool-contract',
+    }],
+    evidenceRunResults: [{
+      evidenceId: 'tool:safe-tool',
+      executed: true,
+      assertions: 1,
+    }],
     ...overrides,
   })
 }
@@ -49,10 +60,37 @@ describe('catalog audit failures', () => {
     expect(errors).toContain('Missing en description for released tool: safe-tool')
   })
 
-  it('reports missing release evidence metadata', () => {
-    const errors = run({ releaseCatalog: [{ ...released, testName: '' }] })
+  it('reports a fabricated non-empty evidence ID', () => {
+    const errors = run({ releaseCatalog: [{ ...released, evidenceId: 'tool:fabricated' }] })
 
-    expect(errors).toContain('Missing testName for released tool: safe-tool')
+    expect(errors).toContain('Missing evidence registry entry for released tool: safe-tool (tool:fabricated)')
+  })
+
+  it('reports duplicate and missing evidence registry entries', () => {
+    const duplicate = {
+      evidenceId: 'tool:safe-tool',
+      subjectKind: 'tool',
+      subjectId: 'safe-tool',
+      executor: 'tool-contract',
+    }
+
+    expect(run({ evidenceRegistry: [duplicate, duplicate] })).toContain('Duplicate evidence registry ID: tool:safe-tool')
+    expect(run({ evidenceRegistry: [] })).toContain('Missing evidence registry entry for released tool: safe-tool (tool:safe-tool)')
+  })
+
+  it('reports evidence fixtures that never run or make no assertions', () => {
+    expect(run({
+      evidenceRunResults: [{ evidenceId: 'tool:safe-tool', executed: false, assertions: 0 }],
+    })).toContain('Evidence fixture did not run: tool:safe-tool')
+    expect(run({
+      evidenceRunResults: [{ evidenceId: 'tool:safe-tool', executed: true, assertions: 0 }],
+    })).toContain('Evidence fixture has no assertions: tool:safe-tool')
+  })
+
+  it('reports an unexecutable evidence fixture', () => {
+    expect(run({
+      evidenceRunResults: [{ evidenceId: 'tool:safe-tool', executed: true, assertions: 0, error: 'missing executor' }],
+    })).toContain('Unexecutable evidence fixture: tool:safe-tool')
   })
 
   it('reports an undocumented hidden tool', () => {
