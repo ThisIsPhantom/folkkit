@@ -45,14 +45,18 @@ export function rgbToHex({ r, g, b }) {
 }
 
 export function parseRgb(s) {
-  const m = String(s || '').trim().match(/^rgb\(\s*(\d+)(?:\s*,\s*|\s+)(\d+)(?:\s*,\s*|\s+)(\d+)\s*\)$/i)
+  const text = String(s || '').trim()
+  const m = text.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i)
+    || text.match(/^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)$/i)
   if (!m) return null
   const rgb = { r: +m[1], g: +m[2], b: +m[3] }
   return [rgb.r, rgb.g, rgb.b].every(value => value >= 0 && value <= 255) ? rgb : null
 }
 
 export function parseHsl(s) {
-  const m = String(s || '').trim().match(/^hsl\(\s*(\d+)(?:\s*,\s*|\s+)(\d+)\s*%(?:\s*,\s*|\s+)(\d+)\s*%\s*\)$/i)
+  const text = String(s || '').trim()
+  const m = text.match(/^hsl\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*\)$/i)
+    || text.match(/^hsl\(\s*(\d+)\s+(\d+)\s*%\s+(\d+)\s*%\s*\)$/i)
   if (!m) return null
   const hsl = { h: +m[1], s: +m[2], l: +m[3] }
   return hsl.h <= 360 && hsl.s <= 100 && hsl.l <= 100 ? hsl : null
@@ -88,7 +92,9 @@ export function hsvToRgb({ h, s, v }) {
 }
 
 export function parseHsv(s) {
-  const m = String(s || '').trim().match(/^hsv\(\s*(\d+)(?:\s*,\s*|\s+)(\d+)\s*%(?:\s*,\s*|\s+)(\d+)\s*%\s*\)$/i)
+  const text = String(s || '').trim()
+  const m = text.match(/^hsv\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*\)$/i)
+    || text.match(/^hsv\(\s*(\d+)\s+(\d+)\s*%\s+(\d+)\s*%\s*\)$/i)
   if (!m) return null
   const hsv = { h: +m[1], s: +m[2], v: +m[3] }
   return hsv.h <= 360 && hsv.s <= 100 && hsv.v <= 100 ? hsv : null

@@ -11,6 +11,17 @@ test.each([
   expect(parse()).toBeNull()
 })
 
+test.each([
+  ['RGB comma then space', () => parseRgb('rgb(255, 0 0)')],
+  ['RGB space then comma', () => parseRgb('rgb(255 0, 0)')],
+  ['HSL comma then space', () => parseHsl('hsl(120, 100% 50%)')],
+  ['HSL space then comma', () => parseHsl('hsl(120 100%, 50%)')],
+  ['HSV space then comma', () => parseHsv('hsv(240 100%, 100%)')],
+  ['HSV comma then space', () => parseHsv('hsv(240, 100% 100%)')],
+])('rejects mixed separator syntax in %s', (_label, parse) => {
+  expect(parse()).toBeNull()
+})
+
 test('preserves the established valid color syntax and surrounding whitespace', () => {
   expect(hexToRgb('  #ff0000  ')).toEqual({ r: 255, g: 0, b: 0 })
   expect(hexToRgb('#f00')).toEqual({ r: 255, g: 0, b: 0 })
