@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const defaultProjectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
+const genericCanonicalLicenseIdentifiers = new Set(['GPL-2.0-or-later', 'LGPL-2.1-or-later'])
 
 function parseJsonWithTrailingCommas(source, label) {
   let output = ''
@@ -129,7 +130,35 @@ async function readCanonicalLicenseTexts(indexPath, projectRoot) {
   return texts
 }
 
-async function readRuntimePackages(lockfile, nodeModulesPath, canonicalLicenseTexts) {
+async function readPackageLicenseOverrides(indexPath) {
+  try {
+    const overrides = JSON.parse(await readFile(indexPath, 'utf8'))
+    if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
+      throw new Error('package override index must be an object')
+    }
+    return overrides
+  } catch (error) {
+    throw new Error(`Unable to read package-specific license text overrides: ${error.message}`)
+  }
+}
+
+function parseSpdxComponents(expression) {
+  const components = [...expression.matchAll(/[A-Za-z0-9][A-Za-z0-9.+-]*/g)]
+    .map(match => match[0])
+    .filter(token => !['AND', 'OR', 'WITH'].includes(token))
+  if (components.length === 0) throw new Error(`Unable to parse SPDX license expression: ${expression}`)
+  return [...new Set(components)]
+}
+
+async function readMappedLegalFiles(paths, projectRoot, description) {
+  if (!Array.isArray(paths) || paths.length === 0) return null
+  return Promise.all(paths.map(async path => ({
+    filename: path,
+    content: await readTextFile(join(projectRoot, path), `${description} ${path}`),
+  })))
+}
+
+async function readRuntimePackages(lockfile, nodeModulesPath, canonicalLicenseTexts, packageOverrides, projectRoot) {
   const packageNames = collectRuntimePackageNames(lockfile)
   return Promise.all(packageNames.map(async (packageName) => {
     const lockedTuple = readLockedTuple(packageName, lockfile.packages[packageName])
@@ -175,11 +204,37 @@ async function readRuntimePackages(lockfile, nodeModulesPath, canonicalLicenseTe
       filename,
       content: await readTextFile(join(packageDirectory, filename), `notice text ${packageName}/${filename}`),
     })))
-    const licenseFiles = localLicenseFiles.length > 0
-      ? localLicenseFiles
-      : canonicalLicenseTexts.get(metadata.license)
-    if (!licenseFiles?.length) {
-      throw new Error(`Locked runtime package ${packageName} has no validated license text for ${metadata.license}.`)
+    const components = parseSpdxComponents(metadata.license)
+    const packageKey = `${packageName}@${metadata.version}`
+    const packageOverride = packageOverrides[packageKey]
+    let licenseFiles = []
+
+    if (packageOverride) {
+      for (const component of components) {
+        const mappedFiles = await readMappedLegalFiles(
+          packageOverride[component],
+          projectRoot,
+          `package-specific license text ${packageKey}/${component}`,
+        )
+        if (!mappedFiles) {
+          throw new Error(`${packageKey} license component ${component} has no validated license text.`)
+        }
+        licenseFiles.push(...mappedFiles)
+      }
+    } else if (components.length > 1) {
+      throw new Error(`${packageKey} has multiple license components without package-specific validated texts.`)
+    } else if (localLicenseFiles.length > 0) {
+      licenseFiles = localLicenseFiles
+    } else {
+      if (canonicalLicenseTexts.has(components[0]) && !genericCanonicalLicenseIdentifiers.has(components[0])) {
+        throw new Error(`Locked runtime package ${packageName} ${components[0]} cannot use a generic fallback and requires package-specific license text.`)
+      }
+      licenseFiles = genericCanonicalLicenseIdentifiers.has(components[0])
+        ? canonicalLicenseTexts.get(components[0]) || []
+        : []
+      if (licenseFiles.length === 0) {
+        throw new Error(`Locked runtime package ${packageName} ${components[0]} has no validated license text; package-specific text is required.`)
+      }
     }
 
     return {
@@ -268,6 +323,7 @@ export async function generateThirdPartyNotices({
   runtimeAssetsPath = join(projectRoot, 'scripts', 'runtime-assets.json'),
   nodeModulesPath = join(projectRoot, 'node_modules'),
   licenseTextIndexPath = join(projectRoot, 'scripts', 'license-texts', 'index.json'),
+  packageLicenseOverridesPath = join(projectRoot, 'scripts', 'license-texts', 'package-overrides.json'),
 } = {}) {
   const [lockfileSource, runtimeAssetsSource] = await Promise.all([
     readFile(lockfilePath, 'utf8'),
@@ -277,7 +333,14 @@ export async function generateThirdPartyNotices({
   const runtimeAssets = JSON.parse(runtimeAssetsSource)
   validateRuntimeAssets(runtimeAssets)
   const canonicalLicenseTexts = await readCanonicalLicenseTexts(licenseTextIndexPath, projectRoot)
-  const packages = await readRuntimePackages(lockfile, nodeModulesPath, canonicalLicenseTexts)
+  const packageOverrides = await readPackageLicenseOverrides(packageLicenseOverridesPath)
+  const packages = await readRuntimePackages(
+    lockfile,
+    nodeModulesPath,
+    canonicalLicenseTexts,
+    packageOverrides,
+    projectRoot,
+  )
   const assets = await Promise.all([...runtimeAssets.assets]
     .sort((left, right) => compareNames(left.id, right.id))
     .map(async asset => ({

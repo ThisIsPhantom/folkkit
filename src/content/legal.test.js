@@ -33,6 +33,7 @@ async function createNoticeFixture({
   installedRuntimeBVersion = '2.0.0',
   runtimeBLicense = 'BSD-2-Clause',
   omitRuntimeBText = false,
+  genericMitFallback = false,
 } = {}) {
   const root = await mkdtemp(join(tmpdir(), 'folkkit-notices-'))
   temporaryDirectories.push(root)
@@ -87,18 +88,20 @@ async function createNoticeFixture({
   await writeFile(join(root, 'bun.lock'), `${JSON.stringify(lockfile, null, 2)}\n`)
   await writeFile(join(root, 'runtime-assets.json'), `${JSON.stringify(runtimeAssets, null, 2)}\n`)
   await writeFile(join(root, 'scripts', 'license-texts', 'index.json'), `${JSON.stringify(
-    omitRuntimeBText ? {} : { 'BSD-2-Clause': ['scripts/license-texts/BSD-2-Clause.txt'] },
+    genericMitFallback ? { MIT: ['scripts/license-texts/MIT.txt'] } : {},
     null,
     2,
   )}\n`)
+  await writeFile(join(root, 'scripts', 'license-texts', 'package-overrides.json'), '{}\n')
   await writeFile(join(root, 'scripts', 'license-texts', 'AGPL-3.0-only.txt'), 'GNU AFFERO GENERAL PUBLIC LICENSE\nVersion 3 fixture text.\n')
   await writeFile(join(root, 'scripts', 'license-texts', 'GPL-2.0-or-later.txt'), 'GNU GENERAL PUBLIC LICENSE\nVersion 2 fixture text.\n')
   await writeFile(join(root, 'scripts', 'license-texts', 'LGPL-2.1-or-later.txt'), 'GNU LESSER GENERAL PUBLIC LICENSE\nVersion 2.1 fixture text.\n')
-  if (!omitRuntimeBText) {
-    await writeFile(
-      join(root, 'scripts', 'license-texts', 'BSD-2-Clause.txt'),
-      'Redistribution and use in source and binary forms fixture text.\n',
-    )
+  if (!omitRuntimeBText) await writeFile(
+    join(nodeModulesPath, 'runtime-b', 'LICENSE'),
+    'Redistribution and use in source and binary forms fixture text.\n',
+  )
+  if (genericMitFallback) {
+    await writeFile(join(root, 'scripts', 'license-texts', 'MIT.txt'), 'Copyright (c) unrelated fallback holder.\nMIT fallback body.\n')
   }
   await writeFile(join(nodeModulesPath, 'runtime-a', 'package.json'), `${JSON.stringify({
     name: 'runtime-a',
@@ -121,6 +124,66 @@ async function createNoticeFixture({
     nodeModulesPath,
     projectRoot: root,
   }
+}
+
+async function createPakoExpressionFixture({ missingZlibComponent = false } = {}) {
+  const root = await mkdtemp(join(tmpdir(), 'folkkit-pako-notices-'))
+  temporaryDirectories.push(root)
+  const nodeModulesPath = join(root, 'node_modules')
+  await mkdir(join(nodeModulesPath, 'pako', 'lib', 'zlib'), { recursive: true })
+  await mkdir(join(root, 'scripts', 'license-texts'), { recursive: true })
+
+  const lockfile = {
+    lockfileVersion: 1,
+    workspaces: { '': { dependencies: { pako: '1.0.11' } } },
+    packages: { pako: ['pako@1.0.11', '', {}, 'sha512-pako'] },
+  }
+  const runtimeAssets = {
+    schemaVersion: 1,
+    fonts: { distributedFiles: [], note: 'No font files in the pako fixture.' },
+    assets: [{
+      id: 'fixture-asset',
+      component: 'Fixture asset',
+      version: '1',
+      paths: ['public/fixture.svg'],
+      license: 'GPL-2.0-or-later',
+      sourceUrl: 'https://example.test/fixture',
+      licenseTextFiles: ['scripts/license-texts/GPL-2.0-or-later.txt'],
+    }],
+  }
+  const packageOverrides = {
+    'pako@1.0.11': {
+      MIT: ['node_modules/pako/LICENSE'],
+      ...(missingZlibComponent ? {} : { Zlib: ['node_modules/pako/lib/zlib/README'] }),
+    },
+  }
+
+  await writeFile(join(root, 'bun.lock'), `${JSON.stringify(lockfile, null, 2)}\n`)
+  await writeFile(join(root, 'runtime-assets.json'), `${JSON.stringify(runtimeAssets, null, 2)}\n`)
+  await writeFile(join(root, 'scripts', 'license-texts', 'index.json'), '{}\n')
+  await writeFile(join(root, 'scripts', 'license-texts', 'package-overrides.json'), `${JSON.stringify(packageOverrides, null, 2)}\n`)
+  await writeFile(join(root, 'scripts', 'license-texts', 'GPL-2.0-or-later.txt'), 'GNU GPL fixture.\n')
+  await writeFile(join(nodeModulesPath, 'pako', 'package.json'), `${JSON.stringify({
+    name: 'pako',
+    version: '1.0.11',
+    license: '(MIT AND Zlib)',
+    repository: 'nodeca/pako',
+  }, null, 2)}\n`)
+  await writeFile(join(nodeModulesPath, 'pako', 'LICENSE'), 'Pako MIT body by Vitaly Puzrin and Andrei Tuputcyn.\n')
+  await writeFile(join(nodeModulesPath, 'pako', 'lib', 'zlib', 'README'), 'Zlib body by Jean-loup Gailly and Mark Adler.\n')
+
+  return {
+    lockfilePath: join(root, 'bun.lock'),
+    runtimeAssetsPath: join(root, 'runtime-assets.json'),
+    nodeModulesPath,
+    projectRoot: root,
+  }
+}
+
+function markdownComponentSection(output, heading) {
+  const start = output.indexOf(`### ${heading}`)
+  const end = output.indexOf('\n### ', start + 4)
+  return output.slice(start, end === -1 ? output.length : end)
 }
 
 test('German and English legal content keep the same complete information structure', () => {
@@ -236,4 +299,34 @@ test('third-party notice generation rejects an installed version that differs fr
 test('third-party notice generation rejects an installed name that differs from the exact lock tuple', async () => {
   const fixture = await createNoticeFixture({ installedRuntimeBName: 'runtime-impostor' })
   await expect(generateThirdPartyNotices(fixture)).rejects.toThrow(/runtime-b.*installed package name runtime-impostor/i)
+})
+
+test('pako notices embed both MIT and Zlib license-expression components', async () => {
+  const fixture = await createPakoExpressionFixture()
+  const output = await generateThirdPartyNotices(fixture)
+  const pakoSection = markdownComponentSection(output, 'pako 1.0.11')
+
+  expect(pakoSection).toContain('Pako MIT body by Vitaly Puzrin and Andrei Tuputcyn.')
+  expect(pakoSection).toContain('Zlib body by Jean-loup Gailly and Mark Adler.')
+})
+
+test('an AND license expression fails when one package-specific component is missing', async () => {
+  const fixture = await createPakoExpressionFixture({ missingZlibComponent: true })
+  await expect(generateThirdPartyNotices(fixture)).rejects.toThrow(/pako@1\.0\.11.*Zlib.*validated license text/i)
+})
+
+test('an unrelated MIT package cannot use a generic fallback with another project copyright', async () => {
+  const fixture = await createNoticeFixture({
+    runtimeBLicense: 'MIT',
+    omitRuntimeBText: true,
+    genericMitFallback: true,
+  })
+  await expect(generateThirdPartyNotices(fixture)).rejects.toThrow(/runtime-b.*MIT.*package-specific license text/i)
+})
+
+test('the manual ffmpeg.wasm asset embeds its explicit MIT copyright text', async () => {
+  const output = await generateThirdPartyNotices()
+  const assetSection = markdownComponentSection(output, 'FFmpeg / ffmpeg.wasm runtime assets 0.12.10')
+
+  expect(assetSection).toContain('Copyright (c) 2019 Jerome Wu')
 })

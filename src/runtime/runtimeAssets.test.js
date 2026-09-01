@@ -1,9 +1,9 @@
 import { afterEach, expect, test } from 'vitest'
-import { copyFile, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runtimeAssetUrl } from './runtimeAssets'
-import { syncRuntimeAssets } from '../../scripts/sync-runtime-assets.mjs'
+import { assertExactRuntimeAssets, syncRuntimeAssets } from '../../scripts/sync-runtime-assets.mjs'
 import { assertPassiveAdsenseOwnershipMeta } from '../../scripts/assert-ownership-meta.mjs'
 import { assertBuiltRuntimeArtifacts, assertNoExternalRuntimeOrigins } from '../../scripts/assert-runtime-artifacts.mjs'
 
@@ -66,6 +66,16 @@ test('keeps an existing runtime directory unchanged when staging a core asset fa
 
   await expect(readFile(join(destinationDirectory, 'ffmpeg-core.js'), 'utf8')).resolves.toBe('previous JavaScript')
   await expect(readFile(join(destinationDirectory, 'ffmpeg-core.wasm'), 'utf8')).resolves.toBe('previous WASM')
+})
+
+test('rejects any file outside the exact FFmpeg runtime vendor allowlist', async () => {
+  const vendorDirectory = await createTemporaryDirectory()
+  await mkdir(join(vendorDirectory, 'ffmpeg'), { recursive: true })
+  await writeFile(join(vendorDirectory, 'ffmpeg', 'ffmpeg-core.js'), 'core JavaScript')
+  await writeFile(join(vendorDirectory, 'ffmpeg', 'ffmpeg-core.wasm'), 'core WASM')
+  await writeFile(join(vendorDirectory, 'unexpected.js'), 'unexpected')
+
+  await expect(assertExactRuntimeAssets({ vendorDirectory })).rejects.toThrow(/unexpected runtime vendor file.*unexpected\.js/i)
 })
 
 test('accepts one passive AdSense ownership meta tag regardless of attribute order or quote style', () => {

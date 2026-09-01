@@ -1,6 +1,5 @@
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { checkThirdPartyNotices } from './generate-third-party-notices.mjs'
 
 function git(repoRoot, args) {
   try {
@@ -25,9 +24,6 @@ export async function validateReleaseSource({
   if (expectedCommit && expectedCommit !== commit) {
     throw new Error(`Release source revision ${expectedCommit} does not match HEAD ${commit}.`)
   }
-
-  const committedNotices = `${git(repoRoot, ['show', 'HEAD:THIRD_PARTY_NOTICES.md'])}\n`
-  await checkThirdPartyNotices({ projectRoot: repoRoot, expectedContent: committedNotices })
 
   const status = git(repoRoot, ['status', '--porcelain=v1', '--untracked-files=all'])
   if (status) {

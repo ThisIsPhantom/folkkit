@@ -1,0 +1,25 @@
+{
+  "@ffmpeg/ffmpeg@0.12.15": {
+    "MIT": [
+      "scripts/license-texts/MIT-ffmpegwasm.txt"
+    ]
+  },
+  "@ffmpeg/types@0.12.4": {
+    "MIT": [
+      "scripts/license-texts/MIT-ffmpegwasm.txt"
+    ]
+  },
+  "@ffmpeg/util@0.12.2": {
+    "MIT": [
+      "scripts/license-texts/MIT-ffmpegwasm.txt"
+    ]
+  },
+  "pako@1.0.11": {
+    "MIT": [
+      "node_modules/pako/LICENSE"
+    ],
+    "Zlib": [
+      "node_modules/pako/lib/zlib/README"
+    ]
+  }
+}

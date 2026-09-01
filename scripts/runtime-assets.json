@@ -17,7 +17,8 @@
       "sourceUrl": "https://github.com/ffmpegwasm/ffmpeg.wasm",
       "licenseTextFiles": [
         "scripts/license-texts/GPL-2.0-or-later.txt",
-        "scripts/license-texts/LGPL-2.1-or-later.txt"
+        "scripts/license-texts/LGPL-2.1-or-later.txt",
+        "scripts/license-texts/MIT-ffmpegwasm.txt"
       ],
       "notices": [
         {

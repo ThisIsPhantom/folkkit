@@ -28,7 +28,7 @@ VITE_PUBLIC_OPERATOR_ADDRESS=
 VITE_PUBLIC_CONTACT_EMAIL=
 ```
 
-Use `|` between postal-address lines. `bun run build:release` rejects missing or unchanged example values. It also requires an exact clean Git `HEAD` and a byte-current committed `THIRD_PARTY_NOTICES.md` before Vite starts. Do not commit real operator details to the repository.
+Use `|` between postal-address lines. `bun run build:release` rejects missing or unchanged example values and requires an exact clean Git `HEAD`. It archives that validated commit into a temporary source tree, installs the committed lockfile from scratch with lifecycle scripts disabled, verifies the committed notices, synchronizes the exact runtime assets, and builds with the validated commit. Only the resulting `dist` directory is copied back. Do not commit real operator details to the repository.
 
 `bun run generate:notices` regenerates `THIRD_PARTY_NOTICES.md` deterministically from the locked runtime dependency graph and `scripts/runtime-assets.json`. Commit that exact output before a release build. Normal development builds do not rewrite the tracked notice file.
 

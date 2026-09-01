@@ -1,4 +1,4 @@
-import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { access, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { execFileSync, spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 import { afterEach, expect, test } from 'vitest'
 import { generateThirdPartyNotices } from './generate-third-party-notices.mjs'
 import { validateReleaseSource } from './validate-release-source.mjs'
+import * as releaseBuilder from './build-release.mjs'
 
 const temporaryDirectories = []
 const scriptsDirectory = dirname(fileURLToPath(import.meta.url))
@@ -76,11 +77,12 @@ async function createReleaseRepository() {
     repository: { type: 'git', url: 'https://example.test/runtime-a.git' },
   }
 
-  await writeFile(join(repoRoot, '.gitignore'), 'node_modules/\nbuild-marker.txt\n')
+  await writeFile(join(repoRoot, '.gitignore'), 'node_modules/\npublic/vendor/\nrelease-dist/\nbuild-marker.txt\n')
   await writeFile(join(repoRoot, 'README.md'), 'release fixture\n')
   await writeFile(join(repoRoot, 'bun.lock'), `${JSON.stringify(lockfile, null, 2)}\n`)
   await writeFile(join(repoRoot, 'scripts', 'runtime-assets.json'), `${JSON.stringify(runtimeAssets, null, 2)}\n`)
-  await writeFile(join(repoRoot, 'scripts', 'license-texts', 'index.json'), `${JSON.stringify({ MIT: ['scripts/license-texts/MIT.txt'] }, null, 2)}\n`)
+  await writeFile(join(repoRoot, 'scripts', 'license-texts', 'index.json'), '{}\n')
+  await writeFile(join(repoRoot, 'scripts', 'license-texts', 'package-overrides.json'), '{}\n')
   await writeFile(join(repoRoot, 'scripts', 'license-texts', 'MIT.txt'), 'MIT License fixture body.\n')
   await writeFile(join(repoRoot, 'node_modules', 'runtime-a', 'package.json'), `${JSON.stringify(packageMetadata, null, 2)}\n`)
   await writeFile(join(repoRoot, 'node_modules', 'runtime-a', 'LICENSE'), 'Runtime A exact license notice.\n')
@@ -109,6 +111,46 @@ async function createReleaseRepository() {
   return {
     repoRoot,
     markerPath: join(repoRoot, 'build-marker.txt'),
+  }
+}
+
+function createFakeReleaseRunner({ expectedCommit, unexpectedVendor = false, observations }) {
+  return async ({ label, args, cwd, env }) => {
+    observations.labels.push(label)
+    if (label === 'install') {
+      expect(args).toEqual(['install', '--frozen-lockfile', '--ignore-scripts', '--force'])
+      await mkdir(join(cwd, 'node_modules', 'runtime-a'), { recursive: true })
+      await writeFile(join(cwd, 'node_modules', 'runtime-a', 'package.json'), `${JSON.stringify({
+        name: 'runtime-a',
+        version: '1.0.0',
+        license: 'MIT',
+        repository: { type: 'git', url: 'https://example.test/runtime-a.git' },
+      }, null, 2)}\n`)
+      await writeFile(join(cwd, 'node_modules', 'runtime-a', 'LICENSE'), 'Runtime A exact license notice.\n')
+      return
+    }
+    if (label === 'sync-runtime-assets') {
+      const vendorDirectory = join(cwd, 'public', 'vendor')
+      await mkdir(join(vendorDirectory, 'ffmpeg'), { recursive: true })
+      await writeFile(join(vendorDirectory, 'ffmpeg', 'ffmpeg-core.js'), 'fresh core JavaScript')
+      await writeFile(join(vendorDirectory, 'ffmpeg', 'ffmpeg-core.wasm'), 'fresh core WASM')
+      if (unexpectedVendor) await writeFile(join(vendorDirectory, 'unexpected.js'), 'unexpected')
+      return
+    }
+    if (label === 'build') {
+      observations.buildInvoked = true
+      observations.buildCommit = env.FOLKKIT_RELEASE_COMMIT
+      observations.archivedReadme = await readFile(join(cwd, 'README.md'), 'utf8')
+      observations.releaseMarker = (await readFile(join(cwd, '.folkkit-release-commit'), 'utf8')).trim()
+      observations.hasCurrentVendorPoison = await pathExists(join(cwd, 'public', 'vendor', 'poison.js'))
+      observations.hasCurrentNodeModulesPoison = await pathExists(join(cwd, 'node_modules', 'current-poison.txt'))
+      expect(env.FOLKKIT_RELEASE_COMMIT).toBe(expectedCommit)
+      await mkdir(join(cwd, 'dist'), { recursive: true })
+      await writeFile(join(cwd, 'dist', 'index.html'), `<p>${expectedCommit}</p>\n`)
+      await writeFile(join(cwd, 'outside-dist.txt'), 'must not be copied\n')
+      return
+    }
+    throw new Error(`Unexpected fake release command: ${label}`)
   }
 }
 
@@ -161,11 +203,18 @@ test.each([
 test('a clean commit with stale generated notices fails before the build marker', async () => {
   const { repoRoot, markerPath } = await createReleaseRepository()
   await makeStaleCommittedNotice(repoRoot)
+  const expectedCommit = git(repoRoot, ['rev-parse', 'HEAD'])
+  const observations = { labels: [], buildInvoked: false }
 
-  const result = runReleaseCli(repoRoot)
+  await expect(releaseBuilder.runReleaseBuild({
+    repoRoot,
+    env: { ...process.env, ...validOperatorEnv },
+    runCommand: createFakeReleaseRunner({ expectedCommit, observations }),
+    outputDirectory: join(repoRoot, 'release-dist'),
+  })).rejects.toThrow(/THIRD_PARTY_NOTICES\.md.*stale/i)
 
-  expect(result.status).toBe(1)
-  expect(`${result.stdout}\n${result.stderr}`).toMatch(/THIRD_PARTY_NOTICES\.md.*stale/i)
+  expect(observations.labels).toEqual(['install'])
+  expect(observations.buildInvoked).toBe(false)
   await expect(pathExists(markerPath)).resolves.toBe(false)
 })
 
@@ -204,4 +253,81 @@ test('the exact example operator values fail through the real CLI before source 
   expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_OPERATOR_ADDRESS still contains the example value/)
   expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_CONTACT_EMAIL still contains the example value/)
   await expect(pathExists(markerPath)).resolves.toBe(false)
+})
+
+test('release build archives the validated commit and excludes ignored current dependency and vendor tampering', async () => {
+  const { repoRoot } = await createReleaseRepository()
+  const validatedCommit = git(repoRoot, ['rev-parse', 'HEAD'])
+  const outputDirectory = join(repoRoot, 'release-dist')
+  const observations = { labels: [], buildInvoked: false }
+  await writeFile(join(repoRoot, 'node_modules', 'runtime-a', 'package.json'), `${JSON.stringify({
+    name: 'runtime-a',
+    version: '9.9.9',
+    license: 'MIT',
+    repository: 'tampered/current-node-modules',
+  })}\n`)
+  await writeFile(join(repoRoot, 'node_modules', 'current-poison.txt'), 'poison\n')
+  await mkdir(join(repoRoot, 'public', 'vendor'), { recursive: true })
+  await writeFile(join(repoRoot, 'public', 'vendor', 'poison.js'), 'poison\n')
+
+  const archive = async (options) => {
+    await writeFile(join(repoRoot, 'README.md'), 'new HEAD created after source validation\n')
+    git(repoRoot, ['add', 'README.md'])
+    git(repoRoot, ['commit', '-m', 'simulated release race'])
+    observations.racedHead = git(repoRoot, ['rev-parse', 'HEAD'])
+    return releaseBuilder.archiveValidatedCommit(options)
+  }
+
+  const result = await releaseBuilder.runReleaseBuild({
+    repoRoot,
+    env: { ...process.env, ...validOperatorEnv },
+    runCommand: createFakeReleaseRunner({ expectedCommit: validatedCommit, observations }),
+    archive,
+    outputDirectory,
+    build: () => { throw new Error('legacy worktree build must not run') },
+  })
+
+  expect(result).toEqual({ commit: validatedCommit, outputDirectory })
+  expect(observations.racedHead).not.toBe(validatedCommit)
+  expect(observations.labels).toEqual(['install', 'sync-runtime-assets', 'build'])
+  expect(observations.buildInvoked).toBe(true)
+  expect(observations.buildCommit).toBe(validatedCommit)
+  expect(observations.releaseMarker).toBe(validatedCommit)
+  expect(observations.archivedReadme).toBe('release fixture\n')
+  expect(observations.hasCurrentVendorPoison).toBe(false)
+  expect(observations.hasCurrentNodeModulesPoison).toBe(false)
+  expect(await readdir(outputDirectory)).toEqual(['index.html'])
+})
+
+test('unexpected files in the isolated vendor destination stop the release before build', async () => {
+  const { repoRoot } = await createReleaseRepository()
+  const validatedCommit = git(repoRoot, ['rev-parse', 'HEAD'])
+  const observations = { labels: [], buildInvoked: false }
+
+  await expect(releaseBuilder.runReleaseBuild({
+    repoRoot,
+    env: { ...process.env, ...validOperatorEnv },
+    runCommand: createFakeReleaseRunner({ expectedCommit: validatedCommit, unexpectedVendor: true, observations }),
+    outputDirectory: join(repoRoot, 'release-dist'),
+    build: () => { observations.buildInvoked = true },
+  })).rejects.toThrow(/unexpected runtime vendor file/i)
+
+  expect(observations.labels).toEqual(['install', 'sync-runtime-assets'])
+  expect(observations.buildInvoked).toBe(false)
+})
+
+test('release commit resolution requires the validated environment commit to match the archive marker', async () => {
+  const repoRoot = await mkdtemp(join(tmpdir(), 'folkkit-release-commit-'))
+  temporaryDirectories.push(repoRoot)
+  const commit = 'a'.repeat(40)
+  await writeFile(join(repoRoot, '.folkkit-release-commit'), `${commit}\n`)
+
+  expect(releaseBuilder.resolveBuildCommit({
+    repoRoot,
+    env: { FOLKKIT_RELEASE_COMMIT: commit },
+  })).toBe(commit)
+  expect(() => releaseBuilder.resolveBuildCommit({
+    repoRoot,
+    env: { FOLKKIT_RELEASE_COMMIT: 'b'.repeat(40) },
+  })).toThrow(/release commit.*archive marker/i)
 })

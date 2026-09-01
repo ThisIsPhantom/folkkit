@@ -1,11 +1,40 @@
-import { access, copyFile as copyRuntimeFile, mkdir, mkdtemp, rename, rm } from 'node:fs/promises'
-import { basename, dirname, join } from 'node:path'
+import { access, copyFile as copyRuntimeFile, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises'
+import { basename, dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const runtimeFiles = ['ffmpeg-core.js', 'ffmpeg-core.wasm']
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 const defaultSourceDirectory = join(projectRoot, 'node_modules', '@ffmpeg', 'core', 'dist', 'esm')
 const defaultDestinationDirectory = join(projectRoot, 'public', 'vendor', 'ffmpeg')
+const defaultVendorDirectory = dirname(defaultDestinationDirectory)
+const expectedVendorFiles = runtimeFiles.map(filename => `ffmpeg/${filename}`).sort()
+
+async function listVendorFiles(directory, root = directory) {
+  const entries = await readdir(directory, { withFileTypes: true })
+  const files = []
+  for (const entry of entries) {
+    const path = join(directory, entry.name)
+    if (entry.isDirectory()) files.push(...await listVendorFiles(path, root))
+    else if (entry.isFile()) files.push(relative(root, path).replaceAll('\\', '/'))
+    else throw new Error(`Unexpected runtime vendor entry type: ${relative(root, path).replaceAll('\\', '/')}`)
+  }
+  return files.sort()
+}
+
+export async function assertExactRuntimeAssets({ vendorDirectory = defaultVendorDirectory } = {}) {
+  let actualFiles
+  try {
+    actualFiles = await listVendorFiles(vendorDirectory)
+  } catch (error) {
+    if (error.code === 'ENOENT') throw new Error('Missing runtime vendor directory.')
+    throw error
+  }
+  const unexpected = actualFiles.filter(path => !expectedVendorFiles.includes(path))
+  if (unexpected.length > 0) throw new Error(`Unexpected runtime vendor file: ${unexpected.join(', ')}`)
+  const missing = expectedVendorFiles.filter(path => !actualFiles.includes(path))
+  if (missing.length > 0) throw new Error(`Missing required runtime vendor file: ${missing.join(', ')}`)
+  return actualFiles
+}
 
 export async function syncRuntimeAssets({
   sourceDirectory = defaultSourceDirectory,
@@ -61,8 +90,10 @@ export async function syncRuntimeAssets({
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  syncRuntimeAssets().catch((error) => {
-    console.error(error.message)
-    process.exitCode = 1
-  })
+  syncRuntimeAssets()
+    .then(() => assertExactRuntimeAssets())
+    .catch((error) => {
+      console.error(error.message)
+      process.exitCode = 1
+    })
 }
