@@ -2,7 +2,9 @@
 
 ## Status
 
-Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 5: `87a3eb3509b387aa23df74b43cc665270d880499`. Die unabhängige Re-Review dieser finalen Fixrunde steht aus.
+Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Unveränderlich geprüfter Codekandidat der abschliessenden Fixwelle: `09504747e6f548754587c893c3542eb93a3e3b4c`. Die abschliessende Fixwelle ist umgesetzt; die finale unabhängige Re-Review steht aus.
+
+Alle automatisierten Nachweise in dieser Checkliste beziehen sich auf diesen Codekandidaten `C`. Der spätere reine Dokumentationscommit `D`, der diese Checkliste und den Task-11-Bericht aufnimmt, wurde nicht als Releasequelle validiert und muss vor einer Veröffentlichung erneut vollständig geprüft werden.
 
 Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit, kein Hosttech-Zugriff, kein DNS-Eingriff, kein Domainkauf und kein Deployment.
 
@@ -11,24 +13,24 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Gate | Ergebnis |
 | --- | --- |
 | ESLint | bestanden |
-| Unit- und Vertragstests | 40 Testdateien, 438 Tests bestanden |
-| Chromium Desktop | 39 von 39 E2E-Tests bestanden |
+| Unit- und Vertragstests | 44 Testdateien, 468 Tests bestanden |
+| Chromium Desktop | 49 von 49 E2E-Tests bestanden |
 | WebKit Desktop | Kernmatrix 1 von 1 bestanden |
 | Chromium Mobile 390 x 844 | Kernmatrix 1 von 1 bestanden |
 | Firefox Desktop | lokal blockiert, siehe Browsermatrix |
-| Axe | Home, Katalog, PDF, QR, Konvertierung, Verlaufseinwilligung, Datenschutz, Lizenzen und Fehlerzustand ohne automatisierte Verletzung |
+| Axe | Home, Katalog, PDF, QR, Konvertierung, Verlauf, ToolPicker, Datei-Auslöser, Datenschutz, Lizenzen und Fehlerzustand ohne automatisierte Verletzung |
 | Privacy-Taint | Marker in Dateiname und Inhalt blieb aus Requests, Headern, Bodies, Konsole, Fehlern, Cache Storage, URL, Local Storage und Session Storage entfernt |
 | Malformed Inputs | Beschädigte, doppelt endende, zu grosse, zu zahlreiche und zu komplexe Eingaben wurden mit inhaltsfreien Fehlern abgewiesen |
 | Produktions-CSP | reale MP3-Konvertierung 1 von 1 bestanden |
 | Offline | Shell, Text, QR und PDF bestanden; fehlendes FFmpeg-Modul wurde nach Wiederverbindung erfolgreich nachgeladen |
 | Katalogaudit | 499 Konverter, 49 freigegeben und 450 verborgen; 223 Formate, 18 freigegeben und 205 verborgen |
 | Formatpaare | 19 freigegebene Paare, 19 `compatible`, 0 `incompatible-but-implemented` |
-| Bundle | initial 166.8 KiB gzip von 200 KiB; PDF-Worker 178.1 KiB gzip von 220 KiB |
+| Bundle | initial 169.3 KiB gzip von 200 KiB; PDF-Worker 178.1 KiB gzip von 220 KiB |
 | Drittanbieterhinweise | aktuell; SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e` |
 | Supply Chain | `bun audit --audit-level=high` ohne Befund |
-| Secret-Scan | 213 getrackte Dateien, 0 Kandidaten beim letzten Kandidatenlauf |
+| Secret-Scan | 217 getrackte Dateien, 0 Kandidaten beim Kandidatenlauf auf `C` |
 | Plesk-Vertrag | Bare-Remote-Verträge bestanden |
-| Plesk `ValidateOnly` | Für Codekandidat `87a3eb3`: 30 Dateien, 0 verboten, Baumhash `cc687b5ac5880fccfdaca17fad31ca15230ba733b8b2a77066cb0b7b23f3555a` |
+| Plesk `ValidateOnly` | Für `C`: 30 Dateien, 0 verboten, Baumhash `4c68c0bb309bd50a4b14c66e457bc7b6a9e9b60bed87532fe3278d3ef1f0dc76` |
 
 ## Browsermatrix
 
@@ -41,7 +43,7 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 
 Der historische Standardscan `d182b66a-b0a8-45f4-93b5-3784092bde95` gilt ausschliesslich für `98d58ed1cd9926a33ec1ee6f94d2fb28b4705f4e`. Seine Artefakte wurden nicht verändert oder als Nachscan bezeichnet. Er deckte 185 von 185 getrackten Dateien ab und meldete 11 validierte Befunde, 4 mittel und 7 niedrig, ohne hohe oder kritische Befunde.
 
-Der aktuelle Kandidat enthält Korrekturen und gezielte Nachweise für alle 11 Befunde. Die neue unabhängige Re-Review steht noch aus:
+Der aktuelle Kandidat enthält Korrekturen und gezielte Nachweise für alle 11 Befunde. Die abschliessende Fixwelle ist umgesetzt; die finale unabhängige Re-Review steht aus:
 
 1. Actions sind an vollständige SHAs gebunden.
 2. Artefaktaufbau und schreibberechtigter Push sind getrennt; Archiv, Baum und Quellcommit sind mit SHA-256 gebunden.
@@ -55,7 +57,7 @@ Der aktuelle Kandidat enthält Korrekturen und gezielte Nachweise für alle 11 B
 10. Audio zu MP3 prüft zuverlässige WAV-Dauer, FFmpeg-Zeitbudget, CPU-Backstop, Ausgabegrösse und echte Terminierung.
 11. Dateianzahl wird vor React-Zustand und erneut im Runtime-Vertrag begrenzt; die Dateinamenvorschau ist beschränkt.
 
-Fixrunde 1 ergänzt folgende Nachweise, jeweils mit ausstehender Re-Review:
+Fixrunde 1 ergänzte folgende Nachweise:
 
 1. Der vorbereitete Hostingstand ist zusätzlich an einen unabhängigen Workflow-Output-Digest über kanonische Manifestbytes und Archivbytes gebunden.
 2. Der Same-Origin-Gate verfolgt Konstanten, Verkettungen, Templates, `new URL`, Worker und `setAttribute`; externe Navigation ist nur für exakt geprüfte Rechts- und Quellziele erlaubt.
@@ -64,22 +66,22 @@ Fixrunde 1 ergänzt folgende Nachweise, jeweils mit ausstehender Re-Review:
 5. Jedes der 19 freigegebenen Formatpaare deklariert seinen Zustand einzeln. Eine Rückkehr zu einem früher bestätigten Paar beginnt wieder unbestätigt.
 6. Der offizielle Playwright-Installationsvertrag umfasst Chromium, Firefox und WebKit.
 7. Der Clipboard-Fallback kopiert ausschliesslich die inhaltsfreie Werkzeug-URL.
-8. Checkliste und Projektmemory verwenden ausschliesslich post-fix Evidenz und bezeichnen die Re-Review als ausstehend.
+8. Checkliste und Projektmemory verwenden ausschliesslich post-fix Evidenz und halten fest: Die abschliessende Fixwelle ist umgesetzt; die finale unabhängige Re-Review steht aus.
 
-Fixrunde 2 ergänzt folgende P1-Nachweise, ebenfalls mit ausstehender Re-Review:
+Fixrunde 2 ergänzte folgende P1-Nachweise:
 
 1. Die externe Literalpolicy ist fail-closed. Nur eine versionierte Liste exakter Rechts-, Quell-, Dokumentations- und Plattform-Namespace-Werte sowie das 40-stellige Folkkit-Commitmuster sind erlaubt. Der Browserbuild entfernt Hidden-Konverterimplementierungen, während Unit- und Katalogauditquellen vollständig bleiben.
 2. Die CSV-Schätzung rechnet vor jeder Zeilen-, Objekt- oder JSON-Allokation mit bis zu sechs ASCII-Bytes pro UTF-16-Codeeinheit. Die 2.9-Millionen-Steuerzeichen-Regression und der begrenzte Zeilenscanner bestehen.
 3. Nicht verlässliche oder fehlende Audiodauer wird für WAV und andere akzeptierte Audioformate abgewiesen. Ein FFmpeg-Rückgabecode ungleich null verhindert das Lesen partieller Ergebnisse; Ausgaben am oder über dem Limit werden verworfen.
 
-Fixrunde 3 ergänzt folgende Restnachweise, ebenfalls mit ausstehender Re-Review:
+Fixrunde 3 ergänzte folgende Restnachweise:
 
 1. Der Browser-Pruner entfernt auch spätere Mutationen der exportierten Konverterarrays. Das finale Artefakt-Gate verlangt exakt die 49 freigegebenen Konverterimplementierungen und weist alle 450 verborgenen IDs ab; alle 499 Auditquellen bleiben im Repository erhalten.
 2. Die Same-Origin-Policy prüft absolute und protokollrelative Literale gegen exakte URL-Pfade, löst statische `new URL`-Kombinationen vollständig auf, berücksichtigt lexikalische Gültigkeitsbereiche und kontrolliert HTML-Attribute einzeln. Das Gate ist ein verpflichtender Schritt des normalen Produktionsbuilds.
 3. Die Produktionsoberfläche verwendet für Ausgabetext keine vollständige Newline-Aufteilung mehr. Der begrenzte Scanner zeigt Überschreitungen ehrlich als `5000+` an und materialisiert nie mehr Zeilennummern als erlaubt.
 4. Der WAV-Preflight liest höchstens 64 KiB, prüft RIFF-, `fmt `- und `data`-Grenzen gegen die tatsächliche Dateigrösse und lehnt abgeschnittene oder widersprüchliche Dateien geschlossen ab.
 
-Fixrunde 4 ergänzt folgende Restnachweise, ebenfalls mit ausstehender Re-Review:
+Fixrunde 4 ergänzte folgende Restnachweise:
 
 1. Jeder normale, Hosting- und Release-Build prüft das 49er-Browsermanifest vor Vite gegen den kanonischen Releasekatalog und die ausführbare Evidenz. Eine gleich grosse Liste mit einer verborgenen Ersatz-ID stoppt vor dem Vite-Aufruf.
 2. HTML wird mit dem exakt gepinnten `parse5` 8.0.1 und einem quote-aware Duplicate-Tokenizer geprüft. Die Policy erfasst gequotete und ungequotete URL-Attribute, `srcset`, Meta-Refresh sowie CSS-Literale in `url()`, `image-set()` und `@import`.
