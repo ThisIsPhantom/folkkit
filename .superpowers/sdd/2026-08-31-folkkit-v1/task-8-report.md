@@ -142,3 +142,59 @@ Der finale Build erzeugte `folkkit-app-a912dbc94ef5` mit 12 Precache-URLs. Die i
 ### Listener- und Scope-Cleanup
 
 Die zweite lokale HTTP-Origin-Instanz wird in `test.afterAll` geschlossen. Playwright stoppt den Previewserver nach jedem Lauf. Nach den Browserläufen lauschte kein Prozess mehr auf Port 4178. Port 4173 blieb unangetastet.
+
+## Review-Fixrunde 2 von 5
+
+### Verbleibendes Finding
+
+Die frühere FFmpeg-Ausnahme verwendete eine Substring-Heuristik für Dateinamen und Pfade. Dadurch konnten beliebige Dateien mit `ffmpeg` im Namen oder Pfad das feste 220-KiB-Limit umgehen. Gleichzeitig wurde der echte gehashte `@ffmpeg/util`-Chunk nicht zuverlässig erkannt.
+
+### RED
+
+```text
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run test:run tests/build/pwa-build.test.js
+Ergebnis: 4 erwartete Fehler, 11 bestanden.
+```
+
+Die RED-Fälle belegten:
+
+- `assets/fake-ffmpeg-worker.js` wurde fälschlich ausgenommen.
+- `nested/path-with-ffmpeg/chunk.js` wurde fälschlich ausgenommen.
+- Der reale Manifest-Eintrag für `node_modules/@ffmpeg/util` wurde wegen seines gehashten Dateinamens fälschlich budgetiert.
+- Ein Near-Package-Key plus irreführender Displayname konnte die alte Namensheuristik fälschlich auslösen.
+- Der bereits vorhandene Shared-Chunk-Test bestätigte, dass ein nicht zum Package gehörender Import budgetpflichtig bleiben muss.
+
+### GREEN und Klassifikationsvertrag
+
+Der Budgetprüfer bildet die Ausnahme jetzt ausschliesslich aus normalisierten Manifest-Keys oder `src`-Feldern mit einer exakten Package-Grenze:
+
+- `node_modules/@ffmpeg/ffmpeg` und Dateien direkt darunter
+- `node_modules/@ffmpeg/util` und Dateien direkt darunter
+- exakt `vendor/ffmpeg/ffmpeg-core.js`
+
+Nur das jeweilige direkt emittierte `file` eines vertrauenswürdigen Manifest-Eintrags wird aufgenommen. Imports oder Shared-Chunks werden nicht transitiv ausgenommen. Displaynamen, caller-supplied Optionen, Near-Package-Pfade, Dateinamen und sonstige Pfadfragmente haben keinen Einfluss.
+
+Der reale Build klassifizierte genau diese drei Dateien als ausgenommen:
+
+| Vertrauensquelle | Emittierte Datei | Gzip | Klassifikation |
+| --- | --- | ---: | --- |
+| `node_modules/@ffmpeg/util` | `assets/index-607UPNXL.js` | 0.9 KiB | FFmpeg exempt |
+| `node_modules/@ffmpeg/ffmpeg` | `assets/index-BYjvCBri.js` | 1.2 KiB | FFmpeg exempt |
+| synchronisierter Vendor-Core | `vendor/ffmpeg/ffmpeg-core.js` | 30.4 KiB | FFmpeg exempt |
+
+Alle übrigen emittierten JavaScript-Dateien blieben budgetpflichtig. Dazu gehören insbesondere `media-Bkiwy-to.js` mit 2.4 KiB, `worker-Dp0dEEIq.js` mit 1.1 KiB, `sw.js` mit 0.9 KiB und `sw.template.js` mit 0.8 KiB. Die initiale Summe blieb 121.4 KiB gzip; der grösste budgetpflichtige übrige Chunk blieb `pdf-lib` mit 179.5 KiB gzip.
+
+### Exakte Abschlussbefehle und Ergebnisse
+
+```text
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run test:run tests/build/pwa-build.test.js
+Ergebnis: 1 Testdatei, 15/15 Tests bestanden.
+
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run verify
+Ergebnis: ESLint bestanden; 27 Testdateien, 260/260 Tests bestanden; Build, Budget und Runtime-Artefakte bestanden.
+
+$env:FOLKKIT_E2E_PORT='4178'
+& 'C:\Users\igorr\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\playwright\cli.js' test tests/e2e/pwa.spec.js tests/e2e/offline.spec.js
+Ergebnis Lauf 1: 6/6 bestanden in 4.4 s.
+Ergebnis Lauf 2: 6/6 bestanden in 4.3 s.
+```

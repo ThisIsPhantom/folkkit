@@ -6,8 +6,21 @@ import { pathToFileURL } from 'node:url'
 export const INITIAL_JS_LIMIT = 200 * 1024
 export const LAZY_JS_LIMIT = 220 * 1024
 
-const FFMPEG_PATTERN = /(?:^|[\/_-])ffmpeg(?:[\/_\-.]|$)/i
 const SUPPORTED_OPTIONS = new Set(['distDir'])
+const TRUSTED_FFMPEG_PACKAGE_ROOTS = Object.freeze([
+  'node_modules/@ffmpeg/ffmpeg',
+  'node_modules/@ffmpeg/util',
+])
+const TRUSTED_VENDOR_CORE_FILE = 'vendor/ffmpeg/ffmpeg-core.js'
+
+function normalizeBuildPath(value) {
+  return String(value || '').replaceAll('\\', '/').replace(/^\.\//, '').replace(/^\//, '')
+}
+
+function isTrustedFfmpegPackageSource(value) {
+  const normalized = normalizeBuildPath(value)
+  return TRUSTED_FFMPEG_PACKAGE_ROOTS.some(root => normalized === root || normalized.startsWith(`${root}/`))
+}
 
 function collectInitialKeys(manifest) {
   const selected = new Set()
@@ -68,15 +81,18 @@ export async function checkBundleBudget(options = {}) {
   }
 
   const initialFileSet = new Set(initialFiles)
-  const ffmpegFiles = new Set(Object.entries(manifest)
-    .filter(([key, chunk]) => FFMPEG_PATTERN.test(key) || FFMPEG_PATTERN.test(chunk.file || ''))
-    .map(([, chunk]) => chunk.file))
+  const ffmpegFiles = new Set([TRUSTED_VENDOR_CORE_FILE])
+  for (const [key, chunk] of Object.entries(manifest)) {
+    if (isTrustedFfmpegPackageSource(chunk.src) || isTrustedFfmpegPackageSource(key)) {
+      ffmpegFiles.add(normalizeBuildPath(chunk.file))
+    }
+  }
   const lazyChunks = []
   const emittedJavaScript = await listJavaScriptFiles(distDir)
   for (const file of emittedJavaScript) {
     if (initialFileSet.has(file)) continue
     const gzipBytes = await gzipFileSize(distDir, file)
-    const isFfmpeg = ffmpegFiles.has(file) || FFMPEG_PATTERN.test(file)
+    const isFfmpeg = ffmpegFiles.has(normalizeBuildPath(file))
     lazyChunks.push({ key: file, file, gzipBytes, exempt: isFfmpeg })
     if (!isFfmpeg && gzipBytes > LAZY_JS_LIMIT) {
       failures.push(`${file} is ${formatKiB(gzipBytes)}; limit is 220 KiB gzip.`)

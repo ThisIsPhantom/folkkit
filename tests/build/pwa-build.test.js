@@ -182,19 +182,17 @@ describe('bundle budget', () => {
     await expect(checkBundleBudget({ distDir })).rejects.toThrow(/initial JavaScript.*200 KiB/i)
   })
 
-  test('rejects an oversized non-FFmpeg lazy chunk but exempts an FFmpeg chunk', async () => {
+  test('rejects an oversized non-FFmpeg lazy chunk', async () => {
     const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
     const distDir = resolve(fixtureRoot, 'dist')
     const smallEntry = 'export default 1'
     const largeLazy = randomBytes(260 * 1024)
     await writeFixture('dist/assets/app.js', smallEntry)
     await writeFixture('dist/assets/utility.js', largeLazy)
-    await writeFixture('dist/assets/ffmpeg-core.js', largeLazy)
     await writeThemeInit()
     await writeFixture('dist/.vite/manifest.json', JSON.stringify({
-      'index.html': { file: 'assets/app.js', isEntry: true, dynamicImports: ['src/utility.js', 'src/media.js'] },
+      'index.html': { file: 'assets/app.js', isEntry: true, dynamicImports: ['src/utility.js'] },
       'src/utility.js': { file: 'assets/utility.js' },
-      'src/media.js': { file: 'assets/ffmpeg-core.js', isDynamicEntry: true },
     }))
 
     await expect(checkBundleBudget({ distDir })).rejects.toThrow(/utility\.js.*220 KiB/i)
@@ -262,5 +260,85 @@ describe('bundle budget', () => {
     const report = await checkBundleBudget({ distDir })
 
     expect(report.lazyChunks.find(item => item.file === 'assets/index-hashed.js')).toMatchObject({ exempt: true })
+  })
+
+  test.each([
+    'assets/fake-ffmpeg-worker.js',
+    'nested/path-with-ffmpeg/chunk.js',
+  ])('keeps an oversized path fragment budgeted: %s', async (file) => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeFixture(`dist/${file}`, randomBytes(260 * 1024))
+    await writeThemeInit()
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+    }))
+
+    await expect(checkBundleBudget({ distDir })).rejects.toThrow(new RegExp(file.replaceAll('.', '\\.')))
+  })
+
+  test('exempts only real FFmpeg package entries and the exact synchronized vendor core', async () => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    const oversized = randomBytes(260 * 1024)
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeFixture('dist/assets/ffmpeg-wrapper-hash.js', oversized)
+    await writeFixture('dist/assets/util-wrapper-hash.js', oversized)
+    await writeFixture('dist/vendor/ffmpeg/ffmpeg-core.js', oversized)
+    await writeThemeInit()
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+      'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js': { file: 'assets/ffmpeg-wrapper-hash.js', src: 'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js', isDynamicEntry: true },
+      'node_modules/@ffmpeg/util/dist/esm/index.js': { file: 'assets/util-wrapper-hash.js', src: 'node_modules/@ffmpeg/util/dist/esm/index.js', isDynamicEntry: true },
+    }))
+
+    const report = await checkBundleBudget({ distDir })
+
+    expect(report.lazyChunks.filter(item => item.exempt).map(item => item.file).sort()).toEqual([
+      'assets/ffmpeg-wrapper-hash.js',
+      'assets/util-wrapper-hash.js',
+      'vendor/ffmpeg/ffmpeg-core.js',
+    ])
+  })
+
+  test('does not trust a spoofed manifest key, display name, or near-package path', async () => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeFixture('dist/assets/spoofed.js', randomBytes(260 * 1024))
+    await writeThemeInit()
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+      'node_modules/@ffmpeg/ffmpeg-fake/index.js': {
+        file: 'assets/spoofed.js',
+        src: 'src/not-a-package.js',
+        name: 'node_modules/@ffmpeg/ffmpeg',
+        isDynamicEntry: true,
+      },
+    }))
+
+    await expect(checkBundleBudget({ distDir })).rejects.toThrow(/assets\/spoofed\.js.*220 KiB/i)
+  })
+
+  test('keeps a shared non-package import budgeted when a real FFmpeg entry imports it', async () => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeFixture('dist/assets/ffmpeg-wrapper.js', 'export class FFmpeg {}')
+    await writeFixture('dist/assets/shared-app-code.js', randomBytes(260 * 1024))
+    await writeThemeInit()
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+      'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js': {
+        file: 'assets/ffmpeg-wrapper.js',
+        src: 'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js',
+        imports: ['_shared.js'],
+        isDynamicEntry: true,
+      },
+      '_shared.js': { file: 'assets/shared-app-code.js' },
+    }))
+
+    await expect(checkBundleBudget({ distDir })).rejects.toThrow(/assets\/shared-app-code\.js.*220 KiB/i)
   })
 })
