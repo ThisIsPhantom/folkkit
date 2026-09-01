@@ -9,7 +9,7 @@ test('publishes complete German and English privacy disclosures', async ({ page 
 
   await expect(page.getByRole('heading', { name: 'Datenschutz' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Lokale Dateiverarbeitung' })).toBeVisible()
-  await expect(page.getByText(/IP-Adresse, Zeitpunkt, angeforderten Pfad, Referrer und User-Agent/)).toBeVisible()
+  await expect(page.getByText(/IP-Adresse, Zeitpunkt, angeforderter Pfad, Referrer und User-Agent/)).toBeVisible()
   await expect(page.getByText(/lokale Inhaltschronik.*ausdrücklich aktivierst/i)).toBeVisible()
   await expect(page.getByText(/passive AdSense-Metadatum/i)).toBeVisible()
   await expect(page.getByText(/erheben keine Daten|sammeln keine Daten|null Daten/i)).toHaveCount(0)
