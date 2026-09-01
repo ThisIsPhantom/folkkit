@@ -72,6 +72,145 @@ function decodeCssEscapes(contents) {
   return decoded
 }
 
+function skipCssIgnorable(contents, startIndex) {
+  let index = startIndex
+  while (index < contents.length) {
+    if (/\s/.test(contents[index])) {
+      index += 1
+      continue
+    }
+    if (contents[index] === '/' && contents[index + 1] === '*') {
+      const end = contents.indexOf('*/', index + 2)
+      if (end === -1) throw new Error('Unterminated CSS comment.')
+      index = end + 2
+      continue
+    }
+    break
+  }
+  return index
+}
+
+function readCssString(contents, startIndex) {
+  const quote = contents[startIndex]
+  let value = ''
+  let index = startIndex + 1
+  while (index < contents.length) {
+    const character = contents[index]
+    if (character === quote) return { value, end: index + 1 }
+    if (character === '\n') throw new Error('Unterminated CSS string.')
+    value += character
+    index += 1
+  }
+  throw new Error('Unterminated CSS string.')
+}
+
+function readCssFunctionBody(contents, openIndex) {
+  let depth = 1
+  let index = openIndex + 1
+  while (index < contents.length) {
+    if (contents[index] === '"' || contents[index] === "'") {
+      index = readCssString(contents, index).end
+      continue
+    }
+    if (contents[index] === '/' && contents[index + 1] === '*') {
+      index = skipCssIgnorable(contents, index)
+      continue
+    }
+    if (contents[index] === '(') depth += 1
+    if (contents[index] === ')') {
+      depth -= 1
+      if (depth === 0) return { body: contents.slice(openIndex + 1, index), end: index + 1 }
+    }
+    index += 1
+  }
+  throw new Error('Unterminated CSS function.')
+}
+
+function stripCssComments(contents) {
+  let result = ''
+  let index = 0
+  while (index < contents.length) {
+    if (contents[index] === '/' && contents[index + 1] === '*') {
+      index = skipCssIgnorable(contents, index)
+      continue
+    }
+    result += contents[index]
+    index += 1
+  }
+  return result
+}
+
+function cssUrlFunctionValue(body) {
+  const start = skipCssIgnorable(body, 0)
+  if (body[start] === '"' || body[start] === "'") {
+    const token = readCssString(body, start)
+    if (skipCssIgnorable(body, token.end) !== body.length) throw new Error('Malformed CSS url().')
+    return token.value
+  }
+  return stripCssComments(body).trim()
+}
+
+function cssUrlCandidates(contents, { stringsAreUrls = false } = {}) {
+  const candidates = []
+  let index = 0
+  while (index < contents.length) {
+    index = skipCssIgnorable(contents, index)
+    if (index >= contents.length) break
+
+    if (contents[index] === '"' || contents[index] === "'") {
+      const token = readCssString(contents, index)
+      if (stringsAreUrls) candidates.push(token.value)
+      index = token.end
+      continue
+    }
+
+    if (contents[index] === '@') {
+      let end = index + 1
+      while (end < contents.length && /[-_a-z0-9]/i.test(contents[end])) end += 1
+      if (contents.slice(index + 1, end).toLowerCase() === 'import') {
+        const valueStart = skipCssIgnorable(contents, end)
+        if (contents[valueStart] === '"' || contents[valueStart] === "'") {
+          const token = readCssString(contents, valueStart)
+          candidates.push(token.value)
+          index = token.end
+          continue
+        }
+      }
+      index = end
+      continue
+    }
+
+    if (/[-_a-z]/i.test(contents[index])) {
+      let end = index + 1
+      while (end < contents.length && /[-_a-z0-9]/i.test(contents[end])) end += 1
+      const name = contents.slice(index, end).toLowerCase()
+      const openIndex = skipCssIgnorable(contents, end)
+      if (contents[openIndex] === '(') {
+        const fn = readCssFunctionBody(contents, openIndex)
+        if (name === 'url') candidates.push(cssUrlFunctionValue(fn.body))
+        if (name === 'image-set' || name === '-webkit-image-set') {
+          candidates.push(...cssUrlCandidates(fn.body, { stringsAreUrls: true }))
+        }
+        index = fn.end
+        continue
+      }
+      index = end
+      continue
+    }
+
+    index += 1
+  }
+  return candidates
+}
+
+function hasExternalCssSink(contents) {
+  const decoded = decodeCssEscapes(contents)
+  return cssUrlCandidates(decoded).some((candidate) => {
+    const normalized = candidate.trim().replaceAll('\\', '/')
+    return /^(?:https?:|\/\/)/i.test(normalized)
+  })
+}
+
 function hasExternalJavaScriptSink(contents) {
   let ast
   try {
@@ -335,7 +474,7 @@ export function assertNoExternalRuntimeOrigins(artifactName, contents) {
   let cssSink = false
   if (lowerName.endsWith('.css')) {
     try {
-      cssSink = externalUrls(decodeCssEscapes(contents)).length > 0
+      cssSink = hasExternalCssSink(contents)
     } catch {
       cssSink = true
     }

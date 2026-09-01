@@ -233,6 +233,17 @@ test.each([
   expect(() => assertNoExternalRuntimeOrigins('escaped.css', contents)).toThrow(/external runtime origin/i)
 })
 
+test.each([
+  String.raw`.x{background:url(https:\5c\5c attacker.example/url-backslash.png)}`,
+  String.raw`.x{background:url(h\74tps:attacker.example/url-scheme.png)}`,
+  String.raw`.x{background-image:image-set(url(https:\5c\5c attacker.example/image-set-backslash.png) 1x)}`,
+  String.raw`.x{background-image:image-set(url(h\74tps:attacker.example/image-set-scheme.png) 1x)}`,
+  String.raw`@import url(https:\5c\5c attacker.example/import-backslash.css);`,
+  String.raw`@import url(h\74tps:attacker.example/import-scheme.css);`,
+])('rejects browser-normalized HTTP(S) special schemes in CSS URL contexts: %s', contents => {
+  expect(() => assertNoExternalRuntimeOrigins('special-scheme.css', contents)).toThrow(/external runtime origin/i)
+})
+
 test('allows escaped same-origin CSS paths, normalized invalid code points and ordinary CSS', () => {
   expect(() => assertNoExternalRuntimeOrigins(
     'local.css',
@@ -241,6 +252,13 @@ test('allows escaped same-origin CSS paths, normalized invalid code points and o
   expect(() => assertNoExternalRuntimeOrigins(
     'ordinary.css',
     String.raw`.x::before{content:"\0 \d800 \110000"}.y{color:rgb(10 20 30)}`,
+  )).not.toThrow()
+})
+
+test('allows external-looking text outside URL-bearing CSS contexts', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'content.css',
+    '.x::before{content:"https://example.invalid is documentation"}',
   )).not.toThrow()
 })
 

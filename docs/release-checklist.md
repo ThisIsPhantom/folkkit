@@ -86,9 +86,10 @@ Fixrunde 4 ergänzt folgende Restnachweise, ebenfalls mit ausstehender Re-Review
 3. Das CSV-Budget zählt jede rohe Newline vor der ersten Zeilenaufteilung, auch innerhalb offener Anführungszeichen. 100000 gequotete Newlines werden früh abgewiesen; 5000 gültige Zeilen bleiben erlaubt.
 4. Der WAV-Preflight validiert Audioformat, Kanäle, Sample-Rate, Bittiefe, Blockausrichtung und Byte-Rate konsistent. PCM und IEEE-Float bleiben unterstützt; komprimierte oder widersprüchliche Header werden geschlossen abgewiesen.
 
-Fixrunde 5 schliesst den letzten gemeldeten CSS-Residual, weiterhin mit ausstehender Re-Review:
+Fixrunde 5 behandelte CSS-Escapes, schloss den gemeldeten CSS-Befund aber noch nicht vollständig. Die frühere Bezeichnung als letzter geschlossener Residual war falsch:
 
-1. CSS-Escapes werden vor jeder externen URL-Prüfung standardsnah decodiert. Ein bis sechs Hexstellen, optionaler Whitespace, einfache Escapes und Zeilenfortsetzungen sind abgedeckt; ungültige Codepoints werden sicher normalisiert und ein unvollständiger Escape stoppt fail-closed. Chromium belegt für `url()`, `image-set()` und `@import` reale externe Requestversuche ohne Gate; das Release-Gate weist alle drei ab.
+1. CSS-Escapes werden vor der Prüfung URL-tragender CSS-Kontexte decodiert. Ein bis sechs Hexstellen, optionaler Whitespace, einfache Escapes und Zeilenfortsetzungen sind abgedeckt; ungültige Codepoints werden sicher normalisiert und ein unvollständiger Escape stoppt fail-closed.
+2. Die abschliessende Fixwelle tokenisiert `url()`, `image-set()` und `@import` nach der Escape-Decodierung. HTTP(S)-Sonderschemas werden auch ohne `//` und mit Backslashes als Browser-Trennzeichen abgewiesen. Sechs Chromium-PoCs belegen reale Requestversuche für die beiden gemeldeten Formen in allen drei Kontexten; das Release-Gate weist alle sechs ab.
 
 ## Formatkompatibilität
 
