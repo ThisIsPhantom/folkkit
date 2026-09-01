@@ -2,7 +2,7 @@
 
 ## Status
 
-Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 1: `65ba8ee0a80102c39f1c3902474b026021959377`. Die unabhängige Re-Review dieser Fixrunde steht aus.
+Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 2: `24cdede94a9c4f2604b667873eaf09ec9d2013f4`. Die unabhängige Re-Review dieser Fixrunde steht aus.
 
 Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit, kein Hosttech-Zugriff, kein DNS-Eingriff, kein Domainkauf und kein Deployment.
 
@@ -11,7 +11,7 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Gate | Ergebnis |
 | --- | --- |
 | ESLint | bestanden |
-| Unit- und Vertragstests | 38 Testdateien, 388 Tests bestanden |
+| Unit- und Vertragstests | 39 Testdateien, 397 Tests bestanden |
 | Chromium Desktop | 36 von 36 E2E-Tests bestanden |
 | WebKit Desktop | Kernmatrix 1 von 1 bestanden |
 | Chromium Mobile 390 x 844 | Kernmatrix 1 von 1 bestanden |
@@ -26,9 +26,9 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Bundle | initial 160.6 KiB gzip von 200 KiB; PDF-Worker 174.6 KiB gzip von 220 KiB |
 | Drittanbieterhinweise | aktuell; SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e` |
 | Supply Chain | `bun audit --audit-level=high` ohne Befund |
-| Secret-Scan | 204 getrackte Dateien, 0 Kandidaten beim letzten Kandidatenlauf |
+| Secret-Scan | 209 getrackte Dateien, 0 Kandidaten beim letzten Kandidatenlauf |
 | Plesk-Vertrag | Bare-Remote-Verträge bestanden |
-| Plesk `ValidateOnly` | 30 Dateien, 0 verboten, Baumhash `90a34a15df128a914c07dd5a0124d3103670c8cfd9fcb2133ff3b5e5d40c4847` |
+| Plesk `ValidateOnly` | 30 Dateien, 0 verboten, Baumhash `b8a48f24615e32c32143b5b8034f78baa0a24df73869ab3e30af4e8044a9ece6` |
 
 ## Browsermatrix
 
@@ -65,6 +65,12 @@ Fixrunde 1 ergänzt folgende Nachweise, jeweils mit ausstehender Re-Review:
 6. Der offizielle Playwright-Installationsvertrag umfasst Chromium, Firefox und WebKit.
 7. Der Clipboard-Fallback kopiert ausschliesslich die inhaltsfreie Werkzeug-URL.
 8. Checkliste und Projektmemory verwenden ausschliesslich post-fix Evidenz und bezeichnen die Re-Review als ausstehend.
+
+Fixrunde 2 ergänzt folgende P1-Nachweise, ebenfalls mit ausstehender Re-Review:
+
+1. Die externe Literalpolicy ist fail-closed. Nur eine versionierte Liste exakter Rechts-, Quell-, Dokumentations- und Plattform-Namespace-Werte sowie das 40-stellige Folkkit-Commitmuster sind erlaubt. Der Browserbuild entfernt Hidden-Konverterimplementierungen, während Unit- und Katalogauditquellen vollständig bleiben.
+2. Die CSV-Schätzung rechnet vor jeder Zeilen-, Objekt- oder JSON-Allokation mit bis zu sechs ASCII-Bytes pro UTF-16-Codeeinheit. Die 2.9-Millionen-Steuerzeichen-Regression und der begrenzte Zeilenscanner bestehen.
+3. Nicht verlässliche oder fehlende Audiodauer wird für WAV und andere akzeptierte Audioformate abgewiesen. Ein FFmpeg-Rückgabecode ungleich null verhindert das Lesen partieller Ergebnisse; Ausgaben am oder über dem Limit werden verworfen.
 
 ## Formatkompatibilität
 
