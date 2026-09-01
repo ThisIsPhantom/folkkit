@@ -2,7 +2,7 @@
 
 ## Status
 
-Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 4: `a1f73997aa77fea0e53497ef5e1dc9ca05c691a8`. Die unabhängige Re-Review dieser Fixrunde steht aus.
+Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 5: `87a3eb3509b387aa23df74b43cc665270d880499`. Die unabhängige Re-Review dieser finalen Fixrunde steht aus.
 
 Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit, kein Hosttech-Zugriff, kein DNS-Eingriff, kein Domainkauf und kein Deployment.
 
@@ -11,8 +11,8 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Gate | Ergebnis |
 | --- | --- |
 | ESLint | bestanden |
-| Unit- und Vertragstests | 40 Testdateien, 426 Tests bestanden |
-| Chromium Desktop | 36 von 36 E2E-Tests bestanden |
+| Unit- und Vertragstests | 40 Testdateien, 438 Tests bestanden |
+| Chromium Desktop | 39 von 39 E2E-Tests bestanden |
 | WebKit Desktop | Kernmatrix 1 von 1 bestanden |
 | Chromium Mobile 390 x 844 | Kernmatrix 1 von 1 bestanden |
 | Firefox Desktop | lokal blockiert, siehe Browsermatrix |
@@ -26,9 +26,9 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Bundle | initial 166.8 KiB gzip von 200 KiB; PDF-Worker 178.1 KiB gzip von 220 KiB |
 | Drittanbieterhinweise | aktuell; SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e` |
 | Supply Chain | `bun audit --audit-level=high` ohne Befund |
-| Secret-Scan | 212 getrackte Dateien, 0 Kandidaten beim letzten Kandidatenlauf |
+| Secret-Scan | 213 getrackte Dateien, 0 Kandidaten beim letzten Kandidatenlauf |
 | Plesk-Vertrag | Bare-Remote-Verträge bestanden |
-| Plesk `ValidateOnly` | Für Codekandidat `a1f7399`: 30 Dateien, 0 verboten, Baumhash `6fcf695eb4879c40d06fe5afe6c0950e6440e7e2b644a732322d4b4b1da38e51` |
+| Plesk `ValidateOnly` | Für Codekandidat `87a3eb3`: 30 Dateien, 0 verboten, Baumhash `cc687b5ac5880fccfdaca17fad31ca15230ba733b8b2a77066cb0b7b23f3555a` |
 
 ## Browsermatrix
 
@@ -85,6 +85,10 @@ Fixrunde 4 ergänzt folgende Restnachweise, ebenfalls mit ausstehender Re-Review
 2. HTML wird mit dem exakt gepinnten `parse5` 8.0.1 und einem quote-aware Duplicate-Tokenizer geprüft. Die Policy erfasst gequotete und ungequotete URL-Attribute, `srcset`, Meta-Refresh sowie CSS-Literale in `url()`, `image-set()` und `@import`.
 3. Das CSV-Budget zählt jede rohe Newline vor der ersten Zeilenaufteilung, auch innerhalb offener Anführungszeichen. 100000 gequotete Newlines werden früh abgewiesen; 5000 gültige Zeilen bleiben erlaubt.
 4. Der WAV-Preflight validiert Audioformat, Kanäle, Sample-Rate, Bittiefe, Blockausrichtung und Byte-Rate konsistent. PCM und IEEE-Float bleiben unterstützt; komprimierte oder widersprüchliche Header werden geschlossen abgewiesen.
+
+Fixrunde 5 schliesst den letzten gemeldeten CSS-Residual, weiterhin mit ausstehender Re-Review:
+
+1. CSS-Escapes werden vor jeder externen URL-Prüfung standardsnah decodiert. Ein bis sechs Hexstellen, optionaler Whitespace, einfache Escapes und Zeilenfortsetzungen sind abgedeckt; ungültige Codepoints werden sicher normalisiert und ein unvollständiger Escape stoppt fail-closed. Chromium belegt für `url()`, `image-set()` und `@import` reale externe Requestversuche ohne Gate; das Release-Gate weist alle drei ab.
 
 ## Formatkompatibilität
 
