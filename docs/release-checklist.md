@@ -2,7 +2,7 @@
 
 ## Status
 
-Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat: `24b9e417f80be702862c07f1e04edbb47a5181e5`.
+Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 1: `65ba8ee0a80102c39f1c3902474b026021959377`. Die unabhängige Re-Review dieser Fixrunde steht aus.
 
 Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit, kein Hosttech-Zugriff, kein DNS-Eingriff, kein Domainkauf und kein Deployment.
 
@@ -11,7 +11,7 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Gate | Ergebnis |
 | --- | --- |
 | ESLint | bestanden |
-| Unit- und Vertragstests | 38 Testdateien, 371 Tests bestanden |
+| Unit- und Vertragstests | 38 Testdateien, 388 Tests bestanden |
 | Chromium Desktop | 36 von 36 E2E-Tests bestanden |
 | WebKit Desktop | Kernmatrix 1 von 1 bestanden |
 | Chromium Mobile 390 x 844 | Kernmatrix 1 von 1 bestanden |
@@ -23,12 +23,12 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Offline | Shell, Text, QR und PDF bestanden; fehlendes FFmpeg-Modul wurde nach Wiederverbindung erfolgreich nachgeladen |
 | Katalogaudit | 499 Konverter, 49 freigegeben und 450 verborgen; 223 Formate, 18 freigegeben und 205 verborgen |
 | Formatpaare | 19 freigegebene Paare, 19 `compatible`, 0 `incompatible-but-implemented` |
-| Bundle | initial 160.2 KiB gzip von 200 KiB; PDF-Worker 174.6 KiB gzip von 220 KiB |
+| Bundle | initial 160.6 KiB gzip von 200 KiB; PDF-Worker 174.6 KiB gzip von 220 KiB |
 | Drittanbieterhinweise | aktuell; SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e` |
 | Supply Chain | `bun audit --audit-level=high` ohne Befund |
 | Secret-Scan | 204 getrackte Dateien, 0 Kandidaten beim letzten Kandidatenlauf |
 | Plesk-Vertrag | Bare-Remote-Verträge bestanden |
-| Plesk `ValidateOnly` | 30 Dateien, 0 verboten, Baumhash `c607fd6f97d693889406fbcff53b2d507bdbd3b18413f3f7097bce6fff638dd8` |
+| Plesk `ValidateOnly` | 30 Dateien, 0 verboten, Baumhash `90a34a15df128a914c07dd5a0124d3103670c8cfd9fcb2133ff3b5e5d40c4847` |
 
 ## Browsermatrix
 
@@ -41,7 +41,7 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 
 Der historische Standardscan `d182b66a-b0a8-45f4-93b5-3784092bde95` gilt ausschliesslich für `98d58ed1cd9926a33ec1ee6f94d2fb28b4705f4e`. Seine Artefakte wurden nicht verändert oder als Nachscan bezeichnet. Er deckte 185 von 185 getrackten Dateien ab und meldete 11 validierte Befunde, 4 mittel und 7 niedrig, ohne hohe oder kritische Befunde.
 
-Alle 11 Befunde wurden im aktuellen Kandidaten mit gezielten Tests und Quellprüfung adressiert:
+Der aktuelle Kandidat enthält Korrekturen und gezielte Nachweise für alle 11 Befunde. Die neue unabhängige Re-Review steht noch aus:
 
 1. Actions sind an vollständige SHAs gebunden.
 2. Artefaktaufbau und schreibberechtigter Push sind getrennt; Archiv, Baum und Quellcommit sind mit SHA-256 gebunden.
@@ -54,6 +54,17 @@ Alle 11 Befunde wurden im aktuellen Kandidaten mit gezielten Tests und Quellprü
 9. Freigegebene PDF-Dateioperationen laufen in einem hart terminierbaren Worker mit Datei-, Seiten-, Gesamtseiten- und Zeitbudget.
 10. Audio zu MP3 prüft zuverlässige WAV-Dauer, FFmpeg-Zeitbudget, CPU-Backstop, Ausgabegrösse und echte Terminierung.
 11. Dateianzahl wird vor React-Zustand und erneut im Runtime-Vertrag begrenzt; die Dateinamenvorschau ist beschränkt.
+
+Fixrunde 1 ergänzt folgende Nachweise, jeweils mit ausstehender Re-Review:
+
+1. Der vorbereitete Hostingstand ist zusätzlich an einen unabhängigen Workflow-Output-Digest über kanonische Manifestbytes und Archivbytes gebunden.
+2. Der Same-Origin-Gate verfolgt Konstanten, Verkettungen, Templates, `new URL`, Worker und `setAttribute`; externe Navigation ist nur für exakt geprüfte Rechts- und Quellziele erlaubt.
+3. CSV-Ausgabeverstärkung wird vor Zeilenarrays und Objektgraphen geschätzt. Zeilen werden für die UI mit einem begrenzten Scanner gezählt.
+4. Alle akzeptierten Audioformate benötigen zuverlässige Dauermetadaten; Objekt-URLs werden bei Erfolg, Fehler und Timeout entfernt. FFmpeg erhält `-t` und `-fs` als zusätzliche Backstops.
+5. Jedes der 19 freigegebenen Formatpaare deklariert seinen Zustand einzeln. Eine Rückkehr zu einem früher bestätigten Paar beginnt wieder unbestätigt.
+6. Der offizielle Playwright-Installationsvertrag umfasst Chromium, Firefox und WebKit.
+7. Der Clipboard-Fallback kopiert ausschliesslich die inhaltsfreie Werkzeug-URL.
+8. Checkliste und Projektmemory verwenden ausschliesslich post-fix Evidenz und bezeichnen die Re-Review als ausstehend.
 
 ## Formatkompatibilität
 
