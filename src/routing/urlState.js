@@ -22,3 +22,17 @@ export function readUrlState(search, hash) {
 
   return { from, to, toolId }
 }
+
+export function createWorkspaceHref({ from, to, toolId }, pathname = '/workspace') {
+  const params = new URLSearchParams()
+  if (typeof toolId === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(toolId)) {
+    params.set('tool', toolId)
+  } else if (getReleasedTargets(from).includes(to)) {
+    params.set('from', from)
+    params.set('to', to)
+  } else {
+    params.set('from', DEFAULT_FROM)
+    params.set('to', DEFAULT_TO)
+  }
+  return `${pathname}?${params.toString()}`
+}

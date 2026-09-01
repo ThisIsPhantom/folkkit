@@ -8,16 +8,15 @@ import ConvertPanel from '../components/ConvertPanel'
 import ErrorBoundary from '../components/ErrorBoundary'
 import History from '../components/History'
 import KeyboardHelp from '../components/KeyboardHelp'
-import { readUrlState } from '../routing/urlState'
+import { createWorkspaceHref, readUrlState } from '../routing/urlState'
 import { getNavigationScrollBehavior } from '../utils/motion'
 
 function getConverterForFile(file) {
   const type = file.type || ''
   const name = file.name.toLowerCase()
   if (type === 'application/pdf' || name.endsWith('.pdf')) return 'pdf-page-count'
-  if (type.startsWith('image/svg')) return 'svg-to-png'
-  if (type.startsWith('image/')) return 'image-resize'
-  if (type.startsWith('video/')) return 'video-to-audio'
+  if (type === 'image/png' || name.endsWith('.png')) return 'png-to-jpg'
+  if (['image/jpeg', 'image/jpg'].includes(type) || /\.jpe?g$/.test(name)) return 'jpg-to-png'
   if (type.startsWith('audio/')) return 'audio-to-mp3'
   return null
 }
@@ -51,11 +50,20 @@ export default function WorkspacePage() {
   const [convertTo, setConvertTo] = useState(initialUrlState.to)
   const [reuseRequest, setReuseRequest] = useState(null)
   const [activeToolId, setActiveToolId] = useState(() => releasedTools.some((tool) => tool.id === initialUrlState.toolId) ? initialUrlState.toolId : null)
+  const initialCanonicalStateRef = useRef(null)
+  if (initialCanonicalStateRef.current === null) {
+    initialCanonicalStateRef.current = {
+      from: initialUrlState.from,
+      to: initialUrlState.to,
+      toolId: releasedTools.some(tool => tool.id === initialUrlState.toolId) ? initialUrlState.toolId : null,
+    }
+  }
   const [loadedConverter, setLoadedConverter] = useState(null)
   const [toolLoadError, setToolLoadError] = useState(null)
   const [toolLoadAttempt, setToolLoadAttempt] = useState(0)
   const [showHelp, setShowHelp] = useState(false)
   const [pageDragging, setPageDragging] = useState(false)
+  const [dropError, setDropError] = useState(false)
   const dragCountRef = useRef(0)
   const reuseRequestIdRef = useRef(0)
   const activeToolMetadata = useMemo(() => releasedTools.find((tool) => tool.id === activeToolId) || null, [activeToolId, releasedTools])
@@ -63,6 +71,26 @@ export default function WorkspacePage() {
     if (!activeToolMetadata || loadedConverter?.id !== activeToolMetadata.id) return null
     return { ...loadedConverter.converter, ...activeToolMetadata }
   }, [activeToolMetadata, loadedConverter])
+
+  const syncUrl = useCallback((state, { replace = false } = {}) => {
+    const href = createWorkspaceHref(state, window.location.pathname)
+    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`
+    if (current === href) return
+    history[replace ? 'replaceState' : 'pushState'](null, '', href)
+  }, [])
+
+  const handlePairChange = useCallback((from, to, options) => {
+    if (!isReleasedFormatPair(from, to)) return
+    setActiveToolId(null)
+    setConvertFrom(from)
+    setConvertTo(to)
+    setDropError(false)
+    syncUrl({ from, to, toolId: null }, options)
+  }, [syncUrl])
+
+  useEffect(() => {
+    syncUrl(initialCanonicalStateRef.current, { replace: true })
+  }, [syncUrl])
 
   useEffect(() => {
     if (!activeToolId) return undefined
@@ -113,21 +141,17 @@ export default function WorkspacePage() {
   }, [releasedTools])
 
   const handleConverterChange = useCallback((converter) => {
-    const params = converter
-      ? new URLSearchParams({ tool: converter.id })
-      : new URLSearchParams({ from: convertFrom, to: convertTo })
-    history.pushState(null, '', `${window.location.pathname}?${params}`)
+    syncUrl({ from: convertFrom, to: convertTo, toolId: converter?.id || null })
     setActiveToolId(converter?.id || null)
+    setDropError(false)
     window.scrollTo({ top: 0, behavior: getNavigationScrollBehavior() })
-  }, [convertFrom, convertTo])
+  }, [convertFrom, convertTo, syncUrl])
 
   const handleHistorySelect = useCallback((item) => {
     if (!isReleasedFormatPair(item?.from, item?.to)) return
-    setActiveToolId(null)
-    setConvertFrom(item.from)
-    setConvertTo(item.to)
+    handlePairChange(item.from, item.to)
     setReuseRequest({ id: ++reuseRequestIdRef.current, value: item.input })
-  }, [])
+  }, [handlePairChange])
 
   const handleReuseConsumed = useCallback((id) => {
     setReuseRequest((current) => current?.id === id ? null : current)
@@ -161,7 +185,11 @@ export default function WorkspacePage() {
       const file = event.dataTransfer?.files?.[0]
       const converterId = file ? getConverterForFile(file) : null
       const converter = releasedTools.find((tool) => tool.id === converterId)
-      if (converter) handleConverterChange(converter)
+      if (converter) {
+        handleConverterChange(converter)
+      } else if (file) {
+        setDropError(true)
+      }
     }
     document.addEventListener('dragenter', handleDragEnter)
     document.addEventListener('dragleave', handleDragLeave)
@@ -194,9 +222,7 @@ export default function WorkspacePage() {
     const handleKey = (event) => {
       const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
       if (event.key === 'Escape' && activeToolMetadata) {
-        const params = new URLSearchParams({ from: convertFrom, to: convertTo })
-        history.pushState(null, '', `${window.location.pathname}?${params}`)
-        setActiveToolId(null)
+        handleConverterChange(null)
       } else if (event.key === '?' && !isInput) {
         event.preventDefault()
         setShowHelp((open) => !open)
@@ -204,7 +230,7 @@ export default function WorkspacePage() {
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeToolMetadata, convertFrom, convertTo])
+  }, [activeToolMetadata, handleConverterChange])
 
   return (
     <div className="workspace-page">
@@ -214,6 +240,7 @@ export default function WorkspacePage() {
         <p>{t('workspace.intro')}</p>
       </header>
       <div className="workspace-surface">
+        {dropError && <div className="error-msg" role="alert">{t('workspace.unsupportedDrop')}</div>}
         <ErrorBoundary key={activeToolMetadata?.id || 'format'}>
           {activeToolMetadata && toolLoadError?.id === activeToolId && toolLoadError.attempt === toolLoadAttempt ? (
             <div className="error-msg" role="alert">
@@ -229,6 +256,7 @@ export default function WorkspacePage() {
             to={convertTo}
             onFromChange={setConvertFrom}
             onToChange={setConvertTo}
+            onPairChange={handlePairChange}
             reuseRequest={reuseRequest}
             onReuseConsumed={handleReuseConsumed}
             activeConverter={activeConverter}

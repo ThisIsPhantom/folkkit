@@ -45,6 +45,7 @@ const messagesEn = Object.freeze({
     title: 'Work with a file locally',
     intro: 'Choose an input. Processing and results stay on your device for this session.',
     dropOverlay: 'Drop the file to convert it',
+    unsupportedDrop: 'This file type cannot be opened automatically here. Choose a released tool.',
   }),
   workspaceTools: Object.freeze({
     input: 'Input',

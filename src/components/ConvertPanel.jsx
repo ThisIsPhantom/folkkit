@@ -140,7 +140,7 @@ function saveFavPairs(pairs) {
   localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(releasedPairs))
 }
 
-function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = defaultReleasedFormats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn, resolvePairPolicy = getFormatPairPolicy }) {
+function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = defaultReleasedFormats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn, resolvePairPolicy = getFormatPairPolicy }) {
   const { t } = useI18n()
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
@@ -179,8 +179,20 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const swappedTimeoutRef = useRef(null)
   const autoDetectTimeoutRef = useRef(null)
 
-  const setFrom = onFromChange
-  const setTo = onToChange
+  const setPair = useCallback((nextFrom, nextTo) => {
+    if (onPairChange) {
+      onPairChange(nextFrom, nextTo)
+      return
+    }
+    onFromChange(nextFrom)
+    onToChange(nextTo)
+  }, [onFromChange, onPairChange, onToChange])
+  const setFrom = useCallback((nextFrom) => {
+    const nextTargets = getReleasedTargets(nextFrom)
+    const nextTo = nextTargets.includes(to) ? to : nextTargets[0]
+    if (nextTo) setPair(nextFrom, nextTo)
+  }, [setPair, to])
+  const setTo = useCallback((nextTo) => setPair(from, nextTo), [from, setPair])
 
   const targets = getReleasedTargets(from)
   const pairPolicy = useMemo(() => resolvePairPolicy(from, to), [from, to, resolvePairPolicy])
@@ -417,8 +429,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     if (!isReleasedFormatPair(to, from)) return
     const reverseFn = getConvertFn(to, from)
     if (!reverseFn) return
-    setFrom(to)
-    setTo(from)
+    setPair(to, from)
     setInput(output)
     setSwapped(true)
     if (swappedTimeoutRef.current) clearTimeout(swappedTimeoutRef.current)
@@ -426,7 +437,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
       setSwapped(false)
       swappedTimeoutRef.current = null
     }, 300)
-  }, [from, to, output, setFrom, setTo])
+  }, [from, to, output, setPair])
 
   const handleCopy = async () => {
     const text = output || (mediaResult?.result?.kind === 'text' ? mediaResult.result.text : '')
@@ -782,9 +793,9 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   // ToolPicker handlers
   const handleFromSelectFormat = useCallback((id) => {
     setFromPickerOpen(false)
-    if (activeConverter) onConverterChange(null)
+    if (activeConverter && !onPairChange) onConverterChange(null)
     setFrom(id)
-  }, [activeConverter, onConverterChange, setFrom, setFromPickerOpen])
+  }, [activeConverter, onConverterChange, onPairChange, setFrom])
 
   const handleFromSelectConverter = useCallback((converter) => {
     setFromPickerOpen(false)
@@ -939,8 +950,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                 className={`fav-pair-btn${pair === pairKey ? ' active' : ''}`}
                 onClick={() => {
                   if (!isReleasedFormatPair(f, t)) return
-                  setFrom(f)
-                  setTo(t)
+                  setPair(f, t)
                 }}
               >
                 {fName} → {tName}
@@ -1090,7 +1100,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                 <button
                   key={t.id}
                   className="chain-hint-btn"
-                  onClick={() => { setFrom(to); setTo(t.id); setInput(output); setOutput('') }}
+                  onClick={() => { setPair(to, t.id); setInput(output); setOutput('') }}
                 >
                   {t.name}
                 </button>
