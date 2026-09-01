@@ -1,5 +1,5 @@
 import { PDF_WORK_LIMITS, resourceLimitError } from './workBudgets'
-import PdfWorker from '../workers/pdfWorker.js?worker'
+import { createPdfWorker } from './createPdfWorker'
 
 const activeWorkers = new Set()
 
@@ -35,9 +35,9 @@ export async function runPdfWorkerTask({
   textInput = '',
   signal,
   maxElapsedMs = PDF_WORK_LIMITS.maxElapsedMs,
-  WorkerCtor = PdfWorker,
+  WorkerCtor = null,
 } = {}) {
-  if (typeof WorkerCtor !== 'function' || (import.meta.env?.MODE === 'test' && WorkerCtor === PdfWorker)) {
+  if (WorkerCtor === null && import.meta.env?.MODE === 'test') {
     if (import.meta.env?.MODE === 'test') {
       const { runPdfOperation } = await import('../workers/pdfWorkerOperations')
       const payloadFiles = await Promise.all(Array.from(files).map(async file => ({
@@ -47,8 +47,9 @@ export async function runPdfWorkerTask({
       })))
       return normalizeWorkerResult(await runPdfOperation({ operation, files: payloadFiles, textInput }))
     }
-    throw codedError('unsupported_browser')
   }
+  if (WorkerCtor !== null && typeof WorkerCtor !== 'function') throw codedError('unsupported_browser')
+  if (WorkerCtor === null && typeof globalThis.Worker !== 'function') throw codedError('unsupported_browser')
   if (signal?.aborted) throw codedError('cancelled')
   const payloadFiles = await Promise.all(Array.from(files).map(async file => ({
     name: String(file.name || 'document.pdf'),
@@ -56,9 +57,9 @@ export async function runPdfWorkerTask({
     bytes: await file.arrayBuffer(),
   })))
   if (signal?.aborted) throw codedError('cancelled')
-  const worker = WorkerCtor === PdfWorker
-    ? new WorkerCtor({ name: 'folkkit-pdf' })
-    : new WorkerCtor('folkkit-pdf-worker', { type: 'module', name: 'folkkit-pdf' })
+  const worker = WorkerCtor
+    ? new WorkerCtor('folkkit-pdf-worker', { type: 'module', name: 'folkkit-pdf' })
+    : createPdfWorker()
   activeWorkers.add(worker)
   return new Promise((resolve, reject) => {
     let settled = false
