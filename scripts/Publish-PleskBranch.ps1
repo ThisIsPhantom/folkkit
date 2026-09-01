@@ -96,7 +96,7 @@ function New-ValidationBuild {
     $sourceDirectory = Join-Path $script:temporaryRoot 'source'
     $archivePath = Join-Path $script:temporaryRoot 'source.tar'
     New-Item -ItemType Directory -Path $sourceDirectory -Force | Out-Null
-    Invoke-Git -Arguments @('archive', '--format=tar', "--output=$archivePath", $Commit) | Out-Null
+    Invoke-Git -Arguments @('-c', 'core.autocrlf=false', 'archive', '--format=tar', "--output=$archivePath", $Commit) | Out-Null
     & tar -xf $archivePath -C $sourceDirectory
     if ($LASTEXITCODE -ne 0) { throw 'Unable to extract the validation source archive.' }
     [System.IO.File]::WriteAllText(
@@ -127,7 +127,7 @@ function New-HostingTree {
     $env:GIT_INDEX_FILE = $indexPath
     try {
         Invoke-Git -Arguments @('read-tree', '--empty') | Out-Null
-        Invoke-Git -Arguments @("--work-tree=$DistPath", 'add', '--all', '--force', '--', '.') | Out-Null
+        Invoke-Git -Arguments @('-c', 'core.autocrlf=false', "--work-tree=$DistPath", 'add', '--all', '--force', '--', '.') | Out-Null
         Get-GitText @('write-tree')
     } finally {
         if ($null -eq $previousIndex) {
@@ -143,7 +143,7 @@ function Confirm-TreeMatchesDist {
     $treeDirectory = Join-Path $script:temporaryRoot 'tree'
     $treeArchive = Join-Path $script:temporaryRoot 'tree.tar'
     New-Item -ItemType Directory -Path $treeDirectory -Force | Out-Null
-    Invoke-Git -Arguments @('archive', '--format=tar', "--output=$treeArchive", $Tree) | Out-Null
+    Invoke-Git -Arguments @('-c', 'core.autocrlf=false', 'archive', '--format=tar', "--output=$treeArchive", $Tree) | Out-Null
     & tar -xf $treeArchive -C $treeDirectory
     if ($LASTEXITCODE -ne 0) { throw 'Unable to extract the generated hosting tree.' }
     $treeReport = Invoke-PleskTreeValidator -Path $treeDirectory

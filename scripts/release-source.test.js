@@ -331,3 +331,21 @@ test('release commit resolution requires the validated environment commit to mat
     env: { FOLKKIT_RELEASE_COMMIT: 'b'.repeat(40) },
   })).toThrow(/release commit.*archive marker/i)
 })
+
+test('release archives preserve committed LF bytes when Git autocrlf is enabled', async () => {
+  const repoRoot = await mkdtemp(join(tmpdir(), 'folkkit-release-autocrlf-'))
+  const destinationDirectory = await mkdtemp(join(tmpdir(), 'folkkit-release-autocrlf-output-'))
+  temporaryDirectories.push(repoRoot, destinationDirectory)
+  git(repoRoot, ['init'])
+  git(repoRoot, ['config', 'user.name', 'Folkkit Test'])
+  git(repoRoot, ['config', 'user.email', 'folkkit-test@example.invalid'])
+  git(repoRoot, ['config', 'core.autocrlf', 'true'])
+  await writeFile(join(repoRoot, 'notice.txt'), 'first\nsecond\n')
+  git(repoRoot, ['add', 'notice.txt'])
+  git(repoRoot, ['commit', '-m', 'line ending fixture'])
+  const commit = git(repoRoot, ['rev-parse', 'HEAD'])
+
+  await releaseBuilder.archiveValidatedCommit({ repoRoot, commit, destinationDirectory })
+
+  await expect(readFile(join(destinationDirectory, 'notice.txt'), 'utf8')).resolves.toBe('first\nsecond\n')
+})

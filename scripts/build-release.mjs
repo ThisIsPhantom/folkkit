@@ -19,7 +19,7 @@ async function runReleaseCommand({ executable, args, cwd, env }) {
 export async function archiveValidatedCommit({ repoRoot, commit, destinationDirectory }) {
   const archivePath = join(dirname(destinationDirectory), 'source.tar')
   await mkdir(destinationDirectory, { recursive: true })
-  execFileSync('git', ['archive', '--format=tar', '--output', archivePath, commit], { cwd: repoRoot })
+  execFileSync('git', ['-c', 'core.autocrlf=false', 'archive', '--format=tar', '--output', archivePath, commit], { cwd: repoRoot })
   execFileSync('tar', ['-xf', archivePath, '-C', destinationDirectory])
 }
 

@@ -151,12 +151,15 @@ try {
     Copy-Item -LiteralPath $reviewedHtaccessPath -Destination (Join-Path $validationFixture 'hosting\.htaccess')
     Write-FixtureFile $validationFixture 'package.json' '{"scripts":{}}'
     Write-FixtureFile $validationFixture 'bun.lock' 'fixture lock'
+    Write-FixtureFile $validationFixture 'line-endings.txt' "first`nsecond`n"
+    & git -C $validationFixture config core.autocrlf true
     & git -C $validationFixture add .
     & git -C $validationFixture commit -m 'validation fixture' | Out-Null
 
     $fakeBun = Join-Path $temporaryRoot 'fake-bun.cmd'
     $fakeBunSource = @'
 @echo off
+if /I "%~1"=="install" powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%FOLKKIT_LINE_ENDING_CHECK%" || exit /b 42
 if /I "%~1"=="install" exit /b 0
 if /I "%~1"=="run" if /I "%~2"=="scripts/build-site.mjs" goto build
 exit /b 23
@@ -176,11 +179,19 @@ copy /Y hosting\.htaccess dist\.htaccess >nul
 exit /b 0
 '@
     [System.IO.File]::WriteAllText($fakeBun, $fakeBunSource, [System.Text.Encoding]::ASCII)
+    $lineEndingCheck = Join-Path $temporaryRoot 'check-line-endings.ps1'
+    $lineEndingCheckSource = @'
+$bytes = [System.IO.File]::ReadAllBytes((Join-Path (Get-Location) 'line-endings.txt'))
+if ($bytes -contains 13) { exit 42 }
+exit 0
+'@
+    [System.IO.File]::WriteAllText($lineEndingCheck, $lineEndingCheckSource, [System.Text.UTF8Encoding]::new($false))
 
     $validationRefsBefore = (& git -C $validationFixture show-ref) -join "`n"
     $validationStatusBefore = (& git -C $validationFixture status --porcelain=v1) -join "`n"
     $validationBranchBefore = (& git -C $validationFixture branch --show-current).Trim()
     $env:FOLKKIT_BUN_EXECUTABLE = $fakeBun
+    $env:FOLKKIT_LINE_ENDING_CHECK = $lineEndingCheck
     Push-Location $validationFixture
     try {
         $validationOutput = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $publisherPath -SourceRef feature/folkkit-v1 -TargetBranch plesk -Remote origin -ValidateOnly 2>&1
@@ -188,6 +199,7 @@ exit /b 0
     } finally {
         Pop-Location
         Remove-Item Env:FOLKKIT_BUN_EXECUTABLE -ErrorAction SilentlyContinue
+        Remove-Item Env:FOLKKIT_LINE_ENDING_CHECK -ErrorAction SilentlyContinue
     }
     $validationRefsAfter = (& git -C $validationFixture show-ref) -join "`n"
     $validationStatusAfter = (& git -C $validationFixture status --porcelain=v1) -join "`n"
