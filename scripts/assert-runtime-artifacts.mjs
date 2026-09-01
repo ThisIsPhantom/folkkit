@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 const forbiddenRuntimeOrigin = /(?:https?:)?\/\/(?:fonts\.googleapis\.com|fonts\.gstatic\.com|unpkg\.com|(?:[a-z0-9-]+\.)?googlesyndication\.com)\b/gi
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
-const runtimeArtifactExtensions = new Set(['.html', '.js'])
+const runtimeArtifactExtensions = new Set(['.css', '.html', '.js'])
 
 export function assertNoExternalRuntimeOrigins(artifactName, contents) {
   const origins = contents.match(forbiddenRuntimeOrigin) || []
@@ -23,8 +23,9 @@ async function listRuntimeArtifacts(directory) {
   return nestedArtifacts.flat()
 }
 
-export async function assertBuiltRuntimeArtifacts() {
-  const distDirectory = join(projectRoot, 'dist')
+export async function assertBuiltRuntimeArtifacts({
+  distDirectory = join(projectRoot, 'dist'),
+} = {}) {
   const artifactPaths = await listRuntimeArtifacts(distDirectory)
   await Promise.all(artifactPaths.map(async (artifactPath) => {
     const contents = await readFile(artifactPath, 'utf8')

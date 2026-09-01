@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { runtimeAssetUrl } from './runtimeAssets'
 import { syncRuntimeAssets } from '../../scripts/sync-runtime-assets.mjs'
 import { assertPassiveAdsenseOwnershipMeta } from '../../scripts/assert-ownership-meta.mjs'
-import { assertNoExternalRuntimeOrigins } from '../../scripts/assert-runtime-artifacts.mjs'
+import { assertBuiltRuntimeArtifacts, assertNoExternalRuntimeOrigins } from '../../scripts/assert-runtime-artifacts.mjs'
 
 const temporaryDirectories = []
 
@@ -91,4 +91,18 @@ test('rejects AdSense runtime markers in built HTML', () => {
 test('rejects external origins in a generated service-worker runtime artifact', () => {
   expect(() => assertNoExternalRuntimeOrigins('sw.js', "fetch('https://fonts.googleapis.com/css2?family=Gothic+A1')")).toThrow('external runtime origin')
   expect(() => assertNoExternalRuntimeOrigins('sw.js', "fetch('/assets/app.js')")).not.toThrow()
+})
+
+test('rejects a built CSS artifact that imports Google Fonts', async () => {
+  const distDirectory = await createTemporaryDirectory()
+  await writeFile(join(distDirectory, 'app.css'), "@import url('https://fonts.googleapis.com/css2?family=Gothic+A1');")
+
+  await expect(assertBuiltRuntimeArtifacts({ distDirectory })).rejects.toThrow('external runtime origin')
+})
+
+test('rejects a built CSS artifact that loads a Google font URL', async () => {
+  const distDirectory = await createTemporaryDirectory()
+  await writeFile(join(distDirectory, 'app.css'), "@font-face { src: url('https://fonts.gstatic.com/s/folkkit.woff2'); }")
+
+  await expect(assertBuiltRuntimeArtifacts({ distDirectory })).rejects.toThrow('external runtime origin')
 })
