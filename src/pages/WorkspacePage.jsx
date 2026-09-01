@@ -52,6 +52,8 @@ export default function WorkspacePage() {
   const [reuseRequest, setReuseRequest] = useState(null)
   const [activeToolId, setActiveToolId] = useState(() => releasedTools.some((tool) => tool.id === initialUrlState.toolId) ? initialUrlState.toolId : null)
   const [loadedConverter, setLoadedConverter] = useState(null)
+  const [toolLoadError, setToolLoadError] = useState(null)
+  const [toolLoadAttempt, setToolLoadAttempt] = useState(0)
   const [showHelp, setShowHelp] = useState(false)
   const [pageDragging, setPageDragging] = useState(false)
   const dragCountRef = useRef(0)
@@ -68,10 +70,12 @@ export default function WorkspacePage() {
     loadConverter(activeToolId).then((converter) => {
       if (current && converter) setLoadedConverter({ id: activeToolId, converter })
     }).catch(() => {
-      if (current) setLoadedConverter(null)
+      if (current) {
+        setToolLoadError({ id: activeToolId, attempt: toolLoadAttempt })
+      }
     })
     return () => { current = false }
-  }, [activeToolId])
+  }, [activeToolId, toolLoadAttempt])
 
   useEffect(() => {
     const fromName = getFormatById(convertFrom)?.name || convertFrom
@@ -127,6 +131,14 @@ export default function WorkspacePage() {
 
   const handleReuseConsumed = useCallback((id) => {
     setReuseRequest((current) => current?.id === id ? null : current)
+  }, [])
+
+  const retryToolLoad = useCallback(() => {
+    if (navigator.onLine) {
+      window.location.reload()
+      return
+    }
+    setToolLoadAttempt(attempt => attempt + 1)
   }, [])
 
   useEffect(() => {
@@ -203,7 +215,14 @@ export default function WorkspacePage() {
       </header>
       <div className="workspace-surface">
         <ErrorBoundary key={activeToolMetadata?.id || 'format'}>
-          {activeToolMetadata && !activeConverter ? (
+          {activeToolMetadata && toolLoadError?.id === activeToolId && toolLoadError.attempt === toolLoadAttempt ? (
+            <div className="error-msg" role="alert">
+              <p>{t(activeToolMetadata.module === 'media' ? 'workspaceTools.mediaModuleUnavailable' : 'workspaceTools.toolModuleUnavailable')}</p>
+              <button type="button" onClick={retryToolLoad}>
+                {t('workspaceTools.retryModule')}
+              </button>
+            </div>
+          ) : activeToolMetadata && !activeConverter ? (
             <p role="status">{t('workspaceTools.loadingTool')}</p>
           ) : <ConvertPanel
             from={convertFrom}

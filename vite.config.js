@@ -40,6 +40,7 @@ export default defineConfig({
     plugins: () => [selfHostFFmpegWorkerFallback()],
   },
   build: {
+    manifest: true,
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {

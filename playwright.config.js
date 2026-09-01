@@ -5,6 +5,7 @@ const baseURL = `http://127.0.0.1:${port}/`
 
 export default defineConfig({
   testDir: './tests/e2e',
+  workers: 1,
   use: {
     baseURL,
     launchOptions: {
@@ -13,7 +14,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: `${process.execPath} ./node_modules/vite/bin/vite.js --host 127.0.0.1 --port ${port} --strictPort`,
+    command: `${process.execPath} ./node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port ${port} --strictPort`,
     url: baseURL,
     reuseExistingServer: false,
   },

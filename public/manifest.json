@@ -1,8 +1,10 @@
 {
   "name": "Folkkit",
   "short_name": "Folkkit",
+  "id": "/",
   "description": "Folkkit verarbeitet Dateien lokal in deinem Browser.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#faf8f5",

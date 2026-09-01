@@ -1,0 +1,49 @@
+/* eslint-disable no-undef */
+const CACHE_NAME = __CACHE_NAME__
+const PRECACHE_URLS = __PRECACHE_URLS__
+const PRECACHE_PATHS = new Set(PRECACHE_URLS)
+const CACHE_PREFIX = 'folkkit-app-'
+const LEGACY_CACHE_NAMES = new Set(['convert-everything-v2'])
+const HASHED_ASSET_PATH = /^\/assets\/.+-[A-Za-z0-9_-]{6,}\.(?:css|js|json|svg|png|jpe?g|webp|gif|woff2?)$/
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_URLS)))
+  self.skipWaiting()
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys
+    .filter(name => (name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME) || LEGACY_CACHE_NAMES.has(name))
+    .map(name => caches.delete(name)))))
+  self.clients.claim()
+})
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event
+  if (request.method !== 'GET') return
+
+  const url = new URL(request.url)
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return
+  if (url.origin !== self.location.origin) return
+
+  if (request.mode === 'navigate') {
+    event.respondWith(fetch(request).catch(() => caches.match('/', { ignoreVary: true })))
+    return
+  }
+
+  if (!url.search && PRECACHE_PATHS.has(url.pathname)) {
+    event.respondWith(caches.open(CACHE_NAME).then(cache => cache.match(url.pathname, { ignoreVary: true })))
+    return
+  }
+
+  if (url.search || !HASHED_ASSET_PATH.test(url.pathname)) return
+  event.respondWith(caches.match(request, { ignoreVary: true }).then(async (cached) => {
+    if (cached) return cached
+    const response = await fetch(request)
+    if (response.ok && response.type === 'basic') {
+      const cache = await caches.open(CACHE_NAME)
+      await cache.put(request, response.clone())
+    }
+    return response
+  }))
+})
