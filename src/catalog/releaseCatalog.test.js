@@ -8,6 +8,7 @@ import {
   releaseCatalog,
   releasedToolCount,
 } from './releaseCatalog'
+import { TOOL_LIMITS } from '../runtime/limits'
 
 const expectedReleasedIds = [
   'text-to-qr',
@@ -70,6 +71,18 @@ describe('released catalog', () => {
         expect(readMessage(messages, `tools.${entry.translationKey}.description`)).toEqual(expect.any(String))
         expect(readMessage(messages, `categories.${entry.category}`)).toEqual(expect.any(String))
       }
+    }
+  })
+
+  it('carries conservative limit metadata on every released file tool', () => {
+    const fileTools = getReleasedTools('de').filter(tool => tool.acceptsFile)
+
+    expect(fileTools).not.toHaveLength(0)
+    for (const tool of fileTools) {
+      const expectedLimits = ['images-to-pdf', 'qr-to-text'].includes(tool.id)
+        ? TOOL_LIMITS.images
+        : TOOL_LIMITS.pdf
+      expect(tool.limits).toBe(expectedLimits)
     }
   })
 })

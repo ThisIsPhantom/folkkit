@@ -2,6 +2,7 @@
 // For more complex conversions, we use ffmpeg.wasm loaded on demand
 
 import { runtimeAssetUrl } from '../runtime/runtimeAssets'
+import { TOOL_LIMITS } from '../runtime/limits'
 
 let ffmpegInstance = null
 let ffmpegReady = false
@@ -12,6 +13,20 @@ let ffmpegTempFileCounter = 0
 export function onFFmpegLoad(fn) {
   ffmpegLoadListeners.push(fn)
   return () => { ffmpegLoadListeners = ffmpegLoadListeners.filter(l => l !== fn) }
+}
+
+export function terminateMediaExecution() {
+  try { ffmpegInstance?.terminate?.() } catch { /* cancellation cleanup is best effort */ }
+  ffmpegInstance = null
+  ffmpegReady = false
+  ffmpegLoadPromise = null
+}
+
+export function attachMediaProgress(ffmpeg, onProgress) {
+  if (!onProgress) return () => {}
+  const listener = ({ progress }) => onProgress(Math.round(progress * 100))
+  ffmpeg.on('progress', listener)
+  return () => ffmpeg.off('progress', listener)
 }
 
 function notifyLoadListeners(status) {
@@ -76,17 +91,16 @@ async function convertMedia(file, outputExt, mimeType, onProgress) {
   try {
     await ffmpeg.writeFile(inputName, await fetchFile(file))
 
-    ffmpeg.off('progress')
-    if (onProgress) {
-      ffmpeg.on('progress', ({ progress }) => {
-        onProgress(Math.round(progress * 100))
-      })
+    const detachProgress = attachMediaProgress(ffmpeg, onProgress)
+
+    try {
+      await ffmpeg.exec(['-i', inputName, outputName])
+
+      const data = await ffmpeg.readFile(outputName)
+      return new Blob([data], { type: mimeType })
+    } finally {
+      detachProgress()
     }
-
-    await ffmpeg.exec(['-i', inputName, outputName])
-
-    const data = await ffmpeg.readFile(outputName)
-    return new Blob([data], { type: mimeType })
   } finally {
     await safeDeleteTempFile(ffmpeg, inputName)
     await safeDeleteTempFile(ffmpeg, outputName)
@@ -98,9 +112,8 @@ function getExtension(filename) {
   return dot >= 0 ? filename.substring(dot) : ''
 }
 
-function createDownloadUrl(blob, filename) {
-  const url = URL.createObjectURL(blob)
-  return { url, filename, size: blob.size }
+export function createMediaDownloadResult(blob, filename) {
+  return { kind: 'download', blob, filename }
 }
 
 export const mediaConverters = [
@@ -115,7 +128,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'mp3', 'audio/mpeg', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.mp3'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -129,7 +142,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'wav', 'audio/wav', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.wav'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -143,7 +156,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'mp3', 'audio/mpeg', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.mp3'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -157,7 +170,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'wav', 'audio/wav', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.wav'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -171,7 +184,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'ogg', 'audio/ogg', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.ogg'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -185,7 +198,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'mp4', 'video/mp4', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.mp4'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -199,7 +212,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'webm', 'video/webm', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.webm'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -213,7 +226,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'gif', 'image/gif', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.gif'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -227,7 +240,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'aac', 'audio/aac', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.aac'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -241,7 +254,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'flac', 'audio/flac', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.flac'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -255,7 +268,7 @@ export const mediaConverters = [
     fileConvert: async (file, onProgress) => {
       const blob = await convertMedia(file, 'ogg', 'audio/ogg', onProgress)
       const name = file.name.replace(/\.[^.]+$/, '') + '.ogg'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -274,19 +287,20 @@ export const mediaConverters = [
       let blob
       try {
         await ffmpeg.writeFile(inputName, await fetchFile(file))
-        ffmpeg.off('progress')
-        if (onProgress) {
-          ffmpeg.on('progress', ({ progress }) => onProgress(Math.round(progress * 100)))
+        const detachProgress = attachMediaProgress(ffmpeg, onProgress)
+        try {
+          await ffmpeg.exec(['-i', inputName, '-c:a', 'aac', '-b:a', '192k', outputName])
+          const data = await ffmpeg.readFile(outputName)
+          blob = new Blob([data], { type: 'audio/mp4' })
+        } finally {
+          detachProgress()
         }
-        await ffmpeg.exec(['-i', inputName, '-c:a', 'aac', '-b:a', '192k', outputName])
-        const data = await ffmpeg.readFile(outputName)
-        blob = new Blob([data], { type: 'audio/mp4' })
       } finally {
         await safeDeleteTempFile(ffmpeg, inputName)
         await safeDeleteTempFile(ffmpeg, outputName)
       }
       const name = file.name.replace(/\.[^.]+$/, '') + '.m4a'
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -319,7 +333,7 @@ export const mediaConverters = [
         await safeDeleteTempFile(ffmpeg, outputName)
       }
       const name = file.name.replace(/\.[^.]+$/, '') + `_trim${start}-${end}` + ext
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
   {
@@ -352,7 +366,11 @@ export const mediaConverters = [
         await safeDeleteTempFile(ffmpeg, outputName)
       }
       const name = file.name.replace(/\.[^.]+$/, '') + `_trim${start}-${end}` + ext
-      return createDownloadUrl(blob, name)
+      return createMediaDownloadResult(blob, name)
     },
   },
-]
+].map((converter) => ({
+  ...converter,
+  limits: TOOL_LIMITS.media,
+  terminate: terminateMediaExecution,
+}))

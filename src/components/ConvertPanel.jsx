@@ -2,10 +2,17 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import ToolPicker from './ToolPicker'
 import { useToast } from '../hooks/useToast'
 import { formats, getTargets, getConvertFn, getFormatById } from '../formats'
+import { useI18n } from '../i18n'
 import { historyStore } from '../privacy/historyStore'
 import { onFFmpegLoad } from '../converters/media'
+import { createToolRuntime } from '../runtime/toolRuntime'
 import { rgbToHex, parseRgb, parseHsl, hslToRgb, hsvToRgb, parseHsv } from '../utils/color'
+import FileDropZone from './workspace/FileDropZone'
+import ProgressStatus from './workspace/ProgressStatus'
+import ResultActions from './workspace/ResultActions'
+import ErrorNotice from './workspace/ErrorNotice'
 import './ConvertPanel.css'
+import './workspace/workspace.css'
 
 // Detect format from content
 function detectFormat(text) {
@@ -97,12 +104,6 @@ function detectFormat(text) {
   return null
 }
 
-function formatSize(bytes) {
-  if (bytes < 1024) return bytes + ' B'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
-}
-
 function autoResize(el) {
   if (!el) return
   el.style.height = 'auto'
@@ -114,6 +115,7 @@ function getFavPairs() { try { return JSON.parse(localStorage.getItem(FAV_PAIRS_
 function saveFavPairs(pairs) { localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(pairs)) }
 
 function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = formats, releasedTools = [], categories = [] }) {
+  const { t } = useI18n()
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
   const [batchMode, setBatchMode] = useState(false)
@@ -132,7 +134,6 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const [toPickerOpen, setToPickerOpen] = useState(false)
 
   // Tool mode state (absorbed from ConverterView)
-  const [dragging, setDragging] = useState(false)
   const [mediaResult, setMediaResult] = useState(null)
   const [processing, setProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -140,13 +141,14 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const [selectedFiles, setSelectedFiles] = useState([])
   const [textParam, setTextParam] = useState('')
   const [ffmpegStatus, setFfmpegStatus] = useState(null)
-  const fileInputRef = useRef(null)
   const toolInputRef = useRef(null)
   const toolOutputRef = useRef(null)
   const formatRunIdRef = useRef(0)
   const toolRunIdRef = useRef(0)
   const fileRunIdRef = useRef(0)
   const activeConverterIdRef = useRef(activeConverter?.id || null)
+  const runtimeRef = useRef(null)
+  if (!runtimeRef.current) runtimeRef.current = createToolRuntime()
   const swappedTimeoutRef = useRef(null)
   const autoDetectTimeoutRef = useRef(null)
 
@@ -160,7 +162,6 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const isGenerator = isToolMode && !!activeConverter.isGenerator
   const acceptsFile = isToolMode && !!activeConverter.acceptsFile
   const isMedia = isToolMode && !!activeConverter.isMediaConverter
-  const showsPreview = isToolMode && !!activeConverter.showsPreview
   const hasTextInput = isToolMode && !!activeConverter.hasTextInput
   const multipleFiles = isToolMode && !!activeConverter.multipleFiles
   // Text-to-text tool: has convert function, no file input, not generator
@@ -191,6 +192,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     return () => {
       if (swappedTimeoutRef.current) clearTimeout(swappedTimeoutRef.current)
       if (autoDetectTimeoutRef.current) clearTimeout(autoDetectTimeoutRef.current)
+      runtimeRef.current?.dispose()
     }
   }, [])
 
@@ -265,13 +267,22 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
       if (runId === toolRunIdRef.current && activeConverterIdRef.current === converterId) setOutput('')
       return
     }
+    setError(null)
     try {
-      const result = await converter.convert(value)
+      const record = await runtimeRef.current.run({ tool: converter, text: value })
       if (runId !== toolRunIdRef.current || activeConverterIdRef.current !== converterId) return
-      setOutput(result)
-    } catch {
+      if (!record) return
+      if (record.result.kind === 'text') {
+        setOutput(record.result.text)
+        setMediaResult(null)
+      } else {
+        setOutput('')
+        setMediaResult(record)
+      }
+    } catch (runtimeFailure) {
       if (runId === toolRunIdRef.current && activeConverterIdRef.current === converterId) {
-        setOutput('(conversion error)')
+        setOutput('')
+        setError(runtimeFailure)
       }
     }
   }, [activeConverter, isGenerator])
@@ -341,14 +352,16 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   }, [from, to, output, setFrom, setTo])
 
   const handleCopy = async () => {
-    const text = output || mediaResult?.text
+    const text = output || (mediaResult?.result?.kind === 'text' ? mediaResult.result.text : '')
     if (!text) return
     await navigator.clipboard.writeText(text)
     toast('Copied to clipboard')
   }
 
   const handleClear = useCallback(() => {
-    if (mediaResult?.url) URL.revokeObjectURL(mediaResult.url)
+    runtimeRef.current.reset()
+    toolRunIdRef.current += 1
+    fileRunIdRef.current += 1
     setInput('')
     setOutput('')
     setMediaResult(null)
@@ -356,9 +369,10 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     setSelectedFiles([])
     setTextParam('')
     setProgress(0)
+    setProcessing(false)
     const ref = isToolMode ? toolInputRef : inputRef
     ref.current?.focus()
-  }, [isToolMode, mediaResult])
+  }, [isToolMode])
 
   const handleSelectOutput = useCallback(() => {
     const ref = isToolMode ? toolOutputRef : outputRef
@@ -404,18 +418,20 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     if (isToolMode && mediaResult?.url) {
       const a = document.createElement('a')
       a.href = mediaResult.url
-      a.download = mediaResult.filename || 'output'
+      a.download = mediaResult.result?.filename || 'output'
       a.click()
       return
     }
     if (!output) return
-    const blob = new Blob([output], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
+    const record = runtimeRef.current.present({
+      kind: 'download',
+      blob: new Blob([output], { type: 'text/plain' }),
+      filename: isToolMode ? `${activeConverter.id}-output.txt` : `${from}-to-${to}.txt`,
+    })
     const a = document.createElement('a')
-    a.href = url
-    a.download = isToolMode ? `${activeConverter.id}-output.txt` : `${from}-to-${to}.txt`
+    a.href = record.url
+    a.download = record.result.filename
     a.click()
-    URL.revokeObjectURL(url)
   }
 
   const handleShare = async () => {
@@ -457,13 +473,15 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
 
   const handleSaveFile = () => {
     if (!output) return
-    const blob = new Blob([output], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
+    const record = runtimeRef.current.present({
+      kind: 'download',
+      blob: new Blob([output], { type: 'text/plain' }),
+      filename: isToolMode ? `${activeConverter.id}-output.txt` : `${from}-to-${to}.txt`,
+    })
     const a = document.createElement('a')
-    a.href = url
-    a.download = isToolMode ? `${activeConverter.id}-output.txt` : `${from}-to-${to}.txt`
+    a.href = record.url
+    a.download = record.result.filename
     a.click()
-    URL.revokeObjectURL(url)
   }
 
   // Smart paste detection (format-pair mode only)
@@ -588,13 +606,6 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     return output
   }, [isColorOutput, to, output])
 
-  // Revoke old blob URLs when mediaResult changes or on unmount
-  useEffect(() => {
-    return () => {
-      if (mediaResult?.url) URL.revokeObjectURL(mediaResult.url)
-    }
-  }, [mediaResult])
-
   // File handling for non-media file converters
   const handleSimpleFile = async (file) => {
     if (!file || !activeConverter?.fileConvert) return
@@ -602,13 +613,15 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     const converterId = converter.id
     const runId = ++fileRunIdRef.current
     try {
-      const result = await converter.fileConvert(file)
+      const record = await runtimeRef.current.run({ tool: converter, files: [file] })
       if (runId !== fileRunIdRef.current || activeConverterIdRef.current !== converterId) return
-      setOutput(result)
+      if (!record) return
+      if (record.result.kind === 'text') setOutput(record.result.text)
+      else setMediaResult(record)
       setInput(file.name)
-    } catch {
+    } catch (runtimeFailure) {
       if (runId === fileRunIdRef.current && activeConverterIdRef.current === converterId) {
-        setOutput('(failed to process file)')
+        setError(runtimeFailure)
       }
     }
   }
@@ -629,19 +642,20 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     setProcessing(true)
     setProgress(0)
     setError(null)
-    if (mediaResult?.url) URL.revokeObjectURL(mediaResult.url)
     setMediaResult(null)
 
     try {
-      const result = await converter.fileConvert(
-        multipleFiles ? filesList : filesList[0],
-        hasTextInput ? textParam : updateProgress
-      )
+      const record = await runtimeRef.current.run({
+        tool: converter,
+        files: filesList,
+        text: hasTextInput ? textParam : '',
+        onProgress: updateProgress,
+      })
       if (runId !== fileRunIdRef.current || activeConverterIdRef.current !== converterId) return
-      setMediaResult(result)
-    } catch (err) {
+      if (record) setMediaResult(record)
+    } catch (runtimeFailure) {
       if (runId === fileRunIdRef.current && activeConverterIdRef.current === converterId) {
-        setError(err.message || 'Conversion failed')
+        setError(runtimeFailure)
       }
     } finally {
       if (runId === fileRunIdRef.current && activeConverterIdRef.current === converterId) {
@@ -650,10 +664,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     }
   }
 
-  const handleDrop = (e) => {
-    e.preventDefault()
-    setDragging(false)
-    const files = e.dataTransfer.files
+  const handleFilesChange = (files) => {
+    setSelectedFiles(files)
     if (isMedia) {
       handleMediaFiles(files)
     } else if (files[0]) {
@@ -661,20 +673,19 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     }
   }
 
-  const handleDragOver = (e) => {
-    e.preventDefault()
-    setDragging(true)
+  const handleCancel = () => {
+    fileRunIdRef.current += 1
+    runtimeRef.current.cancel()
+    setProcessing(false)
+    setProgress(0)
+    setMediaResult(null)
+    setError({ code: 'cancelled', messageKey: 'errors.cancelled' })
   }
 
-  const handleDragLeave = () => setDragging(false)
-
-  const handleFileInput = (e) => {
-    const files = e.target.files
-    if (isMedia) {
-      handleMediaFiles(files)
-    } else if (files[0]) {
-      handleSimpleFile(files[0])
-    }
+  const handleDiscardResult = () => {
+    runtimeRef.current.reset()
+    setMediaResult(null)
+    setError(null)
   }
 
   const handleRegenerate = () => {
@@ -684,8 +695,6 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   // Tool picker display label
   const fromLabel = isToolMode ? activeConverter.name : (fromFmt?.name || from)
   const toLabel = toFmt?.name || to
-
-  const isValidImage = output && output.startsWith('data:image')
 
   // ToolPicker handlers
   const handleFromSelectFormat = useCallback((id) => {
@@ -1106,138 +1115,52 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
         <div className="tool-panels">
           <div className="panel">
             <div className="panel-label-row">
-              <label className="panel-label">Input</label>
+              <span className="panel-label">{t('workspaceTools.input')}</span>
               {(selectedFiles.length > 0 || input) && (
-                <button className="pill-btn-sm" onClick={handleClear}>Clear</button>
+                <button type="button" className="pill-btn-sm" onClick={handleClear}>{t('workspaceTools.clear')}</button>
               )}
             </div>
-            <div
-              className={`drop-zone${dragging ? ' dragging' : ''}`}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onClick={() => fileInputRef.current?.click()}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click() } }}
-              aria-label={multipleFiles ? 'Drop files or click to browse' : 'Drop a file or click to browse'}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={activeConverter.acceptTypes || '*'}
-                multiple={multipleFiles}
-                onChange={handleFileInput}
-                style={{ display: 'none' }}
-                aria-label="File input"
-              />
-              {selectedFiles.length > 0 ? (
-                <div className="drop-zone-files">
-                  {selectedFiles.map((f, i) => (
-                    <span key={i} className="drop-zone-filename">{f.name} ({formatSize(f.size)})</span>
-                  ))}
-                </div>
-              ) : input ? (
-                <span className="drop-zone-filename">{input}</span>
-              ) : (
-                <span className="drop-zone-hint">
-                  {multipleFiles ? 'Drop files here or click to browse' : 'Drop a file here or click to browse'}
-                </span>
-              )}
-            </div>
+            <FileDropZone
+              accept={activeConverter.acceptTypes || '*'}
+              multiple={multipleFiles}
+              files={selectedFiles}
+              onFilesChange={handleFilesChange}
+            />
             {hasTextInput && (
               <input
                 className="param-input"
                 type="text"
                 value={textParam}
-                onChange={(e) => setTextParam(e.target.value)}
-                aria-label="Tool text input"
+                onChange={(event) => {
+                  runtimeRef.current.cancel()
+                  fileRunIdRef.current += 1
+                  setProcessing(false)
+                  setMediaResult(null)
+                  setError(null)
+                  setTextParam(event.target.value)
+                }}
+                aria-label={t('workspaceTools.parameters')}
                 placeholder={activeConverter.textPlaceholder || 'Parameters...'}
               />
             )}
             {isMedia && selectedFiles.length > 0 && hasTextInput && !processing && (
-              <button className="pill-btn convert-btn" onClick={() => handleMediaFiles(selectedFiles)}>
-                Convert
+              <button type="button" className="pill-btn convert-btn" onClick={() => handleMediaFiles(selectedFiles)}>
+                {t('workspaceTools.convert')}
               </button>
             )}
           </div>
 
-          {/* Progress bar */}
           {processing && (
-            <div className="progress-bar-container">
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${progress}%` }} />
-              </div>
-              <span className="progress-text">
-                {ffmpegStatus === 'downloading' ? 'Downloading ffmpeg (first time only)...' : `Processing... ${progress > 0 ? `${progress}%` : ''}`}
-              </span>
-            </div>
+            <ProgressStatus progress={progress} loadingRuntime={ffmpegStatus === 'downloading'} onCancel={handleCancel} />
           )}
 
-          {/* Error */}
-          {error && (
-            <div className="error-msg">{error}</div>
-          )}
-
-          {/* Output panel */}
-          <div className="panel">
-            <div className="panel-label-row">
-              <label className="panel-label">Output</label>
-              <div className="panel-actions">
-                {mediaResult?.url && (
-                  <button className="pill-btn-sm" onClick={handleDownload}>Download</button>
-                )}
-                {(output || mediaResult?.text) && !mediaResult?.url && (
-                  <button
-                    className="pill-btn-sm"
-                    onClick={handleCopy}
-                    disabled={!output && !mediaResult?.text}
-                  >
-                    Copy
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {mediaResult?.url && (
-              <div className="media-result">
-                <span className="media-result-name">{mediaResult.filename}</span>
-                <span className="media-result-size">{formatSize(mediaResult.size)}</span>
-                {mediaResult.info && <span className="media-result-info">{mediaResult.info}</span>}
-              </div>
-            )}
-
-            {mediaResult?.text && (
-              <div className="media-result">
-                <span className="media-result-info">{mediaResult.text}</span>
-              </div>
-            )}
-
-            {showsPreview && isValidImage && (
-              <div className="image-preview">
-                <img src={output} alt="Preview" />
-              </div>
-            )}
-
-            {!isMedia && output && (
-              <div className="textarea-area">
-                <textarea
-                  ref={toolOutputRef}
-                  className="output mono"
-                  value={output}
-                  readOnly
-                  placeholder="Result will appear here..."
-                  onDoubleClick={() => toolOutputRef.current?.select()}
-                  aria-label="Tool output text"
-                />
-                {output.length > 0 && (
-                  <span className="float-info">{output.length} chars</span>
-                )}
-              </div>
-            )}
-          </div>
+          <ErrorNotice error={error} />
+          <ResultActions record={mediaResult} onDiscard={handleDiscardResult} onCopied={() => toast(t('workspaceTools.copied'))} />
         </div>
       )}
+
+      {!acceptsFile && <ErrorNotice error={error} />}
+      {!acceptsFile && mediaResult && <ResultActions record={mediaResult} onDiscard={handleDiscardResult} onCopied={() => toast(t('workspaceTools.copied'))} />}
     </div>
   )
 }

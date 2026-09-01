@@ -1,5 +1,7 @@
 // Lazy-load pdf-lib only when a PDF converter is used
 
+import { TOOL_LIMITS } from '../runtime/limits'
+
 async function loadPdfLib() {
   const { PDFDocument } = await import('pdf-lib')
   return PDFDocument
@@ -51,8 +53,7 @@ export const pdfConverters = [
 
       const pdfBytes = await pdfDoc.save()
       const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      return { url, filename: 'combined.pdf', size: blob.size }
+      return { kind: 'download', blob, filename: 'combined.pdf' }
     },
   },
   {
@@ -79,8 +80,7 @@ export const pdfConverters = [
 
       const pdfBytes = await merged.save()
       const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      return { url, filename: 'merged.pdf', size: blob.size }
+      return { kind: 'download', blob, filename: 'merged.pdf' }
     },
   },
   {
@@ -97,7 +97,7 @@ export const pdfConverters = [
       const bytes = await file.arrayBuffer()
       const pdf = await PDFDocument.load(bytes)
       const count = pdf.getPageCount()
-      return { text: `${file.name}: ${count} page${count !== 1 ? 's' : ''}` }
+      return { kind: 'text', text: `${file.name}: ${count} page${count !== 1 ? 's' : ''}` }
     },
   },
   {
@@ -127,9 +127,8 @@ export const pdfConverters = [
       newPdf.addPage(page)
       const pdfBytes = await newPdf.save()
       const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
       const name = file.name.replace(/\.pdf$/i, '') + `_page${pageNum}.pdf`
-      return { url, filename: name, size: blob.size, info: `Extracted page ${pageNum} of ${total}` }
+      return { kind: 'download', blob, filename: name, info: `Extracted page ${pageNum} of ${total}` }
     },
   },
   {
@@ -173,9 +172,8 @@ export const pdfConverters = [
       copied.forEach(page => newPdf.addPage(page))
       const pdfBytes = await newPdf.save()
       const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
       const name = file.name.replace(/\.pdf$/i, '') + `_pages.pdf`
-      return { url, filename: name, size: blob.size, info: `Extracted ${indices.length} page(s) from ${total}` }
+      return { kind: 'download', blob, filename: name, info: `Extracted ${indices.length} page(s) from ${total}` }
     },
   },
   {
@@ -227,10 +225,13 @@ export const pdfConverters = [
 
       const pdfBytes = await pdfDoc.save()
       const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      setTimeout(() => URL.revokeObjectURL(url), 60000)
-      // Return as data URL for preview
-      return `PDF generated (${wrappedLines.length} lines, ${Math.ceil(wrappedLines.length * lineHeight / (842 - margin * 2))} pages)\n\nDownload: ${url}`
+      const pageCount = Math.max(1, Math.ceil(wrappedLines.length * lineHeight / (842 - margin * 2)))
+      return {
+        kind: 'download',
+        blob,
+        filename: 'folkkit-text.pdf',
+        info: `PDF generated (${wrappedLines.length} lines, ${pageCount} pages)`,
+      }
     },
   },
   {
@@ -260,7 +261,7 @@ export const pdfConverters = [
       const page1 = pdf.getPage(0)
       const { width, height } = page1.getSize()
       info.push(`Page 1 size: ${Math.round(width)} x ${Math.round(height)} pts`)
-      return { text: info.join('\n') }
+      return { kind: 'text', text: info.join('\n') }
     },
   },
   {
@@ -286,9 +287,11 @@ export const pdfConverters = [
       }
       const pdfBytes = await pdf.save()
       const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
       const name = file.name.replace(/\.pdf$/i, '') + `_rotated${deg}.pdf`
-      return { url, filename: name, size: blob.size, info: `Rotated ${pages.length} pages by ${deg} degrees` }
+      return { kind: 'download', blob, filename: name, info: `Rotated ${pages.length} pages by ${deg} degrees` }
     },
   },
-]
+].map((converter) => ({
+  ...converter,
+  limits: converter.id === 'images-to-pdf' ? TOOL_LIMITS.images : TOOL_LIMITS.pdf,
+}))

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('loads the audio-to-mp3 tool without cross-origin runtime requests', async ({ page }) => {
+test('loads the released merge-pdf tool without cross-origin runtime requests', async ({ page }) => {
   const crossOriginRequests = []
   const testServerOrigin = new URL(test.info().project.use.baseURL).origin
 
@@ -10,8 +10,8 @@ test('loads the audio-to-mp3 tool without cross-origin runtime requests', async 
     }
   })
 
-  await page.goto('./?tool=audio-to-mp3', { waitUntil: 'domcontentloaded' })
+  await page.goto('./?tool=merge-pdf', { waitUntil: 'domcontentloaded' })
 
-  await expect(page.getByRole('button', { name: 'Audio to MP3' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'PDFs zusammenführen' })).toBeVisible()
   expect(crossOriginRequests).toEqual([])
 })

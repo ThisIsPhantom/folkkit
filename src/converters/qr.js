@@ -1,3 +1,11 @@
+import { TOOL_LIMITS } from '../runtime/limits'
+
+function qrFailure(code) {
+  const error = new Error(code)
+  error.code = code
+  return error
+}
+
 export const qrConverters = [
   {
     id: 'text-to-qr',
@@ -8,7 +16,8 @@ export const qrConverters = [
       if (!input.trim()) return ''
       const QRCode = (await import('qrcode')).default
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-      const dataUrl = await QRCode.toDataURL(input, {
+      const svg = await QRCode.toString(input, {
+        type: 'svg',
         width: 300,
         margin: 2,
         color: {
@@ -16,7 +25,11 @@ export const qrConverters = [
           light: isDark ? '#1a1916' : '#faf8f5',
         },
       })
-      return dataUrl
+      return {
+        kind: 'image',
+        blob: new Blob([svg], { type: 'image/svg+xml' }),
+        filename: 'folkkit-qr.svg',
+      }
     },
     showsPreview: true,
   },
@@ -27,16 +40,17 @@ export const qrConverters = [
     description: 'Read text from a QR code image — drop or upload a QR code',
     acceptsFile: true,
     acceptTypes: 'image/*',
+    limits: TOOL_LIMITS.images,
     isMediaConverter: true,
     fileConvert: async (files) => {
       const file = Array.isArray(files) ? files[0] : files
 
       if (typeof globalThis.BarcodeDetector !== 'function') {
-        return { text: '(QR reading requires a browser with BarcodeDetector API — try Chrome)' }
+        throw qrFailure('unsupported_browser')
       }
 
       if (typeof globalThis.createImageBitmap !== 'function') {
-        return { text: '(QR reading requires createImageBitmap support in this browser)' }
+        throw qrFailure('unsupported_browser')
       }
 
       try {
@@ -44,11 +58,12 @@ export const qrConverters = [
         const detector = new globalThis.BarcodeDetector({ formats: ['qr_code'] })
         const results = await detector.detect(bitmap)
         if (results.length > 0 && results[0].rawValue) {
-          return { text: results[0].rawValue }
+          return { kind: 'text', text: results[0].rawValue }
         }
-        return { text: '(no QR code found in image)' }
+        throw qrFailure('invalid_file')
       } catch (error) {
-        return { text: `(QR decode failed: ${error?.message || 'unknown error'})` }
+        if (error?.code) throw error
+        throw qrFailure('invalid_file')
       }
     },
   },
