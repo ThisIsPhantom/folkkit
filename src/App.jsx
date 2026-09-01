@@ -36,6 +36,12 @@ function readRoute() {
   return 'home'
 }
 
+function focusMainContent() {
+  requestAnimationFrame(() => {
+    document.getElementById('main-content')?.focus({ preventScroll: true })
+  })
+}
+
 export default function App() {
   const { locale, setLocale } = useI18n()
   const [route, setRoute] = useState(readRoute)
@@ -48,7 +54,10 @@ export default function App() {
   }, [locale])
 
   useEffect(() => {
-    const handlePopState = () => setRoute(readRoute())
+    const handlePopState = () => {
+      setRoute(readRoute())
+      focusMainContent()
+    }
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
@@ -57,6 +66,7 @@ export default function App() {
     const target = new URL(href, window.location.origin)
     history.pushState(null, '', `${target.pathname}${target.search}${target.hash}`)
     setRoute(readRoute())
+    focusMainContent()
     window.scrollTo({ top: 0, behavior: getNavigationScrollBehavior() })
   }, [])
 

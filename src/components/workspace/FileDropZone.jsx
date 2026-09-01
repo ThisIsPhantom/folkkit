@@ -42,7 +42,6 @@ export default function FileDropZone({ accept = '*', multiple = false, files = [
         if (!disabled) setDragging(true)
       }}
       onDragLeave={() => setDragging(false)}
-      onClick={openPicker}
       aria-disabled={disabled}
     >
       <input
@@ -68,6 +67,14 @@ export default function FileDropZone({ accept = '*', multiple = false, files = [
       ) : (
         <span className="drop-zone-hint">{t(multiple ? 'workspaceTools.dropFiles' : 'workspaceTools.dropFile')}</span>
       )}
+      <button
+        type="button"
+        className="drop-zone-choose"
+        disabled={disabled}
+        onClick={openPicker}
+      >
+        {inputLabel}
+      </button>
     </div>
   )
 }

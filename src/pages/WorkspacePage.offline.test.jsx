@@ -27,5 +27,5 @@ test('names an unavailable offline media module and retries the lazy import', as
   fireEvent.click(screen.getByRole('button', { name: 'Erneut versuchen' }))
 
   await waitFor(() => expect(loadConverter).toHaveBeenCalledTimes(2))
-  expect(await screen.findByLabelText('Datei auswählen')).toBeVisible()
+  expect(await screen.findByRole('button', { name: 'Datei auswählen' })).toBeVisible()
 })

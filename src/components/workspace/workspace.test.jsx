@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import FileDropZone from './FileDropZone'
 import ProgressStatus from './ProgressStatus'
@@ -23,6 +23,21 @@ test('the drop zone owns selection state and exposes localized multi-file guidan
 
   expect(screen.getByText('eins.pdf')).toBeVisible()
   expect(screen.getByText('zwei.pdf')).toBeVisible()
+})
+
+test('the visible file chooser is the keyboard focus target and opens the native input', async () => {
+  const user = userEvent.setup()
+  const inputClick = vi.spyOn(HTMLInputElement.prototype, 'click')
+  renderWithProviders(<DropZoneHarness />)
+
+  const chooseButton = screen.getByRole('button', { name: 'PDF-Dateien auswählen' })
+  chooseButton.focus()
+  expect(chooseButton).toHaveFocus()
+  await user.keyboard('{Enter}')
+
+  expect(inputClick).toHaveBeenCalledTimes(1)
+  expect(document.querySelector('.drop-zone')).not.toHaveAttribute('role')
+  inputClick.mockRestore()
 })
 
 test('renders only a bounded filename preview for excessive selections', () => {

@@ -9,17 +9,21 @@ test('navigates the German shell, switches language, and restores routes', async
   await expect(page.getByRole('contentinfo')).toBeVisible()
   await expect(page.getByRole('link', { name: 'Zum Inhalt springen' })).toBeAttached()
   await expect(page.getByText('Deine Dateien bleiben in diesem Browser.')).toBeVisible()
+  await expect(page.getByRole('main')).not.toBeFocused()
 
   await page.getByRole('link', { name: 'Werkzeuge' }).click()
   await expect(page).toHaveURL(/\/tools$/)
   await expect(page.getByRole('heading', { name: 'Alle freigegebenen Werkzeuge' })).toBeVisible()
+  await expect(page.getByRole('main')).toBeFocused()
 
   await page.goBack()
   await expect(page).toHaveURL(/\/$/)
   await expect(page.getByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).toBeVisible()
+  await expect(page.getByRole('main')).toBeFocused()
 
   await page.goForward()
   await expect(page).toHaveURL(/\/tools$/)
+  await expect(page.getByRole('main')).toBeFocused()
 
   await page.getByRole('button', { name: 'English' }).click()
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')

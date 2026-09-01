@@ -663,7 +663,7 @@ textarea.output.no-wrap {
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
-  cursor: pointer;
+  cursor: default;
 }
 
 .compatibility-warning input {

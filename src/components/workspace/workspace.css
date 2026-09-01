@@ -1,11 +1,23 @@
 .workspace-file-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
+  display: none;
+}
+
+.drop-zone-choose {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: 0 2px 0 var(--shadow);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.drop-zone-choose:disabled {
+  cursor: wait;
 }
 
 .drop-zone.disabled {

@@ -426,7 +426,13 @@ body {
   .textarea-area textarea {
     min-height: max(100px, 30dvh);
     padding: 12px 14px;
-    font-size: 0.9rem;
+    font-size: 1rem;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 1rem !important;
   }
 
   .float-actions { bottom: 8px; right: 8px; }

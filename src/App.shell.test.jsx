@@ -1,5 +1,5 @@
 import { beforeEach, expect, test, vi } from 'vitest'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import { renderWithProviders } from './test/renderWithProviders'
@@ -65,4 +65,20 @@ test('theme toggle keeps one German and English accessible name across light and
   await user.click(englishToggle)
   expect(englishToggle).toHaveAttribute('aria-pressed', 'false')
   expect(englishToggle).toHaveAccessibleName('Dark theme')
+})
+
+test('moves focus to main content after SPA navigation and popstate but not on initial load', async () => {
+  const user = userEvent.setup()
+  renderWithProviders(<App />)
+  const main = screen.getByRole('main')
+
+  expect(main).not.toHaveFocus()
+  await user.click(screen.getByRole('link', { name: 'Werkzeuge' }))
+  await waitFor(() => expect(main).toHaveFocus())
+
+  const themeButton = screen.getByRole('button', { name: 'Dunkles Design' })
+  themeButton.focus()
+  history.pushState(null, '', '/')
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  await waitFor(() => expect(main).toHaveFocus())
 })
