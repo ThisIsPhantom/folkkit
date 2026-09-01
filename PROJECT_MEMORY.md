@@ -12,6 +12,10 @@
 - 2026-08-31: The approved visual direction is `Warm Shell / Dark Workbench`, without violet-blue AI glow, neon, or generic AI decoration.
 - 2026-08-31: Hosttech is the intended static host. `main` is full source and `plesk` must be generated as hosting-only. No live deployment is authorized or performed.
 - 2026-09-01: Add `<meta name="google-adsense-account" content="ca-pub-7877827162675091">` to Folkkit's production head for possible future ownership verification. The tag is passive metadata only; no AdSense scripts, ads, cookies, tracking, Google verification action, or monetization is authorized.
+- 2026-09-01: The V1 security remediation is local only. Candidate `24b9e417f80be702862c07f1e04edbb47a5181e5` addresses all 11 findings from historical scan `d182b66a-b0a8-45f4-93b5-3784092bde95` through targeted tests and source review. The original scan remains unchanged evidence for `98d58ed1cd9926a33ec1ee6f94d2fb28b4705f4e`.
+- 2026-09-01: The audited format graph has 19 released pairs, all classified `compatible`; none qualifies as `incompatible-but-implemented`. The future warning gate is session-only and cannot unlock unsupported conversions.
+- 2026-09-01: Local acceptance passed 371 unit/contract tests, 36 Chromium E2E tests, WebKit core matrix, 390 x 844 Chromium matrix, production-CSP MP3, high dependency audit, notices, secret scan and Plesk `ValidateOnly`. Local Firefox remained unverified because its installed Playwright binary failed with a Windows Side-by-Side configuration error.
+- 2026-09-01: Public `build:release` remains blocked until the user approves real operator name, address and contact email. No push, merge, public visibility change, Hosttech deployment, DNS change or domain purchase occurred.
 
 ## Current authority
 
