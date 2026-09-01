@@ -35,6 +35,17 @@ test('copies the pinned FFmpeg core JavaScript and WASM files to the public runt
   await expect(readFile(join(destinationDirectory, 'ffmpeg-core.wasm'), 'utf8')).resolves.toBe('ffmpeg core WASM')
 })
 
+test('removes the non-URL FFmpeg address placeholder instead of weakening the external literal gate', async () => {
+  const sourceDirectory = await createTemporaryDirectory()
+  const destinationDirectory = await createTemporaryDirectory()
+  await writeFile(join(sourceDirectory, 'ffmpeg-core.js'), 'diagnostic: //address:port')
+  await writeFile(join(sourceDirectory, 'ffmpeg-core.wasm'), 'core WASM')
+
+  await syncRuntimeAssets({ sourceDirectory, destinationDirectory })
+
+  await expect(readFile(join(destinationDirectory, 'ffmpeg-core.js'), 'utf8')).resolves.toBe('diagnostic: address:port')
+})
+
 test('keeps an existing runtime directory unchanged when a required FFmpeg core file is absent', async () => {
   const sourceDirectory = await createTemporaryDirectory()
   const destinationDirectory = await createTemporaryDirectory()
@@ -123,11 +134,11 @@ test('allows fixed legal source navigation that does not load a runtime resource
   )).not.toThrow()
 })
 
-test('allows converter output text while still rejecting a DOM runtime source assignment', () => {
+test('rejects external converter output literals and DOM runtime source assignments', () => {
   expect(() => assertNoExternalRuntimeOrigins(
     'utility.js',
     'const output = `<img src="https://placehold.co/400x300">`; const css = `url(https://placehold.co/400x300)`;',
-  )).not.toThrow()
+  )).toThrow(/external runtime origin/i)
   expect(() => assertNoExternalRuntimeOrigins(
     'app.js',
     'const script = document.createElement("script"); script.src = "https://attacker.example/app.js";',
@@ -155,6 +166,11 @@ test('allows only exact reviewed external legal navigation values', () => {
     'app.js',
     'jsx("a", { href: "https://github.com/ThisIsPhantom/folkkit-malicious" })',
   )).toThrow(/external runtime origin/i)
+})
+
+test('rejects unquoted external HTML navigation outside the exact reviewed allowlist', () => {
+  expect(() => assertNoExternalRuntimeOrigins('index.html', '<a href=https://attacker.example>leave</a>')).toThrow(/external runtime origin/i)
+  expect(() => assertNoExternalRuntimeOrigins('index.html', '<a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL</a>')).not.toThrow()
 })
 
 test('scans SVG, manifest JSON, MJS and nested worker artifacts in the final build tree', async () => {

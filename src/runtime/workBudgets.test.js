@@ -60,6 +60,14 @@ test('CSV budget rejects repeated long headers before row arrays or JSON objects
   expect(parseRow).not.toHaveBeenCalled()
 })
 
+test('CSV budget rejects 2.9 million control characters using worst-case JSON escaping', () => {
+  const parseRow = vi.fn(line => [line])
+  const input = `${'\u0000'.repeat(2_900_000)}\n1`
+
+  expect(() => assertCsvBudget(input, parseRow)).toThrow(/resource_limit/)
+  expect(parseRow).not.toHaveBeenCalled()
+})
+
 test('bounded line scan stops at the rendering limit without splitting the full output', () => {
   expect(countLinesBounded('a\nb\nc', 5)).toEqual({ count: 3, overflow: false })
   expect(countLinesBounded('\n'.repeat(6000), 5000)).toEqual({ count: 5001, overflow: true })

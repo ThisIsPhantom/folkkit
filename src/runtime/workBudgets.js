@@ -71,7 +71,7 @@ export function assertCsvBudget(input, parseRow) {
   const cells = rows * columns
   if (cells > CSV_LIMITS.maxCells) throw resourceLimitError()
   const dataRows = Math.max(0, rows - 1)
-  const estimatedOutputBytes = 2 + totalCellCharacters * 2 + dataRows * (headerCharacters * 2 + columns * 8 + 4)
+  const estimatedOutputBytes = 2 + totalCellCharacters * 6 + dataRows * (headerCharacters * 6 + columns * 8 + 4)
   if (estimatedOutputBytes > OUTPUT_LIMIT_BYTES) throw resourceLimitError()
 
   const lines = value.split(/\r?\n/)

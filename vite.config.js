@@ -5,6 +5,31 @@ import { resolve } from 'node:path'
 import { env } from 'node:process'
 import { assertPassiveAdsenseOwnershipMeta } from './scripts/assert-ownership-meta.mjs'
 import { resolveBuildCommit } from './scripts/resolve-build-commit.mjs'
+import { pruneReleasedConverters } from './scripts/prune-released-converters.mjs'
+import { releaseCatalog } from './src/catalog/releaseCatalog.js'
+
+const releasedConverterIdsByModule = new Map()
+for (const entry of releaseCatalog) {
+  if (entry.tier === 'hidden') continue
+  if (!releasedConverterIdsByModule.has(entry.module)) releasedConverterIdsByModule.set(entry.module, new Set())
+  releasedConverterIdsByModule.get(entry.module).add(entry.id)
+}
+
+function pruneHiddenBrowserConverters() {
+  return {
+    name: 'prune-hidden-browser-converters',
+    enforce: 'pre',
+    transform(code, id) {
+      const match = id.replaceAll('\\', '/').match(/\/src\/converters\/([A-Za-z]+)\.js$/)
+      if (!match || ['index', 'loadConverter'].includes(match[1])) return null
+      const moduleId = match[1]
+      return {
+        code: pruneReleasedConverters(code, releasedConverterIdsByModule.get(moduleId) || new Set(), moduleId),
+        map: null,
+      }
+    },
+  }
+}
 
 function assertBuiltOwnershipMetadata() {
   return {
@@ -70,6 +95,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    pruneHiddenBrowserConverters(),
     selfHostFFmpegWorkerFallback(),
     assertBuiltOwnershipMetadata(),
     ...(env.FOLKKIT_E2E_OLD_SW === '1' ? [testOldServiceWorker()] : []),

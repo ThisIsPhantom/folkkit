@@ -1,4 +1,4 @@
-import { access, copyFile as copyRuntimeFile, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises'
+import { access, copyFile as copyRuntimeFile, mkdir, mkdtemp, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -62,6 +62,11 @@ export async function syncRuntimeAssets({
     )))
     const failedStagingResult = stagingResults.find((result) => result.status === 'rejected')
     if (failedStagingResult) throw failedStagingResult.reason
+    const stagedCorePath = join(stagingDirectory, 'ffmpeg-core.js')
+    const stagedCore = await readFile(stagedCorePath, 'utf8')
+    if (stagedCore.includes('//address:port')) {
+      await writeFile(stagedCorePath, stagedCore.replaceAll('//address:port', 'address:port'), 'utf8')
+    }
 
     let destinationExists = true
     try {

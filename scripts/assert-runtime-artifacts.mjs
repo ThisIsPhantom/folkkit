@@ -1,4 +1,5 @@
 import { readFile, readdir } from 'node:fs/promises'
+import { readFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse } from 'acorn'
@@ -21,16 +22,15 @@ const automaticSinkPatterns = Object.freeze({
   ],
 })
 
-const reviewedLegalNavigation = Object.freeze([
-  /^https:\/\/github\.com\/ThisIsPhantom\/folkkit(?:\/tree\/[0-9a-f]{40})?$/,
-  /^https:\/\/github\.com\/MercuriusDream\/convert-everything$/,
-  /^https:\/\/www\.gnu\.org\/licenses\/agpl-3\.0\.html$/,
-  /^https:\/\/ffmpeg\.org\/legal\.html$/,
-  /^https:\/\/www\.edoeb\.admin\.ch\/de\/(?:datenschutzerklaerungen-im-internet|informationspflicht)$/,
-])
+const reviewedLegalNavigation = new Set(JSON.parse(readFileSync(join(projectRoot, 'scripts', 'reviewed-browser-navigation.json'), 'utf8')))
+
+function externalUrls(value) {
+  return [...String(value || '').matchAll(/(?:^|[\s'"`(<\[=:,])((?:https?:)?\/\/[^\s'"`<>\])}]+)/gi)].map(match => match[1])
+}
 
 function isReviewedLegalNavigation(value) {
-  return reviewedLegalNavigation.some(pattern => pattern.test(value))
+  return reviewedLegalNavigation.has(value)
+    || /^https:\/\/github\.com\/ThisIsPhantom\/folkkit\/tree\/[0-9a-f]{40}$/.test(value)
 }
 
 function staticString(node, declarations = new Map(), seen = new Set()) {
@@ -96,31 +96,36 @@ function hasExternalJavaScriptSink(contents) {
   }
   collect(ast)
 
-  let found = false
+  let found = null
   const visit = node => {
     if (found || !node || typeof node !== 'object') return
-    if (node.type === 'ImportExpression' && externalValue(node.source, declarations)) found = true
+    if (['Literal', 'TemplateLiteral', 'BinaryExpression'].includes(node.type)) {
+      const value = staticString(node, declarations)
+      const unreviewed = value === null ? null : externalUrls(value).find(url => !isReviewedLegalNavigation(url))
+      if (unreviewed) found = unreviewed
+    }
+    if (node.type === 'ImportExpression' && externalValue(node.source, declarations)) found = externalValue(node.source, declarations)
     if (node.type === 'CallExpression') {
       const name = node.callee?.type === 'Identifier' ? node.callee.name : propertyName(node.callee)
-      if (['fetch', 'importScripts', 'sendBeacon'].includes(name) && externalValue(node.arguments[0], declarations)) found = true
-      if (name === 'open' && externalValue(node.arguments[1], declarations)) found = true
+      if (['fetch', 'importScripts', 'sendBeacon'].includes(name) && externalValue(node.arguments[0], declarations)) found = externalValue(node.arguments[0], declarations)
+      if (name === 'open' && externalValue(node.arguments[1], declarations)) found = externalValue(node.arguments[1], declarations)
       if (name === 'setAttribute') {
         const attribute = staticString(node.arguments[0], declarations)
         const value = externalValue(node.arguments[1], declarations)
-        if (value && (attribute === 'src' || (attribute === 'href' && !isReviewedLegalNavigation(value)))) found = true
+        if (value && (attribute === 'src' || (attribute === 'href' && !isReviewedLegalNavigation(value)))) found = value
       }
       if (['jsx', 'jsxs'].includes(name) && staticString(node.arguments[0], declarations) === 'a' && node.arguments[1]?.type === 'ObjectExpression') {
         const href = node.arguments[1].properties.find(property => (
           (!property.computed && property.key?.type === 'Identifier' ? property.key.name : staticString(property.key, declarations)) === 'href'
         ))
         const value = externalValue(href?.value, declarations)
-        if (value && !isReviewedLegalNavigation(value)) found = true
+        if (value && !isReviewedLegalNavigation(value)) found = value
       }
     }
-    if (node.type === 'NewExpression' && node.callee?.type === 'Identifier' && ['Worker', 'SharedWorker'].includes(node.callee.name) && externalValue(node.arguments[0], declarations)) found = true
+    if (node.type === 'NewExpression' && node.callee?.type === 'Identifier' && ['Worker', 'SharedWorker'].includes(node.callee.name) && externalValue(node.arguments[0], declarations)) found = externalValue(node.arguments[0], declarations)
     if (node.type === 'AssignmentExpression' && ['src', 'href'].includes(propertyName(node.left))) {
       const value = externalValue(node.right, declarations)
-      if (value && (propertyName(node.left) === 'src' || !isReviewedLegalNavigation(value))) found = true
+      if (value && (propertyName(node.left) === 'src' || !isReviewedLegalNavigation(value))) found = value
     }
     for (const [key, value] of Object.entries(node)) {
       if (key === 'start' || key === 'end' || key === 'loc') continue
@@ -146,6 +151,14 @@ function hasExternalManifestSink(contents) {
   return visit(value)
 }
 
+function hasUnreviewedHtmlNavigation(contents) {
+  for (const match of contents.matchAll(/<a\b[^>]*\bhref\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/gi)) {
+    const value = match[1] || match[2] || match[3] || ''
+    if (/^(?:https?:)?\/\//i.test(value) && !isReviewedLegalNavigation(value)) return true
+  }
+  return false
+}
+
 export function assertNoExternalRuntimeOrigins(artifactName, contents) {
   const lowerName = artifactName.toLowerCase()
   const patterns = lowerName.endsWith('.css')
@@ -157,9 +170,14 @@ export function assertNoExternalRuntimeOrigins(artifactName, contents) {
         : lowerName.endsWith('.json')
           ? []
           : []
-  const javascriptSink = (lowerName.endsWith('.js') || lowerName.endsWith('.mjs')) && hasExternalJavaScriptSink(contents)
-  if (patterns.some(pattern => pattern.test(contents)) || javascriptSink || (lowerName.endsWith('.json') && hasExternalManifestSink(contents))) {
-    throw new Error(`${artifactName} contains an external runtime origin in an automatic sink.`)
+  const javascriptSink = (lowerName.endsWith('.js') || lowerName.endsWith('.mjs')) ? hasExternalJavaScriptSink(contents) : null
+  if (
+    patterns.some(pattern => pattern.test(contents))
+    || javascriptSink
+    || (lowerName.endsWith('.html') && hasUnreviewedHtmlNavigation(contents))
+    || (lowerName.endsWith('.json') && hasExternalManifestSink(contents))
+  ) {
+    throw new Error(`${artifactName} contains an external runtime origin in an automatic sink${javascriptSink ? `: ${javascriptSink}` : ''}.`)
   }
   if (forbiddenTestServiceWorker.test(contents)) {
     throw new Error(`${artifactName} contains the test-only service worker.`)

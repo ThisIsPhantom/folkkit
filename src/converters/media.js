@@ -36,6 +36,12 @@ function mediaRuntimeUnavailableError() {
   return error
 }
 
+function mediaFailure(code) {
+  const error = new Error(code)
+  error.code = code
+  return error
+}
+
 export function createFFmpegRuntime({
   baseURL,
   createFFmpeg,
@@ -145,8 +151,8 @@ export async function preflightMediaFile(file, {
   if (type === 'audio/wav' || type === 'audio/wave' || name.endsWith('.wav')) {
     const prefix = new Uint8Array(await file.slice(0, 44).arrayBuffer())
     const duration = readWavDurationSeconds(prefix)
-    if (duration !== null && duration > MEDIA_LIMITS.maxDurationSeconds) throw resourceLimitError()
-    return { durationSeconds: duration, reliable: duration !== null }
+    if (duration === null || duration > MEDIA_LIMITS.maxDurationSeconds) throw resourceLimitError()
+    return { durationSeconds: duration, reliable: true }
   }
   if (!type.startsWith('audio/') && !type.startsWith('video/')) throw resourceLimitError()
   if (typeof createMediaElement !== 'function' || typeof urlApi?.createObjectURL !== 'function') throw resourceLimitError()
@@ -192,12 +198,12 @@ export async function executeFfmpegWithBudget(ffmpeg, args, {
     '-timelimit', '120',
     ...args.slice(0, -1),
     '-t', String(MEDIA_LIMITS.maxDurationSeconds),
-    '-fs', String(MEDIA_LIMITS.maxOutputBytes + 1),
+    '-fs', String(MEDIA_LIMITS.maxOutputBytes),
     output,
   ]
   let timer
   try {
-    return await Promise.race([
+    const exitCode = await Promise.race([
       ffmpeg.exec(boundedArgs),
       new Promise((_resolve, reject) => {
         timer = setTimeout(() => {
@@ -206,9 +212,16 @@ export async function executeFfmpegWithBudget(ffmpeg, args, {
         }, maxElapsedMs)
       }),
     ])
+    if (exitCode !== 0) throw mediaFailure('conversion_failed')
+    return exitCode
   } finally {
     clearTimeout(timer)
   }
+}
+
+export function assertMediaOutputBudget(blob) {
+  if (!blob || !Number.isFinite(Number(blob.size)) || Number(blob.size) >= MEDIA_LIMITS.maxOutputBytes) throw resourceLimitError()
+  return blob
 }
 
 async function getFFmpeg() {
@@ -246,8 +259,7 @@ async function convertMedia(file, outputExt, mimeType, onProgress) {
 
       const data = await ffmpeg.readFile(outputName)
       const blob = new Blob([data], { type: mimeType })
-      if (blob.size > MEDIA_LIMITS.maxOutputBytes) throw resourceLimitError()
-      return blob
+      return assertMediaOutputBudget(blob)
     } finally {
       detachProgress()
     }
