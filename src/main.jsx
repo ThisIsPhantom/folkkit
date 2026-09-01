@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/global.css'
+import './components/shell/shell.css'
+import './pages/pages.css'
 import App from './App.jsx'
 import { ToastProvider } from './components/Toast'
 import { I18nProvider } from './i18n/I18nProvider'

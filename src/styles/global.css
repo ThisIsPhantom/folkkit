@@ -17,13 +17,15 @@ button, [role="button"] {
 button:focus-visible,
 select:focus-visible,
 input:focus-visible,
+[href]:focus-visible,
 [role="button"]:focus-visible {
   outline: 2px solid var(--focus-ring) !important;
   outline-offset: 2px;
 }
 
 textarea:focus-visible {
-  outline: none !important;
+  outline: 2px solid var(--focus-ring) !important;
+  outline-offset: -2px;
 }
 
 ::selection {
@@ -32,17 +34,38 @@ textarea:focus-visible {
 }
 
 :root {
-  --bg: #faf8f5;
-  --bg-raised: #f0ede6;
-  --bg-hover: #e6e3da;
-  --text: #2c2a25;
-  --text-secondary: #4a4842;
-  --shadow: #d6d3cb;
+  color-scheme: light;
+  --shell: #f4eee5;
+  --shell-raised: #fffaf3;
+  --shell-soft: #ebe2d6;
+  --shell-border: rgba(37, 50, 49, 0.14);
+  --shell-border-strong: rgba(37, 50, 49, 0.28);
+  --workbench: #253231;
+  --workbench-raised: #31413f;
+  --workbench-hover: #3b4d4a;
+  --workbench-border: #526360;
+  --ink: #253231;
+  --ink-muted: #53615e;
+  --paper: #f7f1e8;
+  --paper-muted: #d4ddd7;
+  --clay: #b66f4a;
+  --clay-strong: #8b4f31;
+  --amber: #d2a261;
+  --sage: #71836d;
+  --focus: #8b593d;
+  --bg: var(--shell);
+  --bg-raised: var(--shell-raised);
+  --bg-hover: var(--shell-soft);
+  --text: var(--ink);
+  --text-secondary: var(--ink-muted);
+  --shadow: rgba(37, 50, 49, 0.18);
   --error: #b35c45;
   --error-bg: #f5ebe7;
-  --focus-ring: rgba(90, 87, 80, 0.5);
+  --focus-ring: var(--focus);
 
-  --radius-sm: 3px;
+  --radius-sm: 0.375rem;
+  --radius-control: 0.5rem;
+  --radius-surface: 0.875rem;
   --radius-pill: 999px;
 
   --transition: 150ms ease;
@@ -54,15 +77,34 @@ textarea:focus-visible {
 }
 
 [data-theme="dark"] {
-  --bg: #1a1916;
-  --bg-raised: #302d28;
-  --bg-hover: #413d36;
-  --text: #ede9e0;
-  --text-secondary: #bfb9ab;
-  --shadow: #0a0908;
+  color-scheme: dark;
+  --shell: #1f2826;
+  --shell-raised: #273230;
+  --shell-soft: #31413f;
+  --shell-border: rgba(247, 241, 232, 0.14);
+  --shell-border-strong: rgba(247, 241, 232, 0.26);
+  --workbench: #18201f;
+  --workbench-raised: #253231;
+  --workbench-hover: #31413f;
+  --workbench-border: #4b5b58;
+  --ink: #f7f1e8;
+  --ink-muted: #c4cec7;
+  --paper: #f7f1e8;
+  --paper-muted: #c4cec7;
+  --clay: #d48b64;
+  --clay-strong: #e0a17d;
+  --amber: #ddb373;
+  --sage: #98aa93;
+  --focus: #e0ad80;
+  --bg: var(--shell);
+  --bg-raised: var(--shell-raised);
+  --bg-hover: var(--shell-soft);
+  --text: var(--ink);
+  --text-secondary: var(--ink-muted);
+  --shadow: transparent;
   --error: #d4836a;
   --error-bg: #2e2420;
-  --focus-ring: rgba(176, 171, 156, 0.5);
+  --focus-ring: var(--focus);
 }
 
 .skip-link {
@@ -97,12 +139,17 @@ textarea:focus-visible {
 }
 
 body {
-  font-family: 'Gothic A1', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  min-width: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--shell);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 200ms ease, color 200ms ease;
+}
+
+.display {
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .app {

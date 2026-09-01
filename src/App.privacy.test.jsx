@@ -17,8 +17,7 @@ test('ignores and does not rewrite the legacy tip preference', async () => {
   const user = userEvent.setup()
   renderWithProviders(<App />)
 
-  const dismissButton = screen.getByRole('button', { name: 'Dismiss' })
-  await user.click(dismissButton)
+  await user.click(screen.getByRole('button', { name: 'Dunkles Design' }))
 
   expect(localStorage.getItem('convert-everything-tip-seen')).toBe('legacy-value')
 })

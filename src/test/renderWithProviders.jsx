@@ -6,7 +6,7 @@ export function renderWithProviders(ui, { locale = 'de' } = {}) {
   function Providers({ children }) {
     return (
       <div lang={locale}>
-        <I18nProvider>
+        <I18nProvider initialLocale={locale}>
           <ToastProvider>{children}</ToastProvider>
         </I18nProvider>
       </div>

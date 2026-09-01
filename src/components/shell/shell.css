@@ -1,0 +1,238 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  flex-direction: column;
+  isolation: isolate;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--shell-border);
+  background: var(--shell-raised);
+}
+
+.site-header__inner,
+.site-footer__inner {
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding-inline: max(1.5rem, env(safe-area-inset-left));
+}
+
+.site-header__inner {
+  display: flex;
+  min-height: 5rem;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.site-header__brand-group,
+.site-header__actions,
+.site-nav,
+.locale-switch,
+.privacy-status {
+  display: flex;
+  align-items: center;
+}
+
+.site-header__brand-group {
+  min-width: 0;
+  flex: 1;
+  gap: 1rem;
+}
+
+.wordmark {
+  min-height: 2.75rem;
+  color: var(--ink);
+  font-size: 1.75rem;
+  line-height: 2.75rem;
+  text-decoration: none;
+}
+
+.privacy-status {
+  width: fit-content;
+  gap: 0.5rem;
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.privacy-status__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--sage);
+}
+
+.site-nav {
+  gap: 0.25rem;
+}
+
+.site-nav__link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding-inline: 0.875rem;
+  border-radius: var(--radius-control);
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.site-nav__link:hover,
+.site-nav__link[aria-current="page"] {
+  background: var(--shell-soft);
+  color: var(--ink);
+}
+
+.site-header__actions {
+  flex: 1;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.locale-switch {
+  padding: 0.1875rem;
+  border: 1px solid var(--shell-border);
+  border-radius: var(--radius-control);
+}
+
+.locale-switch button,
+.theme-button,
+.menu-button {
+  min-height: 2.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-radius: calc(var(--radius-control) - 0.1875rem);
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.locale-switch button[aria-pressed="true"] {
+  background: var(--shell-soft);
+  color: var(--ink);
+}
+
+.theme-button,
+.menu-button {
+  border: 1px solid var(--shell-border);
+  color: var(--ink);
+}
+
+.theme-button:hover,
+.menu-button:hover {
+  background: var(--shell-soft);
+}
+
+.menu-button,
+.site-nav--mobile {
+  display: none;
+}
+
+.site-nav--mobile {
+  padding: 0.75rem max(1.5rem, env(safe-area-inset-left)) 1rem;
+  border-top: 1px solid var(--shell-border);
+}
+
+.shell__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.site-footer {
+  border-top: 1px solid var(--shell-border);
+  background: var(--shell-raised);
+  color: var(--ink-muted);
+}
+
+.site-footer__inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-block: 2rem max(2rem, env(safe-area-inset-bottom));
+}
+
+.site-footer__inner > p {
+  max-width: 38ch;
+  line-height: 1.6;
+}
+
+.site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.25rem 1rem;
+  list-style: none;
+}
+
+.site-footer a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--ink);
+  font-weight: 400;
+  text-underline-offset: 0.2em;
+}
+
+@media (max-width: 52rem) {
+  .site-header__inner {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-block: 0.875rem;
+  }
+
+  .site-header__brand-group {
+    flex-basis: calc(100% - 7rem);
+  }
+
+  .site-header__actions {
+    flex: 1 0 100%;
+    justify-content: space-between;
+  }
+
+  .site-nav--desktop,
+  .privacy-status--compact {
+    display: none;
+  }
+
+  .menu-button {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-nav--mobile {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .site-nav--mobile .privacy-status {
+    width: 100%;
+    padding: 0.75rem 0.875rem 0;
+  }
+
+  .site-footer__inner {
+    flex-direction: column;
+  }
+
+  .site-footer__links {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 26rem) {
+  .site-header__inner,
+  .site-footer__inner {
+    padding-inline: 1rem;
+  }
+
+  .site-header__actions {
+    align-items: stretch;
+  }
+
+  .theme-button,
+  .menu-button {
+    padding-inline: 0.625rem;
+  }
+}

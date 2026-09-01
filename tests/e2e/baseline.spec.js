@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-test('loads the converter shell at the local base URL', async ({ page }) => {
+test('loads the Folkkit shell at the local base URL', async ({ page }) => {
   await page.goto('./')
 
-  await expect(page.getByRole('heading', { name: 'Convert Everything' })).toBeVisible()
-  await expect(page.getByRole('textbox', { name: 'Input text' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Datei konvertieren' })).toBeVisible()
 })

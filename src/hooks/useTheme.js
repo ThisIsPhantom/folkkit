@@ -15,7 +15,7 @@ export function useTheme() {
     localStorage.setItem(preferenceKeys.theme, theme)
     // Update PWA theme color
     const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1a1916' : '#faf8f5')
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1f2826' : '#f4eee5')
   }, [theme])
 
   const toggle = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'))
