@@ -157,8 +157,9 @@ try {
     & git -C $validationFixture commit -m 'validation fixture' | Out-Null
 
     $fakeBun = Join-Path $temporaryRoot 'fake-bun.cmd'
-    $fakeBunSource = @'
+$fakeBunSource = @'
 @echo off
+echo fake bun stdout
 if /I "%~1"=="install" powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%FOLKKIT_LINE_ENDING_CHECK%" || exit /b 42
 if /I "%~1"=="install" exit /b 0
 if /I "%~1"=="run" if /I "%~2"=="scripts/build-site.mjs" goto build

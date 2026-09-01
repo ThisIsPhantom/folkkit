@@ -65,9 +65,11 @@ function Invoke-Bun {
     $previousErrorAction = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        & $script:bunExecutable @Arguments
-        if ($LASTEXITCODE -ne 0) {
-            throw "Bun command failed ($LASTEXITCODE): bun $($Arguments -join ' ')"
+        $output = @(& $script:bunExecutable @Arguments 2>&1)
+        $exitCode = $LASTEXITCODE
+        foreach ($line in $output) { Write-Host $line }
+        if ($exitCode -ne 0) {
+            throw "Bun command failed ($exitCode): bun $($Arguments -join ' ')"
         }
     } finally {
         $ErrorActionPreference = $previousErrorAction
