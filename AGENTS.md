@@ -43,4 +43,6 @@
 - Before claiming completion, run lint, unit/contract tests, production build, browser tests, accessibility checks, and network privacy checks appropriate to the change.
 - `main` contains the complete project and source history.
 - `plesk` is hosting-only and must be generated from a verified `main` commit by a repository-owned allowlist workflow. Never edit or force-push it manually.
+- `Publish-PleskBranch.ps1 -ValidateOnly` may inspect any clean local source ref through an isolated archive and must not change branches, refs, or the worktree. `-Push` is restricted to a clean, synchronized `main` tracking `origin/main` and must use the operator-gated release build.
+- Updating `plesk` publishes static GitHub branch contents only. It does not authorize or perform a Hosttech login, checkout, upload, DNS change, or live deployment.
 - GitHub publication after the initial private foundation, public visibility changes, domain registration, and live Hosttech deployment require explicit user authorization.

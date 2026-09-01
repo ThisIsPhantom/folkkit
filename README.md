@@ -30,6 +30,20 @@ VITE_PUBLIC_CONTACT_EMAIL=
 
 Use `|` between postal-address lines. `bun run build:release` rejects missing or unchanged example values and requires an exact clean Git `HEAD`. It archives that validated commit into a temporary source tree, installs the committed lockfile from scratch with lifecycle scripts disabled, verifies the committed notices, synchronizes the exact runtime assets, and builds with the validated commit. Only the resulting `dist` directory is copied back. Do not commit real operator details to the repository.
 
+## Hosttech and `plesk` contract
+
+`bun run build:site` creates a non-public validation artifact in `dist`. It synchronizes the same-origin runtime assets, checks the committed third-party notices, runs Vite, generates the service worker, applies the bundle budgets, removes build-only manifests, and copies the reviewed `hosting/.htaccess`. This command does not satisfy the public operator gate and does not publish anything.
+
+Validate a clean local feature revision without changing a branch, ref, or working file:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-PleskBranch.ps1 -SourceRef feature/folkkit-v1 -TargetBranch plesk -Remote origin -ValidateOnly
+```
+
+The validator builds an isolated `git archive`, installs `bun.lock` with lifecycle scripts disabled, checks the runtime-only allowlist, compares the Git tree with `dist`, and reports its file count and SHA-256 tree hash.
+
+`-Push` is a separate, manual operation. It accepts only a clean local `main` that tracks and exactly matches `origin/main`. It uses `build:release`, so approved public operator values and the exact archived commit remain mandatory. It creates the hosting commit with a temporary Git index and pushes without force. It does not log in to Hosttech, upload files, change DNS, or perform a live deployment.
+
 `bun run generate:notices` regenerates `THIRD_PARTY_NOTICES.md` deterministically from the locked runtime dependency graph and `scripts/runtime-assets.json`. Commit that exact output before a release build. Normal development builds do not rewrite the tracked notice file.
 
 ## Stack

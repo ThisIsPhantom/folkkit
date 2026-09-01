@@ -1,0 +1,45 @@
+name: Publish hosting branch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-plesk
+  cancel-in-progress: false
+
+jobs:
+  publish-plesk:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out synchronized main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.3
+
+      - name: Install the locked dependency graph
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Bind local main to origin/main
+        run: git branch --set-upstream-to=origin/main main
+
+      - name: Publish the generated GitHub hosting branch
+        shell: powershell
+        env:
+          VITE_PUBLIC_OPERATOR_NAME: ${{ secrets.FOLKKIT_PUBLIC_OPERATOR_NAME }}
+          VITE_PUBLIC_OPERATOR_ADDRESS: ${{ secrets.FOLKKIT_PUBLIC_OPERATOR_ADDRESS }}
+          VITE_PUBLIC_CONTACT_EMAIL: ${{ secrets.FOLKKIT_PUBLIC_CONTACT_EMAIL }}
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-PleskBranch.ps1 -SourceRef main -TargetBranch plesk -Remote origin -Push
+
+      - name: State the deployment boundary
+        run: Write-Output 'The plesk branch was updated. No Hosttech login, upload, DNS change, or live deployment was performed.'

@@ -72,7 +72,7 @@ export async function runReleaseBuild({
     await assertExactRuntimeAssets({ vendorDirectory: join(sourceDirectory, 'public', 'vendor') })
     await runCommand({
       executable: bunExecutable,
-      args: ['run', 'build'],
+      args: ['run', 'scripts/build-site.mjs', '--release-artifact'],
       cwd: sourceDirectory,
       env: releaseEnv,
       label: 'build',

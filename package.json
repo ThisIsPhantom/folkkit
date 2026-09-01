@@ -10,6 +10,7 @@
     "dev": "vite",
     "prebuild": "node scripts/sync-runtime-assets.mjs",
     "build": "vite build && node scripts/generate-service-worker.mjs && node scripts/check-bundle-budget.mjs",
+    "build:site": "bun run scripts/build-site.mjs",
     "generate:notices": "node scripts/generate-third-party-notices.mjs",
     "check:notices": "node scripts/generate-third-party-notices.mjs --check",
     "validate:public-config": "bun run scripts/validate-public-config.mjs",

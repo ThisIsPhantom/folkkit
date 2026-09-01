@@ -39,3 +39,6 @@ coverage
 .worktrees/
 public/vendor/
 test-results/
+
+# Generated only inside isolated release source trees
+.folkkit-release-commit
