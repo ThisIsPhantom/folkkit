@@ -241,6 +241,9 @@ export const formats = [
   { id: 'twip', name: 'Twip (1/1440 in)', group: 'Typography', placeholder: '1440' },
 ]
 
+// The complete inherited conversion graph remains available through Convert.
+export const releasedFormats = formats
+
 // Hash helper
 async function digest(algo, input) {
   const data = new TextEncoder().encode(input)

@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { converters } from './converters'
-import { getFormatById } from './formats'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { getFormatById, releasedFormats } from './formats'
 import { useTheme } from './hooks/useTheme'
+import { useI18n } from './i18n'
+import { findReleasedTool, getReleasedCategories, getReleasedTools } from './catalog/releaseCatalog'
 import ConvertPanel from './components/ConvertPanel'
 import History from './components/History'
 import KeyboardHelp from './components/KeyboardHelp'
@@ -42,6 +43,9 @@ function ensureCanonical() {
 
 function App() {
   const { theme, toggle } = useTheme()
+  const { locale } = useI18n()
+  const releasedTools = useMemo(() => getReleasedTools(locale), [locale])
+  const releasedCategories = useMemo(() => getReleasedCategories(locale), [locale])
 
   const [convertFrom, setConvertFrom] = useState(() => readUrlState(window.location.search, window.location.hash).from)
   const [convertTo, setConvertTo] = useState(() => readUrlState(window.location.search, window.location.hash).to)
@@ -49,7 +53,7 @@ function App() {
   const [activeConverter, setActiveConverter] = useState(() => {
     // Check ?tool= param first, then #tool/ hash for backward compat
     const { toolId } = readUrlState(window.location.search, window.location.hash)
-    if (toolId) return converters.find(cv => cv.id === toolId) || null
+    if (toolId) return findReleasedTool(toolId, locale)
     return null
   })
 
@@ -147,7 +151,7 @@ function App() {
     const handlePop = () => {
       const { from, to, toolId } = readUrlState(window.location.search, window.location.hash)
       if (toolId) {
-        const c = converters.find(cv => cv.id === toolId)
+        const c = releasedTools.find(tool => tool.id === toolId)
         if (c) {
           setActiveConverter(c)
           return
@@ -159,7 +163,7 @@ function App() {
     }
     window.addEventListener('popstate', handlePop)
     return () => window.removeEventListener('popstate', handlePop)
-  }, [])
+  }, [releasedTools])
 
   const handleConverterChange = useCallback((converter) => {
     if (converter) {
@@ -195,7 +199,7 @@ function App() {
       if (!file) return
       const converterId = getConverterForFile(file)
       if (!converterId) return
-      const c = converters.find(cv => cv.id === converterId)
+      const c = releasedTools.find(tool => tool.id === converterId)
       if (c) handleConverterChange(c)
     }
     document.addEventListener('dragenter', handleDragEnter)
@@ -208,7 +212,7 @@ function App() {
       document.removeEventListener('dragover', handleDragOver)
       document.removeEventListener('drop', handleDrop)
     }
-  }, [activeConverter, handleConverterChange])
+  }, [activeConverter, handleConverterChange, releasedTools])
 
   // Global paste: route clipboard images to image converter
   useEffect(() => {
@@ -221,7 +225,7 @@ function App() {
       for (const item of items) {
         if (item.type.startsWith('image/')) {
           e.preventDefault()
-          const c = converters.find(cv => cv.id === 'image-resize')
+          const c = releasedTools.find(tool => tool.id === 'image-resize')
           if (c) handleConverterChange(c)
           return
         }
@@ -229,7 +233,7 @@ function App() {
     }
     document.addEventListener('paste', handlePaste)
     return () => document.removeEventListener('paste', handlePaste)
-  }, [activeConverter, handleConverterChange])
+  }, [activeConverter, handleConverterChange, releasedTools])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -317,6 +321,9 @@ function App() {
               onReuseConsumed={handleReuseConsumed}
               activeConverter={activeConverter}
               onConverterChange={handleConverterChange}
+              releasedFormats={releasedFormats}
+              releasedTools={releasedTools}
+              categories={releasedCategories}
             />
           </ErrorBoundary>
           {!activeConverter && <History onSelect={handleHistorySelect} />}

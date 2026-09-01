@@ -41,3 +41,9 @@ export const categories = [
   { id: 'media', name: 'Media' },
   { id: 'document', name: 'Document' },
 ]
+
+const converterById = new Map(converters.map(converter => [converter.id, converter]))
+
+export function findConverter(id) {
+  return converterById.get(id) || null
+}

@@ -1,11 +1,14 @@
 import { render } from '@testing-library/react'
 import { ToastProvider } from '../components/Toast'
+import { I18nProvider } from '../i18n/I18nProvider'
 
 export function renderWithProviders(ui, { locale = 'de' } = {}) {
   function Providers({ children }) {
     return (
       <div lang={locale}>
-        <ToastProvider>{children}</ToastProvider>
+        <I18nProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </I18nProvider>
       </div>
     )
   }

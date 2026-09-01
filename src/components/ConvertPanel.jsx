@@ -113,7 +113,7 @@ const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
 function getFavPairs() { try { return JSON.parse(localStorage.getItem(FAV_PAIRS_KEY)) || [] } catch { return [] } }
 function saveFavPairs(pairs) { localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(pairs)) }
 
-function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed }) {
+function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = formats, releasedTools = [], categories = [] }) {
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
   const [batchMode, setBatchMode] = useState(false)
@@ -746,6 +746,9 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
             availableFormatIds={allFromIds}
             currentFormatValue={isToolMode ? null : from}
             currentConverterValue={isToolMode ? activeConverter.id : null}
+            releasedFormats={releasedFormats}
+            releasedTools={releasedTools}
+            categories={categories}
           />
         </div>
 
@@ -783,6 +786,9 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                 availableFormatIds={toIds}
                 currentFormatValue={to}
                 currentConverterValue={null}
+                releasedFormats={releasedFormats}
+                releasedTools={releasedTools}
+                categories={categories}
               />
             </div>
             <div className="selector-extra-actions">

@@ -1,14 +1,23 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
-import { formats } from '../formats'
-import { converters } from '../converters'
+import { preferenceKeys } from '../privacy/preferences'
 import { fuzzyFilter } from '../utils/fuzzy'
 import './ToolPicker.css'
 
-const RECENT_FORMATS_KEY = 'convert-everything-recent-formats'
 const MAX_RECENT = 5
 
-function getRecentFormats() {
-  try { return JSON.parse(localStorage.getItem(RECENT_FORMATS_KEY)) || [] } catch { return [] }
+function getRecentIds() {
+  try {
+    const recentIds = JSON.parse(localStorage.getItem(preferenceKeys.recentTools))
+    return Array.isArray(recentIds) ? recentIds.filter(id => typeof id === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+function saveRecentId(id) {
+  const recentIds = getRecentIds().filter(recentId => recentId !== id)
+  recentIds.unshift(id)
+  localStorage.setItem(preferenceKeys.recentTools, JSON.stringify(recentIds.slice(0, MAX_RECENT)))
 }
 
 const categoryTabs = [
@@ -71,15 +80,10 @@ for (const [tab, cats] of Object.entries(TAB_TOOL_CATEGORIES)) {
   for (const c of cats) toolCatToTab[c] = tab
 }
 
-// Pre-filter tools once at module scope (converters is a module-level constant)
 const allToolCategories = Object.values(TAB_TOOL_CATEGORIES).flat()
-const allSearchableTools = converters.filter(c => allToolCategories.includes(c.category))
 
-// Pre-index format lookup for O(1) access
-const formatById = new Map(formats.map(f => [f.id, f]))
-
-function getTabForFormat(formatId) {
-  const f = formatById.get(formatId)
+function getTabForFormat(formatId, releasedFormats) {
+  const f = releasedFormats.find(format => format.id === formatId)
   if (!f) return 'text'
   return groupToTab[f.group] || 'text'
 }
@@ -88,13 +92,13 @@ function getTabForConverter(converter) {
   return toolCatToTab[converter.category] || 'utility'
 }
 
-function getInitialTab(mode, currentFormatValue, currentConverterValue) {
+function getInitialTab(mode, currentFormatValue, currentConverterValue, releasedFormats, releasedTools) {
   if (mode === 'to') return 'text'
   if (currentConverterValue) {
-    const conv = converters.find(c => c.id === currentConverterValue)
+    const conv = releasedTools.find(tool => tool.id === currentConverterValue)
     if (conv) return getTabForConverter(conv)
   }
-  if (currentFormatValue) return getTabForFormat(currentFormatValue)
+  if (currentFormatValue) return getTabForFormat(currentFormatValue, releasedFormats)
   return 'text'
 }
 
@@ -114,9 +118,12 @@ function ToolPickerContent({
   availableFormatIds,
   currentFormatValue,
   currentConverterValue,
+  releasedFormats = [],
+  releasedTools = [],
+  categories = [],
 }) {
   const [query, setQuery] = useState('')
-  const [activeTab, setActiveTab] = useState(() => getInitialTab(mode, currentFormatValue, currentConverterValue))
+  const [activeTab, setActiveTab] = useState(() => getInitialTab(mode, currentFormatValue, currentConverterValue, releasedFormats, releasedTools))
   const [highlighted, setHighlighted] = useState(-1)
   const searchRef = useRef(null)
   const listRef = useRef(null)
@@ -131,7 +138,7 @@ function ToolPickerContent({
       // Scroll the active tab button into view on mobile
       if (tabsRef.current) {
         const activeBtn = tabsRef.current.querySelector('.tool-picker-tab.active')
-        activeBtn?.scrollIntoView({ block: 'nearest', inline: 'center' })
+        activeBtn?.scrollIntoView?.({ block: 'nearest', inline: 'center' })
       }
     })
   }, [])
@@ -145,9 +152,9 @@ function ToolPickerContent({
   const allAvailableFormats = useMemo(() => {
     if (!open) return []
     return availableFormatIds
-      ? formats.filter(f => availableFormatIds.includes(f.id))
-      : formats
-  }, [open, availableFormatIds])
+      ? releasedFormats.filter(format => availableFormatIds.includes(format.id))
+      : releasedFormats
+  }, [open, availableFormatIds, releasedFormats])
 
   // Tab-scoped format list (grouped)
   const { tabGrouped, tabFlatFormats, tabFormatIndexMap } = useMemo(() => {
@@ -174,16 +181,16 @@ function ToolPickerContent({
     if (!open || mode === 'to') return []
     const cats = TAB_TOOL_CATEGORIES[activeTab] || []
     if (cats.length === 0) return []
-    return converters.filter(c => cats.includes(c.category))
-  }, [open, mode, activeTab])
+    return releasedTools.filter(tool => cats.includes(tool.category))
+  }, [open, mode, activeTab, releasedTools])
 
   // "to" mode format list
   const toAvailableFormats = useMemo(() => {
     if (!open || mode !== 'to') return []
     return availableFormatIds
-      ? formats.filter(f => availableFormatIds.includes(f.id))
-      : formats
-  }, [open, mode, availableFormatIds])
+      ? releasedFormats.filter(format => availableFormatIds.includes(format.id))
+      : releasedFormats
+  }, [open, mode, availableFormatIds, releasedFormats])
 
   const { toGrouped, toFlatFormats, toFormatIndexMap } = useMemo(() => {
     if (!open || mode !== 'to') return { toGrouped: {}, toFlatFormats: [], toFormatIndexMap: new Map() }
@@ -193,7 +200,7 @@ function ToolPickerContent({
       ? fuzzyFilter(q, toAvailableFormats, f => [f.name, f.id, f.group])
       : toAvailableFormats
 
-    const recent = getRecentFormats().filter(id => filtered.some(f => f.id === id))
+    const recent = getRecentIds().filter(id => filtered.some(f => f.id === id))
     const recentFormats = recent.map(id => filtered.find(f => f.id === id)).filter(Boolean)
     const recentIds = new Set(recent)
 
@@ -217,9 +224,10 @@ function ToolPickerContent({
     if (!q) return { searchFormats: [], searchTools: [] }
 
     const filteredFormats = fuzzyFilter(q, allAvailableFormats, f => [f.name, f.id, f.group])
-    const filteredTools = fuzzyFilter(q, allSearchableTools, c => [c.name, c.description, c.category || ''])
+    const searchableTools = releasedTools.filter(tool => allToolCategories.includes(tool.category))
+    const filteredTools = fuzzyFilter(q, searchableTools, tool => [tool.name, tool.description, tool.id, tool.categoryName || '', tool.category || ''])
     return { searchFormats: filteredFormats, searchTools: filteredTools }
-  }, [open, mode, query, allAvailableFormats])
+  }, [open, mode, query, allAvailableFormats, releasedTools])
 
   const isSearchMode = query.trim().length > 0
 
@@ -264,19 +272,18 @@ function ToolPickerContent({
     if (clampedHighlighted < 0 || !listRef.current) return
     const items = listRef.current.querySelectorAll('[data-picker-item]')
     if (items[clampedHighlighted]) {
-      items[clampedHighlighted].scrollIntoView({ block: 'nearest' })
+      items[clampedHighlighted].scrollIntoView?.({ block: 'nearest' })
     }
   }, [clampedHighlighted])
 
   const handleSelectFormat = useCallback((id) => {
-    const list = getRecentFormats().filter(f => f !== id)
-    list.unshift(id)
-    localStorage.setItem(RECENT_FORMATS_KEY, JSON.stringify(list.slice(0, MAX_RECENT)))
+    saveRecentId(id)
     onSelectFormat(id)
     onClose()
   }, [onSelectFormat, onClose])
 
   const handleSelectConverter = useCallback((converter) => {
+    saveRecentId(converter.id)
     onSelectConverter(converter)
     onClose()
   }, [onSelectConverter, onClose])
@@ -335,6 +342,7 @@ function ToolPickerContent({
   const isToMode = mode === 'to'
   const hasTabFormats = tabFlatFormats.length > 0
   const hasTabTools = tabTools.length > 0
+  const categoryNames = new Map(categories.map(category => [category.id, category.name]))
 
   return (
     <div className={`tool-picker${align === 'right' ? ' align-right' : ''}`} ref={overlayRef}>
@@ -366,7 +374,7 @@ function ToolPickerContent({
               className={`tool-picker-tab${activeTab === tab.id ? ' active' : ''}`}
               onClick={() => { setActiveTab(tab.id); setHighlighted(-1) }}
             >
-              {tab.name}
+              {categoryNames.get(tab.id) || tab.name}
             </button>
           ))}
         </div>
@@ -410,7 +418,7 @@ function ToolPickerContent({
                       onMouseEnter={() => setHighlighted(globalIdx)}
                     >
                       <span className="tool-picker-tool-name">{c.name}</span>
-                      <span className="tool-picker-tool-cat">{c.category}</span>
+                      <span className="tool-picker-tool-cat">{c.categoryName || c.category}</span>
                     </div>
                   )
                 })}
