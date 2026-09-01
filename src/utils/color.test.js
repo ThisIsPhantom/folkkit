@@ -1,5 +1,24 @@
 import { expect, test } from 'vitest'
-import { normalizeColorToHex } from './color'
+import { hexToRgb, normalizeColorToHex, parseHsl, parseHsv, parseRgb } from './color'
+
+test.each([
+  ['malformed HEX', () => hexToRgb('#ff000z')],
+  ['negative RGB', () => parseRgb('rgb(-1, 0, 0)')],
+  ['trailing RGB content', () => parseRgb('rgb(255, 0, 0)garbage')],
+  ['negative HSL', () => parseHsl('hsl(-1, 100%, 50%)')],
+  ['trailing HSV content', () => parseHsv('hsv(240, 100%, 100%)garbage')],
+])('rejects %s with a fully anchored parser', (_label, parse) => {
+  expect(parse()).toBeNull()
+})
+
+test('preserves the established valid color syntax and surrounding whitespace', () => {
+  expect(hexToRgb('  #ff0000  ')).toEqual({ r: 255, g: 0, b: 0 })
+  expect(hexToRgb('#f00')).toEqual({ r: 255, g: 0, b: 0 })
+  expect(parseRgb('  rgb(255, 0, 0)  ')).toEqual({ r: 255, g: 0, b: 0 })
+  expect(parseRgb('rgb(255 0 0)')).toEqual({ r: 255, g: 0, b: 0 })
+  expect(parseHsl(' hsl(120, 100%, 50%) ')).toEqual({ h: 120, s: 100, l: 50 })
+  expect(parseHsv(' hsv(240 100% 100%) ')).toEqual({ h: 240, s: 100, v: 100 })
+})
 
 test.each([
   ['color-hex', '#abc', '#aabbcc'],
