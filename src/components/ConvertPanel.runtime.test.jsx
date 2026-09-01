@@ -24,6 +24,80 @@ function panelProps(activeConverter, overrides = {}) {
 
 afterEach(() => {
   vi.restoreAllMocks()
+  delete navigator.share
+})
+
+test('native tool sharing includes only the localized description and content-free tool URL', async () => {
+  const user = userEvent.setup()
+  const share = vi.fn(async () => {})
+  Object.defineProperty(navigator, 'share', { configurable: true, value: share })
+  renderWithProviders(<ConvertPanel {...panelProps({
+    id: 'share-fixture',
+    name: 'Freigabe-Test',
+    description: 'Lokale Werkzeugbeschreibung',
+    convert: async value => ({ kind: 'text', text: `PRIVATE-RESULT-${value}` }),
+  })} />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Tool input text' }), 'PRIVATE-INPUT')
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Tool output text' })).toHaveValue('PRIVATE-RESULT-PRIVATE-INPUT'))
+  await user.click(screen.getByRole('button', { name: 'Werkzeug teilen' }))
+
+  expect(share).toHaveBeenCalledWith({
+    title: 'Freigabe-Test',
+    text: 'Lokale Werkzeugbeschreibung',
+    url: `${window.location.origin}${window.location.pathname}?tool=share-fixture`,
+  })
+  expect(JSON.stringify(share.mock.calls)).not.toContain('PRIVATE')
+})
+
+test('future incompatible implemented pair requires unchecked session-only confirmation and resets on pair change', async () => {
+  const user = userEvent.setup()
+  const convert = vi.fn(value => value.toUpperCase())
+  const resolvePairPolicy = (from, to) => ({ status: 'incompatible-but-implemented', pairKey: `${from}→${to}` })
+  const view = renderWithProviders(<ConvertPanel {...panelProps(null, {
+    resolveConvertFn: () => convert,
+    resolvePairPolicy,
+  })} />)
+  const input = screen.getByRole('textbox', { name: 'Input text' })
+  await user.type(input, 'private input')
+
+  const confirmation = screen.getByRole('checkbox', {
+    name: 'Ich weiss, was ich mache, und verstehe, dass diese Dateiformate nicht miteinander kompatibel sind.',
+  })
+  expect(confirmation).not.toBeChecked()
+  expect(convert).not.toHaveBeenCalled()
+  expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('')
+
+  await user.click(confirmation)
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('PRIVATE INPUT'))
+  expect(localStorage.getItem('folkkit:format-compatibility-confirmation')).toBeNull()
+  expect(window.location.href).not.toContain('compatibility')
+
+  convert.mockClear()
+  view.rerender(<ConvertPanel {...panelProps(null, {
+    to: 'html-ent',
+    resolveConvertFn: () => convert,
+    resolvePairPolicy,
+  })} />)
+  expect(screen.getByRole('checkbox', {
+    name: 'Ich weiss, was ich mache, und verstehe, dass diese Dateiformate nicht miteinander kompatibel sind.',
+  })).not.toBeChecked()
+  await Promise.resolve()
+  expect(convert).not.toHaveBeenCalled()
+})
+
+test('unsupported pair cannot be unlocked and explains that no conversion exists in English', async () => {
+  const resolveConvertFn = vi.fn(() => () => 'fake success')
+  renderWithProviders(<ConvertPanel {...panelProps(null, {
+    resolveConvertFn,
+    resolvePairPolicy: () => ({ status: 'unsupported', pairKey: 'text→base64' }),
+  })} />, { locale: 'en' })
+
+  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), { target: { value: 'private input' } })
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('No conversion exists for this format pair.')
+  expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+  expect(resolveConvertFn).not.toHaveBeenCalled()
 })
 
 test('renders a localized non-advice notice supplied by released metadata', () => {
@@ -171,7 +245,7 @@ test.each([
     target: { value: 'private raw state' },
   })
 
-  expect(await screen.findByRole('alert')).toHaveTextContent('Dieser Dateityp wird von diesem Werkzeug nicht unterstützt.')
+  expect(await screen.findByRole('alert')).toHaveTextContent('Für dieses Formatpaar existiert keine Konvertierung.')
   expect(screen.getByRole('alert')).not.toHaveTextContent('private raw state')
   expect(resolveConvertFn).not.toHaveBeenCalled()
 })
@@ -208,6 +282,20 @@ test('batch format conversion uses the same content-free runtime error boundary'
   expect(await screen.findByRole('alert')).toHaveTextContent('Die Verarbeitung ist fehlgeschlagen.')
   expect(document.body).not.toHaveTextContent('Alice batch payload')
   expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('')
+})
+
+test('batch conversion rejects excessive line count before invoking a conversion', async () => {
+  const user = userEvent.setup()
+  const convert = vi.fn(value => value)
+  renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn: () => convert })} />)
+  await user.click(screen.getByTitle('Enable batch mode'))
+
+  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+    target: { value: Array.from({ length: 501 }, () => 'x').join('\n') },
+  })
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('Die Eingabe überschreitet die sichere Verarbeitungsgrenze.')
+  expect(convert).not.toHaveBeenCalled()
 })
 
 test('a new format run aborts a slow prior run and its late result cannot overwrite output', async () => {

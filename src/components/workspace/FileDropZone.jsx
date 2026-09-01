@@ -12,6 +12,8 @@ export default function FileDropZone({ accept = '*', multiple = false, files = [
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef(null)
   const inputLabel = t(multiple ? 'workspaceTools.selectFiles' : 'workspaceTools.selectFile')
+  const previewFiles = files.slice(0, 8)
+  const hiddenFileCount = Math.max(0, files.length - previewFiles.length)
 
   useEffect(() => {
     if (files.length === 0 && inputRef.current) inputRef.current.value = ''
@@ -64,12 +66,13 @@ export default function FileDropZone({ accept = '*', multiple = false, files = [
       />
       {files.length > 0 ? (
         <div className="drop-zone-files">
-          {files.map((file, index) => (
+          {previewFiles.map((file, index) => (
             <span className="drop-zone-file" key={`${file.name}-${file.size}-${index}`}>
               <span className="drop-zone-filename">{file.name}</span>
               <span className="drop-zone-size">{formatSize(file.size)}</span>
             </span>
           ))}
+          {hiddenFileCount > 0 && <span className="drop-zone-more">{t('workspaceTools.moreFiles', { count: hiddenFileCount })}</span>}
         </div>
       ) : (
         <span className="drop-zone-hint">{t(multiple ? 'workspaceTools.dropFiles' : 'workspaceTools.dropFile')}</span>

@@ -1,8 +1,16 @@
 import { TEXT_LIMIT, TOOL_LIMITS, validateFiles } from './limits'
 import { createObjectUrlRegistry } from './objectUrlRegistry'
+import {
+  IMAGE_PREFIX_LIMIT_BYTES,
+  assertImageDimensionBudget,
+  assertOutputBudget,
+  getImageDimensionLimits,
+  parseImageDimensions,
+} from './workBudgets'
 
 const errorMessageKeys = Object.freeze({
   unsupported_type: 'errors.unsupportedType',
+  unsupported_pair: 'errors.unsupportedPair',
   unsupported_browser: 'errors.unsupportedBrowser',
   too_large: 'errors.tooLarge',
   invalid_file: 'errors.invalidFile',
@@ -10,6 +18,7 @@ const errorMessageKeys = Object.freeze({
   cancelled: 'errors.cancelled',
   conversion_failed: 'errors.conversionFailed',
   media_runtime_unavailable: 'errors.mediaRuntimeUnavailable',
+  resource_limit: 'errors.resourceLimit',
 })
 
 export class ToolRuntimeError extends Error {
@@ -56,6 +65,8 @@ async function readFilePrefix(file, length) {
 }
 
 async function validateSignatures(tool, files) {
+  const dimensionLimits = getImageDimensionLimits()
+  let aggregatePixels = 0
   for (const file of files) {
     if (hasPdfContract(tool)) {
       const prefix = await readFilePrefix(file, 5)
@@ -66,13 +77,20 @@ async function validateSignatures(tool, files) {
     const mime = String(file.type || '').toLowerCase()
     const name = String(file.name || '').toLowerCase()
     if (mime === 'image/png' || name.endsWith('.png')) {
-      const prefix = await readFilePrefix(file, 8)
+      const prefix = await readFilePrefix(file, IMAGE_PREFIX_LIMIT_BYTES)
       const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
       if (!signature.every((byte, index) => prefix[index] === byte)) throw runtimeError('invalid_file')
+      if (['images-to-pdf', 'png-to-jpg'].includes(tool?.id)) {
+        aggregatePixels += assertImageDimensionBudget(parseImageDimensions(prefix), dimensionLimits)
+      }
     } else if (mime === 'image/jpeg' || mime === 'image/jpg' || name.endsWith('.jpg') || name.endsWith('.jpeg')) {
-      const prefix = await readFilePrefix(file, 3)
+      const prefix = await readFilePrefix(file, IMAGE_PREFIX_LIMIT_BYTES)
       if (prefix[0] !== 0xff || prefix[1] !== 0xd8 || prefix[2] !== 0xff) throw runtimeError('invalid_file')
+      if (['images-to-pdf', 'jpg-to-png'].includes(tool?.id)) {
+        aggregatePixels += assertImageDimensionBudget(parseImageDimensions(prefix), dimensionLimits)
+      }
     }
+    if (aggregatePixels > dimensionLimits.maxAggregatePixels) throw runtimeError('resource_limit')
   }
 }
 
@@ -87,7 +105,7 @@ function normalizeResult(value) {
     && hasExactResultKeys(value, ['kind', 'text', 'info'], ['kind', 'text'])
     && typeof value.text === 'string'
   ) {
-    return { kind: 'text', text: value.text, ...info }
+    return assertOutputBudget({ kind: 'text', text: value.text, ...info })
   }
   if (
     (value.kind === 'download' || value.kind === 'image')
@@ -96,7 +114,7 @@ function normalizeResult(value) {
     && typeof value.filename === 'string'
     && value.filename.trim()
   ) {
-    return { kind: value.kind, blob: value.blob, filename: value.filename, ...info }
+    return assertOutputBudget({ kind: value.kind, blob: value.blob, filename: value.filename, ...info })
   }
   throw runtimeError('conversion_failed')
 }

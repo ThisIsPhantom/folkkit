@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, test } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
@@ -23,6 +23,15 @@ test('the drop zone owns selection state and exposes localized multi-file guidan
 
   expect(screen.getByText('eins.pdf')).toBeVisible()
   expect(screen.getByText('zwei.pdf')).toBeVisible()
+})
+
+test('renders only a bounded filename preview for excessive selections', () => {
+  const files = Array.from({ length: 20 }, (_, index) => new File(['x'], `private-${index}.pdf`, { type: 'application/pdf' }))
+  renderWithProviders(<DropZoneHarness />)
+  fireEvent.change(screen.getByLabelText('PDF-Dateien auswählen'), { target: { files } })
+
+  expect(screen.getAllByText(/private-\d+\.pdf/)).toHaveLength(8)
+  expect(screen.getByText('12 weitere Dateien')).toBeVisible()
 })
 
 test('progress is announced and Cancel remains an actual action', async () => {

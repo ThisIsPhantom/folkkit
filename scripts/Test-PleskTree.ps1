@@ -88,6 +88,9 @@ function Test-HostingSecurityPolicy {
         '(?m)^\s*Header always set X-Frame-Options "DENY"\s*$',
         '(?m)^\s*Header always set Referrer-Policy "no-referrer"\s*$',
         '(?m)^\s*Header always set Permissions-Policy "[^"]*camera=\(\)[^"]*microphone=\(\)[^"]*payment=\(\)[^"]*"\s*$',
+        '(?m)^\s*Header always set Strict-Transport-Security "max-age=86400" "expr=%\{HTTPS\} == ''on''"\s*$',
+        '(?m)^\s*RewriteCond %\{HTTPS\} !=on\s*$',
+        '(?m)^\s*RewriteRule \^ https://%\{HTTP_HOST\}%\{REQUEST_URI\} \[R=301,L,NE\]\s*$',
         '(?m)^\s*RewriteCond %\{REQUEST_FILENAME\} -f \[OR\]\s*$',
         '(?m)^\s*RewriteCond %\{REQUEST_FILENAME\} -d\s*$',
         '(?m)^\s*RewriteRule \^ - \[L\]\s*$',
@@ -96,6 +99,10 @@ function Test-HostingSecurityPolicy {
     foreach ($pattern in $requiredPatterns) {
         if ($text -notmatch $pattern) { return $false }
     }
+    if ($text -match '(?i)includeSubDomains|preload') { return $false }
+    $redirectPosition = $text.IndexOf('RewriteCond %{HTTPS} !=on', [System.StringComparison]::Ordinal)
+    $fallbackPosition = $text.IndexOf('RewriteRule ^ index.html [L]', [System.StringComparison]::Ordinal)
+    if ($redirectPosition -lt 0 -or $fallbackPosition -lt 0 -or $redirectPosition -ge $fallbackPosition) { return $false }
     return $true
 }
 
@@ -152,6 +159,14 @@ try {
         HostingSecurityPolicyValid = $hostingSecurityPolicyValid
         FormActionNone = if ($hostingSecurityPolicyValid) {
             ([System.IO.File]::ReadAllText($ReviewedHtaccessPath) -match "form-action 'none'")
+        } else { $false }
+        HttpsRedirectValid = if ($hostingSecurityPolicyValid) {
+            $reviewedText = [System.IO.File]::ReadAllText($ReviewedHtaccessPath)
+            $reviewedText.IndexOf('RewriteCond %{HTTPS} !=on', [System.StringComparison]::Ordinal) -lt $reviewedText.IndexOf('RewriteRule ^ index.html [L]', [System.StringComparison]::Ordinal)
+        } else { $false }
+        HstsValid = if ($hostingSecurityPolicyValid) {
+            $reviewedText = [System.IO.File]::ReadAllText($ReviewedHtaccessPath)
+            $reviewedText -match 'Strict-Transport-Security "max-age=86400"' -and $reviewedText -notmatch '(?i)includeSubDomains|preload'
         } else { $false }
         ForbiddenFiles = @($forbidden | ForEach-Object { $_.Path })
         MissingRequiredFiles = @($missingRequired | ForEach-Object { $_ })

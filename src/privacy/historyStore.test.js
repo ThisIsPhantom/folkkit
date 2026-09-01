@@ -36,9 +36,10 @@ describe('historyStore', () => {
     }]))
 
     expect(historyStore.list()).toEqual([])
+    expect(localStorage.getItem(preferenceKeys.contentHistory)).toBeNull()
   })
 
-  test('does not rewrite stored content while consent is disabled', () => {
+  test('purges current and legacy content during disabled startup access', () => {
     const staleEntry = [{
       from: 'text',
       to: 'base64',
@@ -47,10 +48,37 @@ describe('historyStore', () => {
       timestamp: 100,
     }]
     localStorage.setItem(preferenceKeys.contentHistory, JSON.stringify(staleEntry))
+    localStorage.setItem('convert-everything-history', JSON.stringify([{ input: 'legacy secret' }]))
 
     historyStore.remove(0)
 
-    expect(localStorage.getItem(preferenceKeys.contentHistory)).toBe(JSON.stringify(staleEntry))
+    expect(localStorage.getItem(preferenceKeys.contentHistory)).toBeNull()
+    expect(localStorage.getItem('convert-everything-history')).toBeNull()
+  })
+
+  test.each(['false', 'corrupted', '{"enabled":true}'])('purges stale content for invalid consent value %s', (consent) => {
+    localStorage.setItem(preferenceKeys.historyEnabled, consent)
+    localStorage.setItem(preferenceKeys.contentHistory, JSON.stringify([{ input: 'private input' }]))
+    localStorage.setItem('convert-everything-history', JSON.stringify([{ input: 'legacy secret' }]))
+
+    expect(historyStore.isEnabled()).toBe(false)
+    expect(localStorage.getItem(preferenceKeys.historyEnabled)).toBeNull()
+    expect(localStorage.getItem(preferenceKeys.contentHistory)).toBeNull()
+    expect(localStorage.getItem('convert-everything-history')).toBeNull()
+  })
+
+  test('enabling history starts empty after stale content was found', () => {
+    localStorage.setItem(preferenceKeys.contentHistory, JSON.stringify([{
+      from: 'text', to: 'base64', input: 'private input', output: 'cHJpdmF0ZQ==', timestamp: 100,
+    }]))
+    localStorage.setItem('convert-everything-history', JSON.stringify([{ input: 'legacy secret' }]))
+
+    historyStore.setEnabled(true)
+
+    expect(historyStore.isEnabled()).toBe(true)
+    expect(historyStore.list()).toEqual([])
+    expect(localStorage.getItem(preferenceKeys.contentHistory)).toBeNull()
+    expect(localStorage.getItem('convert-everything-history')).toBeNull()
   })
 
   test('persists a sanitized bounded preview only after explicit consent', () => {

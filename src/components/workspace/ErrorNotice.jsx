@@ -2,6 +2,7 @@ import { useI18n } from '../../i18n'
 
 const keyByCode = Object.freeze({
   unsupported_type: 'errors.unsupportedType',
+  unsupported_pair: 'errors.unsupportedPair',
   unsupported_browser: 'errors.unsupportedBrowser',
   too_large: 'errors.tooLarge',
   invalid_file: 'errors.invalidFile',
@@ -9,6 +10,7 @@ const keyByCode = Object.freeze({
   cancelled: 'errors.cancelled',
   conversion_failed: 'errors.conversionFailed',
   media_runtime_unavailable: 'errors.mediaRuntimeUnavailable',
+  resource_limit: 'errors.resourceLimit',
 })
 
 export default function ErrorNotice({ error, onRetry }) {

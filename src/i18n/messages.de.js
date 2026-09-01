@@ -69,9 +69,12 @@ const messagesDe = Object.freeze({
     copied: 'Ergebnis kopiert',
     discard: 'Verwerfen',
     previewAlt: 'Lokale Ergebnisvorschau',
+    shareTool: 'Werkzeug teilen',
+    moreFiles: '{count} weitere Dateien',
   }),
   errors: Object.freeze({
     unsupportedType: 'Dieser Dateityp wird von diesem Werkzeug nicht unterstützt.',
+    unsupportedPair: 'Für dieses Formatpaar existiert keine Konvertierung.',
     unsupportedBrowser: 'QR-Codes können in diesem Browser nicht gelesen werden.',
     tooLarge: 'Die ausgewählte Datei ist für dieses Gerät zu gross.',
     invalidFile: 'Die Datei ist beschädigt oder ungültig.',
@@ -79,6 +82,12 @@ const messagesDe = Object.freeze({
     cancelled: 'Der Vorgang wurde abgebrochen.',
     conversionFailed: 'Die Verarbeitung ist fehlgeschlagen.',
     mediaRuntimeUnavailable: 'FFmpeg-Core und WASM sind offline nicht verfügbar. Stelle die Internetverbindung wieder her und versuche es erneut.',
+    resourceLimit: 'Die Eingabe überschreitet die sichere Verarbeitungsgrenze.',
+  }),
+  formatCompatibility: Object.freeze({
+    warningTitle: 'Diese Dateiformate sind nicht miteinander kompatibel.',
+    warningBody: 'Die vorhandene Konvertierungsfunktion ist nur für einen bewussten Spezialfall vorgesehen. Prüfe das Ergebnis sorgfältig.',
+    confirmation: 'Ich weiss, was ich mache, und verstehe, dass diese Dateiformate nicht miteinander kompatibel sind.',
   }),
   labels: Object.freeze({
     experimental: 'Experimentell',

@@ -217,12 +217,16 @@ export const releasedFormatPairs = Object.freeze(formatEvidenceRegistry.flatMap(
     evidenceId: evidence.evidenceId,
     from: evidence.from,
     to: evidence.to,
+    compatibility: 'compatible',
+    implemented: true,
     inputLimitClass: evidence.inputLimitClass,
   }),
   ...evidence.additionalCases.map((fixture, index) => Object.freeze({
     evidenceId: `${evidence.evidenceId}:${index + 2}`,
     from: fixture.from,
     to: fixture.to,
+    compatibility: 'compatible',
+    implemented: true,
     inputLimitClass: evidence.inputLimitClass,
   })),
 ]))

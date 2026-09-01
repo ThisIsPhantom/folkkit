@@ -8,6 +8,7 @@ import { checkThirdPartyNotices } from './generate-third-party-notices.mjs'
 import { resolveBuildCommit } from './resolve-build-commit.mjs'
 import { assertExactRuntimeAssets, syncRuntimeAssets } from './sync-runtime-assets.mjs'
 import { runPublicConfigValidation } from './validate-public-config.mjs'
+import { assertBuiltRuntimeArtifacts } from './assert-runtime-artifacts.mjs'
 
 const supportedModes = new Set(['validation', 'release'])
 const normalizedStaticFiles = Object.freeze(['favicon.svg', 'index.html', 'manifest.json', 'theme-init.js'])
@@ -33,6 +34,7 @@ export async function runSiteBuild({
   },
   generateWorker = options => generateServiceWorker(options),
   checkBudget = options => checkBundleBudget(options),
+  assertArtifacts = options => assertBuiltRuntimeArtifacts(options),
 } = {}) {
   if (!supportedModes.has(mode)) throw new Error(`Unsupported site build mode: ${mode}`)
   if (mode === 'release') runPublicConfigValidation(env)
@@ -60,6 +62,7 @@ export async function runSiteBuild({
   await rm(join(distDirectory, 'sw.template.js'), { force: true })
   const htaccess = normalizeLineEndings(await readFile(join(repoRoot, 'hosting', '.htaccess'), 'utf8'))
   await writeFile(join(distDirectory, '.htaccess'), htaccess)
+  await assertArtifacts({ distDirectory })
 
   return { commit, mode, outputDirectory: distDirectory }
 }

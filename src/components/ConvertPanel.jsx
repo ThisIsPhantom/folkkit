@@ -3,6 +3,7 @@ import ToolPicker from './ToolPicker'
 import { useToast } from '../hooks/useToast'
 import { releasedFormats as defaultReleasedFormats, getReleasedTargets, getConvertFn, getFormatById } from '../formats'
 import { getFormatPairTextLimit, isReleasedFormatPair } from '../catalog/evidenceRegistry'
+import { canExecuteFormatPair, FORMAT_PAIR_COMPATIBILITY, getFormatPairPolicy } from '../catalog/formatCompatibility'
 import { useI18n } from '../i18n'
 import { historyStore } from '../privacy/historyStore'
 import { createToolRuntime, ToolRuntimeError } from '../runtime/toolRuntime'
@@ -11,6 +12,8 @@ import FileDropZone from './workspace/FileDropZone'
 import ProgressStatus from './workspace/ProgressStatus'
 import ResultActions from './workspace/ResultActions'
 import ErrorNotice from './workspace/ErrorNotice'
+import { validateFiles } from '../runtime/limits'
+import { BATCH_CONCURRENCY, BATCH_ITEM_LIMIT, LINE_NUMBER_RENDER_LIMIT, resourceLimitError } from '../runtime/workBudgets'
 import './ConvertPanel.css'
 import './workspace/workspace.css'
 
@@ -137,13 +140,14 @@ function saveFavPairs(pairs) {
   localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(releasedPairs))
 }
 
-function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = defaultReleasedFormats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn }) {
+function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = defaultReleasedFormats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn, resolvePairPolicy = getFormatPairPolicy }) {
   const { t } = useI18n()
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
   const [batchMode, setBatchMode] = useState(false)
   const [wrapOutput, setWrapOutput] = useState(true)
   const [lineNumbers, setLineNumbers] = useState(false)
+  const [confirmedPairKey, setConfirmedPairKey] = useState(null)
   const [favPairs, setFavPairs] = useState(getFavPairs)
   const toast = useToast()
   const inputRef = useRef(null)
@@ -179,6 +183,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const setTo = onToChange
 
   const targets = getReleasedTargets(from)
+  const pairPolicy = useMemo(() => resolvePairPolicy(from, to), [from, to, resolvePairPolicy])
+  const pairKey = `${from}→${to}`
 
   // Determine mode
   const isToolMode = !!activeConverter
@@ -210,6 +216,10 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   useEffect(() => {
     formatRunIdRef.current += 1
   }, [isToolMode])
+
+  useEffect(() => {
+    setConfirmedPairKey(null)
+  }, [from, to, isToolMode])
 
   useEffect(() => {
     return () => {
@@ -247,12 +257,21 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
       }
       return
     }
-    if (!isReleasedFormatPair(from, to)) {
+    if (!isReleasedFormatPair(from, to) || pairPolicy.status === FORMAT_PAIR_COMPATIBILITY.unsupported) {
       runtimeRef.current.cancel()
       if (runId === formatRunIdRef.current) {
         setOutput('')
         setMediaResult(null)
-        setError(new ToolRuntimeError('unsupported_type'))
+        setError(new ToolRuntimeError('unsupported_pair'))
+      }
+      return
+    }
+    if (!canExecuteFormatPair(pairPolicy, confirmedPairKey)) {
+      runtimeRef.current.cancel()
+      if (runId === formatRunIdRef.current) {
+        setOutput('')
+        setMediaResult(null)
+        setError(null)
       }
       return
     }
@@ -271,9 +290,15 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
         textLimit: getFormatPairTextLimit(from, to),
         convert: async (value, context) => {
           if (!batchMode) return { kind: 'text', text: String(await fn(value, context)) }
-          const results = await Promise.all(value.split('\n').map(async (line) => (
-            line.trim() ? fn(line, context) : ''
-          )))
+          const lines = value.split('\n')
+          if (lines.length > BATCH_ITEM_LIMIT) throw resourceLimitError()
+          const results = []
+          for (let index = 0; index < lines.length; index += BATCH_CONCURRENCY) {
+            const chunk = lines.slice(index, index + BATCH_CONCURRENCY)
+            results.push(...await Promise.all(chunk.map(async line => (
+              line.trim() ? fn(line, context) : ''
+            ))))
+          }
           return { kind: 'text', text: results.join('\n') }
         },
       }
@@ -290,7 +315,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
         setError(runtimeFailure)
       }
     }
-  }, [input, from, to, batchMode, isToolMode, resolveConvertFn])
+  }, [input, from, to, batchMode, isToolMode, resolveConvertFn, pairPolicy, confirmedPairKey])
 
   useEffect(() => {
     if (isToolMode) return
@@ -490,7 +515,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
       const url = window.location.origin + window.location.pathname + '?' + toolParams.toString()
       const shareData = {
         title: activeConverter.name,
-        text: output ? output.slice(0, 500) : activeConverter.description,
+        text: activeConverter.description,
         url,
       }
       if (navigator.share) {
@@ -552,7 +577,6 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     }
   }
 
-  const pairKey = `${from}→${to}`
   const isPairFav = favPairs.includes(pairKey)
   const toggleFavPair = useCallback(() => {
     setFavPairs(prev => {
@@ -713,6 +737,14 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   }
 
   const handleFilesChange = (files) => {
+    const validation = validateFiles(activeConverter, files)
+    if (!validation.ok) {
+      runtimeRef.current.cancel()
+      setSelectedFiles([])
+      setMediaResult(null)
+      setError(new ToolRuntimeError(validation.code))
+      return
+    }
     setSelectedFiles(files)
     if (isMedia) {
       handleMediaFiles(files)
@@ -875,7 +907,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
 
         {isToolMode && (
           <div className="tool-mode-actions">
-            <button className="pill-btn-sm" onClick={handleShare} title="Share this tool" aria-label="Share this tool">
+            <button className="pill-btn-sm" onClick={handleShare} title={t('workspaceTools.shareTool')} aria-label={t('workspaceTools.shareTool')}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M4.5 8.5l5-3M4.5 5.5l5 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
                 <circle cx="3.5" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
@@ -959,7 +991,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
 
             <div className="convert-side">
               <div className={`textarea-area${lineNumbers ? ' with-gutter' : ''}`}>
-                {lineNumbers && outputLineCount > 0 && (
+                {lineNumbers && outputLineCount > 0 && outputLineCount <= LINE_NUMBER_RENDER_LIMIT && (
                   <div className="line-gutter" ref={gutterRef}>
                     {Array.from({ length: outputLineCount }, (_, i) => (
                       <div key={i} className="line-num">{i + 1}</div>
@@ -1213,6 +1245,21 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
           <ErrorNotice error={error} onRetry={error?.code === 'media_runtime_unavailable' ? () => handleMediaFiles(selectedFiles) : undefined} />
           <ResultActions record={mediaResult} onDiscard={handleDiscardResult} onCopied={() => toast(t('workspaceTools.copied'))} />
         </div>
+      )}
+
+      {!isToolMode && pairPolicy.status === FORMAT_PAIR_COMPATIBILITY.incompatibleImplemented && (
+        <section className="compatibility-warning" role="note" aria-labelledby="format-compatibility-title">
+          <strong id="format-compatibility-title">{t('formatCompatibility.warningTitle')}</strong>
+          <p>{t('formatCompatibility.warningBody')}</p>
+          <label>
+            <input
+              type="checkbox"
+              checked={confirmedPairKey === pairKey}
+              onChange={(event) => setConfirmedPairKey(event.target.checked ? pairKey : null)}
+            />
+            <span>{t('formatCompatibility.confirmation')}</span>
+          </label>
+        </section>
       )}
 
       {!acceptsFile && <ErrorNotice error={error} />}

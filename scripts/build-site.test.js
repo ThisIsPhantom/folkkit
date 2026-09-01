@@ -45,6 +45,10 @@ function createPipelineDoubles(root, calls) {
     },
     generateWorker: async () => calls.push('service-worker'),
     checkBudget: async () => calls.push('budget'),
+    assertArtifacts: async ({ distDirectory }) => {
+      expect(await readFile(join(distDirectory, '.htaccess'), 'utf8')).toBe('fixture-hosting-contract\n')
+      calls.push('artifact-gate')
+    },
   }
 }
 
@@ -59,7 +63,7 @@ test('validation build runs the complete site pipeline and keeps only hosting ru
     ...createPipelineDoubles(root, calls),
   })
 
-  expect(calls).toEqual(['sync', 'assert:public', 'notices', 'vite', 'service-worker', 'budget', 'assert:dist'])
+  expect(calls).toEqual(['sync', 'assert:public', 'notices', 'vite', 'service-worker', 'budget', 'assert:dist', 'artifact-gate'])
   expect(await readFile(join(root, 'dist', '.htaccess'), 'utf8')).toBe('fixture-hosting-contract\n')
   expect(await readFile(join(root, 'dist', 'index.html'), 'utf8')).toBe('<!doctype html>\n')
   expect(await readFile(join(root, 'dist', 'manifest.json'), 'utf8')).toBe('{}\n')

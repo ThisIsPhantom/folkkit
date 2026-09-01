@@ -647,3 +647,25 @@ textarea.output.no-wrap {
     padding: 20px 16px;
   }
 }
+.compatibility-warning {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.compatibility-warning p {
+  margin: 0.4rem 0 0.75rem;
+}
+
+.compatibility-warning label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  cursor: pointer;
+}
+
+.compatibility-warning input {
+  margin-top: 0.2rem;
+}

@@ -12,22 +12,23 @@ function tiers(lowMemory, standard) {
 
 export const TOOL_LIMITS = Object.freeze({
   pdf: tiers(
-    { perFile: 25 * MIB, total: 60 * MIB },
-    { perFile: 100 * MIB, total: 250 * MIB },
+    { perFile: 25 * MIB, total: 60 * MIB, maxFiles: 8 },
+    { perFile: 100 * MIB, total: 250 * MIB, maxFiles: 20 },
   ),
   images: tiers(
-    { perFile: 25 * MIB, total: 100 * MIB },
-    { perFile: 80 * MIB, total: 300 * MIB },
+    { perFile: 25 * MIB, total: 100 * MIB, maxFiles: 12 },
+    { perFile: 80 * MIB, total: 300 * MIB, maxFiles: 32 },
   ),
   media: tiers(
-    { perFile: 75 * MIB, total: null },
-    { perFile: 250 * MIB, total: null },
+    { perFile: 75 * MIB, total: null, maxFiles: 4 },
+    { perFile: 250 * MIB, total: null, maxFiles: 8 },
   ),
 })
 
 const validationErrors = Object.freeze({
   unsupported_type: Object.freeze({ ok: false, code: 'unsupported_type', messageKey: 'errors.unsupportedType' }),
   too_large: Object.freeze({ ok: false, code: 'too_large', messageKey: 'errors.tooLarge' }),
+  resource_limit: Object.freeze({ ok: false, code: 'resource_limit', messageKey: 'errors.resourceLimit' }),
 })
 
 export function isLowMemoryEnvironment(environment = globalThis) {
@@ -93,6 +94,9 @@ export function validateFiles(tool, files, environment = globalThis) {
 
   const limits = getEnvironmentLimits(tool?.limits, environment)
   if (!limits) return { ok: true }
+  if (Number.isInteger(limits.maxFiles) && selected.length > limits.maxFiles) {
+    return validationErrors.resource_limit
+  }
   if (selected.some((file) => Number(file.size) > limits.perFile)) {
     return validationErrors.too_large
   }

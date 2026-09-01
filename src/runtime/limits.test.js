@@ -74,4 +74,13 @@ describe('validateFiles', () => {
   test('publishes the exact conservative text limit', () => {
     expect(TEXT_LIMIT).toBe(5 * MIB)
   })
+
+  test('rejects excessive image file count before runtime work', () => {
+    const files = Array.from({ length: 13 }, (_, index) => fileOfSize(`image-${index}.png`, 'image/png', 8))
+    expect(validateFiles(
+      { acceptTypes: 'image/png', limits: TOOL_LIMITS.images },
+      files,
+      { deviceMemory: 4, viewportWidth: 390 },
+    )).toMatchObject({ ok: false, code: 'resource_limit' })
+  })
 })

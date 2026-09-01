@@ -82,6 +82,8 @@ try {
     Assert-Equal $validReportA.Report.TreeHash $validReportB.Report.TreeHash 'Tree hashes must not depend on the fixture root.'
     Assert-Equal $validReportA.Report.HostingSecurityPolicyValid $true 'The reviewed Hosttech configuration must enforce the security and fallback contract.'
     Assert-Equal $validReportA.Report.FormActionNone $true 'The production policy must forbid all form submissions.'
+    Assert-Equal $validReportA.Report.HttpsRedirectValid $true 'HTTP must redirect permanently to the same HTTPS host and request before the SPA fallback.'
+    Assert-Equal $validReportA.Report.HstsValid $true 'HTTPS responses must send the reviewed conservative HSTS policy.'
 
     $insecureReviewPath = Join-Path $temporaryRoot 'insecure.htaccess'
     $insecureTree = Join-Path $temporaryRoot 'insecure-tree'

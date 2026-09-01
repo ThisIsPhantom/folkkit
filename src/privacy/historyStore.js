@@ -21,6 +21,13 @@ function clearStoredHistory() {
   localStorage.removeItem(LEGACY_HISTORY_KEY)
 }
 
+function ensureCurrentConsent() {
+  if (getHistoryEnabled()) return true
+  clearStoredHistory()
+  setHistoryEnabled(false)
+  return false
+}
+
 function normalizeEntry(entry) {
   if (
     !entry ||
@@ -52,22 +59,23 @@ function listEntries() {
 
 export const historyStore = Object.freeze({
   isEnabled() {
-    return getHistoryEnabled()
+    return ensureCurrentConsent()
   },
 
   setEnabled(enabled) {
-    if (enabled !== true) clearStoredHistory()
+    const wasEnabled = ensureCurrentConsent()
+    if (enabled !== true || !wasEnabled) clearStoredHistory()
     setHistoryEnabled(enabled)
     notifyChange()
   },
 
   list() {
-    if (!getHistoryEnabled()) return []
+    if (!ensureCurrentConsent()) return []
     return listEntries().map(entry => ({ ...entry }))
   },
 
   append(entry) {
-    if (!getHistoryEnabled()) return
+    if (!ensureCurrentConsent()) return
 
     const normalizedEntry = normalizeEntry(entry)
     if (!normalizedEntry) return
@@ -77,7 +85,7 @@ export const historyStore = Object.freeze({
   },
 
   remove(index) {
-    if (!getHistoryEnabled()) return
+    if (!ensureCurrentConsent()) return
     if (!Number.isInteger(index) || index < 0) return
 
     const entries = listEntries()
@@ -94,3 +102,5 @@ export const historyStore = Object.freeze({
     notifyChange()
   },
 })
+
+if (typeof localStorage !== 'undefined') ensureCurrentConsent()
