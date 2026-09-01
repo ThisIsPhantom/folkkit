@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFile, readdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -57,6 +57,10 @@ export async function generateServiceWorker({
   if (!roots.some(key => CORE_MODULE_PATTERN.test(key) && key.endsWith('/qr.js'))) throw new Error('Vite manifest has no core QR chunk.')
   if (!roots.some(key => CORE_MODULE_PATTERN.test(key) && key.endsWith('/pdf.js'))) throw new Error('Vite manifest has no core PDF chunk.')
   for (const key of roots) collectStaticGraph(manifest, key, selected, CORE_MODULE_PATTERN.test(key))
+  const pdfWorkerFiles = (await readdir(resolve(distDir, 'assets')))
+    .filter(file => /^pdfWorker-[A-Za-z0-9_-]+\.js$/.test(file))
+  if (pdfWorkerFiles.length !== 1) throw new Error(`Expected exactly one emitted PDF worker, found ${pdfWorkerFiles.length}.`)
+  selected.add(toSameOriginPath(`assets/${pdfWorkerFiles[0]}`))
 
   const precacheUrls = [...selected].sort()
   for (const url of precacheUrls) toSameOriginPath(url)

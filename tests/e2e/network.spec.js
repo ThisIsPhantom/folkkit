@@ -30,7 +30,7 @@ test('merges PDFs without cross-origin requests or request leakage', async ({ pa
   await page.waitForLoadState('networkidle')
 
   expect(observedRequests.length).toBeGreaterThan(1)
-  expect(observedRequests.some(request => request.url.includes('pdf-lib'))).toBe(true)
+  expect(observedRequests.some(request => request.url.includes('pdfWorker-'))).toBe(true)
   expect(observedRequests.filter(request => new URL(request.url).origin !== testServerOrigin)).toEqual([])
   for (const request of observedRequests) {
     const metadata = `${decodeURIComponent(request.url)}\n${JSON.stringify(request.headers)}`

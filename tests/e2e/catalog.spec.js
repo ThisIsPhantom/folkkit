@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test'
 import { fixtureFile, onePixelJpegBase64, onePixelPngBase64 } from '../fixtures/coreFixtures'
 import { runBrowserEvidence } from '../../src/catalog/browserEvidence'
 
+const viteManifest = JSON.parse(await readFile(new URL('../../dist/.vite/manifest.json', import.meta.url), 'utf8'))
+
 test('shows the derived released count and excludes hidden entries', async ({ page }) => {
   await page.goto('./tools')
 
@@ -20,9 +22,9 @@ test('loads only the owning converter module after released metadata selection',
   await page.getByRole('textbox', { name: 'Tool input text' }).fill('Folkkit')
   await expect(page.getByRole('textbox', { name: 'Tool output text' })).toHaveValue('Rm9sa2tpdA==')
 
-  expect(requests.some(url => url.includes('/src/converters/text.js'))).toBe(true)
-  expect(requests.some(url => url.includes('/src/converters/data.js'))).toBe(false)
-  expect(requests.some(url => url.includes('/src/converters/media.js'))).toBe(false)
+  expect(requests.some(url => url.endsWith(`/${viteManifest['src/converters/text.js'].file}`))).toBe(true)
+  expect(requests.some(url => url.endsWith(`/${viteManifest['src/converters/data.js'].file}`))).toBe(false)
+  expect(requests.some(url => url.endsWith(`/${viteManifest['src/converters/media.js'].file}`))).toBe(false)
 })
 
 test('converts a real PNG fixture to a runtime-owned JPEG download', async ({ page }) => {
