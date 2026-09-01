@@ -1,4 +1,4 @@
-import { copyFile, rm } from 'node:fs/promises'
+import { readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -10,6 +10,15 @@ import { assertExactRuntimeAssets, syncRuntimeAssets } from './sync-runtime-asse
 import { runPublicConfigValidation } from './validate-public-config.mjs'
 
 const supportedModes = new Set(['validation', 'release'])
+const normalizedStaticFiles = Object.freeze(['favicon.svg', 'index.html', 'manifest.json', 'theme-init.js'])
+
+function normalizeLineEndings(value) {
+  return value.replaceAll('\r\n', '\n').replaceAll('\r', '\n')
+}
+
+async function normalizeTextFile(path) {
+  await writeFile(path, normalizeLineEndings(await readFile(path, 'utf8')))
+}
 
 export async function runSiteBuild({
   repoRoot = process.cwd(),
@@ -39,6 +48,7 @@ export async function runSiteBuild({
   await assertRuntimeAssets({ vendorDirectory: publicVendorDirectory })
   await checkNotices({ projectRoot: repoRoot })
   await viteBuild({ root: repoRoot })
+  await Promise.all(normalizedStaticFiles.map(filename => normalizeTextFile(join(distDirectory, filename))))
   await generateWorker({
     distDir: distDirectory,
     templatePath: join(repoRoot, 'public', 'sw.template.js'),
@@ -48,7 +58,8 @@ export async function runSiteBuild({
 
   await rm(join(distDirectory, '.vite'), { recursive: true, force: true })
   await rm(join(distDirectory, 'sw.template.js'), { force: true })
-  await copyFile(join(repoRoot, 'hosting', '.htaccess'), join(distDirectory, '.htaccess'))
+  const htaccess = normalizeLineEndings(await readFile(join(repoRoot, 'hosting', '.htaccess'), 'utf8'))
+  await writeFile(join(distDirectory, '.htaccess'), htaccess)
 
   return { commit, mode, outputDirectory: distDirectory }
 }

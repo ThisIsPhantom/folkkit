@@ -21,7 +21,7 @@ async function createProjectFixture() {
   const root = await mkdtemp(join(tmpdir(), 'folkkit-site-build-'))
   temporaryDirectories.push(root)
   await mkdir(join(root, 'hosting'), { recursive: true })
-  await writeFile(join(root, 'hosting', '.htaccess'), 'fixture-hosting-contract\n')
+  await writeFile(join(root, 'hosting', '.htaccess'), 'fixture-hosting-contract\r\n')
   await writeFile(join(root, '.folkkit-release-commit'), `${exactCommit}\n`)
   return root
 }
@@ -36,7 +36,10 @@ function createPipelineDoubles(root, calls) {
     viteBuild: async () => {
       calls.push('vite')
       await mkdir(join(root, 'dist', '.vite'), { recursive: true })
-      await writeFile(join(root, 'dist', 'index.html'), '<!doctype html>')
+      await writeFile(join(root, 'dist', 'index.html'), '<!doctype html>\r\n')
+      await writeFile(join(root, 'dist', 'manifest.json'), '{}\r\n')
+      await writeFile(join(root, 'dist', 'favicon.svg'), '<svg />\r\n')
+      await writeFile(join(root, 'dist', 'theme-init.js'), 'void 0\r\n')
       await writeFile(join(root, 'dist', 'sw.template.js'), 'template must not ship')
       await writeFile(join(root, 'dist', '.vite', 'manifest.json'), '{}')
     },
@@ -58,6 +61,10 @@ test('validation build runs the complete site pipeline and keeps only hosting ru
 
   expect(calls).toEqual(['sync', 'assert:public', 'notices', 'vite', 'service-worker', 'budget', 'assert:dist'])
   expect(await readFile(join(root, 'dist', '.htaccess'), 'utf8')).toBe('fixture-hosting-contract\n')
+  expect(await readFile(join(root, 'dist', 'index.html'), 'utf8')).toBe('<!doctype html>\n')
+  expect(await readFile(join(root, 'dist', 'manifest.json'), 'utf8')).toBe('{}\n')
+  expect(await readFile(join(root, 'dist', 'favicon.svg'), 'utf8')).toBe('<svg />\n')
+  expect(await readFile(join(root, 'dist', 'theme-init.js'), 'utf8')).toBe('void 0\n')
   await expect(readFile(join(root, 'dist', 'sw.template.js'))).rejects.toMatchObject({ code: 'ENOENT' })
   await expect(readFile(join(root, 'dist', '.vite', 'manifest.json'))).rejects.toMatchObject({ code: 'ENOENT' })
   expect(result).toMatchObject({ commit: exactCommit, mode: 'validation' })
