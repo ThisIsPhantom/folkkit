@@ -16,13 +16,8 @@ const messagesDe = Object.freeze({
     terms: 'Nutzungsbedingungen',
     contact: 'Kontakt',
     source: 'Quellcode',
+    footerNavigation: 'Fussnavigation',
     footerNote: 'Folkkit verarbeitet Dateiinhalte lokal in deinem Browser.',
-  }),
-  legalPending: Object.freeze({
-    eyebrow: 'Noch nicht verfügbar',
-    message: 'Diese Seite ist in diesem privaten Build noch nicht enthalten.',
-    detail: 'Hier werden noch keine endgültigen rechtlichen oder Kontaktinformationen bereitgestellt.',
-    pathLabel: 'Pfad',
   }),
   home: Object.freeze({
     eyebrow: 'Werkzeuge für den Alltag',

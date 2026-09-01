@@ -28,7 +28,7 @@ test('navigates the German shell, switches language, and restores routes', async
   await page.getByRole('link', { name: 'Privacy' }).click()
   await expect(page).toHaveURL(/\/privacy$/)
   await expect(page.getByRole('heading', { name: 'Privacy' })).toBeVisible()
-  await expect(page.getByText('This page is not part of this private build yet.')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Local file processing' })).toBeVisible()
 })
 
 test('keeps keyboard focus visible and exposes mobile navigation', async ({ page }) => {

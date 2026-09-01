@@ -3,7 +3,14 @@ import react from '@vitejs/plugin-react'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { env } from 'node:process'
+import { execFileSync } from 'node:child_process'
 import { assertPassiveAdsenseOwnershipMeta } from './scripts/assert-ownership-meta.mjs'
+
+function readExactGitCommit() {
+  const commit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
+  if (!/^[0-9a-f]{40}$/.test(commit)) throw new Error('Unable to resolve an exact Git commit for this build.')
+  return commit
+}
 
 function assertBuiltOwnershipMetadata() {
   return {
@@ -64,6 +71,9 @@ self.addEventListener('activate', event => {
 
 export default defineConfig({
   base: '/',
+  define: {
+    'globalThis.__FOLKKIT_COMMIT__': JSON.stringify(readExactGitCommit()),
+  },
   plugins: [
     react(),
     selfHostFFmpegWorkerFallback(),

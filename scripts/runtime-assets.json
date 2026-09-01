@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "fonts": {
+    "distributedFiles": [],
+    "note": "Folkkit distributes no font files. Its CSS uses system font stacks supplied by the user's operating system and browser."
+  },
+  "assets": [
+    {
+      "id": "ffmpeg-core-wasm",
+      "component": "FFmpeg / ffmpeg.wasm runtime assets",
+      "version": "0.12.10",
+      "paths": [
+        "public/vendor/ffmpeg/ffmpeg-core.js",
+        "public/vendor/ffmpeg/ffmpeg-core.wasm"
+      ],
+      "license": "GPL-2.0-or-later",
+      "sourceUrl": "https://github.com/ffmpegwasm/ffmpeg.wasm",
+      "notices": [
+        {
+          "label": "FFmpeg licensing",
+          "url": "https://ffmpeg.org/legal.html"
+        },
+        {
+          "label": "GNU GPL 2.0",
+          "url": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+        },
+        {
+          "label": "GNU LGPL 2.1",
+          "url": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+        }
+      ]
+    },
+    {
+      "id": "folkkit-favicon",
+      "component": "Folkkit favicon",
+      "version": "1",
+      "paths": [
+        "public/favicon.svg"
+      ],
+      "license": "AGPL-3.0-only",
+      "sourceUrl": "https://github.com/ThisIsPhantom/folkkit",
+      "notices": [
+        {
+          "label": "GNU AGPL 3.0",
+          "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+        }
+      ]
+    }
+  ]
+}

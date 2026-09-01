@@ -26,13 +26,13 @@ beforeEach(() => {
   setReducedMotion(false)
 })
 
-test.each(legalRoutes)('%s renders its own pending legal surface instead of Home', (path, title) => {
+test.each(legalRoutes)('%s renders its complete legal surface instead of Home', (path, title) => {
   history.replaceState(null, '', path)
   renderWithProviders(<App />)
 
   expect(window.location.pathname).toBe(path)
   expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
-  expect(screen.getByText('Diese Seite ist in diesem privaten Build noch nicht enthalten.')).toBeInTheDocument()
+  expect(screen.getByTestId(`legal-page-${path.slice(1)}`)).toBeInTheDocument()
   expect(screen.queryByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).not.toBeInTheDocument()
 })
 

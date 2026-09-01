@@ -8,8 +8,11 @@
   "scripts": {
     "predev": "node scripts/sync-runtime-assets.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/sync-runtime-assets.mjs",
+    "prebuild": "node scripts/sync-runtime-assets.mjs && node scripts/generate-third-party-notices.mjs",
     "build": "vite build && node scripts/generate-service-worker.mjs && node scripts/check-bundle-budget.mjs",
+    "generate:notices": "node scripts/generate-third-party-notices.mjs",
+    "validate:public-config": "bun run scripts/validate-public-config.mjs",
+    "build:release": "bun run validate:public-config && bun run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",

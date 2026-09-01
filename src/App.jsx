@@ -3,8 +3,12 @@ import { getReleasedTools } from './catalog/releaseCatalog'
 import AppShell from './components/shell/AppShell'
 import { useI18n } from './i18n'
 import CatalogPage from './pages/CatalogPage'
+import ContactPage from './pages/ContactPage'
 import HomePage from './pages/HomePage'
-import PendingLegalPage from './pages/PendingLegalPage'
+import LicensesPage from './pages/LicensesPage'
+import PrivacyPage from './pages/PrivacyPage'
+import SourcePage from './pages/SourcePage'
+import TermsPage from './pages/TermsPage'
 import WorkspacePage from './pages/WorkspacePage'
 import { getNavigationScrollBehavior } from './utils/motion'
 
@@ -14,6 +18,14 @@ const legalRoutes = Object.freeze({
   '/licenses': 'licenses',
   '/terms': 'terms',
   '/contact': 'contact',
+})
+
+const legalPages = Object.freeze({
+  privacy: PrivacyPage,
+  openSource: SourcePage,
+  licenses: LicensesPage,
+  terms: TermsPage,
+  contact: ContactPage,
 })
 
 function readRoute() {
@@ -29,6 +41,7 @@ export default function App() {
   const [route, setRoute] = useState(readRoute)
   const releasedTools = useMemo(() => getReleasedTools(locale), [locale])
   const shellRoute = route.startsWith('legal:') ? 'legal' : route
+  const LegalPage = route.startsWith('legal:') ? legalPages[route.slice('legal:'.length)] : null
 
   useEffect(() => {
     document.documentElement.lang = locale
@@ -66,9 +79,7 @@ export default function App() {
       {route === 'home' && <HomePage onOpenCore={openCore} onOpenCatalog={() => navigate('/tools')} />}
       {route === 'catalog' && <CatalogPage entries={releasedTools} onSelect={selectCatalogEntry} />}
       {route === 'workspace' && <WorkspacePage />}
-      {route.startsWith('legal:') && (
-        <PendingLegalPage pageKey={route.slice('legal:'.length)} path={window.location.pathname} />
-      )}
+      {LegalPage && <LegalPage />}
     </AppShell>
   )
 }
