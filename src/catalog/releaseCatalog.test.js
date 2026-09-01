@@ -53,6 +53,8 @@ const expectedReleasedIds = [
   'color-convert',
   'char-count',
   'reverse-text',
+  'aspect-ratio',
+  'percentage-calc',
   'loan-calc',
   'bmi-calc',
   'qr-to-text',

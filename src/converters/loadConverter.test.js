@@ -36,6 +36,8 @@ const pureFixtures = [
   ['slug-gen', 'Hello Folkkit!', 'Hello Folkkit!\n  → hello-folkkit'],
   ['char-count', 'one two', 'Characters:  7\nWords:       2\nLines:       1\nBytes:       7'],
   ['reverse-text', 'Folkkit', 'tikkloF'],
+  ['percentage-calc', '15% of 200', '15% of 200 = 30'],
+  ['aspect-ratio', '1920x1080', 'Dimensions: 1920 x 1080\nRatio:      16:9\nDecimal:    1.7778\n\nNearest common: 16:9 (Widescreen / HD)\n\n-- Common sizes at this ratio --\n  853 x 480\n  1280 x 720\n  1920 x 1080\n  2560 x 1440\n  3840 x 2160'],
 ]
 
 describe('lazy converter loading', () => {

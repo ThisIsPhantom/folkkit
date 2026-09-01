@@ -196,6 +196,15 @@ const messagesDe = Object.freeze({
     slugGen: Object.freeze({ name: 'URL-Slug erstellen', description: 'Text in einen einfachen URL-Slug umwandeln' }),
     charCount: Object.freeze({ name: 'Zeichen und Wörter zählen', description: 'Zeichen, Wörter, Zeilen und Bytes lokal zählen' }),
     reverseText: Object.freeze({ name: 'Text umkehren', description: 'Die Reihenfolge der Zeichen umkehren' }),
+    percentageCalc: Object.freeze({
+      name: 'Prozent berechnen',
+      description: 'Einfache Prozentaufgaben lokal berechnen',
+      placeholder: '15% von 200',
+    }),
+    aspectRatio: Object.freeze({
+      name: 'Seitenverhältnis berechnen',
+      description: 'Ein begrenztes Seitenverhältnis aus Breite und Höhe berechnen',
+    }),
     loanCalc: Object.freeze({
       name: 'Kreditrate berechnen',
       description: 'Monatsrate, Gesamtkosten und Tilgungsverlauf aus Betrag, Zinssatz und Laufzeit schätzen',

@@ -119,6 +119,8 @@ const releaseMetadata = Object.freeze({
   'slug-gen': pureTool('slug-gen', 'web', 'slugGen', { category: 'utility' }),
   'char-count': pureTool('char-count', 'utility', 'charCount'),
   'reverse-text': pureTool('reverse-text', 'utility', 'reverseText'),
+  'percentage-calc': pureTool('percentage-calc', 'utility', 'percentageCalc', { placeholderKey: 'tools.percentageCalc.placeholder' }),
+  'aspect-ratio': pureTool('aspect-ratio', 'utility', 'aspectRatio'),
   'loan-calc': released({
     module: 'utility',
     tier: 'advanced',

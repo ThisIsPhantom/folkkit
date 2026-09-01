@@ -23,12 +23,12 @@ The format graph contains 223 unique IDs in 34 groups. All 223 remain available 
 | `web` | 149 | 5 | 144 | Released local CSS minification, JSON syntax parsing, Base64URL encode/decode, and slug generation after literal fixtures. Live-looking checks, external lookup implications, and unverified generators remain hidden. |
 | `number` | 44 | 6 | 38 | Released the six fixed base conversions after literal fixtures. Expansion-oriented sequences, combinatorics, and unverified calculators remain hidden. |
 | `color` | 22 | 1 | 21 | Released deterministic HEX/RGB/HSL conversion after a literal fixture. Accessibility claims, extraction, random generation, and unverified palette operations remain hidden. |
-| `utility` | 119 | 4 | 115 | Released character count, text reversal, loan calculation, and BMI calculation after fixtures. Loan and BMI metadata displays localized non-advice. Dated data, professional guidance, and unverified calculators remain hidden. |
+| `utility` | 119 | 6 | 113 | Released character count, text reversal, percentage, aspect ratio, loan calculation, and BMI calculation after fixtures. Loan and BMI metadata displays localized non-advice. Dated data, professional guidance, and unverified calculators remain hidden. |
 | `imageFormat` | 22 | 0 | 22 | Hidden pending exact PNG/JPEG validation, Canvas cleanup, Blob result fixtures, and URL ownership. |
 | `media` | 14 | 0 | 14 | Hidden pending the Task 7 same-origin FFmpeg network journey and cancellation evidence. |
 | `pdf` | 8 | 8 | 0 | Kept the Task 4 core PDF set with Task 6 PDF/image limits, signature checks, exact Blob results, and checked-in PDF/image fixtures. |
 
-Current audited total: 499 raw converters, 45 released converters, 454 hidden converters, and 223 released format IDs. The UI tool count is `releasedToolCount`, derived from the 45 non-hidden converter entries. Format graph choices are intentionally not added to that tool-card count.
+Current audited total: 499 raw converters, 47 released converters, 452 hidden converters, and 223 released format IDs. The UI tool count is `releasedToolCount`, derived from the 47 non-hidden converter entries. Format graph choices are intentionally not added to that tool-card count.
 
 ## Lazy-loading boundary
 
