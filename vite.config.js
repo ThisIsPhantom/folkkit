@@ -14,9 +14,31 @@ function assertBuiltOwnershipMetadata() {
   }
 }
 
+function selfHostFFmpegWorkerFallback() {
+  return {
+    name: 'self-host-ffmpeg-worker-fallback',
+    transform(code, id) {
+      const normalizedId = id.replaceAll('\\', '/')
+      if (!normalizedId.endsWith('/node_modules/@ffmpeg/ffmpeg/dist/esm/const.js')) return null
+
+      const transformedCode = code.replace(
+        /`https:\/\/unpkg\.com\/@ffmpeg\/core@\$\{CORE_VERSION\}\/dist\/umd\/ffmpeg-core\.js`/,
+        "'/vendor/ffmpeg/ffmpeg-core.js'",
+      )
+      if (transformedCode === code) {
+        throw new Error('Unable to replace the inherited FFmpeg worker fallback URL.')
+      }
+      return { code: transformedCode, map: null }
+    },
+  }
+}
+
 export default defineConfig({
   base: '/',
-  plugins: [react(), assertBuiltOwnershipMetadata()],
+  plugins: [react(), selfHostFFmpegWorkerFallback(), assertBuiltOwnershipMetadata()],
+  worker: {
+    plugins: () => [selfHostFFmpegWorkerFallback()],
+  },
   build: {
     chunkSizeWarningLimit: 600,
     rollupOptions: {

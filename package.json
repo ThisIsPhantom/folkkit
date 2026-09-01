@@ -16,7 +16,8 @@
     "test:run": "vitest run",
     "test:e2e": "node ./node_modules/playwright/cli.js test",
     "test:e2e:install": "node ./node_modules/playwright/cli.js install chromium",
-    "verify": "bun run lint && bun run test:run && bun run build"
+    "test:runtime-artifacts": "node scripts/assert-runtime-artifacts.mjs",
+    "verify": "bun run lint && bun run test:run && bun run build && bun run test:runtime-artifacts"
   },
   "dependencies": {
     "@ffmpeg/core": "0.12.10",

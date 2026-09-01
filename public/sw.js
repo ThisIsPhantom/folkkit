@@ -31,24 +31,7 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return
 
-  // Cache Google Fonts (cross-origin, long-lived)
-  if (request.url.startsWith('https://fonts.googleapis.com') || request.url.startsWith('https://fonts.gstatic.com')) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached
-        return fetch(request).then((response) => {
-          if (response.ok) {
-            const clone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
-          }
-          return response
-        })
-      })
-    )
-    return
-  }
-
-  // Skip other cross-origin requests (ffmpeg CDN, etc.)
+  // Skip cross-origin requests.
   if (!request.url.startsWith(self.location.origin)) return
 
   // Network-first for navigation requests (HTML pages)
