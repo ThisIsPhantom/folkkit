@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getFormatById, releasedFormats } from '../formats'
+import { getLocalizedReleasedFormatById, getLocalizedReleasedFormats } from '../formats'
 import { useI18n } from '../i18n'
 import { getReleasedCategories, getReleasedTools } from '../catalog/releaseCatalog'
 import { loadConverter } from '../converters/loadConverter'
@@ -45,6 +45,7 @@ export default function WorkspacePage() {
   const { locale, t } = useI18n()
   const releasedTools = useMemo(() => getReleasedTools(locale), [locale])
   const releasedCategories = useMemo(() => getReleasedCategories(locale), [locale])
+  const localizedReleasedFormats = useMemo(() => getLocalizedReleasedFormats(locale), [locale])
   const initialUrlState = useMemo(() => readUrlState(window.location.search, window.location.hash), [])
   const [convertFrom, setConvertFrom] = useState(initialUrlState.from)
   const [convertTo, setConvertTo] = useState(initialUrlState.to)
@@ -106,8 +107,8 @@ export default function WorkspacePage() {
   }, [activeToolId, toolLoadAttempt])
 
   useEffect(() => {
-    const fromName = getFormatById(convertFrom)?.name || convertFrom
-    const toName = getFormatById(convertTo)?.name || convertTo
+    const fromName = getLocalizedReleasedFormatById(convertFrom, locale)?.name || convertFrom
+    const toName = getLocalizedReleasedFormatById(convertTo, locale)?.name || convertTo
     const thing = activeToolMetadata ? activeToolMetadata.name : `${fromName} to ${toName}`
     const title = `${thing} · Folkkit`
     const description = locale === 'de'
@@ -261,7 +262,7 @@ export default function WorkspacePage() {
             onReuseConsumed={handleReuseConsumed}
             activeConverter={activeConverter}
             onConverterChange={handleConverterChange}
-            releasedFormats={releasedFormats}
+            releasedFormats={localizedReleasedFormats}
             releasedTools={releasedTools}
             categories={releasedCategories}
           />}

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useState, useEffect, useId, useRef, useMemo, useCallback } from 'react'
+import { useI18n } from '../i18n'
 import { preferenceKeys } from '../privacy/preferences'
 import { fuzzyFilter } from '../utils/fuzzy'
 import './ToolPicker.css'
@@ -20,19 +21,7 @@ function saveRecentId(id) {
   localStorage.setItem(preferenceKeys.recentTools, JSON.stringify(recentIds.slice(0, MAX_RECENT)))
 }
 
-const categoryTabs = [
-  { id: 'text', name: 'Text' },
-  { id: 'encode', name: 'Encode' },
-  { id: 'data', name: 'Data' },
-  { id: 'number', name: 'Number' },
-  { id: 'hash', name: 'Hash' },
-  { id: 'color', name: 'Color' },
-  { id: 'units', name: 'Units' },
-  { id: 'image', name: 'Image' },
-  { id: 'media', name: 'Media' },
-  { id: 'document', name: 'Document' },
-  { id: 'utility', name: 'Utility' },
-]
+const categoryTabs = ['text', 'encode', 'data', 'number', 'hash', 'color', 'units', 'image', 'media', 'document', 'utility']
 
 const TAB_FORMAT_GROUPS = {
   text: ['Case', 'Markup'],
@@ -127,6 +116,7 @@ function ToolPickerContent({
   releasedTools = [],
   categories = [],
 }) {
+  const { t } = useI18n()
   const [query, setQuery] = useState('')
   const [activeTab, setActiveTab] = useState(() => getInitialTab(mode, currentFormatValue, currentConverterValue, releasedFormats, releasedTools))
   const [highlighted, setHighlighted] = useState(-1)
@@ -134,6 +124,15 @@ function ToolPickerContent({
   const listRef = useRef(null)
   const overlayRef = useRef(null)
   const tabsRef = useRef(null)
+  const openerRef = useRef(document.activeElement)
+  const listboxId = useId()
+
+  useEffect(() => () => {
+    const opener = openerRef.current
+    requestAnimationFrame(() => {
+      if (opener?.isConnected) opener.focus()
+    })
+  }, [])
 
   // On open, focus search and align scroll positions
   useEffect(() => {
@@ -251,6 +250,9 @@ function ToolPickerContent({
   }, [open, mode, isSearchMode, toFlatFormats, searchFormats, searchTools, tabFlatFormats, tabTools])
 
   const clampedHighlighted = clampHighlightedIndex(highlighted, flatItems.length)
+  const activeOption = clampedHighlighted >= 0 ? flatItems[clampedHighlighted] : null
+  const optionId = (type, id) => `${listboxId}-${type}-${id}`
+  const activeOptionId = activeOption ? optionId(activeOption.type, activeOption.item.id) : undefined
 
   // Pre-compute index maps for search mode
   const { searchFormatIndexMap, searchToolIndexMap } = useMemo(() => {
@@ -348,6 +350,8 @@ function ToolPickerContent({
   const hasTabFormats = tabFlatFormats.length > 0
   const hasTabTools = tabTools.length > 0
   const categoryNames = new Map(categories.map(category => [category.id, category.name]))
+  const localizedGroup = group => t(`toolPicker.groups.${group}`)
+  const searchLabel = t(isToMode ? 'toolPicker.searchFormats' : 'toolPicker.searchConversions')
 
   return (
     <div className={`tool-picker${align === 'right' ? ' align-right' : ''}`} ref={overlayRef}>
@@ -365,7 +369,13 @@ function ToolPickerContent({
             setHighlighted(e.target.value.trim() ? 0 : -1)
           }}
           onKeyDown={handleKeyDown}
-          placeholder={isToMode ? 'Search formats...' : 'Search all conversions...'}
+          role="combobox"
+          aria-label={searchLabel}
+          aria-expanded={open}
+          aria-controls={listboxId}
+          aria-activedescendant={activeOptionId}
+          aria-autocomplete="list"
+          placeholder={t(isToMode ? 'toolPicker.searchFormatsPlaceholder' : 'toolPicker.searchConversionsPlaceholder')}
           spellCheck={false}
           autoComplete="off"
         />
@@ -375,35 +385,38 @@ function ToolPickerContent({
         <div className="tool-picker-tabs" ref={tabsRef}>
           {categoryTabs.map(tab => (
             <button
-              key={tab.id}
-              className={`tool-picker-tab${activeTab === tab.id ? ' active' : ''}`}
-              onClick={() => { setActiveTab(tab.id); setHighlighted(-1) }}
+              key={tab}
+              className={`tool-picker-tab${activeTab === tab ? ' active' : ''}`}
+              onClick={() => { setActiveTab(tab); setHighlighted(-1) }}
             >
-              {categoryNames.get(tab.id) || tab.name}
+              {categoryNames.get(tab) || t(`toolPicker.tabs.${tab}`)}
             </button>
           ))}
         </div>
       )}
 
-      <div className="tool-picker-list" ref={listRef}>
+      <div className="tool-picker-list" ref={listRef} role="listbox" id={listboxId} aria-label={searchLabel}>
         {/* Search mode: show mixed results */}
         {isSearchMode && !isToMode && (
           <>
             {searchFormats.length > 0 && (
               <div className="tool-picker-section">
-                <div className="tool-picker-section-label">Formats</div>
+                <div className="tool-picker-section-label">{t('toolPicker.formats')}</div>
                 {searchFormats.map(f => {
                   const globalIdx = searchFormatIndexMap.get(f) ?? -1
                   return (
                     <div
                       key={`f-${f.id}`}
+                      id={optionId('format', f.id)}
+                      role="option"
+                      aria-selected={f.id === currentFormatValue}
                       data-picker-item
                       className={`tool-picker-format-item${f.id === currentFormatValue ? ' selected' : ''}${globalIdx === clampedHighlighted ? ' highlighted' : ''}`}
                       onMouseDown={(e) => { e.preventDefault(); handleSelectFormat(f.id) }}
                       onMouseEnter={() => setHighlighted(globalIdx)}
                     >
                       <span className="tool-picker-format-name">{f.name}</span>
-                      <span className="tool-picker-format-group">{f.group}</span>
+                      <span className="tool-picker-format-group">{localizedGroup(f.group)}</span>
                     </div>
                   )
                 })}
@@ -411,12 +424,15 @@ function ToolPickerContent({
             )}
             {searchTools.length > 0 && (
               <div className="tool-picker-section">
-                <div className="tool-picker-section-label">Tools</div>
+                <div className="tool-picker-section-label">{t('toolPicker.tools')}</div>
                 {searchTools.map(c => {
                   const globalIdx = searchToolIndexMap.get(c) ?? -1
                   return (
                     <div
                       key={`c-${c.id}`}
+                      id={optionId('converter', c.id)}
+                      role="option"
+                      aria-selected={c.id === currentConverterValue}
                       data-picker-item
                       className={`tool-picker-tool-item${c.id === currentConverterValue ? ' selected' : ''}${globalIdx === clampedHighlighted ? ' highlighted' : ''}`}
                       onMouseDown={(e) => { e.preventDefault(); handleSelectConverter(c) }}
@@ -431,7 +447,7 @@ function ToolPickerContent({
               </div>
             )}
             {searchFormats.length === 0 && searchTools.length === 0 && (
-              <div className="tool-picker-empty">No results</div>
+              <div className="tool-picker-empty">{t('toolPicker.noResults')}</div>
             )}
           </>
         )}
@@ -441,12 +457,15 @@ function ToolPickerContent({
           <>
             {Object.entries(toGrouped).map(([group, items]) => (
               <div key={group} className="tool-picker-section">
-                <div className="tool-picker-section-label">{group}</div>
+                <div className="tool-picker-section-label">{localizedGroup(group)}</div>
                 {items.map(f => {
                   const idx = toFormatIndexMap.get(f) ?? -1
                   return (
                     <div
                       key={f.id}
+                      id={optionId('format', f.id)}
+                      role="option"
+                      aria-selected={f.id === currentFormatValue}
                       data-picker-item
                       className={`tool-picker-format-item${f.id === currentFormatValue ? ' selected' : ''}${idx === clampedHighlighted ? ' highlighted' : ''}`}
                       onMouseDown={(e) => { e.preventDefault(); handleSelectFormat(f.id) }}
@@ -464,7 +483,7 @@ function ToolPickerContent({
               </div>
             ))}
             {toFlatFormats.length === 0 && (
-              <div className="tool-picker-empty">No formats found</div>
+              <div className="tool-picker-empty">{t('toolPicker.noFormats')}</div>
             )}
           </>
         )}
@@ -474,12 +493,15 @@ function ToolPickerContent({
           <>
             {hasTabFormats && Object.entries(tabGrouped).map(([group, items]) => (
               <div key={group} className="tool-picker-section">
-                <div className="tool-picker-section-label">{group}</div>
+                <div className="tool-picker-section-label">{localizedGroup(group)}</div>
                 {items.map(f => {
                   const idx = tabFormatIndexMap.get(f) ?? -1
                   return (
                     <div
                       key={f.id}
+                      id={optionId('format', f.id)}
+                      role="option"
+                      aria-selected={f.id === currentFormatValue}
                       data-picker-item
                       className={`tool-picker-format-item${f.id === currentFormatValue ? ' selected' : ''}${idx === clampedHighlighted ? ' highlighted' : ''}`}
                       onMouseDown={(e) => { e.preventDefault(); handleSelectFormat(f.id) }}
@@ -499,7 +521,7 @@ function ToolPickerContent({
 
             {hasTabFormats && hasTabTools && (
               <div className="tool-picker-section">
-                <div className="tool-picker-section-label">Tools</div>
+                <div className="tool-picker-section-label">{t('toolPicker.tools')}</div>
               </div>
             )}
 
@@ -510,6 +532,9 @@ function ToolPickerContent({
                   return (
                     <div
                       key={c.id}
+                      id={optionId('converter', c.id)}
+                      role="option"
+                      aria-selected={c.id === currentConverterValue}
                       data-picker-item
                       className={`tool-picker-tool-card${c.id === currentConverterValue ? ' selected' : ''}${idx === clampedHighlighted ? ' highlighted' : ''}`}
                       data-category={c.category}
@@ -526,7 +551,7 @@ function ToolPickerContent({
             )}
 
             {!hasTabFormats && !hasTabTools && (
-              <div className="tool-picker-empty">No items in this category</div>
+              <div className="tool-picker-empty">{t('toolPicker.noItems')}</div>
             )}
           </>
         )}

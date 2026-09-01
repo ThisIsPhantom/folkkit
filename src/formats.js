@@ -2,7 +2,7 @@
 // This powers the "Apple Translate" style UI where you pick From → To
 import { objToYaml, yamlToJson, parseToml } from './utils/parsers'
 import { hexToRgb, rgbToHsl, hslToRgb, parseRgb, parseHsl, rgbToHsv, hsvToRgb, parseHsv } from './utils/color'
-import { getReleasedEvidenceTargets, releasedFormatIds } from './catalog/evidenceRegistry'
+import { getFormatEvidence, getReleasedEvidenceTargets, releasedFormatIds } from './catalog/evidenceRegistry'
 
 export const formats = [
   { id: 'text', name: 'Text', group: 'Text', placeholder: 'Type or paste text...' },
@@ -246,6 +246,20 @@ const releasedFormatIdSet = new Set(releasedFormatIds)
 
 // Raw formats remain preserved; only independently evidenced formats are exposed.
 export const releasedFormats = formats.filter(format => releasedFormatIdSet.has(format.id))
+
+export function getLocalizedReleasedFormatById(id, locale = 'de') {
+  const format = formats.find(entry => entry.id === id)
+  const evidence = getFormatEvidence(id)
+  if (!format || !evidence) return null
+  return {
+    ...format,
+    name: locale === 'en' ? evidence.nameEn : evidence.nameDe,
+  }
+}
+
+export function getLocalizedReleasedFormats(locale = 'de') {
+  return releasedFormats.map(format => getLocalizedReleasedFormatById(format.id, locale))
+}
 
 // Hash helper
 async function digest(algo, input) {

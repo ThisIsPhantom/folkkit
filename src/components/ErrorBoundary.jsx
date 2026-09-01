@@ -1,6 +1,7 @@
 import { Component } from 'react'
+import { useI18n } from '../i18n'
 
-class ErrorBoundary extends Component {
+class ErrorBoundaryCore extends Component {
   constructor(props) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -14,14 +15,14 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div className="converter-view">
-          <div className="error-msg">
-            Something went wrong with this converter.
+          <div className="error-msg" role="alert">
+            {this.props.message}
             <br />
             <button
               className="pill-btn-sm error-retry"
               onClick={() => this.setState({ hasError: false, error: null })}
             >
-              Try again
+              {this.props.retryLabel}
             </button>
           </div>
         </div>
@@ -31,4 +32,13 @@ class ErrorBoundary extends Component {
   }
 }
 
-export default ErrorBoundary
+export default function ErrorBoundary(props) {
+  const { t } = useI18n()
+  return (
+    <ErrorBoundaryCore
+      {...props}
+      message={t('errorBoundary.message')}
+      retryLabel={t('errorBoundary.retry')}
+    />
+  )
+}

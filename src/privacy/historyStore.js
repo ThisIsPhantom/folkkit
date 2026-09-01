@@ -2,6 +2,7 @@ import {
   clearContentHistory,
   getContentHistory,
   getHistoryEnabled,
+  preferenceKeys,
   setContentHistory,
   setHistoryEnabled,
 } from './preferences'
@@ -51,10 +52,14 @@ function normalizeEntry(entry) {
 }
 
 function listEntries() {
-  return getContentHistory()
+  const entries = getContentHistory()
     .map(normalizeEntry)
     .filter(Boolean)
     .slice(0, MAX_ENTRIES)
+  const stored = localStorage.getItem(preferenceKeys.contentHistory)
+  const canonical = JSON.stringify(entries)
+  if (stored !== null && stored !== canonical) setContentHistory(entries)
+  return entries
 }
 
 export const historyStore = Object.freeze({

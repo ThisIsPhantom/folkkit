@@ -27,6 +27,16 @@ function allCopy(content) {
   return JSON.stringify(content)
 }
 
+test('states that Hosttech logging depends on the active deployment configuration in both locales', () => {
+  const german = legalDe.privacy.sections.find(section => section.id === 'host-logs')
+  const english = legalEn.privacy.sections.find(section => section.id === 'host-logs')
+
+  expect(german.paragraphs[0]).toContain('hängt von der aktiven Hosting-Konfiguration ab')
+  expect(english.paragraphs[0]).toContain('depends on the active hosting configuration')
+  expect(german.paragraphs[0]).not.toContain('späteren Bereitstellung')
+  expect(english.paragraphs[0]).not.toContain('later Hosttech deployment')
+})
+
 async function createNoticeFixture({
   missingLicense = false,
   installedRuntimeBName = 'runtime-b',

@@ -147,6 +147,44 @@ describe('historyStore', () => {
 
     expect(historyStore.isEnabled()).toBe(true)
     expect(historyStore.list()).toEqual([])
+    expect(localStorage.getItem(preferenceKeys.contentHistory)).toBe('[]')
+  })
+
+  test('rewrites non-canonical history once with bounded fields only', () => {
+    localStorage.setItem(preferenceKeys.historyEnabled, 'true')
+    localStorage.setItem(preferenceKeys.contentHistory, JSON.stringify([
+      {
+        from: 'text',
+        to: 'base64',
+        input: 'a'.repeat(140),
+        output: 'b'.repeat(140),
+        timestamp: 123,
+        privateMetadata: 'must be removed',
+      },
+      { from: 'hidden', to: 'hidden', input: 'private', output: 'private', timestamp: 122 },
+    ]))
+    const setItem = vi.spyOn(Storage.prototype, 'setItem')
+
+    expect(historyStore.list()).toEqual([{
+      from: 'text',
+      to: 'base64',
+      input: 'a'.repeat(120),
+      output: 'b'.repeat(120),
+      timestamp: 123,
+    }])
+    expect(localStorage.getItem(preferenceKeys.contentHistory)).toBe(JSON.stringify([{
+      from: 'text',
+      to: 'base64',
+      input: 'a'.repeat(120),
+      output: 'b'.repeat(120),
+      timestamp: 123,
+    }]))
+    const firstWriteCount = setItem.mock.calls.filter(([key]) => key === preferenceKeys.contentHistory).length
+    expect(firstWriteCount).toBe(1)
+
+    historyStore.list()
+    expect(setItem.mock.calls.filter(([key]) => key === preferenceKeys.contentHistory)).toHaveLength(firstWriteCount)
+    setItem.mockRestore()
   })
 
   test('clears content and revokes consent when requested', () => {

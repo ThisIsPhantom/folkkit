@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 
 test('generates a local QR image download from text', async ({ page }) => {
   await page.goto('./workspace?tool=text-to-qr')
-  await page.getByRole('textbox', { name: 'Tool input text' }).fill('Folkkit QR fixture')
+  await page.getByRole('textbox', { name: 'Werkzeugeingabe' }).fill('Folkkit QR fixture')
 
   const downloadPromise = page.waitForEvent('download')
   await page.getByRole('link', { name: 'Herunterladen' }).click()

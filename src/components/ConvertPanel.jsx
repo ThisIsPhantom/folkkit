@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import ToolPicker from './ToolPicker'
 import { useToast } from '../hooks/useToast'
-import { releasedFormats as defaultReleasedFormats, getReleasedTargets, getConvertFn, getFormatById } from '../formats'
+import { releasedFormats as defaultReleasedFormats, getReleasedTargets, getConvertFn, getLocalizedReleasedFormatById } from '../formats'
 import { getFormatPairTextLimit, isReleasedFormatPair } from '../catalog/evidenceRegistry'
 import { canExecuteFormatPair, FORMAT_PAIR_COMPATIBILITY, getFormatPairPolicy } from '../catalog/formatCompatibility'
 import { useI18n } from '../i18n'
 import { historyStore } from '../privacy/historyStore'
+import { preferenceKeys } from '../privacy/preferences'
 import { createToolRuntime, ToolRuntimeError } from '../runtime/toolRuntime'
 import { rgbToHex, parseRgb, parseHsl, hslToRgb, hsvToRgb, parseHsv, normalizeColorToHex } from '../utils/color'
 import FileDropZone from './workspace/FileDropZone'
@@ -113,22 +114,28 @@ function autoResize(el) {
   el.style.height = Math.max(120, el.scrollHeight) + 'px'
 }
 
-const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
+const LEGACY_FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
+const FAV_PAIRS_KEY = preferenceKeys.favorites
 function getFavPairs() {
+  const current = localStorage.getItem(FAV_PAIRS_KEY)
+  const legacy = localStorage.getItem(LEGACY_FAV_PAIRS_KEY)
   try {
-    const stored = JSON.parse(localStorage.getItem(FAV_PAIRS_KEY))
+    const stored = JSON.parse(current ?? legacy ?? '[]')
     const pairs = Array.isArray(stored) ? stored : []
     const releasedPairs = pairs.filter((pair) => {
       if (typeof pair !== 'string') return false
       const [from, to, extra] = pair.split('→')
       return !extra && isReleasedFormatPair(from, to)
     })
-    if (releasedPairs.length !== pairs.length) {
-      localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(releasedPairs))
+    const canonical = JSON.stringify(releasedPairs)
+    if ((current !== null || legacy !== null) && current !== canonical) {
+      localStorage.setItem(FAV_PAIRS_KEY, canonical)
     }
+    localStorage.removeItem(LEGACY_FAV_PAIRS_KEY)
     return releasedPairs
   } catch {
-    localStorage.removeItem(FAV_PAIRS_KEY)
+    localStorage.setItem(FAV_PAIRS_KEY, '[]')
+    localStorage.removeItem(LEGACY_FAV_PAIRS_KEY)
     return []
   }
 }
@@ -141,7 +148,7 @@ function saveFavPairs(pairs) {
 }
 
 function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = defaultReleasedFormats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn, resolvePairPolicy = getFormatPairPolicy }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
   const [batchMode, setBatchMode] = useState(false)
@@ -443,7 +450,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
     const text = output || (mediaResult?.result?.kind === 'text' ? mediaResult.result.text : '')
     if (!text) return
     await navigator.clipboard.writeText(text)
-    toast('Copied to clipboard')
+    toast(t('workspaceTools.copiedToClipboard'))
   }
 
   const handleClear = useCallback(() => {
@@ -474,7 +481,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
       if (mod && e.shiftKey && e.key === 'c') {
         if (output && output !== '(conversion error)') {
           e.preventDefault()
-          navigator.clipboard.writeText(output).then(() => toast('Copied output'))
+          navigator.clipboard.writeText(output).then(() => toast(t('workspaceTools.copiedOutput')))
         }
       }
       if (mod && e.key === 'b' && !e.shiftKey && !isToolMode) {
@@ -498,7 +505,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
     }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [output, toast, handleSwap, isToolMode, handleClear])
+  }, [output, toast, handleSwap, isToolMode, handleClear, t])
 
   const canSwap = !isToolMode && isReleasedFormatPair(to, from)
 
@@ -535,17 +542,17 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
         try { await navigator.share(shareData) } catch { /* cancelled */ }
       } else {
         await navigator.clipboard.writeText(url)
-        toast('Link copied')
+        toast(t('workspaceTools.linkCopied'))
       }
       return
     }
     const params = new URLSearchParams({ from, to })
     const url = window.location.origin + window.location.pathname + '?' + params.toString()
     if (navigator.share) {
-      try { await navigator.share({ title: `${getFormatById(from)?.name} → ${getFormatById(to)?.name}`, url }) } catch { /* cancelled */ }
+      try { await navigator.share({ title: `${fromFmt?.name} → ${toFmt?.name}`, url }) } catch { /* cancelled */ }
     } else {
       await navigator.clipboard.writeText(url)
-      toast('Share link copied')
+      toast(t('workspaceTools.shareLinkCopied'))
     }
   }
 
@@ -605,10 +612,10 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
   }, [releasedFormats])
   const toIds = targets.length > 0 ? targets : []
 
-  const fromFmt = getFormatById(from)
-  const toFmt = getFormatById(to)
-  const inputPlaceholder = isToolMode ? (activeConverter.placeholder || 'Type or paste here...') : (fromFmt?.placeholder || 'Type or paste...')
-  const outputPlaceholder = isToolMode ? 'Result will appear here...' : (toFmt?.placeholder || 'Result...')
+  const fromFmt = getLocalizedReleasedFormatById(from, locale)
+  const toFmt = getLocalizedReleasedFormatById(to, locale)
+  const inputPlaceholder = isToolMode ? (activeConverter.placeholder || t('workspaceTools.formatInputPlaceholder')) : t('workspaceTools.formatInputPlaceholder')
+  const outputPlaceholder = t('workspaceTools.resultPlaceholder')
 
   // Color input picker
   const isColorInput = !isToolMode && ['color-hex', 'color-rgb', 'color-hsl', 'color-hsv'].includes(from)
@@ -669,8 +676,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
     if (isToolMode) return []
     const releasedIds = new Set(releasedFormats.map(format => format.id))
     const next = getReleasedTargets(to).filter(t => t !== from && releasedIds.has(t))
-    return next.slice(0, 4).map(t => getFormatById(t)).filter(Boolean)
-  }, [to, from, isToolMode, releasedFormats])
+    return next.slice(0, 4).map(id => getLocalizedReleasedFormatById(id, locale)).filter(Boolean)
+  }, [to, from, isToolMode, locale, releasedFormats])
 
   // Scroll sync for line number gutter
   const handleOutputScroll = useCallback(() => {
@@ -832,13 +839,14 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
             onMouseDown={(e) => e.stopPropagation()}
             onClick={toggleFromPicker}
             aria-expanded={fromPickerOpen}
+            aria-label={t('workspaceTools.selectInput', { name: fromLabel })}
           >
             <span className="picker-trigger-label">{fromLabel}</span>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
               <path d="M2.5 4l2.5 2 2.5-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          {autoDetected && <span className="detect-badge">detected</span>}
+          {autoDetected && <span className="detect-badge">{t('workspaceTools.detected')}</span>}
           <ToolPicker
             open={fromPickerOpen}
             onClose={() => setFromPickerOpen(false)}
@@ -861,7 +869,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
               className={`swap-btn${canSwap ? '' : ' disabled'}${swapped ? ' swapped' : ''}`}
               onClick={handleSwap}
               disabled={!canSwap}
-              title={canSwap ? 'Swap' : 'No reverse conversion'}
+              title={canSwap ? t('workspaceTools.swap') : t('workspaceTools.noReverseConversion')}
+              aria-label={canSwap ? t('workspaceTools.swap') : t('workspaceTools.noReverseConversion')}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M5 4l6 0M11 4l-2.5 2.5M11 4l-2.5-2.5M11 12l-6 0M5 12l2.5-2.5M5 12l2.5 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -873,6 +882,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={toggleToPicker}
                 aria-expanded={toPickerOpen}
+                aria-label={t('workspaceTools.selectOutput', { name: toLabel })}
               >
                 <span className="picker-trigger-label">{toLabel}</span>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -898,7 +908,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
               <button
                 className={`batch-toggle${batchMode ? ' active' : ''}`}
                 onClick={() => setBatchMode(b => !b)}
-                title={batchMode ? 'Batch mode: each line converted separately' : 'Enable batch mode'}
+                title={t(batchMode ? 'workspaceTools.disableBatch' : 'workspaceTools.enableBatch')}
+                aria-label={t(batchMode ? 'workspaceTools.disableBatch' : 'workspaceTools.enableBatch')}
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M3 4h8M3 7h8M3 10h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
@@ -907,7 +918,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
               <button
                 className={`batch-toggle${isPairFav ? ' active' : ''}`}
                 onClick={toggleFavPair}
-                title={isPairFav ? 'Remove from favorites' : 'Save this pair'}
+                title={t(isPairFav ? 'workspaceTools.removeFavourite' : 'workspaceTools.addFavourite')}
+                aria-label={t(isPairFav ? 'workspaceTools.removeFavourite' : 'workspaceTools.addFavourite')}
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M7 1.5l1.76 3.57 3.94.57-2.85 2.78.67 3.93L7 10.57l-3.52 1.78.67-3.93L1.3 5.64l3.94-.57L7 1.5z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" fill={isPairFav ? 'currentColor' : 'none'}/>
@@ -942,8 +954,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
         <div className="fav-pairs">
           {favPairs.map(pair => {
             const [f, t] = pair.split('→')
-            const fName = getFormatById(f)?.name || f
-            const tName = getFormatById(t)?.name || t
+            const fName = getLocalizedReleasedFormatById(f, locale)?.name || f
+            const tName = getLocalizedReleasedFormatById(t, locale)?.name || t
             return (
               <button
                 key={pair}
@@ -970,22 +982,22 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  aria-label="Input text"
+                  aria-label={t('workspaceTools.inputText')}
                   onPaste={handlePaste}
                   placeholder={inputPlaceholder}
                   spellCheck={false}
                   autoFocus
                 />
                 {input && (
-                  <button className="float-clear" onClick={handleClear}>
+                  <button className="float-clear" onClick={handleClear} aria-label={t('workspaceTools.clearInput')}>
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                       <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                     </svg>
                   </button>
                 )}
                 {isColorInput && (
-                  <label className="color-picker-btn" title="Pick a color">
-                    <input ref={colorInputRef} type="color" value={colorPickerValue} onChange={handleColorPick} className="color-picker-input" />
+                  <label className="color-picker-btn" title={t('workspaceTools.pickColor')}>
+                    <input ref={colorInputRef} type="color" value={colorPickerValue} onChange={handleColorPick} className="color-picker-input" aria-label={t('workspaceTools.pickColor')} />
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
                       <rect x="4" y="4" width="6" height="6" rx="1" fill="currentColor" opacity="0.3"/>
@@ -993,8 +1005,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                   </label>
                 )}
                 {input.length > 0 && (
-                  <span className={`float-info${isColorInput ? ' float-info-color-offset' : ''}`} title={`${new Blob([input]).size} bytes`}>
-                    {input.length} chars · {input.split(/\s+/).filter(Boolean).length} words · {input.split('\n').length} lines
+                  <span className={`float-info${isColorInput ? ' float-info-color-offset' : ''}`} title={t('workspaceTools.byteCount', { count: new Blob([input]).size })}>
+                    {t('workspaceTools.inputStats', { characters: input.length, words: input.split(/\s+/).filter(Boolean).length, lines: input.split('\n').length })}
                   </span>
                 )}
               </div>
@@ -1017,26 +1029,26 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                   placeholder={outputPlaceholder}
                   onDoubleClick={handleSelectOutput}
                   onScroll={lineNumbers ? handleOutputScroll : undefined}
-                  aria-label="Conversion output"
+                  aria-label={t('workspaceTools.conversionResult')}
                   aria-live="polite"
                 />
                 {output && (
                   <div className="float-actions">
-                    <button className="float-icon" onClick={handleCopy} title="Copy" aria-label="Copy">
+                    <button className="float-icon" onClick={handleCopy} title={t('workspaceTools.copyResult')} aria-label={t('workspaceTools.copyResult')}>
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <rect x="4.5" y="4.5" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.2"/>
                         <path d="M9.5 4.5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v5.5a1 1 0 0 0 1 1h1.5" stroke="currentColor" strokeWidth="1.2"/>
                       </svg>
                     </button>
                     {output !== '(conversion error)' && output.length > 500 && (
-                      <button className="float-icon" onClick={handleDownload} title="Download" aria-label="Download">
+                      <button className="float-icon" onClick={handleDownload} title={t('workspaceTools.downloadResult')} aria-label={t('workspaceTools.downloadResult')}>
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                           <path d="M7 2v7M7 9L4.5 6.5M7 9l2.5-2.5M3 11h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </button>
                     )}
                     {output !== '(conversion error)' && (
-                      <button className="float-icon" onClick={handleUseAsInput} title="Use as input" aria-label="Use as input">
+                      <button className="float-icon" onClick={handleUseAsInput} title={t('workspaceTools.useAsInput')} aria-label={t('workspaceTools.useAsInput')}>
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                           <path d="M10 4H4M4 4L6.5 6.5M4 4L6.5 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                           <path d="M4 10H10M10 10L7.5 7.5M10 10L7.5 12.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1046,7 +1058,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                     <button
                       className={`float-icon${wrapOutput ? ' active' : ''}`}
                       onClick={() => setWrapOutput(w => !w)}
-                      title={wrapOutput ? 'Word wrap on' : 'Word wrap off'}
+                      title={t(wrapOutput ? 'workspaceTools.wordWrapOn' : 'workspaceTools.wordWrapOff')}
+                      aria-label={t(wrapOutput ? 'workspaceTools.wordWrapOn' : 'workspaceTools.wordWrapOff')}
                     >
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path d="M2 3h10M2 7h7a2 2 0 0 1 0 4H7M7 11L5 9M7 11l-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1055,7 +1068,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                     <button
                       className={`float-icon${lineNumbers ? ' active' : ''}`}
                       onClick={() => setLineNumbers(n => !n)}
-                      title={lineNumbers ? 'Hide line numbers' : 'Show line numbers'}
+                      title={t(lineNumbers ? 'workspaceTools.hideLineNumbers' : 'workspaceTools.showLineNumbers')}
+                      aria-label={t(lineNumbers ? 'workspaceTools.hideLineNumbers' : 'workspaceTools.showLineNumbers')}
                     >
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <text x="1" y="5" fontSize="4.5" fill="currentColor" fontFamily="sans-serif">1</text>
@@ -1066,7 +1080,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                       </svg>
                     </button>
                     {output !== '(conversion error)' && input.length <= 500 && (
-                      <button className="float-icon" onClick={handleShare} title="Share conversion" aria-label="Share conversion">
+                      <button className="float-icon" onClick={handleShare} title={t('workspaceTools.shareConversion')} aria-label={t('workspaceTools.shareConversion')}>
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                           <path d="M4.5 8.5l5-3M4.5 5.5l5 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
                           <circle cx="3.5" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
@@ -1078,16 +1092,16 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                   </div>
                 )}
                 {colorPreview && (
-                  <input className="color-swatch" type="color" value={colorPreview} aria-label="Color preview" disabled tabIndex="-1" />
+                  <input className="color-swatch" type="color" value={colorPreview} aria-label={t('workspaceTools.colorPreview')} disabled tabIndex="-1" />
                 )}
                 {output && output.startsWith('data:image/') && (
                   <div className="base64-preview">
-                    <img src={output} alt="Base64 preview" />
+                    <img src={output} alt={t('workspaceTools.base64Preview')} />
                   </div>
                 )}
                 {output && output !== '(conversion error)' && (
-                  <span className="float-info" title={`${new Blob([output]).size} bytes`}>
-                    {output.length} chars · {outputLineLabel} lines
+                  <span className="float-info" title={t('workspaceTools.byteCount', { count: new Blob([output]).size })}>
+                    {t('workspaceTools.outputStats', { characters: output.length, lines: outputLineLabel })}
                   </span>
                 )}
               </div>
@@ -1095,7 +1109,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
           </div>
           {output && output !== '(conversion error)' && chainTargets.length > 0 && (
             <div className="chain-hint">
-              Chain →
+              {t('workspaceTools.chain')} →
               {chainTargets.map(t => (
                 <button
                   key={t.id}
@@ -1119,13 +1133,13 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                 ref={toolInputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                aria-label="Tool input text"
+                aria-label={t('workspaceTools.toolInputText')}
                 placeholder={inputPlaceholder}
                 spellCheck={false}
                 autoFocus
               />
               {input && (
-                <button className="float-clear" onClick={handleClear}>
+                <button className="float-clear" onClick={handleClear} aria-label={t('workspaceTools.clearInput')}>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                     <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                   </svg>
@@ -1142,18 +1156,18 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                 readOnly
                 placeholder={outputPlaceholder}
                 onDoubleClick={handleSelectOutput}
-                aria-label="Tool output text"
+                aria-label={t('workspaceTools.toolOutputText')}
               />
               {output && !output.startsWith('(') && (
                 <div className="float-actions">
-                  <button className="float-icon" onClick={handleCopy} title="Copy" aria-label="Copy">
+                  <button className="float-icon" onClick={handleCopy} title={t('workspaceTools.copyResult')} aria-label={t('workspaceTools.copyResult')}>
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <rect x="4.5" y="4.5" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.2"/>
                       <path d="M9.5 4.5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v5.5a1 1 0 0 0 1 1h1.5" stroke="currentColor" strokeWidth="1.2"/>
                     </svg>
                   </button>
                   {output.length > 20 && (
-                    <button className="float-icon" onClick={handleSaveFile} title="Save" aria-label="Save">
+                    <button className="float-icon" onClick={handleSaveFile} title={t('workspaceTools.saveResult')} aria-label={t('workspaceTools.saveResult')}>
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path d="M7 2v7M7 9L4.5 6.5M7 9l2.5-2.5M3 11h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
@@ -1162,7 +1176,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                 </div>
               )}
               {output && output.length > 0 && (
-                <span className="float-info">{output.length} chars</span>
+                <span className="float-info">{t('workspaceTools.characterCount', { count: output.length })}</span>
               )}
             </div>
           </div>
@@ -1173,7 +1187,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
       {isGenerator && (
         <div className="tool-panels">
           <div className="panel-label-row">
-            <button className="pill-btn-sm" onClick={handleRegenerate}>Generate</button>
+            <button className="pill-btn-sm" onClick={handleRegenerate}>{t('workspaceTools.generate')}</button>
           </div>
           <div className="textarea-area">
             <textarea
@@ -1181,20 +1195,20 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
               className="output mono"
               value={output}
               readOnly
-              placeholder="Result will appear here..."
+              placeholder={outputPlaceholder}
               onDoubleClick={handleSelectOutput}
-              aria-label="Tool output text"
+              aria-label={t('workspaceTools.toolOutputText')}
             />
             {output && !output.startsWith('(') && (
               <div className="float-actions">
-                <button className="float-icon" onClick={handleCopy} title="Copy" aria-label="Copy">
+                <button className="float-icon" onClick={handleCopy} title={t('workspaceTools.copyResult')} aria-label={t('workspaceTools.copyResult')}>
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <rect x="4.5" y="4.5" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.2"/>
                     <path d="M9.5 4.5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v5.5a1 1 0 0 0 1 1h1.5" stroke="currentColor" strokeWidth="1.2"/>
                   </svg>
                 </button>
                 {output.length > 20 && (
-                  <button className="float-icon" onClick={handleSaveFile} title="Save" aria-label="Save">
+                  <button className="float-icon" onClick={handleSaveFile} title={t('workspaceTools.saveResult')} aria-label={t('workspaceTools.saveResult')}>
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <path d="M7 2v7M7 9L4.5 6.5M7 9l2.5-2.5M3 11h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -1203,7 +1217,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
               </div>
             )}
             {output && output.length > 0 && (
-              <span className="float-info">{output.length} chars</span>
+              <span className="float-info">{t('workspaceTools.characterCount', { count: output.length })}</span>
             )}
           </div>
         </div>
@@ -1239,7 +1253,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
                   setTextParam(event.target.value)
                 }}
                 aria-label={t('workspaceTools.parameters')}
-                placeholder={activeConverter.textPlaceholder || 'Parameters...'}
+                placeholder={activeConverter.textPlaceholder || t('workspaceTools.parametersPlaceholder')}
               />
             )}
             {isMedia && selectedFiles.length > 0 && hasTextInput && !processing && (

@@ -32,11 +32,11 @@ test('runs core text, QR, and PDF workflows offline after the first load', async
   await context.setOffline(true)
 
   await page.goto('./workspace?from=text&to=base64')
-  await page.getByRole('textbox', { name: 'Input text' }).fill('Folkkit offline')
-  await expect(page.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('Rm9sa2tpdCBvZmZsaW5l')
+  await page.getByRole('textbox', { name: 'Eingabetext' }).fill('Folkkit offline')
+  await expect(page.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('Rm9sa2tpdCBvZmZsaW5l')
 
   await page.goto('./workspace?tool=text-to-qr')
-  await page.getByRole('textbox', { name: 'Tool input text' }).fill('Folkkit offline QR')
+  await page.getByRole('textbox', { name: 'Werkzeugeingabe' }).fill('Folkkit offline QR')
   await expect(page.getByRole('link', { name: 'Herunterladen' })).toHaveAttribute('href', /^blob:/)
 
   await page.goto('./workspace?tool=merge-pdf')

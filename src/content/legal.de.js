@@ -48,8 +48,8 @@ const legalDe = Object.freeze({
         id: 'host-logs',
         title: 'Technische Zugriffsprotokolle bei Hosttech',
         paragraphs: Object.freeze([
-          'Bei einer späteren Bereitstellung auf Hosttech können nach Prüfung der tatsächlich aktiven Hosting-Konfiguration technische Zugriffsprotokolle anfallen. Sie können IP-Adresse, Zeitpunkt, angeforderten Pfad, Referrer und User-Agent enthalten.',
-          'Umfang, Zweck und Aufbewahrungsdauer müssen vor der öffentlichen Veröffentlichung anhand der aktiven Hosttech-Konfiguration bestätigt werden. Diese Vorabversion behauptet dazu keine bereits verifizierte Konfiguration.',
+          'Ob Hosttech technische Zugriffsprotokolle erstellt und welche Daten sie enthalten, hängt von der aktiven Hosting-Konfiguration ab. Mögliche Felder sind IP-Adresse, Zeitpunkt, angeforderter Pfad, Referrer und User-Agent.',
+          'Umfang, Zweck und Aufbewahrungsdauer müssen vor der öffentlichen Veröffentlichung anhand dieser Konfiguration bestätigt werden. Für diese Vorabversion liegt dazu keine verifizierte Konfiguration vor.',
         ]),
       }),
       Object.freeze({

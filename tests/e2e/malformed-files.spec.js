@@ -42,17 +42,17 @@ test('rejects excessive image dimensions and file count before canvas or PDF wor
 
 test('rejects excessive batch, CSV, QR and PDF page complexity before dangerous work', async ({ page }) => {
   await page.goto('./workspace?from=text&to=base64')
-  await page.getByTitle('Enable batch mode').click()
-  await page.getByRole('textbox', { name: 'Input text' }).fill(Array.from({ length: 501 }, () => 'x').join('\n'))
+  await page.getByTitle('Stapelmodus aktivieren').click()
+  await page.getByRole('textbox', { name: 'Eingabetext' }).fill(Array.from({ length: 501 }, () => 'x').join('\n'))
   await expectGermanResourceLimit(page)
 
   await page.goto('./workspace?tool=csv-to-json')
   const wideCsv = Array.from({ length: 101 }, (_, index) => `c${index}`).join(',')
-  await page.getByRole('textbox', { name: 'Tool input text' }).fill(`${wideCsv}\n${wideCsv}`)
+  await page.getByRole('textbox', { name: 'Werkzeugeingabe' }).fill(`${wideCsv}\n${wideCsv}`)
   await expectGermanResourceLimit(page)
 
   await page.goto('./workspace?tool=text-to-qr')
-  await page.getByRole('textbox', { name: 'Tool input text' }).fill('x'.repeat(QR_TEXT_LIMIT_BYTES + 1))
+  await page.getByRole('textbox', { name: 'Werkzeugeingabe' }).fill('x'.repeat(QR_TEXT_LIMIT_BYTES + 1))
   await expectGermanResourceLimit(page)
 
   const document = await PDFDocument.create()

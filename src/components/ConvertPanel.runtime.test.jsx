@@ -38,8 +38,8 @@ test('native tool sharing includes only the localized description and content-fr
     convert: async value => ({ kind: 'text', text: `PRIVATE-RESULT-${value}` }),
   })} />)
 
-  await user.type(screen.getByRole('textbox', { name: 'Tool input text' }), 'PRIVATE-INPUT')
-  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Tool output text' })).toHaveValue('PRIVATE-RESULT-PRIVATE-INPUT'))
+  await user.type(screen.getByRole('textbox', { name: 'Werkzeugeingabe' }), 'PRIVATE-INPUT')
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Werkzeugergebnis' })).toHaveValue('PRIVATE-RESULT-PRIVATE-INPUT'))
   await user.click(screen.getByRole('button', { name: 'Werkzeug teilen' }))
 
   expect(share).toHaveBeenCalledWith({
@@ -58,7 +58,7 @@ test('future incompatible implemented pair requires unchecked session-only confi
     resolveConvertFn: () => convert,
     resolvePairPolicy,
   })} />)
-  const input = screen.getByRole('textbox', { name: 'Input text' })
+  const input = screen.getByRole('textbox', { name: 'Eingabetext' })
   await user.type(input, 'private input')
 
   const confirmation = screen.getByRole('checkbox', {
@@ -66,10 +66,10 @@ test('future incompatible implemented pair requires unchecked session-only confi
   })
   expect(confirmation).not.toBeChecked()
   expect(convert).not.toHaveBeenCalled()
-  expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('')
+  expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('')
 
   await user.click(confirmation)
-  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('PRIVATE INPUT'))
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('PRIVATE INPUT'))
   expect(localStorage.getItem('folkkit:format-compatibility-confirmation')).toBeNull()
   expect(window.location.href).not.toContain('compatibility')
 
@@ -116,8 +116,8 @@ test('clipboard tool sharing copies only a content-free URL', async () => {
     description: 'Local description',
     convert: async value => ({ kind: 'text', text: `PRIVATE-RESULT-${value}` }),
   })} />)
-  await user.type(screen.getByRole('textbox', { name: 'Tool input text' }), 'PRIVATE-INPUT')
-  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Tool output text' })).toHaveValue('PRIVATE-RESULT-PRIVATE-INPUT'))
+  await user.type(screen.getByRole('textbox', { name: 'Werkzeugeingabe' }), 'PRIVATE-INPUT')
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Werkzeugergebnis' })).toHaveValue('PRIVATE-RESULT-PRIVATE-INPUT'))
   await user.click(screen.getByRole('button', { name: 'Werkzeug teilen' }))
 
   expect(writeText).toHaveBeenCalledWith(`${window.location.origin}${window.location.pathname}?tool=share-clipboard-fixture`)
@@ -220,7 +220,7 @@ test('text-tool failures use the stable localized notice and a new input clears 
     },
   }
   renderWithProviders(<ConvertPanel {...panelProps(tool)} />)
-  const input = screen.getByRole('textbox', { name: 'Tool input text' })
+  const input = screen.getByRole('textbox', { name: 'Werkzeugeingabe' })
 
   await user.type(input, 'bad')
   expect(await screen.findByRole('alert')).toHaveTextContent('Die Verarbeitung ist fehlgeschlagen.')
@@ -229,7 +229,7 @@ test('text-tool failures use the stable localized notice and a new input clears 
   await user.clear(input)
   await user.type(input, 'good')
   await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
-  expect(screen.getByRole('textbox', { name: 'Tool output text' })).toHaveValue('GOOD')
+  expect(screen.getByRole('textbox', { name: 'Werkzeugergebnis' })).toHaveValue('GOOD')
 })
 
 test('format conversion rejects text above five MiB before calling the converter', async () => {
@@ -240,13 +240,13 @@ test('format conversion rejects text above five MiB before calling the converter
   }
   renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn })} />)
 
-  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+  fireEvent.change(screen.getByRole('textbox', { name: 'Eingabetext' }), {
     target: { value: 'x'.repeat(TEXT_LIMIT + 1) },
   })
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Die ausgewählte Datei ist für dieses Gerät zu gross.')
   expect(conversionCalls).toBe(0)
-  expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('')
+  expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('')
 })
 
 test.each([
@@ -260,7 +260,7 @@ test.each([
   }
   renderWithProviders(<ConvertPanel {...panelProps(null, { from, to, resolveConvertFn })} />)
 
-  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+  fireEvent.change(screen.getByRole('textbox', { name: 'Eingabetext' }), {
     target: { value: 'x'.repeat(BASE58_TEXT_LIMIT + 1) },
   })
 
@@ -277,9 +277,9 @@ test.each([
   const user = userEvent.setup()
   const resolveConvertFn = vi.fn(() => () => 'must not run')
   renderWithProviders(<ConvertPanel {...panelProps(null, { from, to, resolveConvertFn })} />)
-  if (batchMode) await user.click(screen.getByTitle('Enable batch mode'))
+  if (batchMode) await user.click(screen.getByTitle('Stapelmodus aktivieren'))
 
-  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+  fireEvent.change(screen.getByRole('textbox', { name: 'Eingabetext' }), {
     target: { value: 'private raw state' },
   })
 
@@ -294,14 +294,14 @@ test('format conversion maps thrown payloads to a stable localized error', async
   }
   renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn })} />)
 
-  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+  fireEvent.change(screen.getByRole('textbox', { name: 'Eingabetext' }), {
     target: { value: 'private marker' },
   })
 
   const alert = await screen.findByRole('alert')
   expect(alert).toHaveTextContent('Die Verarbeitung ist fehlgeschlagen.')
   expect(document.body).not.toHaveTextContent('Alice private payload')
-  expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('')
+  expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('')
 })
 
 test('batch format conversion uses the same content-free runtime error boundary', async () => {
@@ -311,24 +311,24 @@ test('batch format conversion uses the same content-free runtime error boundary'
     return value.toUpperCase()
   }
   renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn })} />)
-  await user.click(screen.getByTitle('Enable batch mode'))
+  await user.click(screen.getByTitle('Stapelmodus aktivieren'))
 
-  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+  fireEvent.change(screen.getByRole('textbox', { name: 'Eingabetext' }), {
     target: { value: 'safe\nprivate marker' },
   })
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Die Verarbeitung ist fehlgeschlagen.')
   expect(document.body).not.toHaveTextContent('Alice batch payload')
-  expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('')
+  expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('')
 })
 
 test('batch conversion rejects excessive line count before invoking a conversion', async () => {
   const user = userEvent.setup()
   const convert = vi.fn(value => value)
   renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn: () => convert })} />)
-  await user.click(screen.getByTitle('Enable batch mode'))
+  await user.click(screen.getByTitle('Stapelmodus aktivieren'))
 
-  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+  fireEvent.change(screen.getByRole('textbox', { name: 'Eingabetext' }), {
     target: { value: Array.from({ length: 501 }, () => 'x').join('\n') },
   })
 
@@ -340,12 +340,12 @@ test('line-number UI never materializes more than the bounded rendering limit', 
   const user = userEvent.setup()
   const resolveConvertFn = () => () => '\n'.repeat(6000)
   renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn })} />)
-  await user.type(screen.getByRole('textbox', { name: 'Input text' }), 'x')
-  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Conversion output' })).not.toHaveValue(''))
-  await user.click(screen.getByTitle('Show line numbers'))
+  await user.type(screen.getByRole('textbox', { name: 'Eingabetext' }), 'x')
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).not.toHaveValue(''))
+  await user.click(screen.getByTitle('Zeilennummern anzeigen'))
 
   expect(document.querySelectorAll('.line-num')).toHaveLength(0)
-  expect(screen.getByText(/5000\+ lines/)).toBeVisible()
+  expect(screen.getByText(/Zeilen 5000\+/)).toBeVisible()
 })
 
 test('a new format run aborts a slow prior run and its late result cannot overwrite output', async () => {
@@ -363,16 +363,16 @@ test('a new format run aborts a slow prior run and its late result cannot overwr
     return async () => 'fresh-output'
   }
   const view = renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn })} />)
-  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), { target: { value: 'input' } })
+  fireEvent.change(screen.getByRole('textbox', { name: 'Eingabetext' }), { target: { value: 'input' } })
   await waitFor(() => expect(slowSignal).toBeDefined())
 
   view.rerender(<ConvertPanel {...panelProps(null, { to: 'html-ent', resolveConvertFn })} />)
 
-  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('fresh-output'))
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('fresh-output'))
   expect(slowSignal.aborted).toBe(true)
   resolveSlow('stale-output')
   await Promise.resolve()
-  expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('fresh-output')
+  expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('fresh-output')
 })
 
 test('emptying a text tool aborts active work and revokes its visible result', async () => {
@@ -396,7 +396,7 @@ test('emptying a text tool aborts active work and revokes its visible result', a
     },
   }
   renderWithProviders(<ConvertPanel {...panelProps(tool)} />)
-  const input = screen.getByRole('textbox', { name: 'Tool input text' })
+  const input = screen.getByRole('textbox', { name: 'Werkzeugeingabe' })
 
   await user.type(input, 'ready')
   expect(await screen.findByRole('link', { name: 'Herunterladen' })).toHaveAttribute('href', 'blob:text-tool-result')

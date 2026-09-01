@@ -1,20 +1,22 @@
 import { useState, useEffect, useCallback } from 'react'
 import { HISTORY_CHANGE_EVENT, historyStore } from '../privacy/historyStore'
-import { getFormatById } from '../formats'
+import { getLocalizedReleasedFormatById } from '../formats'
+import { useI18n } from '../i18n'
 import { useToast } from '../hooks/useToast'
 import './History.css'
 
-function timeAgo(ts) {
+function timeAgo(ts, t) {
   const diff = Date.now() - ts
   const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'now'
-  if (mins < 60) return `${mins}m`
+  if (mins < 1) return t('history.now')
+  if (mins < 60) return t('history.minutesAgo', { count: mins })
   const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h`
-  return `${Math.floor(hrs / 24)}d`
+  if (hrs < 24) return t('history.hoursAgo', { count: hrs })
+  return t('history.daysAgo', { count: Math.floor(hrs / 24) })
 }
 
 function History({ onSelect }) {
+  const { locale, t } = useI18n()
   const [items, setItems] = useState([])
   const [isEnabled, setIsEnabled] = useState(false)
   const toast = useToast()
@@ -46,15 +48,15 @@ function History({ onSelect }) {
     e.stopPropagation()
     try {
       await navigator.clipboard.writeText(output)
-      toast('Copied to clipboard')
+      toast(t('history.copied'))
     } catch { /* clipboard not available */ }
-  }, [toast])
+  }, [t, toast])
 
   if (!isEnabled) {
     return (
       <div className="history">
-        <p>Local history is stored only in this browser after you enable it.</p>
-        <button className="history-clear" onClick={handleEnable}>Enable local history</button>
+        <p>{t('history.consent')}</p>
+        <button className="history-clear" onClick={handleEnable}>{t('history.enable')}</button>
       </div>
     )
   }
@@ -62,27 +64,23 @@ function History({ onSelect }) {
   return (
     <div className="history">
       <div className="history-header">
-        <span className="history-label">Recents</span>
-        <button className="history-clear" onClick={handleDeleteAndDisable}>Delete history and disable</button>
+        <span className="history-label">{t('history.recent')}</span>
+        <button className="history-clear" onClick={handleDeleteAndDisable}>{t('history.deleteAndDisable')}</button>
       </div>
-      <div className="history-scroll">
-        {items.length === 0 && <p>No local history yet.</p>}
+      <ul className="history-scroll" aria-label={t('history.recent')}>
+        {items.length === 0 && <li className="history-empty">{t('history.empty')}</li>}
         {items.map((item, i) => {
-          const fromFmt = getFormatById(item.from)
-          const toFmt = getFormatById(item.to)
+          const fromFmt = getLocalizedReleasedFormatById(item.from, locale)
+          const toFmt = getLocalizedReleasedFormatById(item.to, locale)
           return (
-            <div
+            <li
               key={`${item.timestamp}-${i}`}
-              className="history-card"
-              role="button"
-              tabIndex={0}
-              onClick={() => onSelect(item)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(item) } }}
             >
+              <article className="history-card">
               <button
                 className="history-card-remove"
                 onClick={(e) => handleRemove(e, i)}
-                aria-label="Remove from history"
+                aria-label={t('history.remove')}
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                   <path d="M2.5 2.5l5 5M7.5 2.5l-5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
@@ -94,7 +92,7 @@ function History({ onSelect }) {
                   <svg className="history-arrow" width="10" height="10" viewBox="0 0 10 10"><path d="M2 5h6M6 3l2 2-2 2" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   {toFmt?.name || item.to}
                 </span>
-                <span className="history-card-time">{timeAgo(item.timestamp)}</span>
+                <span className="history-card-time">{timeAgo(item.timestamp, t)}</span>
               </div>
               <span className="history-card-preview">{item.input}</span>
               <span className="history-card-output">{item.output}</span>
@@ -103,19 +101,20 @@ function History({ onSelect }) {
                   className="history-card-btn"
                   onClick={(e) => handleCopy(e, item.output)}
                 >
-                  Copy
+                  {t('history.copy')}
                 </button>
                 <button
                   className="history-card-btn"
                   onClick={(e) => { e.stopPropagation(); onSelect(item) }}
                 >
-                  Reuse
+                  {t('history.reuse')}
                 </button>
               </div>
-            </div>
+              </article>
+            </li>
           )
         })}
-      </div>
+      </ul>
     </div>
   )
 }

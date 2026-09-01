@@ -19,8 +19,8 @@ test('loads only the owning converter module after released metadata selection',
   page.on('request', request => requests.push(request.url()))
 
   await page.goto('./?tool=base64-encode')
-  await page.getByRole('textbox', { name: 'Tool input text' }).fill('Folkkit')
-  await expect(page.getByRole('textbox', { name: 'Tool output text' })).toHaveValue('Rm9sa2tpdA==')
+  await page.getByRole('textbox', { name: 'Werkzeugeingabe' }).fill('Folkkit')
+  await expect(page.getByRole('textbox', { name: 'Werkzeugergebnis' })).toHaveValue('Rm9sa2tpdA==')
 
   expect(requests.some(url => url.endsWith(`/${viteManifest['src/converters/text.js'].file}`))).toBe(true)
   expect(requests.some(url => url.endsWith(`/${viteManifest['src/converters/data.js'].file}`))).toBe(false)

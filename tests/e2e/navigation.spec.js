@@ -93,13 +93,13 @@ test('history reuse changes only URL identifiers and does not survive reload as 
   })
   await page.goto('./workspace?from=text&to=base64')
 
-  await page.getByRole('button', { name: 'Reuse', exact: true }).click()
+  await page.getByRole('button', { name: 'Wiederverwenden', exact: true }).click()
   await expect(page).toHaveURL(/\/workspace\?from=base64&to=text$/)
-  await expect(page.getByRole('textbox', { name: 'Input text' })).toHaveValue('UFJJVkFURQ==')
+  await expect(page.getByRole('textbox', { name: 'Eingabetext' })).toHaveValue('UFJJVkFURQ==')
   expect(page.url()).not.toContain('UFJJVkFURQ')
 
   await page.reload()
-  await expect(page.getByRole('textbox', { name: 'Input text' })).toHaveValue('')
+  await expect(page.getByRole('textbox', { name: 'Eingabetext' })).toHaveValue('')
   await expect(page).toHaveURL(/\/workspace\?from=base64&to=text$/)
 })
 

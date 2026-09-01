@@ -28,7 +28,7 @@ test('a format selection writes one authoritative pair URL with a valid target',
   const user = userEvent.setup()
   renderWithProviders(<WorkspacePage />)
 
-  await user.click(screen.getByRole('button', { name: 'Text' }))
+  await user.click(screen.getByRole('button', { name: 'Eingabe auswählen: Text' }))
   const picker = document.querySelector('.tool-picker')
   await user.click(within(picker).getByText('Base64'))
 
@@ -47,11 +47,11 @@ test('history reuse updates the pair URL without placing reused content in it', 
   const user = userEvent.setup()
   renderWithProviders(<WorkspacePage />)
 
-  await user.click(screen.getByRole('button', { name: 'Reuse' }))
+  await user.click(screen.getByRole('button', { name: 'Wiederverwenden' }))
 
   expect(window.location.search).toBe('?from=base64&to=text')
   expect(window.location.href).not.toContain('UFJJVkFURQ')
-  expect(screen.getByRole('textbox', { name: 'Input text' })).toHaveValue('UFJJVkFURQ==')
+  expect(screen.getByRole('textbox', { name: 'Eingabetext' })).toHaveValue('UFJJVkFURQ==')
 })
 
 test.each([

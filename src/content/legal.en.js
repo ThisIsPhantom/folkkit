@@ -48,8 +48,8 @@ const legalEn = Object.freeze({
         id: 'host-logs',
         title: 'Technical access logs at Hosttech',
         paragraphs: Object.freeze([
-          'For a later Hosttech deployment, technical access logs may arise after the actually active hosting configuration has been checked. They may include IP address, timestamp, requested path, referrer, and user agent.',
-          'The scope, purpose, and retention period must be confirmed against the active Hosttech configuration before public release. This pre-release does not claim that such a configuration has already been verified.',
+          'Whether Hosttech creates technical access logs and which data they contain depends on the active hosting configuration. Possible fields are the IP address, timestamp, requested path, referrer, and user agent.',
+          'The scope, purpose, and retention period must be confirmed against that configuration before public release. No verified configuration is available for this pre-release.',
         ]),
       }),
       Object.freeze({
