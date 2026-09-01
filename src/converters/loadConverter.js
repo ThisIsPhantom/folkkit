@@ -35,6 +35,18 @@ function selectModuleConverters(moduleId, loadedModule) {
   }
 }
 
+function adaptConverter(converter, moduleId, loadedModule) {
+  const adapted = { ...converter }
+  if (typeof converter.convert === 'function') {
+    adapted.convert = async (...args) => {
+      const result = await converter.convert(...args)
+      return typeof result === 'string' ? { kind: 'text', text: result } : result
+    }
+  }
+  if (moduleId === 'media') adapted.onRuntimeStatus = loadedModule.onFFmpegLoad
+  return adapted
+}
+
 export function createConverterLoader(loaders = moduleLoaders) {
   return async function resolveConverter(id) {
     if (typeof id !== 'string') return null
@@ -47,10 +59,7 @@ export function createConverterLoader(loaders = moduleLoaders) {
     const moduleConverters = selectModuleConverters(entry.module, loadedModule)
     const converter = moduleConverters?.find(candidate => candidate.id === entry.id)
     if (!converter) throw new Error(`Missing released converter implementation: ${entry.id}`)
-    if (entry.module === 'media') {
-      return { ...converter, onRuntimeStatus: loadedModule.onFFmpegLoad }
-    }
-    return converter
+    return adaptConverter(converter, entry.module, loadedModule)
   }
 }
 

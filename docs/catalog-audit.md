@@ -24,16 +24,18 @@ The format graph contains 223 unique IDs in 34 groups. All 223 remain available 
 | `number` | 44 | 6 | 38 | Released the six fixed base conversions after literal fixtures. Expansion-oriented sequences, combinatorics, and unverified calculators remain hidden. |
 | `color` | 22 | 1 | 21 | Released deterministic HEX/RGB/HSL conversion after a literal fixture. Accessibility claims, extraction, random generation, and unverified palette operations remain hidden. |
 | `utility` | 119 | 6 | 113 | Released character count, text reversal, percentage, aspect ratio, loan calculation, and BMI calculation after fixtures. Loan and BMI metadata displays localized non-advice. Dated data, professional guidance, and unverified calculators remain hidden. |
-| `imageFormat` | 22 | 0 | 22 | Hidden pending exact PNG/JPEG validation, Canvas cleanup, Blob result fixtures, and URL ownership. |
-| `media` | 14 | 0 | 14 | Hidden pending the Task 7 same-origin FFmpeg network journey and cancellation evidence. |
+| `imageFormat` | 22 | 2 | 20 | Released PNG-to-JPEG and JPEG-to-PNG with exact MIME/extension contracts, device-aware image limits, closed `ImageBitmap` instances, exact Blob results, and real Chromium download fixtures. Other Canvas operations remain hidden pending equivalent evidence. |
+| `media` | 14 | 14 | 0 | Released the Task 6-hardened FFmpeg tools as experimental with device-aware media limits, localized warnings, exact Blob results, lifecycle tests, and localized trim parameters. A real WAV-to-MP3 browser journey verifies same-origin FFmpeg JavaScript/WASM and no input leakage. A separate journey cancels during WASM loading and verifies reusable input. |
 | `pdf` | 8 | 8 | 0 | Kept the Task 4 core PDF set with Task 6 PDF/image limits, signature checks, exact Blob results, and checked-in PDF/image fixtures. |
 
-Current audited total: 499 raw converters, 47 released converters, 452 hidden converters, and 223 released format IDs. The UI tool count is `releasedToolCount`, derived from the 47 non-hidden converter entries. Format graph choices are intentionally not added to that tool-card count.
+Current audited total: 499 raw converters, 63 released converters, 436 hidden converters, and 223 released format IDs. The UI tool count is `releasedToolCount`, derived from the 63 non-hidden converter entries. Format graph choices are intentionally not added to that tool-card count.
 
 ## Lazy-loading boundary
 
 `src/converters/index.js` contains IDs and categories only. It imports no converter implementation. `loadConverter(id)` first resolves a non-hidden audited ID, selects one fixed module loader from an internal map, and then uses an explicit module switch to read that module's converter array. Hidden, unknown, path-like, and prototype-like IDs return `null` before any module import.
 
-## Remaining image and media gate
+## Image and media evidence
 
-Image-format and media release decisions remain open in this document until their Task 7 browser evidence is complete. No hidden entry is presented as released behavior.
+`tests/e2e/catalog.spec.js` checks the derived count, proves that selecting Base64 loads `text.js` without loading `data.js` or `media.js`, and verifies real PNG-to-JPEG and JPEG-to-PNG downloads by file signatures. `tests/e2e/network.spec.js` converts a generated valid PCM WAV fixture to MP3, observes both pinned same-origin FFmpeg assets, and rejects cross-origin or content-bearing requests. Its cancellation case delays the same-origin WASM request, cancels the active runtime, and verifies that the native file input is enabled and empty afterwards.
+
+No other `image` or `imageFormat` entry is presented as released behavior. The remaining hidden entries retain their exact raw IDs and documented module reason.

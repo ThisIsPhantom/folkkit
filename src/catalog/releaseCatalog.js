@@ -76,6 +76,25 @@ function pureTool(id, module, translationKey, options = {}) {
   })
 }
 
+function experimentalMedia(id, translationKey, acceptTypes, options = {}) {
+  return released({
+    module: 'media',
+    tier: 'experimental',
+    translationKey,
+    runtimeClass: 'ffmpeg-wasm',
+    inputLimitClass: 'media-device',
+    outputNaming: 'converter-filename',
+    testName: `exposes audited experimental media contract: ${id}`,
+    acceptsFile: true,
+    acceptTypes,
+    isMediaConverter: true,
+    limits: TOOL_LIMITS.media,
+    noticeKey: 'labels.mediaWarning',
+    hasTextInput: options.hasTextInput,
+    parameterPlaceholderKey: options.parameterPlaceholderKey,
+  })
+}
+
 const releaseMetadata = Object.freeze({
   'base64-encode': released({
     module: 'text',
@@ -142,6 +161,52 @@ const releaseMetadata = Object.freeze({
     testName: 'runs audited advice-scoped fixture: bmi-calc',
     placeholderKey: 'tools.bmiCalc.placeholder',
     noticeKey: 'tools.bmiCalc.notice',
+  }),
+  'png-to-jpg': released({
+    module: 'imageFormat',
+    tier: 'advanced',
+    translationKey: 'pngToJpg',
+    runtimeClass: 'canvas',
+    inputLimitClass: 'image-device',
+    outputNaming: 'converter-filename',
+    testName: 'converts a real PNG fixture to a runtime-owned JPEG download',
+    acceptsFile: true,
+    acceptTypes: 'image/png,.png',
+    isMediaConverter: true,
+    limits: TOOL_LIMITS.images,
+  }),
+  'jpg-to-png': released({
+    module: 'imageFormat',
+    tier: 'advanced',
+    translationKey: 'jpgToPng',
+    runtimeClass: 'canvas',
+    inputLimitClass: 'image-device',
+    outputNaming: 'converter-filename',
+    testName: 'converts a real JPEG fixture to a runtime-owned PNG download',
+    acceptsFile: true,
+    acceptTypes: 'image/jpeg,.jpg,.jpeg',
+    isMediaConverter: true,
+    limits: TOOL_LIMITS.images,
+  }),
+  'video-to-audio': experimentalMedia('video-to-audio', 'videoToAudio', 'video/*'),
+  'video-to-wav': experimentalMedia('video-to-wav', 'videoToWav', 'video/*'),
+  'audio-to-mp3': experimentalMedia('audio-to-mp3', 'audioToMp3', 'audio/*'),
+  'audio-to-wav': experimentalMedia('audio-to-wav', 'audioToWav', 'audio/*'),
+  'audio-to-ogg': experimentalMedia('audio-to-ogg', 'audioToOgg', 'audio/*'),
+  'video-to-mp4': experimentalMedia('video-to-mp4', 'videoToMp4', 'video/*'),
+  'video-to-webm': experimentalMedia('video-to-webm', 'videoToWebm', 'video/*'),
+  'video-to-gif': experimentalMedia('video-to-gif', 'videoToGif', 'video/*'),
+  'audio-to-aac': experimentalMedia('audio-to-aac', 'audioToAac', 'audio/*'),
+  'audio-to-flac': experimentalMedia('audio-to-flac', 'audioToFlac', 'audio/*'),
+  'video-to-audio-ogg': experimentalMedia('video-to-audio-ogg', 'videoToAudioOgg', 'video/*'),
+  'audio-to-m4a': experimentalMedia('audio-to-m4a', 'audioToM4a', 'audio/*'),
+  'video-trim': experimentalMedia('video-trim', 'videoTrim', 'video/*', {
+    hasTextInput: true,
+    parameterPlaceholderKey: 'tools.videoTrim.parameterPlaceholder',
+  }),
+  'audio-trim': experimentalMedia('audio-trim', 'audioTrim', 'audio/*', {
+    hasTextInput: true,
+    parameterPlaceholderKey: 'tools.audioTrim.parameterPlaceholder',
   }),
   'text-to-qr': released({
     module: 'qr',

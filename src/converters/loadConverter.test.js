@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createConverterLoader, loadConverter } from './loadConverter'
 import { findReleasedTool } from '../catalog/releaseCatalog'
+import { TOOL_LIMITS } from '../runtime/limits'
 
 const pureFixtures = [
   ['base64-encode', 'Folkkit', 'Rm9sa2tpdA=='],
@@ -72,7 +73,7 @@ describe('lazy converter loading', () => {
     const converter = await loadConverter(id)
 
     expect(converter, `${id} is not released`).not.toBeNull()
-    expect(await converter.convert(input)).toBe(expected)
+    expect(await converter.convert(input)).toEqual({ kind: 'text', text: expected })
   })
 
   it.each([
@@ -91,6 +92,25 @@ describe('lazy converter loading', () => {
     const converter = await loadConverter(id)
 
     expect(converter, `${id} is not released`).not.toBeNull()
-    expect(await converter.convert(input)).toContain(expected)
+    expect((await converter.convert(input)).text).toContain(expected)
+  })
+
+  it.each([
+    'video-to-audio', 'video-to-wav', 'audio-to-mp3', 'audio-to-wav',
+    'audio-to-ogg', 'video-to-mp4', 'video-to-webm', 'video-to-gif',
+    'audio-to-aac', 'audio-to-flac', 'video-to-audio-ogg', 'audio-to-m4a',
+    'video-trim', 'audio-trim',
+  ])('exposes audited experimental media contract: %s', async (id) => {
+    const converter = await loadConverter(id)
+
+    expect(converter).toMatchObject({
+      id,
+      limits: TOOL_LIMITS.media,
+      isMediaConverter: true,
+      acceptsFile: true,
+    })
+    expect(converter.fileConvert).toEqual(expect.any(Function))
+    expect(converter.terminate).toEqual(expect.any(Function))
+    expect(converter.onRuntimeStatus).toEqual(expect.any(Function))
   })
 })

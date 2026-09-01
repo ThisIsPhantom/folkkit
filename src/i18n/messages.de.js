@@ -83,6 +83,7 @@ const messagesDe = Object.freeze({
   }),
   labels: Object.freeze({
     experimental: 'Experimentell',
+    mediaWarning: 'Experimentell. Das lokale Medienmodul benötigt je nach Datei viel Speicher und Rechenleistung.',
   }),
   categories: Object.freeze({
     encode: 'QR und Codierung',
@@ -216,6 +217,36 @@ const messagesDe = Object.freeze({
       description: 'Den Body-Mass-Index aus Gewicht und Grösse berechnen',
       placeholder: '70kg 175cm',
       notice: 'Nur eine allgemeine Rechenhilfe, keine medizinische Beratung.',
+    }),
+    pngToJpg: Object.freeze({
+      name: 'PNG in JPEG',
+      description: 'Ein PNG-Bild lokal in JPEG umwandeln',
+    }),
+    jpgToPng: Object.freeze({
+      name: 'JPEG in PNG',
+      description: 'Ein JPEG-Bild lokal in PNG umwandeln',
+    }),
+    videoToAudio: Object.freeze({ name: 'Video in MP3-Audio', description: 'Die Tonspur eines Videos lokal als MP3 extrahieren' }),
+    videoToWav: Object.freeze({ name: 'Video in WAV-Audio', description: 'Die Tonspur eines Videos lokal als WAV extrahieren' }),
+    audioToMp3: Object.freeze({ name: 'Audio in MP3', description: 'Eine Audiodatei lokal in MP3 umwandeln' }),
+    audioToWav: Object.freeze({ name: 'Audio in WAV', description: 'Eine Audiodatei lokal in WAV umwandeln' }),
+    audioToOgg: Object.freeze({ name: 'Audio in OGG', description: 'Eine Audiodatei lokal in OGG Vorbis umwandeln' }),
+    videoToMp4: Object.freeze({ name: 'Video in MP4', description: 'Eine Videodatei lokal in MP4 umwandeln' }),
+    videoToWebm: Object.freeze({ name: 'Video in WebM', description: 'Eine Videodatei lokal in WebM umwandeln' }),
+    videoToGif: Object.freeze({ name: 'Video in GIF', description: 'Einen Videoclip lokal in ein animiertes GIF umwandeln' }),
+    audioToAac: Object.freeze({ name: 'Audio in AAC', description: 'Eine Audiodatei lokal in AAC umwandeln' }),
+    audioToFlac: Object.freeze({ name: 'Audio in FLAC', description: 'Eine Audiodatei lokal in FLAC umwandeln' }),
+    videoToAudioOgg: Object.freeze({ name: 'Video in OGG-Audio', description: 'Die Tonspur eines Videos lokal als OGG Vorbis extrahieren' }),
+    audioToM4a: Object.freeze({ name: 'Audio in M4A', description: 'Eine Audiodatei lokal in M4A umwandeln' }),
+    videoTrim: Object.freeze({
+      name: 'Video zuschneiden',
+      description: 'Einen Zeitbereich lokal aus einem Video ausschneiden',
+      parameterPlaceholder: 'Start-Ende in Sekunden, zum Beispiel 5-30',
+    }),
+    audioTrim: Object.freeze({
+      name: 'Audio zuschneiden',
+      description: 'Einen Zeitbereich lokal aus einer Audiodatei ausschneiden',
+      parameterPlaceholder: 'Start-Ende in Sekunden, zum Beispiel 0-30',
     }),
     textToQr: Object.freeze({
       name: 'Text in QR-Code',

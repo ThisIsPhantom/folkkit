@@ -61,18 +61,21 @@ async function createImageBitmap(source, ...rest) {
 
 async function convertImage(file, outputType, quality) {
   const bitmap = await createImageBitmap(file)
-  const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
-  const ctx = canvas.getContext('2d')
+  try {
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
+    const ctx = canvas.getContext('2d')
 
-  // White background for JPEG (no alpha)
-  if (outputType === 'image/jpeg') {
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    // White background for JPEG (no alpha)
+    if (outputType === 'image/jpeg') {
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+    }
+
+    ctx.drawImage(bitmap, 0, 0)
+    return await canvas.convertToBlob({ type: outputType, quality })
+  } finally {
+    bitmap.close?.()
   }
-
-  ctx.drawImage(bitmap, 0, 0)
-  const blob = await canvas.convertToBlob({ type: outputType, quality })
-  return blob
 }
 
 function makeConverter(id, name, description, acceptTypes, outputType, outputExt, quality) {
@@ -88,8 +91,7 @@ function makeConverter(id, name, description, acceptTypes, outputType, outputExt
       const file = Array.isArray(files) ? files[0] : files
       const blob = await convertImage(file, outputType, quality)
       const filename = file.name.replace(/\.[^.]+$/, '') + '.' + outputExt
-      const url = URL.createObjectURL(blob)
-      return { url, filename, size: blob.size }
+      return { kind: 'download', blob, filename }
     },
   }
 }
