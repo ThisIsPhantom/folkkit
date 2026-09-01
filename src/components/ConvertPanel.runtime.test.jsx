@@ -156,6 +156,26 @@ test.each([
   expect(conversionCalls).toBe(0)
 })
 
+test.each([
+  ['petabytes', 'terabytes', false],
+  ['petabytes', 'terabytes', true],
+  ['text', 'url', false],
+  ['text', 'url', true],
+])('never resolves unaudited pair %s to %s in batch=%s', async (from, to, batchMode) => {
+  const user = userEvent.setup()
+  const resolveConvertFn = vi.fn(() => () => 'must not run')
+  renderWithProviders(<ConvertPanel {...panelProps(null, { from, to, resolveConvertFn })} />)
+  if (batchMode) await user.click(screen.getByTitle('Enable batch mode'))
+
+  fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), {
+    target: { value: 'private raw state' },
+  })
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('Dieser Dateityp wird von diesem Werkzeug nicht unterstützt.')
+  expect(screen.getByRole('alert')).not.toHaveTextContent('private raw state')
+  expect(resolveConvertFn).not.toHaveBeenCalled()
+})
+
 test('format conversion maps thrown payloads to a stable localized error', async () => {
   const resolveConvertFn = () => () => {
     throw new Error('Alice private payload')
@@ -208,7 +228,7 @@ test('a new format run aborts a slow prior run and its late result cannot overwr
   fireEvent.change(screen.getByRole('textbox', { name: 'Input text' }), { target: { value: 'input' } })
   await waitFor(() => expect(slowSignal).toBeDefined())
 
-  view.rerender(<ConvertPanel {...panelProps(null, { to: 'base32', resolveConvertFn })} />)
+  view.rerender(<ConvertPanel {...panelProps(null, { to: 'html-ent', resolveConvertFn })} />)
 
   await waitFor(() => expect(screen.getByRole('textbox', { name: 'Conversion output' })).toHaveValue('fresh-output'))
   expect(slowSignal.aborted).toBe(true)

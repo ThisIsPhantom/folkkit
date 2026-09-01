@@ -36,6 +36,7 @@ function run(overrides = {}) {
       evidenceId: 'tool:safe-tool',
       executed: true,
       assertions: 1,
+      behaviorAssertions: 1,
     }],
     ...overrides,
   })
@@ -91,6 +92,36 @@ describe('catalog audit failures', () => {
     expect(run({
       evidenceRunResults: [{ evidenceId: 'tool:safe-tool', executed: true, assertions: 0, error: 'missing executor' }],
     })).toContain('Unexecutable evidence fixture: tool:safe-tool')
+  })
+
+  it('reports evidence with infrastructure assertions but no behavioral assertion', () => {
+    expect(run({
+      evidenceRunResults: [{
+        evidenceId: 'tool:safe-tool',
+        executed: true,
+        assertions: 2,
+        behaviorAssertions: 0,
+      }],
+    })).toContain('Evidence fixture has no behavioral assertions: tool:safe-tool')
+  })
+
+  it('reports a fabricated browser evidence ID without an executable shared runner', () => {
+    const browserEntry = {
+      evidenceId: 'tool:fabricated-browser',
+      subjectKind: 'tool',
+      subjectId: 'safe-tool',
+      executor: 'browser-e2e',
+    }
+    expect(run({
+      releaseCatalog: [{ ...released, evidenceId: browserEntry.evidenceId }],
+      evidenceRegistry: [browserEntry],
+      evidenceRunResults: [{
+        evidenceId: browserEntry.evidenceId,
+        executed: true,
+        assertions: 1,
+        behaviorAssertions: 0,
+      }],
+    })).toContain('Missing browser evidence runner: tool:fabricated-browser')
   })
 
   it('reports an undocumented hidden tool', () => {

@@ -2,7 +2,7 @@
 // This powers the "Apple Translate" style UI where you pick From → To
 import { objToYaml, yamlToJson, parseToml } from './utils/parsers'
 import { hexToRgb, rgbToHsl, hslToRgb, parseRgb, parseHsl, rgbToHsv, hsvToRgb, parseHsv } from './utils/color'
-import { releasedFormatIds } from './catalog/evidenceRegistry'
+import { getReleasedEvidenceTargets, releasedFormatIds } from './catalog/evidenceRegistry'
 
 export const formats = [
   { id: 'text', name: 'Text', group: 'Text', placeholder: 'Type or paste text...' },
@@ -2217,7 +2217,7 @@ export function getTargets(fromId) {
 
 export function getReleasedTargets(fromId) {
   if (!releasedFormatIdSet.has(fromId)) return []
-  return getTargets(fromId).filter(id => releasedFormatIdSet.has(id))
+  return getReleasedEvidenceTargets(fromId)
 }
 
 export function getConvertFn(fromId, toId) {

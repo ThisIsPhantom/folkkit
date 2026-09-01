@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import { fixtureFile, onePagePdfBase64, secondOnePagePdfBase64, tinyWavFixture } from '../fixtures/coreFixtures'
+import { runBrowserEvidence } from '../../src/catalog/browserEvidence'
 
 test('merges PDFs without cross-origin requests or request leakage', async ({ page }) => {
   const observedRequests = []
@@ -67,30 +68,30 @@ test('converts real media with same-origin FFmpeg assets and no input leakage', 
   const downloadPromise = page.waitForEvent('download')
   await page.getByRole('link', { name: 'Herunterladen' }).click()
   const download = await downloadPromise
-  expect(download.suggestedFilename()).toBe('network-private.mp3')
   const outputBytes = await readFile(await download.path())
-  const hasId3 = outputBytes.subarray(0, 3).toString('ascii') === 'ID3'
-  const hasMpegFrame = outputBytes.some((byte, index) => (
-    byte === 0xff
-    && index + 1 < outputBytes.length
-    && (outputBytes[index + 1] & 0xe0) === 0xe0
-  ))
-  expect(outputBytes.length).toBeGreaterThan(100)
-  expect(hasId3 || hasMpegFrame).toBe(true)
 
   expect(observedRequests.some(request => request.url.includes('/vendor/ffmpeg/ffmpeg-core.js'))).toBe(true)
   expect(observedRequests.some(request => request.url.includes('/vendor/ffmpeg/ffmpeg-core.wasm'))).toBe(true)
-  expect(observedRequests.filter(request => new URL(request.url).origin !== testServerOrigin && !request.url.startsWith('blob:'))).toEqual([])
+  const sameOriginOnly = observedRequests.every(request => (
+    request.url.startsWith('blob:') || new URL(request.url).origin === testServerOrigin
+  ))
+  let leakFree = true
 
   for (const request of observedRequests) {
     const metadata = `${decodeURIComponent(request.url)}\n${JSON.stringify(request.headers)}`
-    expect(metadata).not.toContain(audio.name)
-    expect(metadata).not.toContain(audio.buffer.toString('base64'))
+    if (metadata.includes(audio.name) || metadata.includes(audio.buffer.toString('base64'))) leakFree = false
     if (!request.body) continue
-    expect(request.body.indexOf(audio.buffer)).toBe(-1)
-    expect(request.body.toString('utf8')).not.toContain(audio.name)
-    expect(request.body.toString('utf8')).not.toContain(audio.buffer.toString('base64'))
+    if (request.body.indexOf(audio.buffer) !== -1) leakFree = false
+    if (request.body.toString('utf8').includes(audio.name)) leakFree = false
+    if (request.body.toString('utf8').includes(audio.buffer.toString('base64'))) leakFree = false
   }
+  const evidence = runBrowserEvidence('tool:audio-to-mp3', {
+    filename: download.suggestedFilename(),
+    bytes: outputBytes,
+    sameOriginOnly,
+    leakFree,
+  })
+  expect(evidence.behaviorAssertions).toBeGreaterThanOrEqual(5)
 })
 
 test('cancels an experimental media load and leaves the input reusable', async ({ page }) => {

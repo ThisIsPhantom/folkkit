@@ -5,6 +5,7 @@ import {
   setContentHistory,
   setHistoryEnabled,
 } from './preferences'
+import { isReleasedFormatPair } from '../catalog/evidenceRegistry'
 
 const MAX_ENTRIES = 30
 const MAX_PREVIEW_LENGTH = 120
@@ -27,7 +28,8 @@ function normalizeEntry(entry) {
     typeof entry.to !== 'string' ||
     typeof entry.input !== 'string' ||
     typeof entry.output !== 'string' ||
-    !Number.isFinite(entry.timestamp)
+    !Number.isFinite(entry.timestamp) ||
+    !isReleasedFormatPair(entry.from, entry.to)
   ) {
     return null
   }

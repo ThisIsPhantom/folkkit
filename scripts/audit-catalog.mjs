@@ -7,6 +7,7 @@ import messagesDe from '../src/i18n/messages.de.js'
 import messagesEn from '../src/i18n/messages.en.js'
 import { catalogEvidenceRegistry } from '../src/catalog/evidenceRegistry.js'
 import { evidenceRunErrors, runEvidenceRegistry } from '../src/catalog/evidenceRunner.js'
+import { browserEvidenceLinkErrors } from '../src/catalog/browserEvidence.js'
 
 const requiredReleasedFields = Object.freeze([
   'category',
@@ -138,6 +139,7 @@ export function auditCatalogData({
     }
   }
   errors.push(...evidenceRunErrors(evidenceRegistry, evidenceRunResults))
+  errors.push(...browserEvidenceLinkErrors(evidenceRegistry))
 
   return errors
 }

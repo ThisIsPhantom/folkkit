@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import { fixtureFile, onePixelJpegBase64, onePixelPngBase64 } from '../fixtures/coreFixtures'
+import { runBrowserEvidence } from '../../src/catalog/browserEvidence'
 
 test('shows the derived released count and excludes hidden entries', async ({ page }) => {
   await page.goto('./tools')
@@ -33,8 +34,11 @@ test('converts a real PNG fixture to a runtime-owned JPEG download', async ({ pa
   const download = await downloadPromise
   const bytes = await readFile(await download.path())
 
-  expect(download.suggestedFilename()).toBe('catalog-private.jpg')
-  expect([...bytes.subarray(0, 3)]).toEqual([0xff, 0xd8, 0xff])
+  const evidence = runBrowserEvidence('tool:png-to-jpg', {
+    filename: download.suggestedFilename(),
+    bytes,
+  })
+  expect(evidence.behaviorAssertions).toBeGreaterThanOrEqual(3)
 })
 
 test('converts a real JPEG fixture to a runtime-owned PNG download', async ({ page }) => {
@@ -47,6 +51,27 @@ test('converts a real JPEG fixture to a runtime-owned PNG download', async ({ pa
   const download = await downloadPromise
   const bytes = await readFile(await download.path())
 
-  expect(download.suggestedFilename()).toBe('catalog-private.png')
-  expect([...bytes.subarray(0, 8)]).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+  const evidence = runBrowserEvidence('tool:jpg-to-png', {
+    filename: download.suggestedFilename(),
+    bytes,
+  })
+  expect(evidence.behaviorAssertions).toBeGreaterThanOrEqual(3)
+})
+
+test('combines real PNG and JPEG fixtures through the shared PDF browser evidence runner', async ({ page }) => {
+  const png = fixtureFile('one.png', 'image/png', onePixelPngBase64)
+  const jpeg = fixtureFile('two.jpg', 'image/jpeg', onePixelJpegBase64)
+  await page.goto('./?tool=images-to-pdf')
+
+  await page.getByLabel('PDF-Dateien auswählen').setInputFiles([png, jpeg])
+  const downloadPromise = page.waitForEvent('download')
+  await page.getByRole('link', { name: 'Herunterladen' }).click()
+  const download = await downloadPromise
+  const bytes = await readFile(await download.path())
+  const evidence = runBrowserEvidence('tool:images-to-pdf', {
+    filename: download.suggestedFilename(),
+    bytes,
+  })
+
+  expect(evidence.behaviorAssertions).toBeGreaterThanOrEqual(3)
 })

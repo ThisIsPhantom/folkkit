@@ -3,6 +3,7 @@ import { getFormatById, releasedFormats } from '../formats'
 import { useI18n } from '../i18n'
 import { getReleasedCategories, getReleasedTools } from '../catalog/releaseCatalog'
 import { loadConverter } from '../converters/loadConverter'
+import { isReleasedFormatPair } from '../catalog/evidenceRegistry'
 import ConvertPanel from '../components/ConvertPanel'
 import ErrorBoundary from '../components/ErrorBoundary'
 import History from '../components/History'
@@ -117,6 +118,7 @@ export default function WorkspacePage() {
   }, [convertFrom, convertTo])
 
   const handleHistorySelect = useCallback((item) => {
+    if (!isReleasedFormatPair(item?.from, item?.to)) return
     setActiveToolId(null)
     setConvertFrom(item.from)
     setConvertTo(item.to)

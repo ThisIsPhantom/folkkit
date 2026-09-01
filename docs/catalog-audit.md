@@ -42,7 +42,11 @@ No other `image` or `imageFormat` entry is presented as released behavior. The r
 
 ## Executable evidence and bounds
 
-`src/catalog/evidenceRegistry.js` is the independent source for 18 format fixtures and 50 tool evidence records. `src/catalog/evidenceRunner.js` executes every registered fixture or contract and records its assertion count. The auditor rejects fabricated references, duplicate or missing registry entries, missing executors, fixtures that do not run, and fixtures with zero assertions. It does not grep test source.
+`src/catalog/evidenceRegistry.js` is the independent source for 18 format fixtures, the canonical released-pair allowlist, and 50 tool evidence records. `src/catalog/evidenceRunner.js` executes every non-browser fixture and records infrastructure and behavioral assertions separately. Released non-browser evidence needs at least one behavioral assertion. The auditor rejects fabricated references, duplicate or missing registry entries, missing executors, empty cases, fixtures that do not run, and fixtures with zero behavioral assertions. It does not grep test source.
+
+Browser-only evidence is configured in `src/catalog/browserEvidence.js`. Each browser evidence ID maps to an executable shared runner. Actual Playwright tests import and call those runners with real PDF, JPEG, PNG, or MP3 bytes. The runner must consume every configured claim, including filenames, minimum byte counts, signatures, and media network/privacy flags. Missing, uncalled, no-op, or partially consuming runners fail their contracts.
+
+The canonical pair allowlist is checked at URL restoration, picker targets, favourite loading and selection, history loading and selection, chain suggestions, and single or batch execution. A hidden pair such as `petabytes→terabytes`, or a non-audited edge between individually released IDs such as `text→url`, cannot reach `getConvertFn`. Persisted content history is filtered non-destructively so invalid entries are neither displayed nor reusable.
 
 The released text utilities were reviewed for obvious input-driven loops. `loan-calc` now rejects non-finite values, principal above 1 trillion, annual rates outside 0 to 100, and integer terms outside 1 to 100 years before its amortization loop. Base58 rejects text above 64 KiB before either conversion function runs. Other released text operations are fixed-output or linear behind the five MiB text limit; no additional released entry required hiding in this bounded review. The percentage parser accepts both `15% of 200` and `15% von 200` with exact literal evidence.
 
@@ -51,9 +55,9 @@ The released text utilities were reviewed for obvious input-driven loops. `loan-
 The final local Task 7 gate produced these results on 2026-09-01:
 
 - Portable Bun audit: 499 converters with 50 released and 449 hidden; 223 formats with 18 released and 205 hidden.
-- Full Vitest run: 24 files and 224 tests passed.
+- Full Vitest run: 25 files and 237 tests passed.
 - ESLint: exit 0 with no findings.
 - Vite production build: 331 modules transformed; converter implementations emitted as separate lazy chunks.
 - Runtime artifact check: same-origin paths only.
-- Serial Playwright run on `FOLKKIT_E2E_PORT=4177`: 16 tests passed, including catalog count, owner-only lazy loading, Canvas downloads, PDF/QR journeys, media conversion, media cancellation, and network privacy.
+- Serial Playwright run on `FOLKKIT_E2E_PORT=4177`: 17 tests passed, including catalog count, owner-only lazy loading, shared browser evidence, Canvas downloads, PDF/QR journeys, media conversion, media cancellation, and network privacy.
 - Port cleanup: no listener remained on port 4177. Port 4173 was not inspected, reused, or stopped.

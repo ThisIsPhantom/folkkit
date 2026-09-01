@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import ToolPicker from './ToolPicker'
 import { useToast } from '../hooks/useToast'
 import { releasedFormats as defaultReleasedFormats, getReleasedTargets, getConvertFn, getFormatById } from '../formats'
-import { getFormatPairTextLimit } from '../catalog/evidenceRegistry'
+import { getFormatPairTextLimit, isReleasedFormatPair } from '../catalog/evidenceRegistry'
 import { useI18n } from '../i18n'
 import { historyStore } from '../privacy/historyStore'
-import { createToolRuntime } from '../runtime/toolRuntime'
+import { createToolRuntime, ToolRuntimeError } from '../runtime/toolRuntime'
 import { rgbToHex, parseRgb, parseHsl, hslToRgb, hsvToRgb, parseHsv } from '../utils/color'
 import FileDropZone from './workspace/FileDropZone'
 import ProgressStatus from './workspace/ProgressStatus'
@@ -111,8 +111,31 @@ function autoResize(el) {
 }
 
 const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
-function getFavPairs() { try { return JSON.parse(localStorage.getItem(FAV_PAIRS_KEY)) || [] } catch { return [] } }
-function saveFavPairs(pairs) { localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(pairs)) }
+function getFavPairs() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(FAV_PAIRS_KEY))
+    const pairs = Array.isArray(stored) ? stored : []
+    const releasedPairs = pairs.filter((pair) => {
+      if (typeof pair !== 'string') return false
+      const [from, to, extra] = pair.split('→')
+      return !extra && isReleasedFormatPair(from, to)
+    })
+    if (releasedPairs.length !== pairs.length) {
+      localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(releasedPairs))
+    }
+    return releasedPairs
+  } catch {
+    localStorage.removeItem(FAV_PAIRS_KEY)
+    return []
+  }
+}
+function saveFavPairs(pairs) {
+  const releasedPairs = pairs.filter((pair) => {
+    const [from, to, extra] = String(pair).split('→')
+    return !extra && isReleasedFormatPair(from, to)
+  })
+  localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(releasedPairs))
+}
 
 function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = defaultReleasedFormats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn }) {
   const { t } = useI18n()
@@ -221,6 +244,15 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
         setOutput('')
         setError(null)
         setMediaResult(null)
+      }
+      return
+    }
+    if (!isReleasedFormatPair(from, to)) {
+      runtimeRef.current.cancel()
+      if (runId === formatRunIdRef.current) {
+        setOutput('')
+        setMediaResult(null)
+        setError(new ToolRuntimeError('unsupported_type'))
       }
       return
     }
@@ -355,6 +387,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
 
   const [swapped, setSwapped] = useState(false)
   const handleSwap = useCallback(() => {
+    if (!isReleasedFormatPair(to, from)) return
     const reverseFn = getConvertFn(to, from)
     if (!reverseFn) return
     setFrom(to)
@@ -429,7 +462,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     return () => document.removeEventListener('keydown', handler)
   }, [output, toast, handleSwap, isToolMode, handleClear])
 
-  const canSwap = !isToolMode && !!getConvertFn(to, from)
+  const canSwap = !isToolMode && isReleasedFormatPair(to, from)
 
   const handleDownload = () => {
     if (isToolMode && mediaResult?.url) {
@@ -523,11 +556,12 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const isPairFav = favPairs.includes(pairKey)
   const toggleFavPair = useCallback(() => {
     setFavPairs(prev => {
+      if (!isReleasedFormatPair(from, to)) return prev.filter(pair => pair !== pairKey)
       const next = prev.includes(pairKey) ? prev.filter(p => p !== pairKey) : [...prev, pairKey].slice(-8)
       saveFavPairs(next)
       return next
     })
-  }, [pairKey])
+  }, [from, pairKey, to])
 
   const allFromIds = useMemo(() => {
     return releasedFormats.filter(f => getReleasedTargets(f.id).length > 0).map(f => f.id)
@@ -874,7 +908,11 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
               <button
                 key={pair}
                 className={`fav-pair-btn${pair === pairKey ? ' active' : ''}`}
-                onClick={() => { setFrom(f); setTo(t) }}
+                onClick={() => {
+                  if (!isReleasedFormatPair(f, t)) return
+                  setFrom(f)
+                  setTo(t)
+                }}
               >
                 {fName} → {tName}
               </button>

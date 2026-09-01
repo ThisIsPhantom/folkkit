@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { expect, test } from 'vitest'
+import { beforeEach, expect, test } from 'vitest'
 import ConvertPanel from './ConvertPanel'
 import { renderWithProviders } from '../test/renderWithProviders'
 
 const noop = () => {}
+const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
 const uppercaseTool = {
   id: 'test-uppercase',
   name: 'Uppercase',
@@ -31,6 +32,10 @@ function panelProps(overrides = {}) {
     ...overrides,
   }
 }
+
+beforeEach(() => {
+  localStorage.clear()
+})
 
 function ReuseRoundTripHarness() {
   const [activeConverter, setActiveConverter] = useState(null)
@@ -95,4 +100,19 @@ test('a new reuse request applies its value once', async () => {
 
   view.rerender(<ConvertPanel {...panelProps({ reuseRequest: { id: 2, value: 'second request' } })} />)
   expect(screen.getByRole('textbox', { name: 'Input text' })).toHaveValue('second request')
+})
+
+test('removes hidden and unaudited persisted favourites before they can be selected', () => {
+  localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify([
+    'petabytes→terabytes',
+    'text→url',
+    'text→base64',
+  ]))
+
+  renderWithProviders(<ConvertPanel {...panelProps()} />)
+
+  expect(screen.queryByRole('button', { name: /Petabytes/ })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /URL Encoded/ })).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Text → Base64' })).toBeInTheDocument()
+  expect(JSON.parse(localStorage.getItem(FAV_PAIRS_KEY))).toEqual(['text→base64'])
 })

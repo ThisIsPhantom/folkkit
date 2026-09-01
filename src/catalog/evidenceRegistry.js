@@ -5,7 +5,7 @@ export const evidenceLimitBytes = Object.freeze({
   'text-64-kib': BASE58_TEXT_LIMIT,
 })
 
-function formatEvidence({ formatId, from, to, input, expected, inputLimitClass = 'text-5-mib', nameDe, nameEn, descriptionDe, descriptionEn }) {
+function formatEvidence({ formatId, from, to, input, expected, additionalCases = [], inputLimitClass = 'text-5-mib', nameDe, nameEn, descriptionDe, descriptionEn }) {
   return Object.freeze({
     evidenceId: `format:${formatId}`,
     subjectKind: 'format',
@@ -16,6 +16,7 @@ function formatEvidence({ formatId, from, to, input, expected, inputLimitClass =
     to,
     input,
     expected,
+    additionalCases: Object.freeze(additionalCases.map(item => Object.freeze({ ...item }))),
     inputLimitClass,
     category: 'format',
     tier: 'advanced',
@@ -38,7 +39,8 @@ export const formatEvidenceRegistry = Object.freeze([
     nameDe: 'Base64', nameEn: 'Base64', descriptionDe: 'Base64 lokal in Text decodieren.', descriptionEn: 'Decode Base64 to text locally.',
   }),
   formatEvidence({
-    formatId: 'base58', from: 'base58', to: 'text', input: '3fp86L69TR', expected: 'Folkkit', inputLimitClass: 'text-64-kib',
+    formatId: 'base58', from: 'text', to: 'base58', input: 'Folkkit', expected: '3fp86L69TR', inputLimitClass: 'text-64-kib',
+    additionalCases: [{ from: 'base58', to: 'text', input: '3fp86L69TR', expected: 'Folkkit' }],
     nameDe: 'Base58', nameEn: 'Base58', descriptionDe: 'Base58 bis 64 KiB lokal in Text decodieren.', descriptionEn: 'Decode Base58 up to 64 KiB to text locally.',
   }),
   formatEvidence({
@@ -178,28 +180,22 @@ const adviceEvidence = [
 ]
 
 const contractEvidence = [
-  toolEvidence('text-to-qr', 'tool-contract', { expectedMethod: 'convert' }),
-  toolEvidence('qr-to-text', 'tool-contract', { expectedMethod: 'fileConvert' }),
-  toolEvidence('images-to-pdf', 'tool-contract', { expectedMethod: 'fileConvert' }),
-  toolEvidence('merge-pdf', 'tool-contract', { expectedMethod: 'fileConvert' }),
-  toolEvidence('pdf-page-count', 'tool-contract', { expectedMethod: 'fileConvert' }),
-  toolEvidence('pdf-split', 'tool-contract', { expectedMethod: 'fileConvert' }),
-  toolEvidence('pdf-extract-range', 'tool-contract', { expectedMethod: 'fileConvert' }),
-  toolEvidence('text-to-pdf', 'tool-contract', { expectedMethod: 'convert' }),
-  toolEvidence('pdf-metadata', 'tool-contract', { expectedMethod: 'fileConvert' }),
-  toolEvidence('pdf-rotate', 'tool-contract', { expectedMethod: 'fileConvert' }),
+  toolEvidence('text-to-qr', 'tool-qr-generate', { input: 'Folkkit evidence', expectedFilename: 'folkkit-qr.svg' }),
+  toolEvidence('qr-to-text', 'tool-qr-read', { expected: 'Folkkit QR evidence' }),
+  toolEvidence('merge-pdf', 'tool-pdf-behavior', { operation: 'merge' }),
+  toolEvidence('pdf-page-count', 'tool-pdf-behavior', { operation: 'page-count' }),
+  toolEvidence('pdf-split', 'tool-pdf-behavior', { operation: 'split' }),
+  toolEvidence('pdf-extract-range', 'tool-pdf-behavior', { operation: 'extract-range' }),
+  toolEvidence('text-to-pdf', 'tool-pdf-behavior', { operation: 'text-to-pdf' }),
+  toolEvidence('pdf-metadata', 'tool-pdf-behavior', { operation: 'metadata' }),
+  toolEvidence('pdf-rotate', 'tool-pdf-behavior', { operation: 'rotate' }),
 ]
 
 const browserEvidence = [
-  toolEvidence('png-to-jpg', 'browser-download-contract', {
-    expectedMethod: 'fileConvert', expectedFilename: 'catalog-private.jpg', expectedSignature: 'jpeg',
-  }),
-  toolEvidence('jpg-to-png', 'browser-download-contract', {
-    expectedMethod: 'fileConvert', expectedFilename: 'catalog-private.png', expectedSignature: 'png',
-  }),
-  toolEvidence('audio-to-mp3', 'browser-download-contract', {
-    expectedMethod: 'fileConvert', expectedFilename: 'network-private.mp3', expectedSignature: 'mp3', minimumBytes: 100,
-  }),
+  toolEvidence('images-to-pdf', 'browser-e2e'),
+  toolEvidence('png-to-jpg', 'browser-e2e'),
+  toolEvidence('jpg-to-png', 'browser-e2e'),
+  toolEvidence('audio-to-mp3', 'browser-e2e'),
 ]
 
 export const toolEvidenceRegistry = Object.freeze([
@@ -217,11 +213,40 @@ export const catalogEvidenceRegistry = Object.freeze([
 
 export const releasedFormatIds = Object.freeze(formatEvidenceRegistry.map(evidence => evidence.formatId))
 
+export const releasedFormatPairs = Object.freeze(formatEvidenceRegistry.flatMap(evidence => [
+  Object.freeze({
+    evidenceId: evidence.evidenceId,
+    from: evidence.from,
+    to: evidence.to,
+    inputLimitClass: evidence.inputLimitClass,
+  }),
+  ...evidence.additionalCases.map((fixture, index) => Object.freeze({
+    evidenceId: `${evidence.evidenceId}:${index + 2}`,
+    from: fixture.from,
+    to: fixture.to,
+    inputLimitClass: evidence.inputLimitClass,
+  })),
+]))
+
+const releasedFormatPairKeys = new Set(releasedFormatPairs.map(pair => `${pair.from}→${pair.to}`))
+
 export function getFormatEvidence(formatId) {
   return formatEvidenceRegistry.find(evidence => evidence.formatId === formatId) || null
 }
 
+export function isReleasedFormatPair(from, to) {
+  return typeof from === 'string'
+    && typeof to === 'string'
+    && releasedFormatPairKeys.has(`${from}→${to}`)
+}
+
+export function getReleasedEvidenceTargets(from) {
+  if (typeof from !== 'string') return []
+  return releasedFormatPairs.filter(pair => pair.from === from).map(pair => pair.to)
+}
+
 export function getFormatPairTextLimit(from, to) {
+  if (!isReleasedFormatPair(from, to)) return null
   const fromEvidence = getFormatEvidence(from)
   const toEvidence = getFormatEvidence(to)
   const fromLimit = evidenceLimitBytes[fromEvidence?.inputLimitClass] || evidenceLimitBytes['text-5-mib']
