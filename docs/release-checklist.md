@@ -2,7 +2,7 @@
 
 ## Status
 
-Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 3: `0bb64dcc8938fbc53574b1ee6c381a7b3aa2911f`. Die unabhängige Re-Review dieser Fixrunde steht aus.
+Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Geprüfter Codekandidat nach Fixrunde 4: `a1f73997aa77fea0e53497ef5e1dc9ca05c691a8`. Die unabhängige Re-Review dieser Fixrunde steht aus.
 
 Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit, kein Hosttech-Zugriff, kein DNS-Eingriff, kein Domainkauf und kein Deployment.
 
@@ -11,7 +11,7 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Gate | Ergebnis |
 | --- | --- |
 | ESLint | bestanden |
-| Unit- und Vertragstests | 40 Testdateien, 407 Tests bestanden |
+| Unit- und Vertragstests | 40 Testdateien, 426 Tests bestanden |
 | Chromium Desktop | 36 von 36 E2E-Tests bestanden |
 | WebKit Desktop | Kernmatrix 1 von 1 bestanden |
 | Chromium Mobile 390 x 844 | Kernmatrix 1 von 1 bestanden |
@@ -23,12 +23,12 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Offline | Shell, Text, QR und PDF bestanden; fehlendes FFmpeg-Modul wurde nach Wiederverbindung erfolgreich nachgeladen |
 | Katalogaudit | 499 Konverter, 49 freigegeben und 450 verborgen; 223 Formate, 18 freigegeben und 205 verborgen |
 | Formatpaare | 19 freigegebene Paare, 19 `compatible`, 0 `incompatible-but-implemented` |
-| Bundle | initial 166.6 KiB gzip von 200 KiB; PDF-Worker 178.1 KiB gzip von 220 KiB |
+| Bundle | initial 166.8 KiB gzip von 200 KiB; PDF-Worker 178.1 KiB gzip von 220 KiB |
 | Drittanbieterhinweise | aktuell; SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e` |
 | Supply Chain | `bun audit --audit-level=high` ohne Befund |
 | Secret-Scan | 212 getrackte Dateien, 0 Kandidaten beim letzten Kandidatenlauf |
 | Plesk-Vertrag | Bare-Remote-Verträge bestanden |
-| Plesk `ValidateOnly` | Für Codekandidat `0bb64dc`: 30 Dateien, 0 verboten, Baumhash `698136ab31e787ae385c40655015b8af873aebc8e374a0ece4bd36b379f4065f` |
+| Plesk `ValidateOnly` | Für Codekandidat `a1f7399`: 30 Dateien, 0 verboten, Baumhash `6fcf695eb4879c40d06fe5afe6c0950e6440e7e2b644a732322d4b4b1da38e51` |
 
 ## Browsermatrix
 
@@ -78,6 +78,13 @@ Fixrunde 3 ergänzt folgende Restnachweise, ebenfalls mit ausstehender Re-Review
 2. Die Same-Origin-Policy prüft absolute und protokollrelative Literale gegen exakte URL-Pfade, löst statische `new URL`-Kombinationen vollständig auf, berücksichtigt lexikalische Gültigkeitsbereiche und kontrolliert HTML-Attribute einzeln. Das Gate ist ein verpflichtender Schritt des normalen Produktionsbuilds.
 3. Die Produktionsoberfläche verwendet für Ausgabetext keine vollständige Newline-Aufteilung mehr. Der begrenzte Scanner zeigt Überschreitungen ehrlich als `5000+` an und materialisiert nie mehr Zeilennummern als erlaubt.
 4. Der WAV-Preflight liest höchstens 64 KiB, prüft RIFF-, `fmt `- und `data`-Grenzen gegen die tatsächliche Dateigrösse und lehnt abgeschnittene oder widersprüchliche Dateien geschlossen ab.
+
+Fixrunde 4 ergänzt folgende Restnachweise, ebenfalls mit ausstehender Re-Review:
+
+1. Jeder normale, Hosting- und Release-Build prüft das 49er-Browsermanifest vor Vite gegen den kanonischen Releasekatalog und die ausführbare Evidenz. Eine gleich grosse Liste mit einer verborgenen Ersatz-ID stoppt vor dem Vite-Aufruf.
+2. HTML wird mit dem exakt gepinnten `parse5` 8.0.1 und einem quote-aware Duplicate-Tokenizer geprüft. Die Policy erfasst gequotete und ungequotete URL-Attribute, `srcset`, Meta-Refresh sowie CSS-Literale in `url()`, `image-set()` und `@import`.
+3. Das CSV-Budget zählt jede rohe Newline vor der ersten Zeilenaufteilung, auch innerhalb offener Anführungszeichen. 100000 gequotete Newlines werden früh abgewiesen; 5000 gültige Zeilen bleiben erlaubt.
+4. Der WAV-Preflight validiert Audioformat, Kanäle, Sample-Rate, Bittiefe, Blockausrichtung und Byte-Rate konsistent. PCM und IEEE-Float bleiben unterstützt; komprimierte oder widersprüchliche Header werden geschlossen abgewiesen.
 
 ## Formatkompatibilität
 
