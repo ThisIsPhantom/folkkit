@@ -13,7 +13,7 @@ import ProgressStatus from './workspace/ProgressStatus'
 import ResultActions from './workspace/ResultActions'
 import ErrorNotice from './workspace/ErrorNotice'
 import { validateFiles } from '../runtime/limits'
-import { BATCH_CONCURRENCY, BATCH_ITEM_LIMIT, LINE_NUMBER_RENDER_LIMIT, resourceLimitError } from '../runtime/workBudgets'
+import { BATCH_CONCURRENCY, BATCH_ITEM_LIMIT, LINE_NUMBER_RENDER_LIMIT, countLinesBounded, resourceLimitError } from '../runtime/workBudgets'
 import './ConvertPanel.css'
 import './workspace/workspace.css'
 
@@ -185,6 +185,11 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const targets = getReleasedTargets(from)
   const pairPolicy = useMemo(() => resolvePairPolicy(from, to), [from, to, resolvePairPolicy])
   const pairKey = `${from}→${to}`
+  const [previousPairKey, setPreviousPairKey] = useState(pairKey)
+  if (previousPairKey !== pairKey) {
+    setPreviousPairKey(pairKey)
+    setConfirmedPairKey(null)
+  }
   const activeConfirmedPairKey = confirmedPairKey === pairKey ? confirmedPairKey : null
 
   // Determine mode
@@ -663,10 +668,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     }
   }, [])
 
-  const outputLineCount = useMemo(() => {
-    if (!output) return 0
-    return output.split('\n').length
-  }, [output])
+  const outputLineScan = useMemo(() => countLinesBounded(output, LINE_NUMBER_RENDER_LIMIT), [output])
+  const outputLineCount = outputLineScan.count
 
   // Color preview for color conversions
   const isColorOutput = !isToolMode && ['color-hex', 'color-rgb', 'color-hsl', 'color-hsv'].includes(to)
@@ -988,7 +991,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
 
             <div className="convert-side">
               <div className={`textarea-area${lineNumbers ? ' with-gutter' : ''}`}>
-                {lineNumbers && outputLineCount > 0 && outputLineCount <= LINE_NUMBER_RENDER_LIMIT && (
+                {lineNumbers && outputLineCount > 0 && !outputLineScan.overflow && (
                   <div className="line-gutter" ref={gutterRef}>
                     {Array.from({ length: outputLineCount }, (_, i) => (
                       <div key={i} className="line-num">{i + 1}</div>

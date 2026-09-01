@@ -35,18 +35,64 @@ export function assertOutputBudget(result, limit = OUTPUT_LIMIT_BYTES) {
 }
 
 export function assertCsvBudget(input, parseRow) {
-  const lines = String(input).trim().split(/\r?\n/)
-  if (lines.length > CSV_LIMITS.maxRows) throw resourceLimitError()
-  let cells = 0
-  const rows = []
+  const value = String(input).trim()
+  let rows = 1
+  let columns = 1
+  let currentColumns = 1
+  let totalCellCharacters = 0
+  let headerCharacters = 0
+  let inQuotes = false
+  let inHeader = true
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index]
+    if (character === '"') {
+      if (inQuotes && value[index + 1] === '"') { totalCellCharacters += 1; if (inHeader) headerCharacters += 1; index += 1 }
+      else inQuotes = !inQuotes
+      continue
+    }
+    if (!inQuotes && character === ',') {
+      currentColumns += 1
+      if (currentColumns > CSV_LIMITS.maxColumns) throw resourceLimitError()
+      continue
+    }
+    if (!inQuotes && (character === '\n' || character === '\r')) {
+      if (character === '\r' && value[index + 1] === '\n') index += 1
+      columns = Math.max(columns, currentColumns)
+      rows += 1
+      if (rows > CSV_LIMITS.maxRows) throw resourceLimitError()
+      currentColumns = 1
+      inHeader = false
+      continue
+    }
+    totalCellCharacters += 1
+    if (inHeader) headerCharacters += 1
+  }
+  columns = Math.max(columns, currentColumns)
+  const cells = rows * columns
+  if (cells > CSV_LIMITS.maxCells) throw resourceLimitError()
+  const dataRows = Math.max(0, rows - 1)
+  const estimatedOutputBytes = 2 + totalCellCharacters * 2 + dataRows * (headerCharacters * 2 + columns * 8 + 4)
+  if (estimatedOutputBytes > OUTPUT_LIMIT_BYTES) throw resourceLimitError()
+
+  const lines = value.split(/\r?\n/)
+  const parsedRows = []
   for (const line of lines) {
     const columns = parseRow(line)
     if (columns.length > CSV_LIMITS.maxColumns) throw resourceLimitError()
-    cells += columns.length
-    if (cells > CSV_LIMITS.maxCells) throw resourceLimitError()
-    rows.push(columns)
+    parsedRows.push(columns)
   }
-  return rows
+  return parsedRows
+}
+
+export function countLinesBounded(value, limit = LINE_NUMBER_RENDER_LIMIT) {
+  if (!value) return { count: 0, overflow: false }
+  let count = 1
+  for (let index = 0; index < value.length; index += 1) {
+    if (value.charCodeAt(index) !== 10) continue
+    count += 1
+    if (count > limit) return { count: limit + 1, overflow: true }
+  }
+  return { count, overflow: false }
 }
 
 export function getImageDimensionLimits(environment = globalThis) {

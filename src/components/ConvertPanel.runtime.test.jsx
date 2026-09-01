@@ -84,6 +84,44 @@ test('future incompatible implemented pair requires unchecked session-only confi
   })).not.toBeChecked()
   await Promise.resolve()
   expect(convert).not.toHaveBeenCalled()
+
+  view.rerender(<ConvertPanel {...panelProps(null, {
+    to: 'base64',
+    resolveConvertFn: () => convert,
+    resolvePairPolicy,
+  })} />)
+  expect(screen.getByRole('checkbox', {
+    name: 'Ich weiss, was ich mache, und verstehe, dass diese Dateiformate nicht miteinander kompatibel sind.',
+  })).not.toBeChecked()
+  expect(convert).not.toHaveBeenCalled()
+})
+
+test('English incompatible warning and unchecked acknowledgement are explicit', () => {
+  renderWithProviders(<ConvertPanel {...panelProps(null, {
+    resolvePairPolicy: (from, to) => ({ status: 'incompatible-but-implemented', pairKey: `${from}→${to}` }),
+  })} />, { locale: 'en' })
+
+  expect(screen.getByText('These file formats are not compatible with each other.')).toBeVisible()
+  expect(screen.getByRole('checkbox', {
+    name: 'I know what I am doing and understand that these file formats are not compatible with each other.',
+  })).not.toBeChecked()
+})
+
+test('clipboard tool sharing copies only a content-free URL', async () => {
+  const user = userEvent.setup()
+  const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
+  renderWithProviders(<ConvertPanel {...panelProps({
+    id: 'share-clipboard-fixture',
+    name: 'Clipboard fixture',
+    description: 'Local description',
+    convert: async value => ({ kind: 'text', text: `PRIVATE-RESULT-${value}` }),
+  })} />)
+  await user.type(screen.getByRole('textbox', { name: 'Tool input text' }), 'PRIVATE-INPUT')
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Tool output text' })).toHaveValue('PRIVATE-RESULT-PRIVATE-INPUT'))
+  await user.click(screen.getByRole('button', { name: 'Werkzeug teilen' }))
+
+  expect(writeText).toHaveBeenCalledWith(`${window.location.origin}${window.location.pathname}?tool=share-clipboard-fixture`)
+  expect(JSON.stringify(writeText.mock.calls)).not.toContain('PRIVATE')
 })
 
 test('unsupported pair cannot be unlocked and explains that no conversion exists in English', async () => {
@@ -296,6 +334,17 @@ test('batch conversion rejects excessive line count before invoking a conversion
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Die Eingabe überschreitet die sichere Verarbeitungsgrenze.')
   expect(convert).not.toHaveBeenCalled()
+})
+
+test('line-number UI never materializes more than the bounded rendering limit', async () => {
+  const user = userEvent.setup()
+  const resolveConvertFn = () => () => '\n'.repeat(6000)
+  renderWithProviders(<ConvertPanel {...panelProps(null, { resolveConvertFn })} />)
+  await user.type(screen.getByRole('textbox', { name: 'Input text' }), 'x')
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Conversion output' })).not.toHaveValue(''))
+  await user.click(screen.getByTitle('Show line numbers'))
+
+  expect(document.querySelectorAll('.line-num')).toHaveLength(0)
 })
 
 test('a new format run aborts a slow prior run and its late result cannot overwrite output', async () => {

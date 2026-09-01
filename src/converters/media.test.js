@@ -55,10 +55,45 @@ test('reliable WAV metadata rejects excessive duration before FFmpeg work', asyn
   await expect(preflightMediaFile(new File([bytes], 'long.wav', { type: 'audio/wav' }))).rejects.toMatchObject({ code: 'resource_limit' })
 })
 
+test('non-WAV metadata fails closed for excessive duration and always revokes its object URL', async () => {
+  const listeners = {}
+  const audio = {
+    duration: MEDIA_LIMITS.maxDurationSeconds + 1,
+    addEventListener: (name, listener) => { listeners[name] = listener },
+    removeEventListener: vi.fn(),
+    removeAttribute: vi.fn(),
+    load: () => queueMicrotask(() => listeners.loadedmetadata()),
+  }
+  const urlApi = { createObjectURL: vi.fn(() => 'blob:metadata'), revokeObjectURL: vi.fn() }
+
+  await expect(preflightMediaFile(
+    new File(['mp3'], 'long.mp3', { type: 'audio/mpeg' }),
+    { createMediaElement: () => audio, urlApi, metadataTimeoutMs: 100 },
+  )).rejects.toMatchObject({ code: 'resource_limit', message: 'resource_limit' })
+  expect(urlApi.revokeObjectURL).toHaveBeenCalledWith('blob:metadata')
+  expect(audio.removeAttribute).toHaveBeenCalledWith('src')
+})
+
+test('non-WAV metadata timeout fails closed and cleans the object URL', async () => {
+  const audio = { addEventListener: vi.fn(), removeEventListener: vi.fn(), removeAttribute: vi.fn(), load: vi.fn() }
+  const urlApi = { createObjectURL: vi.fn(() => 'blob:timeout'), revokeObjectURL: vi.fn() }
+
+  await expect(preflightMediaFile(
+    new File(['ogg'], 'unknown.ogg', { type: 'audio/ogg' }),
+    { createMediaElement: () => audio, urlApi, metadataTimeoutMs: 5 },
+  )).rejects.toMatchObject({ code: 'resource_limit' })
+  expect(urlApi.revokeObjectURL).toHaveBeenCalledWith('blob:timeout')
+})
+
 test('FFmpeg work budget adds a CPU backstop and hard-terminates a stalled execution', async () => {
   const ffmpeg = { exec: vi.fn(() => new Promise(() => {})), terminate: vi.fn() }
   await expect(executeFfmpegWithBudget(ffmpeg, ['-i', 'input.wav', 'output.mp3'], { maxElapsedMs: 5 })).rejects.toMatchObject({ code: 'resource_limit' })
-  expect(ffmpeg.exec).toHaveBeenCalledWith(['-timelimit', '120', '-i', 'input.wav', 'output.mp3'])
+  expect(ffmpeg.exec).toHaveBeenCalledWith([
+    '-timelimit', '120', '-i', 'input.wav',
+    '-t', String(MEDIA_LIMITS.maxDurationSeconds),
+    '-fs', String(MEDIA_LIMITS.maxOutputBytes + 1),
+    'output.mp3',
+  ])
   expect(ffmpeg.terminate).toHaveBeenCalledTimes(1)
 })
 

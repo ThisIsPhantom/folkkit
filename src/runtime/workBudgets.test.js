@@ -10,6 +10,7 @@ import {
   assertImageDimensionBudget,
   assertOutputBudget,
   assertTextPdfBudget,
+  countLinesBounded,
   parseImageDimensions,
   readWavDurationSeconds,
 } from './workBudgets'
@@ -48,6 +49,20 @@ test('CSV budget rejects excessive rows, columns and cells before row conversion
   expect(parseRow).not.toHaveBeenCalled()
   const excessiveColumns = Array.from({ length: CSV_LIMITS.maxColumns + 1 }, () => 'x').join(',')
   expect(() => assertCsvBudget(`${excessiveColumns}\n${excessiveColumns}`, parseRow)).toThrow(/resource_limit/)
+})
+
+test('CSV budget rejects repeated long headers before row arrays or JSON objects are allocated', () => {
+  const parseRow = vi.fn(line => line.split(','))
+  const header = Array.from({ length: 100 }, (_, index) => `header-${index}-${'x'.repeat(90)}`).join(',')
+  const input = [header, ...Array.from({ length: 2000 }, () => '1')].join('\n')
+
+  expect(() => assertCsvBudget(input, parseRow)).toThrow(/resource_limit/)
+  expect(parseRow).not.toHaveBeenCalled()
+})
+
+test('bounded line scan stops at the rendering limit without splitting the full output', () => {
+  expect(countLinesBounded('a\nb\nc', 5)).toEqual({ count: 3, overflow: false })
+  expect(countLinesBounded('\n'.repeat(6000), 5000)).toEqual({ count: 5001, overflow: true })
 })
 
 test('text-to-PDF budget rejects excessive logical lines and pages before PDF import', () => {

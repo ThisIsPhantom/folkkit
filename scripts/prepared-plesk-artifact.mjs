@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { mkdtemp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { appendFile, mkdtemp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, relative, resolve } from 'node:path'
 import { spawn } from 'node:child_process'
@@ -51,6 +51,13 @@ function assertSourceCommit(sourceCommit) {
   if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw new Error('Prepared artifact requires an exact lowercase source commit.')
 }
 
+function computePreparedDigest(manifestBytes, archiveBytes) {
+  return sha256(Buffer.concat([
+    Buffer.from('folkkit-prepared-manifest\0', 'utf8'), manifestBytes,
+    Buffer.from('\0folkkit-prepared-archive\0', 'utf8'), archiveBytes,
+  ]))
+}
+
 export async function preparePleskArtifact({ distDirectory, outputDirectory, sourceCommit }) {
   assertSourceCommit(sourceCommit)
   const resolvedDist = resolve(distDirectory)
@@ -60,7 +67,8 @@ export async function preparePleskArtifact({ distDirectory, outputDirectory, sou
   const { treeHash, fileCount } = await hashHostingTree(resolvedDist)
   const archivePath = join(resolvedOutput, 'hosting.tar')
   await run('tar', ['-cf', archivePath, '-C', resolvedDist, '.'])
-  const archiveSha256 = sha256(await readFile(archivePath))
+  const archiveBytes = await readFile(archivePath)
+  const archiveSha256 = sha256(archiveBytes)
   const manifest = Object.freeze({
     version: 1,
     sourceCommit,
@@ -69,13 +77,20 @@ export async function preparePleskArtifact({ distDirectory, outputDirectory, sou
     fileCount,
     archiveSha256,
   })
-  await writeFile(join(resolvedOutput, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
-  return manifest
+  const manifestBytes = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
+  await writeFile(join(resolvedOutput, 'manifest.json'), manifestBytes)
+  return Object.freeze({ ...manifest, preparedDigest: computePreparedDigest(manifestBytes, archiveBytes) })
 }
 
-export async function verifyPreparedPleskArtifact({ artifactDirectory }) {
+export async function verifyPreparedPleskArtifact({ artifactDirectory, expectedDigest }) {
   const root = resolve(artifactDirectory)
-  const manifest = JSON.parse(await readFile(join(root, 'manifest.json'), 'utf8'))
+  if (!/^[0-9a-f]{64}$/.test(String(expectedDigest || ''))) throw new Error('Prepared digest is missing or invalid.')
+  const manifestBytes = await readFile(join(root, 'manifest.json'))
+  const archivePath = join(root, 'hosting.tar')
+  const archiveBytes = await readFile(archivePath)
+  const preparedDigest = computePreparedDigest(manifestBytes, archiveBytes)
+  if (preparedDigest !== expectedDigest) throw new Error('Prepared digest does not match the independently supplied prepare output.')
+  const manifest = JSON.parse(manifestBytes.toString('utf8'))
   const exactKeys = ['version', 'sourceCommit', 'sourceCommitSha256', 'treeHash', 'fileCount', 'archiveSha256']
   if (Reflect.ownKeys(manifest).sort().join('\0') !== [...exactKeys].sort().join('\0')) {
     throw new Error('Prepared artifact manifest has an invalid shape.')
@@ -88,8 +103,7 @@ export async function verifyPreparedPleskArtifact({ artifactDirectory }) {
   if (!/^[0-9a-f]{64}$/.test(manifest.treeHash) || !/^[0-9a-f]{64}$/.test(manifest.archiveSha256)) {
     throw new Error('Prepared artifact SHA-256 values are invalid.')
   }
-  const archivePath = join(root, 'hosting.tar')
-  if (manifest.archiveSha256 !== sha256(await readFile(archivePath))) {
+  if (manifest.archiveSha256 !== sha256(archiveBytes)) {
     throw new Error('Prepared artifact archive SHA-256 does not match.')
   }
   const temporaryRoot = await mkdtemp(join(tmpdir(), 'folkkit-prepared-'))
@@ -102,7 +116,7 @@ export async function verifyPreparedPleskArtifact({ artifactDirectory }) {
       throw new Error('Prepared artifact hosting tree does not match its manifest.')
     }
     return {
-      manifest,
+      manifest: Object.freeze({ ...manifest, preparedDigest }),
       hostingDirectory,
       cleanup: () => rm(temporaryRoot, { recursive: true, force: true }),
     }
@@ -129,8 +143,9 @@ export async function pushPreparedPleskArtifact({
   targetBranch = 'plesk',
   env = process.env,
   validateHostingTree = defaultValidateHostingTree,
+  expectedDigest,
 }) {
-  const verified = await verifyPreparedPleskArtifact({ artifactDirectory })
+  const verified = await verifyPreparedPleskArtifact({ artifactDirectory, expectedDigest })
   const root = resolve(repoRoot)
   const git = (...args) => run('git', ['-C', root, ...args], { env })
   try {
@@ -194,11 +209,12 @@ async function main(args) {
   const [mode, artifactDirectory, sourceCommit] = args
   if (mode === 'prepare' && artifactDirectory && sourceCommit) {
     const manifest = await preparePleskArtifact({ distDirectory: join(process.cwd(), 'dist'), outputDirectory: artifactDirectory, sourceCommit })
+    if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `prepared-digest=${manifest.preparedDigest}\n`)
     console.log(`Prepared ${manifest.fileCount} hosting files with tree SHA-256 ${manifest.treeHash}.`)
     return
   }
   if (mode === 'push' && artifactDirectory && !sourceCommit) {
-    const result = await pushPreparedPleskArtifact({ artifactDirectory })
+    const result = await pushPreparedPleskArtifact({ artifactDirectory, expectedDigest: process.env.FOLKKIT_PREPARED_DIGEST })
     console.log(`Updated hosting branch from ${result.sourceCommit}; tree SHA-256 ${result.treeHash}. No Hosttech deployment was performed.`)
     return
   }

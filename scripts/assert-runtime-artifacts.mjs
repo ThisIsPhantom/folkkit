@@ -21,20 +21,52 @@ const automaticSinkPatterns = Object.freeze({
   ],
 })
 
-function staticString(node) {
+const reviewedLegalNavigation = Object.freeze([
+  /^https:\/\/github\.com\/ThisIsPhantom\/folkkit(?:\/tree\/[0-9a-f]{40})?$/,
+  /^https:\/\/github\.com\/MercuriusDream\/convert-everything$/,
+  /^https:\/\/www\.gnu\.org\/licenses\/agpl-3\.0\.html$/,
+  /^https:\/\/ffmpeg\.org\/legal\.html$/,
+  /^https:\/\/www\.edoeb\.admin\.ch\/de\/(?:datenschutzerklaerungen-im-internet|informationspflicht)$/,
+])
+
+function isReviewedLegalNavigation(value) {
+  return reviewedLegalNavigation.some(pattern => pattern.test(value))
+}
+
+function staticString(node, declarations = new Map(), seen = new Set()) {
   if (node?.type === 'Literal' && typeof node.value === 'string') return node.value
-  if (node?.type === 'TemplateLiteral' && node.expressions.length === 0) return node.quasis.map(part => part.value.cooked || '').join('')
+  if (node?.type === 'Identifier') {
+    if (seen.has(node.name) || !declarations.has(node.name)) return null
+    const declaration = declarations.get(node.name)
+    if (!declaration) return null
+    return staticString(declaration, declarations, new Set([...seen, node.name]))
+  }
+  if (node?.type === 'TemplateLiteral') {
+    let result = ''
+    for (let index = 0; index < node.quasis.length; index += 1) {
+      result += node.quasis[index].value.cooked || ''
+      if (index < node.expressions.length) {
+        const expression = staticString(node.expressions[index], declarations, seen)
+        if (expression === null) return null
+        result += expression
+      }
+    }
+    return result
+  }
   if (node?.type === 'BinaryExpression' && node.operator === '+') {
-    const left = staticString(node.left)
-    const right = staticString(node.right)
+    const left = staticString(node.left, declarations, seen)
+    const right = staticString(node.right, declarations, seen)
     return left !== null && right !== null ? left + right : null
+  }
+  if (node?.type === 'NewExpression' && node.callee?.type === 'Identifier' && node.callee.name === 'URL') {
+    return staticString(node.arguments[0], declarations, seen)
   }
   return null
 }
 
-function isExternalNode(node) {
-  const value = staticString(node)
-  return typeof value === 'string' && /^(?:https?:)?\/\//i.test(value)
+function externalValue(node, declarations) {
+  const value = staticString(node, declarations)
+  return typeof value === 'string' && /^(?:https?:)?\/\//i.test(value) ? value : null
 }
 
 function propertyName(node) {
@@ -50,17 +82,46 @@ function hasExternalJavaScriptSink(contents) {
   } catch (error) {
     throw new Error(`JavaScript runtime artifact could not be parsed: ${error.message}`)
   }
+  const declarations = new Map()
+  const collect = node => {
+    if (!node || typeof node !== 'object') return
+    if (node.type === 'VariableDeclarator' && node.id?.type === 'Identifier' && node.init) {
+      declarations.set(node.id.name, declarations.has(node.id.name) ? null : node.init)
+    }
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'start' || key === 'end' || key === 'loc') continue
+      if (Array.isArray(value)) value.forEach(collect)
+      else if (value && typeof value === 'object') collect(value)
+    }
+  }
+  collect(ast)
+
   let found = false
   const visit = node => {
     if (found || !node || typeof node !== 'object') return
-    if (node.type === 'ImportExpression' && isExternalNode(node.source)) found = true
+    if (node.type === 'ImportExpression' && externalValue(node.source, declarations)) found = true
     if (node.type === 'CallExpression') {
       const name = node.callee?.type === 'Identifier' ? node.callee.name : propertyName(node.callee)
-      if (['fetch', 'importScripts', 'sendBeacon'].includes(name) && isExternalNode(node.arguments[0])) found = true
-      if (name === 'open' && isExternalNode(node.arguments[1])) found = true
+      if (['fetch', 'importScripts', 'sendBeacon'].includes(name) && externalValue(node.arguments[0], declarations)) found = true
+      if (name === 'open' && externalValue(node.arguments[1], declarations)) found = true
+      if (name === 'setAttribute') {
+        const attribute = staticString(node.arguments[0], declarations)
+        const value = externalValue(node.arguments[1], declarations)
+        if (value && (attribute === 'src' || (attribute === 'href' && !isReviewedLegalNavigation(value)))) found = true
+      }
+      if (['jsx', 'jsxs'].includes(name) && staticString(node.arguments[0], declarations) === 'a' && node.arguments[1]?.type === 'ObjectExpression') {
+        const href = node.arguments[1].properties.find(property => (
+          (!property.computed && property.key?.type === 'Identifier' ? property.key.name : staticString(property.key, declarations)) === 'href'
+        ))
+        const value = externalValue(href?.value, declarations)
+        if (value && !isReviewedLegalNavigation(value)) found = true
+      }
     }
-    if (node.type === 'NewExpression' && node.callee?.type === 'Identifier' && ['Worker', 'SharedWorker'].includes(node.callee.name) && isExternalNode(node.arguments[0])) found = true
-    if (node.type === 'AssignmentExpression' && ['src', 'href'].includes(propertyName(node.left)) && isExternalNode(node.right)) found = true
+    if (node.type === 'NewExpression' && node.callee?.type === 'Identifier' && ['Worker', 'SharedWorker'].includes(node.callee.name) && externalValue(node.arguments[0], declarations)) found = true
+    if (node.type === 'AssignmentExpression' && ['src', 'href'].includes(propertyName(node.left))) {
+      const value = externalValue(node.right, declarations)
+      if (value && (propertyName(node.left) === 'src' || !isReviewedLegalNavigation(value))) found = true
+    }
     for (const [key, value] of Object.entries(node)) {
       if (key === 'start' || key === 'end' || key === 'loc') continue
       if (Array.isArray(value)) value.forEach(visit)

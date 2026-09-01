@@ -25,7 +25,7 @@ export function classifyFormatPairEntry(entry, { implementationExists = false, e
 export function getFormatPairPolicy(from, to) {
   const entry = releasedFormatPairs.find(pair => pair.from === from && pair.to === to) || null
   return classifyFormatPairEntry(entry, {
-    implementationExists: entry?.implemented === true,
+    implementationExists: typeof entry?.implementationEvidenceId === 'string' && entry.implementationEvidenceId.length > 0,
     evidenceExists: typeof entry?.evidenceId === 'string' && entry.evidenceId.length > 0,
   })
 }

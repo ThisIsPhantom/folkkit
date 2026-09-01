@@ -15,6 +15,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: windows-latest
     timeout-minutes: 30
+    outputs:
+      prepared-digest: ${{ steps.prepare.outputs.prepared-digest }}
     steps:
       - name: Check out synchronized main
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -44,6 +46,7 @@ jobs:
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-PleskTree.ps1 -SourcePath dist
 
       - name: Bind the hosting archive, tree and source revision by SHA-256
+        id: prepare
         run: node scripts/prepared-plesk-artifact.mjs prepare "${{ runner.temp }}\folkkit-plesk" "${{ github.sha }}"
 
       - name: Upload the immutable prepared artifact
@@ -78,6 +81,7 @@ jobs:
       - name: Verify and fast-forward the hosting branch
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          FOLKKIT_PREPARED_DIGEST: ${{ needs.prepare-hosting.outputs.prepared-digest }}
         run: node scripts/prepared-plesk-artifact.mjs push "${{ runner.temp }}\folkkit-plesk"
 
       - name: State the deployment boundary

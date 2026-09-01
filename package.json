@@ -30,7 +30,7 @@
     "test:run": "vitest run",
     "pretest:e2e": "bun run build",
     "test:e2e": "node ./node_modules/playwright/cli.js test",
-    "test:e2e:install": "node ./node_modules/playwright/cli.js install chromium",
+    "test:e2e:install": "node ./node_modules/playwright/cli.js install chromium firefox webkit",
     "test:runtime-artifacts": "node scripts/assert-runtime-artifacts.mjs",
     "check:bundle": "node scripts/check-bundle-budget.mjs",
     "scan:secrets": "node scripts/scan-secrets.mjs",

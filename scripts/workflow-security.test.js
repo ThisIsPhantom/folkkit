@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -20,6 +20,13 @@ function runValidator(paths = []) {
 test('repository workflows use immutable action SHAs and separate preparation from write-authorized push', () => {
   const result = runValidator()
   expect(result.status, result.stderr || result.stdout).toBe(0)
+})
+
+test('official Playwright install contract provisions Chromium, Firefox and WebKit for the configured matrix', async () => {
+  const packageJson = JSON.parse(await readFile(join(process.cwd(), 'package.json'), 'utf8'))
+  expect(packageJson.scripts['test:e2e:install']).toMatch(/playwright\/cli\.js install chromium firefox webkit$/)
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'verify.yml'), 'utf8')
+  expect(workflow).toContain('bun run test:e2e:install')
 })
 
 test.each([

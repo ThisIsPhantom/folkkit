@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import { getConvertFn } from '../formats'
-import { releasedFormatPairs } from './evidenceRegistry'
+import { formatEvidenceRegistry, releasedFormatPairs } from './evidenceRegistry'
 import { canExecuteFormatPair, classifyFormatPairEntry, getFormatPairPolicy } from './formatCompatibility'
 
 test('every currently released format pair is explicitly compatible and has an evidenced implementation', () => {
@@ -14,6 +14,12 @@ test('every currently released format pair is explicitly compatible and has an e
     })
   }
   expect(releasedFormatPairs.filter(pair => pair.compatibility === 'incompatible-but-implemented')).toEqual([])
+  for (const evidence of formatEvidenceRegistry) {
+    expect(Object.hasOwn(evidence, 'compatibility'), evidence.evidenceId).toBe(true)
+    for (const fixture of evidence.additionalCases) {
+      expect(Object.hasOwn(fixture, 'compatibility'), `${evidence.evidenceId} additional case`).toBe(true)
+    }
+  }
 })
 
 test('a future incompatible pair is executable only with evidence, implementation and current-session pair confirmation', () => {

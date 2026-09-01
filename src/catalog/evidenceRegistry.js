@@ -5,7 +5,11 @@ export const evidenceLimitBytes = Object.freeze({
   'text-64-kib': BASE58_TEXT_LIMIT,
 })
 
-function formatEvidence({ formatId, from, to, input, expected, additionalCases = [], inputLimitClass = 'text-5-mib', nameDe, nameEn, descriptionDe, descriptionEn }) {
+function formatEvidence({ formatId, from, to, compatibility, input, expected, additionalCases = [], inputLimitClass = 'text-5-mib', nameDe, nameEn, descriptionDe, descriptionEn }) {
+  if (!['compatible', 'incompatible-but-implemented'].includes(compatibility)) throw new Error(`Format evidence ${formatId} needs an explicit compatibility state.`)
+  for (const fixture of additionalCases) {
+    if (!['compatible', 'incompatible-but-implemented'].includes(fixture.compatibility)) throw new Error(`Additional format evidence ${formatId} needs an explicit compatibility state.`)
+  }
   return Object.freeze({
     evidenceId: `format:${formatId}`,
     subjectKind: 'format',
@@ -14,6 +18,7 @@ function formatEvidence({ formatId, from, to, input, expected, additionalCases =
     executor: 'format-exact',
     from,
     to,
+    compatibility,
     input,
     expected,
     additionalCases: Object.freeze(additionalCases.map(item => Object.freeze({ ...item }))),
@@ -31,76 +36,76 @@ function formatEvidence({ formatId, from, to, input, expected, additionalCases =
 
 export const formatEvidenceRegistry = Object.freeze([
   formatEvidence({
-    formatId: 'text', from: 'text', to: 'base64', input: 'Folkkit', expected: 'Rm9sa2tpdA==',
+    formatId: 'text', from: 'text', to: 'base64', compatibility: 'compatible', input: 'Folkkit', expected: 'Rm9sa2tpdA==',
     nameDe: 'Text', nameEn: 'Text', descriptionDe: 'Text lokal in ein belegtes Zielformat umwandeln.', descriptionEn: 'Convert text locally to an evidenced target format.',
   }),
   formatEvidence({
-    formatId: 'base64', from: 'base64', to: 'text', input: 'Rm9sa2tpdA==', expected: 'Folkkit',
+    formatId: 'base64', from: 'base64', to: 'text', compatibility: 'compatible', input: 'Rm9sa2tpdA==', expected: 'Folkkit',
     nameDe: 'Base64', nameEn: 'Base64', descriptionDe: 'Base64 lokal in Text decodieren.', descriptionEn: 'Decode Base64 to text locally.',
   }),
   formatEvidence({
-    formatId: 'base58', from: 'text', to: 'base58', input: 'Folkkit', expected: '3fp86L69TR', inputLimitClass: 'text-64-kib',
-    additionalCases: [{ from: 'base58', to: 'text', input: '3fp86L69TR', expected: 'Folkkit' }],
+    formatId: 'base58', from: 'text', to: 'base58', compatibility: 'compatible', input: 'Folkkit', expected: '3fp86L69TR', inputLimitClass: 'text-64-kib',
+    additionalCases: [{ from: 'base58', to: 'text', compatibility: 'compatible', input: '3fp86L69TR', expected: 'Folkkit' }],
     nameDe: 'Base58', nameEn: 'Base58', descriptionDe: 'Base58 bis 64 KiB lokal in Text decodieren.', descriptionEn: 'Decode Base58 up to 64 KiB to text locally.',
   }),
   formatEvidence({
-    formatId: 'url', from: 'url', to: 'text', input: 'Folkkit%20lokal', expected: 'Folkkit lokal',
+    formatId: 'url', from: 'url', to: 'text', compatibility: 'compatible', input: 'Folkkit%20lokal', expected: 'Folkkit lokal',
     nameDe: 'URL-Codierung', nameEn: 'URL encoding', descriptionDe: 'Percent-codierten URL-Text lokal decodieren.', descriptionEn: 'Decode percent-encoded URL text locally.',
   }),
   formatEvidence({
-    formatId: 'html-ent', from: 'text', to: 'html-ent', input: '<b>&', expected: '&lt;b&gt;&amp;',
+    formatId: 'html-ent', from: 'text', to: 'html-ent', compatibility: 'compatible', input: '<b>&', expected: '&lt;b&gt;&amp;',
     nameDe: 'HTML-Entities', nameEn: 'HTML entities', descriptionDe: 'HTML-Sonderzeichen lokal als Entities codieren.', descriptionEn: 'Encode HTML special characters as entities locally.',
   }),
   formatEvidence({
-    formatId: 'hex', from: 'hex', to: 'text', input: '46 6f 6c 6b 6b 69 74', expected: 'Folkkit',
+    formatId: 'hex', from: 'hex', to: 'text', compatibility: 'compatible', input: '46 6f 6c 6b 6b 69 74', expected: 'Folkkit',
     nameDe: 'Hexadezimal', nameEn: 'Hexadecimal', descriptionDe: 'Hexadezimalwerte lokal in Text decodieren.', descriptionEn: 'Decode hexadecimal values to text locally.',
   }),
   formatEvidence({
-    formatId: 'binary', from: 'binary', to: 'text', input: '01000110 01101111 01101100 01101011 01101011 01101001 01110100', expected: 'Folkkit',
+    formatId: 'binary', from: 'binary', to: 'text', compatibility: 'compatible', input: '01000110 01101111 01101100 01101011 01101011 01101001 01110100', expected: 'Folkkit',
     nameDe: 'Binär', nameEn: 'Binary', descriptionDe: 'Binärwerte lokal in Text decodieren.', descriptionEn: 'Decode binary values to text locally.',
   }),
   formatEvidence({
-    formatId: 'unicode', from: 'unicode', to: 'text', input: '\\u0046\\u006f\\u006c\\u006b\\u006b\\u0069\\u0074', expected: 'Folkkit',
+    formatId: 'unicode', from: 'unicode', to: 'text', compatibility: 'compatible', input: '\\u0046\\u006f\\u006c\\u006b\\u006b\\u0069\\u0074', expected: 'Folkkit',
     nameDe: 'Unicode-Escapes', nameEn: 'Unicode escapes', descriptionDe: 'Unicode-Escape-Sequenzen lokal in Text decodieren.', descriptionEn: 'Decode Unicode escape sequences to text locally.',
   }),
   formatEvidence({
-    formatId: 'uppercase', from: 'uppercase', to: 'lowercase', input: 'FOLKKIT', expected: 'folkkit',
+    formatId: 'uppercase', from: 'uppercase', to: 'lowercase', compatibility: 'compatible', input: 'FOLKKIT', expected: 'folkkit',
     nameDe: 'GROSSBUCHSTABEN', nameEn: 'UPPERCASE', descriptionDe: 'Grossbuchstaben lokal in Kleinbuchstaben umwandeln.', descriptionEn: 'Convert uppercase text to lowercase locally.',
   }),
   formatEvidence({
-    formatId: 'lowercase', from: 'lowercase', to: 'uppercase', input: 'folkkit', expected: 'FOLKKIT',
+    formatId: 'lowercase', from: 'lowercase', to: 'uppercase', compatibility: 'compatible', input: 'folkkit', expected: 'FOLKKIT',
     nameDe: 'kleinbuchstaben', nameEn: 'lowercase', descriptionDe: 'Kleinbuchstaben lokal in Grossbuchstaben umwandeln.', descriptionEn: 'Convert lowercase text to uppercase locally.',
   }),
   formatEvidence({
-    formatId: 'json', from: 'json', to: 'json-min', input: '{"name": "Folkkit"}', expected: '{"name":"Folkkit"}',
+    formatId: 'json', from: 'json', to: 'json-min', compatibility: 'compatible', input: '{"name": "Folkkit"}', expected: '{"name":"Folkkit"}',
     nameDe: 'JSON', nameEn: 'JSON', descriptionDe: 'JSON lokal minimieren.', descriptionEn: 'Minify JSON locally.',
   }),
   formatEvidence({
-    formatId: 'json-min', from: 'json-min', to: 'json', input: '{"name":"Folkkit"}', expected: '{\n  "name": "Folkkit"\n}',
+    formatId: 'json-min', from: 'json-min', to: 'json', compatibility: 'compatible', input: '{"name":"Folkkit"}', expected: '{\n  "name": "Folkkit"\n}',
     nameDe: 'Minimiertes JSON', nameEn: 'Minified JSON', descriptionDe: 'Minimiertes JSON lokal formatieren.', descriptionEn: 'Format minified JSON locally.',
   }),
   formatEvidence({
-    formatId: 'decimal', from: 'decimal', to: 'numhex', input: '255', expected: '0xFF',
+    formatId: 'decimal', from: 'decimal', to: 'numhex', compatibility: 'compatible', input: '255', expected: '0xFF',
     nameDe: 'Dezimal', nameEn: 'Decimal', descriptionDe: 'Eine Dezimalzahl lokal in Hexadezimal umwandeln.', descriptionEn: 'Convert a decimal number to hexadecimal locally.',
   }),
   formatEvidence({
-    formatId: 'numhex', from: 'numhex', to: 'decimal', input: '0xFF', expected: '255',
+    formatId: 'numhex', from: 'numhex', to: 'decimal', compatibility: 'compatible', input: '0xFF', expected: '255',
     nameDe: 'Hexadezimalzahl', nameEn: 'Hexadecimal number', descriptionDe: 'Eine Hexadezimalzahl lokal in Dezimal umwandeln.', descriptionEn: 'Convert a hexadecimal number to decimal locally.',
   }),
   formatEvidence({
-    formatId: 'numbin', from: 'numbin', to: 'decimal', input: '0b1010', expected: '10',
+    formatId: 'numbin', from: 'numbin', to: 'decimal', compatibility: 'compatible', input: '0b1010', expected: '10',
     nameDe: 'Binärzahl', nameEn: 'Binary number', descriptionDe: 'Eine Binärzahl lokal in Dezimal umwandeln.', descriptionEn: 'Convert a binary number to decimal locally.',
   }),
   formatEvidence({
-    formatId: 'numoct', from: 'numoct', to: 'decimal', input: '0o10', expected: '8',
+    formatId: 'numoct', from: 'numoct', to: 'decimal', compatibility: 'compatible', input: '0o10', expected: '8',
     nameDe: 'Oktalzahl', nameEn: 'Octal number', descriptionDe: 'Eine Oktalzahl lokal in Dezimal umwandeln.', descriptionEn: 'Convert an octal number to decimal locally.',
   }),
   formatEvidence({
-    formatId: 'color-hex', from: 'color-hex', to: 'color-rgb', input: '#ff0000', expected: 'rgb(255, 0, 0)',
+    formatId: 'color-hex', from: 'color-hex', to: 'color-rgb', compatibility: 'compatible', input: '#ff0000', expected: 'rgb(255, 0, 0)',
     nameDe: 'Farbe HEX', nameEn: 'Color HEX', descriptionDe: 'Einen HEX-Farbwert lokal in RGB umwandeln.', descriptionEn: 'Convert a HEX color value to RGB locally.',
   }),
   formatEvidence({
-    formatId: 'color-rgb', from: 'color-rgb', to: 'color-hex', input: 'rgb(255, 0, 0)', expected: '#ff0000',
+    formatId: 'color-rgb', from: 'color-rgb', to: 'color-hex', compatibility: 'compatible', input: 'rgb(255, 0, 0)', expected: '#ff0000',
     nameDe: 'Farbe RGB', nameEn: 'Color RGB', descriptionDe: 'Einen RGB-Farbwert lokal in HEX umwandeln.', descriptionEn: 'Convert an RGB color value to HEX locally.',
   }),
 ])
@@ -217,16 +222,16 @@ export const releasedFormatPairs = Object.freeze(formatEvidenceRegistry.flatMap(
     evidenceId: evidence.evidenceId,
     from: evidence.from,
     to: evidence.to,
-    compatibility: 'compatible',
-    implemented: true,
+    compatibility: evidence.compatibility,
+    implementationEvidenceId: evidence.evidenceId,
     inputLimitClass: evidence.inputLimitClass,
   }),
   ...evidence.additionalCases.map((fixture, index) => Object.freeze({
     evidenceId: `${evidence.evidenceId}:${index + 2}`,
     from: fixture.from,
     to: fixture.to,
-    compatibility: 'compatible',
-    implemented: true,
+    compatibility: fixture.compatibility,
+    implementationEvidenceId: `${evidence.evidenceId}:${index + 2}`,
     inputLimitClass: evidence.inputLimitClass,
   })),
 ]))

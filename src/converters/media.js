@@ -135,7 +135,11 @@ export function terminateMediaExecution() {
   ffmpegRuntime.terminate()
 }
 
-export async function preflightMediaFile(file) {
+export async function preflightMediaFile(file, {
+  createMediaElement = (kind) => document.createElement(kind),
+  urlApi = URL,
+  metadataTimeoutMs = 5000,
+} = {}) {
   const type = String(file?.type || '').toLowerCase()
   const name = String(file?.name || '').toLowerCase()
   if (type === 'audio/wav' || type === 'audio/wave' || name.endsWith('.wav')) {
@@ -144,17 +148,57 @@ export async function preflightMediaFile(file) {
     if (duration !== null && duration > MEDIA_LIMITS.maxDurationSeconds) throw resourceLimitError()
     return { durationSeconds: duration, reliable: duration !== null }
   }
-  return { durationSeconds: null, reliable: false }
+  if (!type.startsWith('audio/') && !type.startsWith('video/')) throw resourceLimitError()
+  if (typeof createMediaElement !== 'function' || typeof urlApi?.createObjectURL !== 'function') throw resourceLimitError()
+  const media = createMediaElement(type.startsWith('video/') ? 'video' : 'audio')
+  const objectUrl = urlApi.createObjectURL(file)
+  let timer
+  let onLoaded
+  let onError
+  try {
+    const duration = await new Promise((resolve, reject) => {
+      onLoaded = () => {
+        const value = Number(media.duration)
+        if (!Number.isFinite(value) || value <= 0) reject(resourceLimitError())
+        else resolve(value)
+      }
+      onError = () => reject(resourceLimitError())
+      media.addEventListener('loadedmetadata', onLoaded, { once: true })
+      media.addEventListener('error', onError, { once: true })
+      timer = setTimeout(() => reject(resourceLimitError()), metadataTimeoutMs)
+      media.preload = 'metadata'
+      media.src = objectUrl
+      media.load()
+    })
+    if (duration > MEDIA_LIMITS.maxDurationSeconds) throw resourceLimitError()
+    return { durationSeconds: duration, reliable: true }
+  } finally {
+    clearTimeout(timer)
+    media.removeEventListener?.('loadedmetadata', onLoaded)
+    media.removeEventListener?.('error', onError)
+    media.removeAttribute?.('src')
+    try { media.load?.() } catch { /* cleanup remains best effort */ }
+    urlApi.revokeObjectURL?.(objectUrl)
+  }
 }
 
 export async function executeFfmpegWithBudget(ffmpeg, args, {
   maxElapsedMs = MEDIA_LIMITS.maxElapsedMs,
   onTimeout = () => ffmpeg.terminate?.(),
 } = {}) {
+  const output = args.at(-1)
+  if (typeof output !== 'string' || args.length < 2) throw resourceLimitError()
+  const boundedArgs = [
+    '-timelimit', '120',
+    ...args.slice(0, -1),
+    '-t', String(MEDIA_LIMITS.maxDurationSeconds),
+    '-fs', String(MEDIA_LIMITS.maxOutputBytes + 1),
+    output,
+  ]
   let timer
   try {
     return await Promise.race([
-      ffmpeg.exec(['-timelimit', '120', ...args]),
+      ffmpeg.exec(boundedArgs),
       new Promise((_resolve, reject) => {
         timer = setTimeout(() => {
           try { onTimeout() } catch { /* best effort */ }

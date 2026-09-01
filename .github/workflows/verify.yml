@@ -53,7 +53,7 @@ jobs:
         shell: powershell
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-PleskTree.ps1 -SourcePath dist
 
-      - name: Install Chromium for browser tests
+      - name: Install Chromium, Firefox, and WebKit for the browser matrix
         run: bun run test:e2e:install
 
       - name: Run browser tests
