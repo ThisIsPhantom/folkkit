@@ -198,3 +198,53 @@ $env:FOLKKIT_E2E_PORT='4178'
 Ergebnis Lauf 1: 6/6 bestanden in 4.4 s.
 Ergebnis Lauf 2: 6/6 bestanden in 4.3 s.
 ```
+
+## Review-Fixrunde 3 von 5
+
+### Verbleibendes Finding
+
+Die exakte Package-Grenze aus Fixrunde 2 wurde vor der Präfixprüfung noch nicht kanonisiert. Ein Manifestpfad wie `node_modules/@ffmpeg/ffmpeg/../ffmpeg-fake/index.js` begann deshalb textuell mit dem vertrauenswürdigen Root, obwohl er nach Auflösung von `..` in ein nicht vertrauenswürdiges Geschwisterpackage zeigte.
+
+### RED
+
+```text
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run test:run tests/build/pwa-build.test.js
+Ergebnis: 5 erwartete Fehler, 14 bestanden.
+```
+
+Die RED-Fälle umfassten:
+
+- Parent-Escape von `@ffmpeg/ffmpeg` zu `ffmpeg-fake`
+- verschachtelte `./`- und `../`-Segmente
+- Windows-Backslashes mit Parent-Escape aus `@ffmpeg/util`
+- wiederholte Slashes vor einem Near-Package-Escape
+- einen echten Main-Package-Pfad mit führendem `./` und wiederholten Slashes, der weiterhin positiv erkannt werden muss
+
+### GREEN und Kanonisierungsvertrag
+
+`normalizeBuildPath` ersetzt zuerst Backslashes durch Slashes, entfernt wiederholte führende `./`-Segmente und verwendet danach `node:path.posix.normalize`. Erst der kanonische Pfad wird mit den beiden exakten Package-Roots verglichen. Absolute oder entkommene Pfade, Near-Siblings und nicht vertrauenswürdige Geschwister qualifizieren sich nicht. URL-Encoding wird nicht dekodiert.
+
+Die positiven Verträge bleiben erhalten:
+
+- Main-Package mit führendem `./` und wiederholten Slashes
+- Util-Package über ein Windows-Backslash-`src`
+- exakt synchronisierter `vendor/ffmpeg/ffmpeg-core.js`
+
+Fake-Namen, Pfadfragmente, Shared-Chunks und alle vier Dot-Segment-Escapes bleiben budgetpflichtig.
+
+### Exakte Abschlussbefehle und Ergebnisse
+
+```text
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run test:run tests/build/pwa-build.test.js
+Ergebnis: 1 Testdatei, 19/19 Tests bestanden.
+
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run verify
+Ergebnis: ESLint bestanden; 27 Testdateien, 264/264 Tests bestanden; Build, Budget und Runtime-Artefakte bestanden.
+
+$env:FOLKKIT_E2E_PORT='4178'
+& 'C:\Users\igorr\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\playwright\cli.js' test tests/e2e/pwa.spec.js tests/e2e/offline.spec.js
+Ergebnis Lauf 1: 6/6 bestanden in 4.4 s.
+Ergebnis Lauf 2: 6/6 bestanden in 4.2 s.
+```
+
+Die reale Budgetausgabe blieb unverändert: 121.4 KiB gzip initial, `pdf-lib` mit 179.5 KiB als grösster budgetpflichtiger Chunk sowie genau 0.9 KiB für `@ffmpeg/util`, 1.2 KiB für `@ffmpeg/ffmpeg` und 30.4 KiB für den Vendor-Core als vertrauenswürdig ausgenommen.

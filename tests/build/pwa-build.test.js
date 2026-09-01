@@ -289,8 +289,8 @@ describe('bundle budget', () => {
     await writeThemeInit()
     await writeFixture('dist/.vite/manifest.json', JSON.stringify({
       'index.html': { file: 'assets/app.js', isEntry: true },
-      'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js': { file: 'assets/ffmpeg-wrapper-hash.js', src: 'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js', isDynamicEntry: true },
-      'node_modules/@ffmpeg/util/dist/esm/index.js': { file: 'assets/util-wrapper-hash.js', src: 'node_modules/@ffmpeg/util/dist/esm/index.js', isDynamicEntry: true },
+      './node_modules//@ffmpeg//ffmpeg/dist/esm/index.js': { file: 'assets/ffmpeg-wrapper-hash.js', isDynamicEntry: true },
+      'src/util-wrapper.js': { file: 'assets/util-wrapper-hash.js', src: '.\\node_modules\\@ffmpeg\\util\\dist\\esm\\index.js', isDynamicEntry: true },
     }))
 
     const report = await checkBundleBudget({ distDir })
@@ -319,6 +319,44 @@ describe('bundle budget', () => {
     }))
 
     await expect(checkBundleBudget({ distDir })).rejects.toThrow(/assets\/spoofed\.js.*220 KiB/i)
+  })
+
+  test.each([
+    {
+      index: 1,
+      label: 'parent escape to ffmpeg-fake',
+      key: 'node_modules/@ffmpeg/ffmpeg/../ffmpeg-fake/index.js',
+    },
+    {
+      index: 2,
+      label: 'nested dot parent escape',
+      key: 'src/wrapper-a.js',
+      src: 'node_modules/@ffmpeg/ffmpeg/dist/./../../ffmpeg-fake/index.js',
+    },
+    {
+      index: 3,
+      label: 'Windows backslash parent escape',
+      key: 'src/wrapper-b.js',
+      src: 'node_modules\\@ffmpeg\\util\\..\\evil\\index.js',
+    },
+    {
+      index: 4,
+      label: 'repeated slash near-package escape',
+      key: 'node_modules/@ffmpeg/ffmpeg//../ffmpeg-fake/index.js',
+    },
+  ])('keeps a canonical package escape budgeted: $label', async ({ index, key, src }) => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    const file = `assets/canonical-spoof-${index}.js`
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeFixture(`dist/${file}`, randomBytes(260 * 1024))
+    await writeThemeInit()
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+      [key]: { file, ...(src ? { src } : {}), isDynamicEntry: true },
+    }))
+
+    await expect(checkBundleBudget({ distDir })).rejects.toThrow(/canonical-spoof-.*220 KiB/i)
   })
 
   test('keeps a shared non-package import budgeted when a real FFmpeg entry imports it', async () => {

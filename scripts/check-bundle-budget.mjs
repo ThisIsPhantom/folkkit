@@ -1,6 +1,6 @@
 import { gzipSync } from 'node:zlib'
 import { readFile, readdir } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { posix, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 export const INITIAL_JS_LIMIT = 200 * 1024
@@ -14,7 +14,9 @@ const TRUSTED_FFMPEG_PACKAGE_ROOTS = Object.freeze([
 const TRUSTED_VENDOR_CORE_FILE = 'vendor/ffmpeg/ffmpeg-core.js'
 
 function normalizeBuildPath(value) {
-  return String(value || '').replaceAll('\\', '/').replace(/^\.\//, '').replace(/^\//, '')
+  const slashPath = String(value || '').replaceAll('\\', '/')
+  const relativePath = slashPath.replace(/^(?:\.\/)+/, '')
+  return posix.normalize(relativePath)
 }
 
 function isTrustedFfmpegPackageSource(value) {
