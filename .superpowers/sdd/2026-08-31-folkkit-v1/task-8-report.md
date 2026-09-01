@@ -101,3 +101,44 @@ Vor den neuen UI- und Berichtstexten wurden `writing-natural-de-ch` und das Regi
 - Port 4173 blieb unangetastet. Alle Browserläufe verwendeten Port 4178 mit `strictPort` und `reuseExistingServer: false`.
 - Playwright wurde für die Beweisläufe direkt mit dem bereitgestellten Node.js-Binary gestartet. `bun run` ersetzt in dieser Umgebung einen `node`-Aufruf teilweise durch Bun und führte beim Chromium-Start zu Timeouts; dies betrifft die getestete Anwendung nicht.
 - Medien- und FFmpeg-Assets sind absichtlich nicht offline verfügbar. Die Oberfläche benennt diesen Zustand und bietet eine Recovery nach Wiederherstellung der Verbindung.
+
+## Review-Fixrunde 1 von 5
+
+### Status der sieben Important Findings
+
+1. Der reale Medien-Test lädt den Medien- und die FFmpeg-Wrapper vor, trennt danach das Netz und lässt Vendor-Core sowie WASM bewusst fehlen. Eine echte WAV-Datei löst den lokalisierten Fehler `FFmpeg-Core und WASM sind offline nicht verfügbar.` aus. Nach der Wiederverbindung startet `Erneut versuchen` dieselbe Auswahl erneut. Der Test lädt eine echte MP3-Datei herunter und prüft Dateiname, Mindestgrösse sowie ID3- oder MPEG-Frame-Signatur.
+2. Der Budgetprüfer akzeptiert nur noch `distDir`. `allowlist`, `initialLimit`, `lazyLimit` und andere Zusatzoptionen werden als nicht unterstützte Budgetoptionen abgelehnt. Die Grenzen sind unveränderlich 200 KiB gzip initial und 220 KiB gzip für jeden nicht zu FFmpeg gehörenden übrigen JavaScript-Chunk.
+3. Die Budgetprüfung läuft rekursiv über jede emittierte `.js`-Datei unter `dist`. `theme-init.js` zählt zur initialen Summe. Root-, Nested-, Worker-, Service-Worker-, Template- und Vendor-JavaScript werden erfasst. Gehashte FFmpeg-Wrapper werden über ihre Manifest-Quellschlüssel erkannt.
+4. Navigation und Runtime-Assets lesen ausschliesslich aus dem geöffneten aktuellen `CACHE_NAME`. Es gibt kein globales `caches.match` mehr. Ein fremder Cache mit denselben Root- und Entry-Schlüsseln bleibt erhalten, kann Folkkit offline aber nicht beantworten.
+5. Die Cacheversion hasht für jede sortierte Precache-URL sowohl den Pfad als auch die tatsächlichen Datei-Bytes. Identischer Inhalt erzeugt byteidentisches `sw.js`; eine Änderung am Favicon bei unverändertem Pfad ändert Cache-ID und Service-Worker-Ausgabe.
+6. Der Browser-Datenschutztest prüft unbekannten Pfad, Query-Variante mit privatem Marker, POST-Body, Blob-URL und einen echten zweiten lokalen HTTP-Origin. Keine dieser Anfragen erscheint im aktuellen Folkkit-Cache. Fremde Cache-Schlüssel werden getrennt gelesen und zählen nicht als Folkkit-Inhalt.
+7. `skipWaiting()` und `clients.claim()` liegen innerhalb der jeweiligen `waitUntil`-Promise. Ein testexklusiver alter Service Worker wird per Preview-Middleware installiert, aktiviert und danach auf den generierten Folkkit-Worker aktualisiert. Alte eigene und Legacy-Caches verschwinden, der aktuelle Cache bleibt, ein fremder Cache bleibt unangetastet und der Client wird vom neuen Worker kontrolliert. Ein Artifact-Gate verbietet den Test-Worker im gebauten `dist`.
+
+### Review RED
+
+- `bun run test:run tests/build/pwa-build.test.js src/converters/media.test.js src/components/workspace/workspace.test.jsx`: 5 erwartete Fehler für Path-only-Versionierung, Budget-Overrides, ungezählte JavaScript-Dateien, generische FFmpeg-Fehler und fehlende Retry-Oberfläche.
+- Direkter Node-Lauf `playwright test tests/e2e/pwa.spec.js`: Der alte Worker wurde zunächst als HTML statt JavaScript beantwortet; der fremde Cache übernahm offline Root und Entry.
+- Direkter Node-Lauf `playwright test tests/e2e/offline.spec.js --grep 'missing FFmpeg core'`: Der reale Core-Ausfall erschien zunächst als generischer Verarbeitungsfehler.
+- Der präzisierte Lifecycle-Test zeigte, dass das Install-Promise vor dem noch offenen `skipWaiting()` aufgelöst wurde.
+- Der Artifact-Test zeigte, dass ein testexklusiver alter Worker vor der neuen Sperre nicht abgelehnt wurde.
+
+### Review GREEN und exakte Abschlussbefehle
+
+```text
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run test:run tests/build/pwa-build.test.js src/converters/media.test.js src/components/workspace/workspace.test.jsx
+Ergebnis: 3 Testdateien, 23/23 Tests bestanden.
+
+& 'C:\Codex-Workspaces\folkkit\.worktrees\folkkit-v1\.superpowers\tools\bun-v1.3.3\bun-windows-x64\bun.exe' run verify
+Ergebnis: ESLint bestanden; 27 Testdateien, 255/255 Tests bestanden; Build bestanden; Runtime-Artefakte ausschliesslich Same-Origin und ohne testexklusiven alten Worker.
+
+$env:FOLKKIT_E2E_PORT='4178'
+& 'C:\Users\igorr\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\playwright\cli.js' test tests/e2e/pwa.spec.js tests/e2e/offline.spec.js
+Ergebnis Lauf 1: 6/6 bestanden in 4.5 s.
+Ergebnis Lauf 2: 6/6 bestanden in 4.3 s.
+```
+
+Der finale Build erzeugte `folkkit-app-a912dbc94ef5` mit 12 Precache-URLs. Die initiale JavaScript-Summe beträgt 121.4 KiB gzip. Der grösste nicht zu FFmpeg gehörende übrige Chunk ist `pdf-lib` mit 179.5 KiB gzip. Es gibt keine Budget-Allowlist und keinen Limit-Override.
+
+### Listener- und Scope-Cleanup
+
+Die zweite lokale HTTP-Origin-Instanz wird in `test.afterAll` geschlossen. Playwright stoppt den Previewserver nach jedem Lauf. Nach den Browserläufen lauschte kein Prozess mehr auf Port 4178. Port 4173 blieb unangetastet.

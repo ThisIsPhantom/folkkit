@@ -3,6 +3,7 @@ import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const forbiddenRuntimeOrigin = /(?:https?:)?\/\/(?:fonts\.googleapis\.com|fonts\.gstatic\.com|unpkg\.com|(?:[a-z0-9-]+\.)?googlesyndication\.com)\b/gi
+const forbiddenTestServiceWorker = /(?:__folkkit-test__|folkkit-app-test-old)/i
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 const runtimeArtifactExtensions = new Set(['.css', '.html', '.js'])
 
@@ -10,6 +11,9 @@ export function assertNoExternalRuntimeOrigins(artifactName, contents) {
   const origins = contents.match(forbiddenRuntimeOrigin) || []
   if (origins.length > 0) {
     throw new Error(`${artifactName} contains an external runtime origin: ${origins.join(', ')}`)
+  }
+  if (forbiddenTestServiceWorker.test(contents)) {
+    throw new Error(`${artifactName} contains the test-only service worker.`)
   }
 }
 

@@ -93,6 +93,13 @@ test('rejects external origins in a generated service-worker runtime artifact', 
   expect(() => assertNoExternalRuntimeOrigins('sw.js', "fetch('/assets/app.js')")).not.toThrow()
 })
 
+test('rejects the test-only old service worker from built runtime artifacts', async () => {
+  const distDirectory = await createTemporaryDirectory()
+  await writeFile(join(distDirectory, 'old-sw.js'), "caches.open('folkkit-app-test-old')")
+
+  await expect(assertBuiltRuntimeArtifacts({ distDirectory })).rejects.toThrow('test-only service worker')
+})
+
 test('rejects a built CSS artifact that imports Google Fonts', async () => {
   const distDirectory = await createTemporaryDirectory()
   await writeFile(join(distDirectory, 'app.css'), "@import url('https://fonts.googleapis.com/css2?family=Gothic+A1');")

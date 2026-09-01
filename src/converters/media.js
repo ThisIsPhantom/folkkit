@@ -29,7 +29,20 @@ function abortLoadError() {
   return error
 }
 
-export function createFFmpegRuntime({ baseURL, createFFmpeg, toBlobURL, revokeObjectURL, notify }) {
+function mediaRuntimeUnavailableError() {
+  const error = new Error('media_runtime_unavailable')
+  error.code = 'media_runtime_unavailable'
+  return error
+}
+
+export function createFFmpegRuntime({
+  baseURL,
+  createFFmpeg,
+  toBlobURL,
+  revokeObjectURL,
+  notify,
+  isOnline = () => globalThis.navigator?.onLine !== false,
+}) {
   let generation = 0
   let activeInstance = null
   let ready = false
@@ -52,16 +65,19 @@ export function createFFmpegRuntime({ baseURL, createFFmpeg, toBlobURL, revokeOb
 
   const beginLoad = (state) => (async () => {
     notify('downloading')
-    const ffmpeg = await createFFmpeg()
-    if (state.generation !== generation) {
-      ffmpeg.terminate?.()
-      throw abortLoadError()
-    }
-    activeInstance = ffmpeg
-
+    let ffmpeg = null
+    let phase = 'wrapper'
     try {
+      ffmpeg = await createFFmpeg()
+      if (state.generation !== generation) {
+        ffmpeg.terminate?.()
+        throw abortLoadError()
+      }
+      activeInstance = ffmpeg
+      phase = 'core'
       const coreURL = await createAssetUrl(`${baseURL}/ffmpeg-core.js`, 'text/javascript', state)
       const wasmURL = await createAssetUrl(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm', state)
+      phase = 'engine'
       await ffmpeg.load({ coreURL, wasmURL })
       if (state.generation !== generation || activeInstance !== ffmpeg) throw abortLoadError()
       ready = true
@@ -69,7 +85,7 @@ export function createFFmpegRuntime({ baseURL, createFFmpeg, toBlobURL, revokeOb
       return ffmpeg
     } catch (error) {
       if (state.generation === generation) {
-        if (activeInstance === ffmpeg) {
+        if (ffmpeg && activeInstance === ffmpeg) {
           try { ffmpeg.terminate?.() } catch { /* best-effort worker cleanup */ }
           activeInstance = null
         }
@@ -77,6 +93,9 @@ export function createFFmpegRuntime({ baseURL, createFFmpeg, toBlobURL, revokeOb
         if (error?.name !== 'AbortError') notify('error')
       }
       if (state.generation !== generation) throw abortLoadError()
+      if (error?.name !== 'AbortError' && (phase === 'core' || !isOnline())) {
+        throw mediaRuntimeUnavailableError()
+      }
       throw error
     } finally {
       revokeAll(state)

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { env } from 'node:process'
 import { assertPassiveAdsenseOwnershipMeta } from './scripts/assert-ownership-meta.mjs'
 
 function assertBuiltOwnershipMetadata() {
@@ -33,9 +34,42 @@ function selfHostFFmpegWorkerFallback() {
   }
 }
 
+function testOldServiceWorker() {
+  const source = `
+self.addEventListener('install', event => {
+  event.waitUntil((async () => {
+    await caches.open('folkkit-app-test-old')
+    await caches.open('convert-everything-v2')
+    await self.skipWaiting()
+  })())
+})
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim())
+})
+`
+  return {
+    name: 'test-old-service-worker',
+    configurePreviewServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if (request.url !== '/__folkkit-test__/old-sw.js') return next()
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'text/javascript; charset=utf-8')
+        response.setHeader('Cache-Control', 'no-store')
+        response.setHeader('Service-Worker-Allowed', '/')
+        response.end(source)
+      })
+    },
+  }
+}
+
 export default defineConfig({
   base: '/',
-  plugins: [react(), selfHostFFmpegWorkerFallback(), assertBuiltOwnershipMetadata()],
+  plugins: [
+    react(),
+    selfHostFFmpegWorkerFallback(),
+    assertBuiltOwnershipMetadata(),
+    ...(env.FOLKKIT_E2E_OLD_SW === '1' ? [testOldServiceWorker()] : []),
+  ],
   worker: {
     plugins: () => [selfHostFFmpegWorkerFallback()],
   },

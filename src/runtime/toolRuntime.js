@@ -9,6 +9,7 @@ const errorMessageKeys = Object.freeze({
   out_of_memory: 'errors.outOfMemory',
   cancelled: 'errors.cancelled',
   conversion_failed: 'errors.conversionFailed',
+  media_runtime_unavailable: 'errors.mediaRuntimeUnavailable',
 })
 
 export class ToolRuntimeError extends Error {

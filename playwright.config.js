@@ -15,6 +15,7 @@ export default defineConfig({
   },
   webServer: {
     command: `${process.execPath} ./node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port ${port} --strictPort`,
+    env: { ...process.env, FOLKKIT_E2E_OLD_SW: '1' },
     url: baseURL,
     reuseExistingServer: false,
   },

@@ -83,6 +83,7 @@ const messagesDe = Object.freeze({
     outOfMemory: 'Der verfügbare Speicher reicht für diese Verarbeitung nicht aus.',
     cancelled: 'Der Vorgang wurde abgebrochen.',
     conversionFailed: 'Die Verarbeitung ist fehlgeschlagen.',
+    mediaRuntimeUnavailable: 'FFmpeg-Core und WASM sind offline nicht verfügbar. Stelle die Internetverbindung wieder her und versuche es erneut.',
   }),
   labels: Object.freeze({
     experimental: 'Experimentell',

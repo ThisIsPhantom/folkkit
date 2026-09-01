@@ -1215,7 +1215,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
             <ProgressStatus progress={progress} loadingRuntime={ffmpegStatus === 'downloading'} onCancel={handleCancel} />
           )}
 
-          <ErrorNotice error={error} />
+          <ErrorNotice error={error} onRetry={error?.code === 'media_runtime_unavailable' ? () => handleMediaFiles(selectedFiles) : undefined} />
           <ResultActions record={mediaResult} onDiscard={handleDiscardResult} onCopied={() => toast(t('workspaceTools.copied'))} />
         </div>
       )}

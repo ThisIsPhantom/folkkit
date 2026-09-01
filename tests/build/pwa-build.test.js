@@ -2,7 +2,8 @@ import { gzipSync } from 'node:zlib'
 import { randomBytes } from 'node:crypto'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { afterEach, describe, expect, test } from 'vitest'
+import { runInNewContext } from 'node:vm'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 const fixtureRoot = resolve('test-results', 'task-8-build-fixtures')
 
@@ -11,6 +12,27 @@ async function writeFixture(relativePath, contents) {
   await mkdir(resolve(path, '..'), { recursive: true })
   await writeFile(path, contents)
   return path
+}
+
+async function writeGeneratorAssets() {
+  const files = [
+    'index.html',
+    'favicon.svg',
+    'manifest.json',
+    'theme-init.js',
+    'assets/app-a1.css',
+    'assets/app-a1.js',
+    'assets/pdf-c1.js',
+    'assets/pdf-lib-c2.js',
+    'assets/qr-b1.js',
+    'assets/qrcode-b2.js',
+    'assets/react-a2.js',
+  ]
+  for (const file of files) await writeFixture(`dist/${file}`, `fixture:${file}`)
+}
+
+async function writeThemeInit() {
+  await writeFixture('dist/theme-init.js', 'document.documentElement.dataset.theme = "light"')
 }
 
 afterEach(async () => {
@@ -33,6 +55,7 @@ describe('generated service worker', () => {
       'src/experimental.test.js': { file: 'assets/experimental-e1.js', isDynamicEntry: true },
       'src/main.jsx.map': { file: 'assets/app-a1.js.map' },
     }))
+    await writeGeneratorAssets()
     const templatePath = await writeFixture('sw.template.js', '/* __CACHE_NAME__ __PRECACHE_URLS__ */\nconst CACHE_NAME = __CACHE_NAME__;\nconst PRECACHE_URLS = __PRECACHE_URLS__;')
 
     const result = await generateServiceWorker({ distDir, templatePath })
@@ -70,6 +93,78 @@ describe('generated service worker', () => {
 
     await expect(generateServiceWorker({ distDir, templatePath })).rejects.toThrow(/same-origin/i)
   })
+
+  test('changes the cache version when precached bytes change and stays deterministic otherwise', async () => {
+    const { generateServiceWorker } = await import('../../scripts/generate-service-worker.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app-a1.js', isEntry: true },
+      'src/converters/qr.js': { file: 'assets/qr-b1.js', isDynamicEntry: true },
+      'src/converters/pdf.js': { file: 'assets/pdf-c1.js', isDynamicEntry: true },
+    }))
+    await writeGeneratorAssets()
+    const templatePath = await writeFixture('sw.template.js', 'const CACHE_NAME = __CACHE_NAME__;\nconst PRECACHE_URLS = __PRECACHE_URLS__;')
+
+    const first = await generateServiceWorker({ distDir, templatePath })
+    const firstSource = await readFile(resolve(distDir, 'sw.js'), 'utf8')
+    const identical = await generateServiceWorker({ distDir, templatePath })
+    const identicalSource = await readFile(resolve(distDir, 'sw.js'), 'utf8')
+    await writeFixture('dist/favicon.svg', 'fixture:favicon.svg:changed-bytes')
+    const changed = await generateServiceWorker({ distDir, templatePath })
+    const changedSource = await readFile(resolve(distDir, 'sw.js'), 'utf8')
+
+    expect(identical.cacheName).toBe(first.cacheName)
+    expect(identicalSource).toBe(firstSource)
+    expect(changed.cacheName).not.toBe(first.cacheName)
+    expect(changedSource).not.toBe(firstSource)
+  })
+
+  test('keeps skipWaiting and clients.claim inside their lifecycle promises', async () => {
+    const template = await readFile(resolve('public', 'sw.template.js'), 'utf8')
+    const source = template
+      .replaceAll('__CACHE_NAME__', JSON.stringify('folkkit-app-test'))
+      .replaceAll('__PRECACHE_URLS__', JSON.stringify(['/']))
+    const listeners = new Map()
+    let resolveSkipWaiting
+    let resolveClaim
+    const skipWaitingPromise = new Promise(resolvePromise => { resolveSkipWaiting = resolvePromise })
+    const claimPromise = new Promise(resolvePromise => { resolveClaim = resolvePromise })
+    const context = {
+      URL,
+      caches: {
+        open: vi.fn(async () => ({ addAll: vi.fn(async () => {}), match: vi.fn() })),
+        keys: vi.fn(async () => []),
+      },
+      self: {
+        addEventListener: (type, listener) => listeners.set(type, listener),
+        skipWaiting: vi.fn(() => skipWaitingPromise),
+        clients: { claim: vi.fn(() => claimPromise) },
+        location: { origin: 'https://folkkit.test' },
+      },
+      Set,
+    }
+    runInNewContext(source, context)
+
+    let installPromise
+    listeners.get('install')({ waitUntil: promise => { installPromise = promise } })
+    const installState = await Promise.race([
+      installPromise.then(() => 'settled'),
+      new Promise(resolvePromise => setTimeout(() => resolvePromise('pending'), 0)),
+    ])
+    expect(installState).toBe('pending')
+    resolveSkipWaiting()
+    await installPromise
+
+    let activatePromise
+    listeners.get('activate')({ waitUntil: promise => { activatePromise = promise } })
+    const activateState = await Promise.race([
+      activatePromise.then(() => 'settled'),
+      new Promise(resolvePromise => setTimeout(() => resolvePromise('pending'), 0)),
+    ])
+    expect(activateState).toBe('pending')
+    resolveClaim()
+    await activatePromise
+  })
 })
 
 describe('bundle budget', () => {
@@ -78,6 +173,7 @@ describe('bundle budget', () => {
     const distDir = resolve(fixtureRoot, 'dist')
     const largeEntry = randomBytes(240 * 1024)
     await writeFixture('dist/assets/app.js', largeEntry)
+    await writeThemeInit()
     await writeFixture('dist/.vite/manifest.json', JSON.stringify({
       'index.html': { file: 'assets/app.js', isEntry: true },
     }))
@@ -94,6 +190,7 @@ describe('bundle budget', () => {
     await writeFixture('dist/assets/app.js', smallEntry)
     await writeFixture('dist/assets/utility.js', largeLazy)
     await writeFixture('dist/assets/ffmpeg-core.js', largeLazy)
+    await writeThemeInit()
     await writeFixture('dist/.vite/manifest.json', JSON.stringify({
       'index.html': { file: 'assets/app.js', isEntry: true, dynamicImports: ['src/utility.js', 'src/media.js'] },
       'src/utility.js': { file: 'assets/utility.js' },
@@ -108,10 +205,62 @@ describe('bundle budget', () => {
     const distDir = resolve(fixtureRoot, 'dist')
     await writeFixture('dist/assets/app.js', 'export default 1')
     await writeFixture('dist/assets/worker.js', randomBytes(260 * 1024))
+    await writeThemeInit()
     await writeFixture('dist/.vite/manifest.json', JSON.stringify({
       'index.html': { file: 'assets/app.js', isEntry: true },
     }))
 
     await expect(checkBundleBudget({ distDir })).rejects.toThrow(/worker\.js.*220 KiB/i)
+  })
+
+  test('rejects attempted budget overrides instead of allowing a bypass', async () => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeThemeInit()
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+    }))
+
+    await expect(checkBundleBudget({ distDir, allowlist: { 'assets/app.js': 999999 } })).rejects.toThrow(/unsupported budget option.*allowlist/i)
+    await expect(checkBundleBudget({ distDir, initialLimit: 999999, lazyLimit: 999999 })).rejects.toThrow(/unsupported budget option/i)
+  })
+
+  test('accounts for theme init initially and every emitted root or nested JavaScript file', async () => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeThemeInit()
+    await writeFixture('dist/sw.js', 'self.addEventListener("fetch", () => {})')
+    await writeFixture('dist/root-helper.js', 'export const root = true')
+    await writeFixture('dist/nested/workers/converter-worker.js', 'self.onmessage = () => {}')
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+    }))
+
+    const report = await checkBundleBudget({ distDir })
+
+    expect(report.initialFiles.map(item => item.file).sort()).toEqual(['assets/app.js', 'theme-init.js'])
+    expect(report.lazyChunks.map(item => item.file).sort()).toEqual([
+      'nested/workers/converter-worker.js',
+      'root-helper.js',
+      'sw.js',
+    ])
+  })
+
+  test('recognizes hashed FFmpeg wrapper files through their manifest source keys', async () => {
+    const { checkBundleBudget } = await import('../../scripts/check-bundle-budget.mjs')
+    const distDir = resolve(fixtureRoot, 'dist')
+    await writeFixture('dist/assets/app.js', 'export default 1')
+    await writeFixture('dist/assets/index-hashed.js', 'export class FFmpeg {}')
+    await writeThemeInit()
+    await writeFixture('dist/.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/app.js', isEntry: true },
+      'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js': { file: 'assets/index-hashed.js', isDynamicEntry: true },
+    }))
+
+    const report = await checkBundleBudget({ distDir })
+
+    expect(report.lazyChunks.find(item => item.file === 'assets/index-hashed.js')).toMatchObject({ exempt: true })
   })
 })

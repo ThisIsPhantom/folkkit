@@ -54,6 +54,16 @@ test('a stable error code is localized without rendering attached private detail
   expect(alert).not.toHaveTextContent('Alice private contents')
 })
 
+test('an unavailable FFmpeg core is named and exposes its retry action', async () => {
+  const user = userEvent.setup()
+  let retries = 0
+  renderWithProviders(<ErrorNotice error={{ code: 'media_runtime_unavailable' }} onRetry={() => { retries += 1 }} />)
+
+  expect(screen.getByRole('alert')).toHaveTextContent('FFmpeg-Core und WASM sind offline nicht verfügbar.')
+  await user.click(screen.getByRole('button', { name: 'Erneut versuchen' }))
+  expect(retries).toBe(1)
+})
+
 test('result actions expose the runtime-owned download and discard it through the owner', async () => {
   const user = userEvent.setup()
   function Harness() {

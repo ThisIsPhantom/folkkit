@@ -8,11 +8,19 @@ const keyByCode = Object.freeze({
   out_of_memory: 'errors.outOfMemory',
   cancelled: 'errors.cancelled',
   conversion_failed: 'errors.conversionFailed',
+  media_runtime_unavailable: 'errors.mediaRuntimeUnavailable',
 })
 
-export default function ErrorNotice({ error }) {
+export default function ErrorNotice({ error, onRetry }) {
   const { t } = useI18n()
   if (!error) return null
   const messageKey = keyByCode[error.code] || 'errors.conversionFailed'
-  return <div className="error-msg" role="alert">{t(messageKey)}</div>
+  return (
+    <div className="error-msg" role="alert">
+      <span>{t(messageKey)}</span>
+      {error.code === 'media_runtime_unavailable' && onRetry && (
+        <button type="button" onClick={onRetry}>{t('workspaceTools.retryModule')}</button>
+      )}
+    </div>
+  )
 }

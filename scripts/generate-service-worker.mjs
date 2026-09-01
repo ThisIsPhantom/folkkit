@@ -60,7 +60,13 @@ export async function generateServiceWorker({
 
   const precacheUrls = [...selected].sort()
   for (const url of precacheUrls) toSameOriginPath(url)
-  const version = createHash('sha256').update(precacheUrls.join('\n')).digest('hex').slice(0, 12)
+  const versionHash = createHash('sha256')
+  for (const url of precacheUrls) {
+    const file = url === '/' || url === '/index.html' ? 'index.html' : url.slice(1)
+    const bytes = await readFile(resolve(distDir, file))
+    versionHash.update(url).update('\0').update(bytes).update('\0')
+  }
+  const version = versionHash.digest('hex').slice(0, 12)
   const cacheName = `folkkit-app-${version}`
   const template = await readFile(templatePath, 'utf8')
   if (!template.includes('__CACHE_NAME__') || !template.includes('__PRECACHE_URLS__')) {

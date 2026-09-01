@@ -109,6 +109,32 @@ test('ffmpeg runtime revokes core and wasm Blob URLs after success and failure',
   ])
 })
 
+test('an offline FFmpeg core fetch failure exposes a stable media runtime error', async () => {
+  const runtime = createFFmpegRuntime({
+    baseURL: '/vendor/ffmpeg',
+    createFFmpeg: async () => ({ load: async () => {}, terminate() {} }),
+    toBlobURL: async () => { throw new TypeError('Failed to fetch') },
+    revokeObjectURL: () => {},
+    notify: () => {},
+    isOnline: () => false,
+  })
+
+  await expect(runtime.get()).rejects.toMatchObject({ code: 'media_runtime_unavailable' })
+})
+
+test('an offline FFmpeg wrapper import failure uses the same stable runtime error', async () => {
+  const runtime = createFFmpegRuntime({
+    baseURL: '/vendor/ffmpeg',
+    createFFmpeg: async () => { throw new TypeError('Failed to fetch dynamically imported module') },
+    toBlobURL: async url => `blob:${url}`,
+    revokeObjectURL: () => {},
+    notify: () => {},
+    isOnline: () => false,
+  })
+
+  await expect(runtime.get()).rejects.toMatchObject({ code: 'media_runtime_unavailable' })
+})
+
 test('a stale load cannot revoke Blob URLs owned by its replacement load', async () => {
   const firstLoad = deferred()
   const secondLoad = deferred()

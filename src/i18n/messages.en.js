@@ -83,6 +83,7 @@ const messagesEn = Object.freeze({
     outOfMemory: 'There is not enough available memory for this conversion.',
     cancelled: 'The operation was cancelled.',
     conversionFailed: 'Processing failed.',
+    mediaRuntimeUnavailable: 'FFmpeg core and WASM are not available offline. Reconnect to the internet and try again.',
   }),
   labels: Object.freeze({
     experimental: 'Experimental',

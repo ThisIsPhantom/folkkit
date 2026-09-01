@@ -7,6 +7,7 @@ export const INITIAL_JS_LIMIT = 200 * 1024
 export const LAZY_JS_LIMIT = 220 * 1024
 
 const FFMPEG_PATTERN = /(?:^|[\/_-])ffmpeg(?:[\/_\-.]|$)/i
+const SUPPORTED_OPTIONS = new Set(['distDir'])
 
 function collectInitialKeys(manifest) {
   const selected = new Set()
@@ -28,16 +29,34 @@ async function gzipFileSize(distDir, file) {
   return gzipSync(await readFile(resolve(distDir, file))).byteLength
 }
 
+async function listJavaScriptFiles(directory, prefix = '') {
+  const files = []
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name
+    if (entry.isDirectory()) {
+      files.push(...await listJavaScriptFiles(resolve(directory, entry.name), relativePath))
+    } else if (entry.isFile() && entry.name.endsWith('.js')) {
+      files.push(relativePath)
+    }
+  }
+  return files
+}
+
 function formatKiB(bytes) {
   return `${(bytes / 1024).toFixed(1)} KiB gzip`
 }
 
-export async function checkBundleBudget({ distDir = resolve('dist'), allowlist = {} } = {}) {
+export async function checkBundleBudget(options = {}) {
+  const unsupportedOptions = Object.keys(options).filter(option => !SUPPORTED_OPTIONS.has(option))
+  if (unsupportedOptions.length) {
+    throw new Error(`Unsupported budget option: ${unsupportedOptions.join(', ')}`)
+  }
+  const distDir = options.distDir || resolve('dist')
   const manifest = JSON.parse(await readFile(resolve(distDir, '.vite', 'manifest.json'), 'utf8'))
   const initialKeys = collectInitialKeys(manifest)
   const initialFiles = [...new Set([...initialKeys]
     .map(key => manifest[key].file)
-    .filter(file => file?.endsWith('.js')))]
+    .filter(file => file?.endsWith('.js')).concat('theme-init.js'))]
   const initialMeasurements = await Promise.all(initialFiles.map(async file => ({
     file,
     gzipBytes: await gzipFileSize(distDir, file),
@@ -48,37 +67,19 @@ export async function checkBundleBudget({ distDir = resolve('dist'), allowlist =
     failures.push(`Initial JavaScript is ${formatKiB(initialGzipBytes)}; limit is 200 KiB gzip.`)
   }
 
-  const lazyChunks = []
-  const measuredLazyFiles = new Set()
-  for (const [key, chunk] of Object.entries(manifest)) {
-    if (initialKeys.has(key) || !chunk.file?.endsWith('.js') || measuredLazyFiles.has(chunk.file)) continue
-    measuredLazyFiles.add(chunk.file)
-    const gzipBytes = await gzipFileSize(distDir, chunk.file)
-    const isFfmpeg = FFMPEG_PATTERN.test(key) || FFMPEG_PATTERN.test(chunk.file)
-    const allowlistedLimit = allowlist[chunk.file] || allowlist[key]
-    const limit = allowlistedLimit || LAZY_JS_LIMIT
-    lazyChunks.push({ key, file: chunk.file, gzipBytes, exempt: isFfmpeg, allowlisted: Boolean(allowlistedLimit) })
-    if (!isFfmpeg && gzipBytes > limit) {
-      const limitLabel = allowlistedLimit ? formatKiB(limit) : '220 KiB gzip'
-      failures.push(`${chunk.file} is ${formatKiB(gzipBytes)}; limit is ${limitLabel}.`)
-    }
-  }
-
   const initialFileSet = new Set(initialFiles)
-  const emittedJavaScript = (await readdir(resolve(distDir, 'assets')))
-    .filter(file => file.endsWith('.js'))
-    .map(file => `assets/${file}`)
+  const ffmpegFiles = new Set(Object.entries(manifest)
+    .filter(([key, chunk]) => FFMPEG_PATTERN.test(key) || FFMPEG_PATTERN.test(chunk.file || ''))
+    .map(([, chunk]) => chunk.file))
+  const lazyChunks = []
+  const emittedJavaScript = await listJavaScriptFiles(distDir)
   for (const file of emittedJavaScript) {
-    if (initialFileSet.has(file) || measuredLazyFiles.has(file)) continue
-    measuredLazyFiles.add(file)
+    if (initialFileSet.has(file)) continue
     const gzipBytes = await gzipFileSize(distDir, file)
-    const isFfmpeg = FFMPEG_PATTERN.test(file)
-    const allowlistedLimit = allowlist[file]
-    const limit = allowlistedLimit || LAZY_JS_LIMIT
-    lazyChunks.push({ key: file, file, gzipBytes, exempt: isFfmpeg, allowlisted: Boolean(allowlistedLimit) })
-    if (!isFfmpeg && gzipBytes > limit) {
-      const limitLabel = allowlistedLimit ? formatKiB(limit) : '220 KiB gzip'
-      failures.push(`${file} is ${formatKiB(gzipBytes)}; limit is ${limitLabel}.`)
+    const isFfmpeg = ffmpegFiles.has(file) || FFMPEG_PATTERN.test(file)
+    lazyChunks.push({ key: file, file, gzipBytes, exempt: isFfmpeg })
+    if (!isFfmpeg && gzipBytes > LAZY_JS_LIMIT) {
+      failures.push(`${file} is ${formatKiB(gzipBytes)}; limit is 220 KiB gzip.`)
     }
   }
 
@@ -90,7 +91,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const report = await checkBundleBudget()
   console.log(`Initial JavaScript: ${formatKiB(report.initialGzipBytes)} / 200.0 KiB gzip`)
   for (const chunk of report.lazyChunks) {
-    const suffix = chunk.exempt ? ' (FFmpeg exempt)' : chunk.allowlisted ? ' (allowlisted)' : ''
+    const suffix = chunk.exempt ? ' (FFmpeg exempt)' : ''
     console.log(`Lazy ${chunk.file}: ${formatKiB(chunk.gzipBytes)}${suffix}`)
   }
 }
