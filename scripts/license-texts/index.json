@@ -1,0 +1,8 @@
+{
+  "GPL-2.0-or-later": [
+    "scripts/license-texts/GPL-2.0-or-later.txt"
+  ],
+  "MIT": [
+    "scripts/license-texts/MIT.txt"
+  ]
+}

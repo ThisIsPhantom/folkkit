@@ -27,12 +27,19 @@ function allCopy(content) {
   return JSON.stringify(content)
 }
 
-async function createNoticeFixture({ missingLicense = false } = {}) {
+async function createNoticeFixture({
+  missingLicense = false,
+  installedRuntimeBName = 'runtime-b',
+  installedRuntimeBVersion = '2.0.0',
+  runtimeBLicense = 'BSD-2-Clause',
+  omitRuntimeBText = false,
+} = {}) {
   const root = await mkdtemp(join(tmpdir(), 'folkkit-notices-'))
   temporaryDirectories.push(root)
   const nodeModulesPath = join(root, 'node_modules')
   await mkdir(join(nodeModulesPath, 'runtime-a'), { recursive: true })
   await mkdir(join(nodeModulesPath, 'runtime-b'), { recursive: true })
+  await mkdir(join(root, 'scripts', 'license-texts'), { recursive: true })
 
   const lockfile = {
     lockfileVersion: 1,
@@ -56,6 +63,7 @@ async function createNoticeFixture({ missingLicense = false } = {}) {
         paths: ['public/favicon.svg'],
         license: 'AGPL-3.0-only',
         sourceUrl: 'https://github.com/ThisIsPhantom/folkkit',
+        licenseTextFiles: ['scripts/license-texts/AGPL-3.0-only.txt'],
       },
       {
         id: 'ffmpeg-core-wasm',
@@ -64,6 +72,10 @@ async function createNoticeFixture({ missingLicense = false } = {}) {
         paths: ['public/vendor/ffmpeg/ffmpeg-core.js', 'public/vendor/ffmpeg/ffmpeg-core.wasm'],
         license: 'GPL-2.0-or-later',
         sourceUrl: 'https://github.com/ffmpegwasm/ffmpeg.wasm',
+        licenseTextFiles: [
+          'scripts/license-texts/GPL-2.0-or-later.txt',
+          'scripts/license-texts/LGPL-2.1-or-later.txt',
+        ],
         notices: [
           { label: 'FFmpeg licensing', url: 'https://ffmpeg.org/legal.html' },
           { label: 'GNU LGPL 2.1', url: 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html' },
@@ -74,6 +86,20 @@ async function createNoticeFixture({ missingLicense = false } = {}) {
 
   await writeFile(join(root, 'bun.lock'), `${JSON.stringify(lockfile, null, 2)}\n`)
   await writeFile(join(root, 'runtime-assets.json'), `${JSON.stringify(runtimeAssets, null, 2)}\n`)
+  await writeFile(join(root, 'scripts', 'license-texts', 'index.json'), `${JSON.stringify(
+    omitRuntimeBText ? {} : { 'BSD-2-Clause': ['scripts/license-texts/BSD-2-Clause.txt'] },
+    null,
+    2,
+  )}\n`)
+  await writeFile(join(root, 'scripts', 'license-texts', 'AGPL-3.0-only.txt'), 'GNU AFFERO GENERAL PUBLIC LICENSE\nVersion 3 fixture text.\n')
+  await writeFile(join(root, 'scripts', 'license-texts', 'GPL-2.0-or-later.txt'), 'GNU GENERAL PUBLIC LICENSE\nVersion 2 fixture text.\n')
+  await writeFile(join(root, 'scripts', 'license-texts', 'LGPL-2.1-or-later.txt'), 'GNU LESSER GENERAL PUBLIC LICENSE\nVersion 2.1 fixture text.\n')
+  if (!omitRuntimeBText) {
+    await writeFile(
+      join(root, 'scripts', 'license-texts', 'BSD-2-Clause.txt'),
+      'Redistribution and use in source and binary forms fixture text.\n',
+    )
+  }
   await writeFile(join(nodeModulesPath, 'runtime-a', 'package.json'), `${JSON.stringify({
     name: 'runtime-a',
     version: '1.0.0',
@@ -83,9 +109,9 @@ async function createNoticeFixture({ missingLicense = false } = {}) {
   await writeFile(join(nodeModulesPath, 'runtime-a', 'LICENSE'), 'Runtime A license text.\n')
   await writeFile(join(nodeModulesPath, 'runtime-a', 'NOTICE'), 'Runtime A copyright notice.\n')
   await writeFile(join(nodeModulesPath, 'runtime-b', 'package.json'), `${JSON.stringify({
-    name: 'runtime-b',
-    version: '2.0.0',
-    ...(missingLicense ? {} : { license: 'BSD-2-Clause' }),
+    name: installedRuntimeBName,
+    version: installedRuntimeBVersion,
+    ...(missingLicense ? {} : { license: runtimeBLicense }),
     repository: { type: 'git', url: 'git+ssh://git@github.com/example/runtime-b.git' },
   }, null, 2)}\n`)
 
@@ -93,6 +119,7 @@ async function createNoticeFixture({ missingLicense = false } = {}) {
     lockfilePath: join(root, 'bun.lock'),
     runtimeAssetsPath: join(root, 'runtime-assets.json'),
     nodeModulesPath,
+    projectRoot: root,
   }
 }
 
@@ -178,16 +205,35 @@ test('third-party notices are deterministic and cover locked transitive packages
   expect(first).toContain('Runtime A license text.')
   expect(first).toContain('Runtime A copyright notice.')
   expect(first).toContain('runtime-b 2.0.0')
+  expect(first).toContain('Redistribution and use in source and binary forms fixture text.')
   expect(first).toContain('https://github.com/example/runtime-b')
   expect(first).not.toContain('ssh://git@github.com')
   expect(first).toContain('Folkkit favicon')
   expect(first).toContain('FFmpeg / ffmpeg.wasm runtime assets')
   expect(first).toContain('GPL-2.0-or-later')
   expect(first).toContain('LGPL 2.1')
+  expect(first).toContain('GNU GENERAL PUBLIC LICENSE\nVersion 2 fixture text.')
+  expect(first).toContain('GNU LESSER GENERAL PUBLIC LICENSE\nVersion 2.1 fixture text.')
+  expect(first).toContain('GNU AFFERO GENERAL PUBLIC LICENSE\nVersion 3 fixture text.')
   expect(first).toContain('No font files are distributed')
 })
 
 test('third-party notice generation fails when a locked runtime package lacks license metadata', async () => {
   const fixture = await createNoticeFixture({ missingLicense: true })
   await expect(generateThirdPartyNotices(fixture)).rejects.toThrow(/runtime-b.*license metadata/i)
+})
+
+test('third-party notice generation fails when a package has no local or canonical license text', async () => {
+  const fixture = await createNoticeFixture({ runtimeBLicense: 'LicenseRef-NoValidatedText', omitRuntimeBText: true })
+  await expect(generateThirdPartyNotices(fixture)).rejects.toThrow(/runtime-b.*validated license text/i)
+})
+
+test('third-party notice generation rejects an installed version that differs from the exact lock tuple', async () => {
+  const fixture = await createNoticeFixture({ installedRuntimeBVersion: '2.0.1' })
+  await expect(generateThirdPartyNotices(fixture)).rejects.toThrow(/runtime-b.*locked version 2\.0\.0.*installed version 2\.0\.1/i)
+})
+
+test('third-party notice generation rejects an installed name that differs from the exact lock tuple', async () => {
+  const fixture = await createNoticeFixture({ installedRuntimeBName: 'runtime-impostor' })
+  await expect(generateThirdPartyNotices(fixture)).rejects.toThrow(/runtime-b.*installed package name runtime-impostor/i)
 })

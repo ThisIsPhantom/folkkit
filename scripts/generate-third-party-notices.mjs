@@ -2,7 +2,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
+const defaultProjectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 
 function parseJsonWithTrailingCommas(source, label) {
   let output = ''
@@ -88,9 +88,51 @@ function collectRuntimePackageNames(lockfile) {
   return [...discovered].sort(compareNames)
 }
 
-async function readRuntimePackages(lockfile, nodeModulesPath) {
+function readLockedTuple(packageName, entry) {
+  const resolution = entry[0]
+  const prefix = `${packageName}@`
+  if (typeof resolution !== 'string' || !resolution.startsWith(prefix) || resolution.length === prefix.length) {
+    throw new Error(`Locked runtime package ${packageName} has an invalid exact resolution tuple.`)
+  }
+  return { name: packageName, version: resolution.slice(prefix.length) }
+}
+
+async function readTextFile(path, description) {
+  let content
+  try {
+    content = (await readFile(path, 'utf8')).replace(/\r\n/g, '\n').trimEnd()
+  } catch (error) {
+    throw new Error(`Unable to read ${description}: ${error.message}`)
+  }
+  if (!content.trim()) throw new Error(`${description} is empty.`)
+  return content
+}
+
+async function readCanonicalLicenseTexts(indexPath, projectRoot) {
+  let index
+  try {
+    index = JSON.parse(await readFile(indexPath, 'utf8'))
+  } catch (error) {
+    throw new Error(`Unable to read canonical license text index: ${error.message}`)
+  }
+
+  const texts = new Map()
+  for (const [identifier, paths] of Object.entries(index)) {
+    if (!Array.isArray(paths) || paths.length === 0) {
+      throw new Error(`Canonical license mapping ${identifier} must name at least one local text file.`)
+    }
+    texts.set(identifier, await Promise.all(paths.map(async path => ({
+      filename: path,
+      content: await readTextFile(join(projectRoot, path), `canonical license text ${path}`),
+    }))))
+  }
+  return texts
+}
+
+async function readRuntimePackages(lockfile, nodeModulesPath, canonicalLicenseTexts) {
   const packageNames = collectRuntimePackageNames(lockfile)
   return Promise.all(packageNames.map(async (packageName) => {
+    const lockedTuple = readLockedTuple(packageName, lockfile.packages[packageName])
     const packageDirectory = join(nodeModulesPath, packageName)
     const packagePath = join(packageDirectory, 'package.json')
     let metadata
@@ -106,26 +148,46 @@ async function readRuntimePackages(lockfile, nodeModulesPath) {
     if (!metadata.version || typeof metadata.version !== 'string') {
       throw new Error(`Locked runtime package ${packageName} is missing version metadata.`)
     }
+    if (metadata.name !== lockedTuple.name) {
+      throw new Error(`Locked runtime package ${packageName} resolved to installed package name ${metadata.name || '(missing)'}.`)
+    }
+    if (metadata.version !== lockedTuple.version) {
+      throw new Error(`Locked runtime package ${packageName} expected locked version ${lockedTuple.version}, but found installed version ${metadata.version}.`)
+    }
 
     const sourceUrl = normalizeRepository(metadata.repository, metadata.homepage)
     if (!sourceUrl) throw new Error(`Locked runtime package ${packageName} is missing source metadata.`)
 
     const packageEntries = await readdir(packageDirectory, { withFileTypes: true })
-    const noticeFilenames = packageEntries
-      .filter(entry => entry.isFile() && /^(?:LICENSE|LICENCE|COPYING|NOTICE)(?:[._-].*)?$/i.test(entry.name))
+    const licenseFilenames = packageEntries
+      .filter(entry => entry.isFile() && /^(?:LICENSE|LICENCE|COPYING)(?:[._-].*)?$/i.test(entry.name))
       .map(entry => entry.name)
       .sort(compareNames)
+    const noticeFilenames = packageEntries
+      .filter(entry => entry.isFile() && /^NOTICE(?:[._-].*)?$/i.test(entry.name))
+      .map(entry => entry.name)
+      .sort(compareNames)
+    const localLicenseFiles = await Promise.all(licenseFilenames.map(async (filename) => ({
+      filename,
+      content: await readTextFile(join(packageDirectory, filename), `license text ${packageName}/${filename}`),
+    })))
     const noticeFiles = await Promise.all(noticeFilenames.map(async (filename) => ({
       filename,
-      content: (await readFile(join(packageDirectory, filename), 'utf8')).replace(/\r\n/g, '\n').trimEnd(),
+      content: await readTextFile(join(packageDirectory, filename), `notice text ${packageName}/${filename}`),
     })))
+    const licenseFiles = localLicenseFiles.length > 0
+      ? localLicenseFiles
+      : canonicalLicenseTexts.get(metadata.license)
+    if (!licenseFiles?.length) {
+      throw new Error(`Locked runtime package ${packageName} has no validated license text for ${metadata.license}.`)
+    }
 
     return {
       name: packageName,
       version: metadata.version,
       license: metadata.license,
       sourceUrl,
-      noticeFiles,
+      legalFiles: [...licenseFiles, ...noticeFiles],
     }
   }))
 }
@@ -148,7 +210,26 @@ function validateRuntimeAssets(runtimeAssets) {
     if (!Array.isArray(asset.paths) || asset.paths.length === 0) {
       throw new Error(`Runtime asset ${asset.id} must register at least one deployed path.`)
     }
+    if (!Array.isArray(asset.licenseTextFiles) || asset.licenseTextFiles.length === 0) {
+      throw new Error(`Runtime asset ${asset.id} must register at least one local license text file.`)
+    }
   }
+}
+
+function legalTextBlock(filename, content) {
+  let fence = '```'
+  while (content.includes(fence)) fence += '`'
+  return [
+    '<details>',
+    `<summary>${filename}</summary>`,
+    '',
+    `${fence}text`,
+    content,
+    fence,
+    '',
+    '</details>',
+    '',
+  ]
 }
 
 function packageSection(pkg) {
@@ -159,21 +240,7 @@ function packageSection(pkg) {
     `- Source: [${pkg.sourceUrl}](${pkg.sourceUrl})`,
     '',
   ]
-  for (const notice of pkg.noticeFiles) {
-    let fence = '```'
-    while (notice.content.includes(fence)) fence += '`'
-    lines.push(
-      '<details>',
-      `<summary>${notice.filename}</summary>`,
-      '',
-      `${fence}text`,
-      notice.content,
-      fence,
-      '',
-      '</details>',
-      '',
-    )
-  }
+  for (const legalFile of pkg.legalFiles) lines.push(...legalTextBlock(legalFile.filename, legalFile.content))
   return lines
 }
 
@@ -189,13 +256,18 @@ function assetSection(asset) {
     lines.push(`- ${notice.label}: [${notice.url}](${notice.url})`)
   }
   lines.push('')
+  for (const licenseText of asset.licenseTexts) {
+    lines.push(...legalTextBlock(licenseText.filename, licenseText.content))
+  }
   return lines
 }
 
 export async function generateThirdPartyNotices({
+  projectRoot = defaultProjectRoot,
   lockfilePath = join(projectRoot, 'bun.lock'),
   runtimeAssetsPath = join(projectRoot, 'scripts', 'runtime-assets.json'),
   nodeModulesPath = join(projectRoot, 'node_modules'),
+  licenseTextIndexPath = join(projectRoot, 'scripts', 'license-texts', 'index.json'),
 } = {}) {
   const [lockfileSource, runtimeAssetsSource] = await Promise.all([
     readFile(lockfilePath, 'utf8'),
@@ -204,8 +276,17 @@ export async function generateThirdPartyNotices({
   const lockfile = parseJsonWithTrailingCommas(lockfileSource, 'bun.lock')
   const runtimeAssets = JSON.parse(runtimeAssetsSource)
   validateRuntimeAssets(runtimeAssets)
-  const packages = await readRuntimePackages(lockfile, nodeModulesPath)
-  const assets = [...runtimeAssets.assets].sort((left, right) => compareNames(left.id, right.id))
+  const canonicalLicenseTexts = await readCanonicalLicenseTexts(licenseTextIndexPath, projectRoot)
+  const packages = await readRuntimePackages(lockfile, nodeModulesPath, canonicalLicenseTexts)
+  const assets = await Promise.all([...runtimeAssets.assets]
+    .sort((left, right) => compareNames(left.id, right.id))
+    .map(async asset => ({
+      ...asset,
+      licenseTexts: await Promise.all([...asset.licenseTextFiles].sort(compareNames).map(async path => ({
+        filename: path,
+        content: await readTextFile(join(projectRoot, path), `runtime asset license text ${asset.id}/${path}`),
+      }))),
+    })))
 
   const lines = [
     '# Folkkit Third-Party Notices',
@@ -247,15 +328,29 @@ export async function generateThirdPartyNotices({
 }
 
 export async function writeThirdPartyNotices(options = {}) {
-  const outputPath = options.outputPath || join(projectRoot, 'THIRD_PARTY_NOTICES.md')
+  const outputPath = options.outputPath || join(options.projectRoot || defaultProjectRoot, 'THIRD_PARTY_NOTICES.md')
   const output = await generateThirdPartyNotices(options)
   await writeFile(outputPath, output, 'utf8')
   return output
 }
 
+export async function checkThirdPartyNotices({ expectedContent, outputPath, ...options } = {}) {
+  const generated = await generateThirdPartyNotices(options)
+  const current = expectedContent ?? await readFile(
+    outputPath || join(options.projectRoot || defaultProjectRoot, 'THIRD_PARTY_NOTICES.md'),
+    'utf8',
+  )
+  if (generated !== current) {
+    throw new Error('THIRD_PARTY_NOTICES.md is stale. Run `bun run generate:notices` and commit the exact output.')
+  }
+  return generated
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  writeThirdPartyNotices()
-    .then(() => console.log('Generated THIRD_PARTY_NOTICES.md.'))
+  const checkMode = process.argv.includes('--check')
+  const operation = checkMode ? checkThirdPartyNotices() : writeThirdPartyNotices()
+  operation
+    .then(() => console.log(checkMode ? 'THIRD_PARTY_NOTICES.md is current.' : 'Generated THIRD_PARTY_NOTICES.md.'))
     .catch((error) => {
       console.error(error.message)
       process.exitCode = 1
