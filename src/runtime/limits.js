@@ -57,9 +57,27 @@ function acceptsFile(file, acceptTypes) {
   })
 }
 
+function imageKindFromMime(mime) {
+  if (mime === 'image/png') return 'png'
+  if (mime === 'image/jpeg' || mime === 'image/jpg') return 'jpeg'
+  return null
+}
+
+function imageKindFromName(name) {
+  if (name.endsWith('.png')) return 'png'
+  if (name.endsWith('.jpg') || name.endsWith('.jpeg')) return 'jpeg'
+  return null
+}
+
+function hasConflictingImageMetadata(file) {
+  const mimeKind = imageKindFromMime(String(file.type || '').toLowerCase())
+  const extensionKind = imageKindFromName(String(file.name || '').toLowerCase())
+  return mimeKind && extensionKind && mimeKind !== extensionKind
+}
+
 export function validateFiles(tool, files, environment = globalThis) {
   const selected = Array.from(files || [])
-  if (selected.some((file) => !acceptsFile(file, tool?.acceptTypes))) {
+  if (selected.some((file) => hasConflictingImageMetadata(file) || !acceptsFile(file, tool?.acceptTypes))) {
     return validationErrors.unsupported_type
   }
 

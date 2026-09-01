@@ -114,7 +114,7 @@ const FAV_PAIRS_KEY = 'convert-everything-fav-pairs'
 function getFavPairs() { try { return JSON.parse(localStorage.getItem(FAV_PAIRS_KEY)) || [] } catch { return [] } }
 function saveFavPairs(pairs) { localStorage.setItem(FAV_PAIRS_KEY, JSON.stringify(pairs)) }
 
-function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = formats, releasedTools = [], categories = [] }) {
+function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConverter, onConverterChange, initialInput = '', reuseRequestId, onReuseConsumed, releasedFormats = formats, releasedTools = [], categories = [], resolveConvertFn = getConvertFn }) {
   const { t } = useI18n()
   const [input, setInput] = useState(initialInput)
   const [output, setOutput] = useState('')
@@ -216,37 +216,48 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     const runId = ++formatRunIdRef.current
     if (isToolMode) return
     if (!input.trim()) {
-      if (runId === formatRunIdRef.current) setOutput('')
+      runtimeRef.current.cancel()
+      if (runId === formatRunIdRef.current) {
+        setOutput('')
+        setError(null)
+        setMediaResult(null)
+      }
       return
     }
-    const fn = getConvertFn(from, to)
+    const fn = resolveConvertFn(from, to)
     if (!fn) {
-      if (runId === formatRunIdRef.current) setOutput('')
+      runtimeRef.current.cancel()
+      if (runId === formatRunIdRef.current) {
+        setOutput('')
+        setError(null)
+      }
       return
     }
+    setError(null)
     try {
-      let result
-      if (batchMode) {
-        const lines = input.split('\n')
-        const results = await Promise.all(lines.map(async (line) => {
-          if (!line.trim()) return ''
-          try { return await fn(line) } catch (err) { return `(error: ${err.message || 'unknown'})` }
-        }))
-        result = results.join('\n')
-      } else {
-        result = await fn(input)
+      const tool = {
+        convert: async (value, context) => {
+          if (!batchMode) return { kind: 'text', text: String(await fn(value, context)) }
+          const results = await Promise.all(value.split('\n').map(async (line) => (
+            line.trim() ? fn(line, context) : ''
+          )))
+          return { kind: 'text', text: results.join('\n') }
+        },
       }
+      const record = await runtimeRef.current.run({ tool, text: input })
       if (runId !== formatRunIdRef.current || isToolMode) return
-      setOutput(result)
-      if (result && result !== '(conversion error)') {
-        historyStore.append({ from, to, input, output: result, timestamp: Date.now() })
+      if (!record || record.result.kind !== 'text') return
+      setOutput(record.result.text)
+      if (record.result.text) {
+        historyStore.append({ from, to, input, output: record.result.text, timestamp: Date.now() })
       }
-    } catch {
+    } catch (runtimeFailure) {
       if (runId === formatRunIdRef.current && !isToolMode) {
-        setOutput('(conversion error)')
+        setOutput('')
+        setError(runtimeFailure)
       }
     }
-  }, [input, from, to, batchMode, isToolMode])
+  }, [input, from, to, batchMode, isToolMode, resolveConvertFn])
 
   useEffect(() => {
     if (isToolMode) return
@@ -264,7 +275,12 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     const converterId = converter.id
     const runId = ++toolRunIdRef.current
     if (!value && !isGenerator) {
-      if (runId === toolRunIdRef.current && activeConverterIdRef.current === converterId) setOutput('')
+      runtimeRef.current.cancel()
+      if (runId === toolRunIdRef.current && activeConverterIdRef.current === converterId) {
+        setOutput('')
+        setMediaResult(null)
+        setError(null)
+      }
       return
     }
     setError(null)
@@ -679,6 +695,8 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
     setProcessing(false)
     setProgress(0)
     setMediaResult(null)
+    setSelectedFiles([])
+    setInput('')
     setError({ code: 'cancelled', messageKey: 'errors.cancelled' })
   }
 

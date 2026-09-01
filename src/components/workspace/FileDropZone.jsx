@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../../i18n'
 
 function formatSize(bytes) {
@@ -12,6 +12,10 @@ export default function FileDropZone({ accept = '*', multiple = false, files = [
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef(null)
   const inputLabel = t(multiple ? 'workspaceTools.selectFiles' : 'workspaceTools.selectFile')
+
+  useEffect(() => {
+    if (files.length === 0 && inputRef.current) inputRef.current.value = ''
+  }, [files.length])
 
   const choose = (fileList) => {
     if (disabled) return

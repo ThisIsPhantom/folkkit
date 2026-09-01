@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createToolRuntime, executeTool } from './toolRuntime'
 import { PDFDocument } from 'pdf-lib'
 import { TOOL_LIMITS } from './limits'
@@ -10,6 +10,10 @@ function deferred() {
   const promise = new Promise((done) => { resolve = done })
   return { promise, resolve }
 }
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
 describe('executeTool', () => {
   test('rejects a corrupt PDF with a stable content-free error', async () => {
@@ -39,7 +43,7 @@ describe('executeTool', () => {
         onProgress(0.25)
         onProgress(40)
         onProgress(140)
-        return 'done'
+        return { kind: 'text', text: 'done' }
       },
     }
 
@@ -58,7 +62,7 @@ describe('executeTool', () => {
       convert: async (_text, context) => {
         emitProgress = context.onProgress
         await gate.promise
-        return 'late result'
+        return { kind: 'text', text: 'late result' }
       },
       terminate: () => { terminated += 1 },
     }
@@ -84,7 +88,7 @@ describe('executeTool', () => {
     const controller = new AbortController()
     let terminated = 0
     const tool = {
-      convert: async () => 'done',
+      convert: async () => ({ kind: 'text', text: 'done' }),
       terminate: () => { terminated += 1 },
     }
 
@@ -93,6 +97,52 @@ describe('executeTool', () => {
     controller.abort()
 
     expect(terminated).toBe(0)
+  })
+
+  test('rejects a corrupt PNG before calling the image converter', async () => {
+    let conversionCalls = 0
+    const tool = {
+      acceptTypes: 'image/*',
+      limits: TOOL_LIMITS.images,
+      fileConvert: async () => {
+        conversionCalls += 1
+        return { kind: 'text', text: 'unreachable' }
+      },
+    }
+    const file = new File(['private non-image bytes'], 'private.png', { type: 'image/png' })
+
+    await expect(executeTool({ tool, files: [file] })).rejects.toMatchObject({ code: 'invalid_file' })
+    expect(conversionCalls).toBe(0)
+  })
+
+  test.each([
+    {
+      value: { kind: 'text', text: 'safe', info: 'details', filename: 'leak.txt', extra: 'drop' },
+      expected: { kind: 'text', text: 'safe', info: 'details' },
+    },
+    {
+      value: { kind: 'download', blob: new Blob(['download']), filename: 'result.bin', info: 'details', text: 'drop', url: 'drop' },
+      expected: { kind: 'download', blob: expect.any(Blob), filename: 'result.bin', info: 'details' },
+    },
+    {
+      value: { kind: 'image', blob: new Blob(['image']), filename: 'result.png', payload: 'drop' },
+      expected: { kind: 'image', blob: expect.any(Blob), filename: 'result.png' },
+    },
+  ])('returns only declared fields for $value.kind results', async ({ value, expected }) => {
+    await expect(executeTool({ tool: { convert: async () => value }, text: 'input' })).resolves.toEqual(expected)
+  })
+
+  test.each([
+    { kind: 'download', blob: new Blob(['x']), filename: '' },
+    { kind: 'image', blob: new Blob(['x']), filename: '   ' },
+    { kind: 'download', blob: 'not-a-blob', filename: 'result.bin' },
+    { kind: 'text', text: 42 },
+    { kind: 'text', text: 'safe', info: 42 },
+    { kind: 'unknown', text: 'safe' },
+    { blob: new Blob(['legacy']), filename: 'legacy.bin' },
+  ])('rejects malformed ToolResult %#', async (value) => {
+    await expect(executeTool({ tool: { convert: async () => value }, text: 'input' }))
+      .rejects.toMatchObject({ code: 'conversion_failed', messageKey: 'errors.conversionFailed' })
   })
 })
 
@@ -124,6 +174,66 @@ test('the released QR generator returns an image Blob rather than an unmanaged U
   expect(result).toMatchObject({ kind: 'image', filename: 'folkkit-qr.svg' })
   expect(result.blob.type).toBe('image/svg+xml')
   expect(await result.blob.text()).toContain('<svg')
+})
+
+test.each([
+  { label: 'success', detect: async () => [{ rawValue: 'decoded' }], expected: 'decoded' },
+  { label: 'failure', detect: async () => { throw new Error('decode failed') }, expected: null },
+])('QR reader closes its ImageBitmap after $label', async ({ detect, expected }) => {
+  let closeCount = 0
+  vi.stubGlobal('createImageBitmap', async () => ({ close: () => { closeCount += 1 } }))
+  vi.stubGlobal('BarcodeDetector', class {
+    async detect(bitmap) { return detect(bitmap) }
+  })
+  const file = new File([
+    new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+  ], 'qr.png', { type: 'image/png' })
+  const tool = qrConverters.find((entry) => entry.id === 'qr-to-text')
+
+  if (expected) {
+    await expect(executeTool({ tool, files: [file] })).resolves.toEqual({ kind: 'text', text: expected })
+  } else {
+    await expect(executeTool({ tool, files: [file] })).rejects.toMatchObject({ code: 'invalid_file' })
+  }
+  expect(closeCount).toBe(1)
+})
+
+test.each([
+  { label: 'success', failDraw: false },
+  { label: 'failure', failDraw: true },
+])('images-to-PDF closes its fallback ImageBitmap after $label', async ({ failDraw }) => {
+  let closeCount = 0
+  vi.stubGlobal('createImageBitmap', async () => ({
+    width: 1,
+    height: 1,
+    close: () => { closeCount += 1 },
+  }))
+  const pngBytes = Uint8Array.from(
+    atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQmcAAAAASUVORK5CYII='),
+    character => character.charCodeAt(0),
+  )
+  vi.stubGlobal('OffscreenCanvas', class {
+    getContext() {
+      return {
+        drawImage() {
+          if (failDraw) throw new Error('draw failed')
+        },
+      }
+    }
+    async convertToBlob() { return new Blob([pngBytes], { type: 'image/png' }) }
+  })
+  const file = new File(['webp fixture'], 'image.webp', { type: 'image/webp' })
+  const tool = pdfConverters.find((entry) => entry.id === 'images-to-pdf')
+
+  if (failDraw) {
+    await expect(executeTool({ tool, files: [file] })).rejects.toMatchObject({ code: 'conversion_failed' })
+  } else {
+    await expect(executeTool({ tool, files: [file] })).resolves.toMatchObject({
+      kind: 'download',
+      filename: 'combined.pdf',
+    })
+  }
+  expect(closeCount).toBe(1)
 })
 
 test('a newer run suppresses a late older result and revokes its previous URL', async () => {
@@ -166,4 +276,26 @@ test('manual downloads also receive URLs from the runtime owner and replace prio
   expect(first.url).toBe('blob:manual-1')
   expect(second.url).toBe('blob:manual-2')
   expect(revoked).toEqual(['blob:manual-1'])
+})
+
+test('manual presentation enforces and sanitizes the exact ToolResult union', () => {
+  const runtime = createToolRuntime({
+    urlApi: {
+      createObjectURL: () => 'blob:manual',
+      revokeObjectURL: () => {},
+    },
+  })
+
+  expect(() => runtime.present({ kind: 'download', blob: new Blob(['x']), filename: '' }))
+    .toThrow(expect.objectContaining({ code: 'conversion_failed' }))
+  expect(runtime.present({
+    kind: 'download',
+    blob: new Blob(['safe']),
+    filename: 'safe.txt',
+    payload: 'drop',
+  }).result).toEqual({
+    kind: 'download',
+    blob: expect.any(Blob),
+    filename: 'safe.txt',
+  })
 })

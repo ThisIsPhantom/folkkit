@@ -53,8 +53,9 @@ export const qrConverters = [
         throw qrFailure('unsupported_browser')
       }
 
+      let bitmap
       try {
-        const bitmap = await globalThis.createImageBitmap(file)
+        bitmap = await globalThis.createImageBitmap(file)
         const detector = new globalThis.BarcodeDetector({ formats: ['qr_code'] })
         const results = await detector.detect(bitmap)
         if (results.length > 0 && results[0].rawValue) {
@@ -64,6 +65,8 @@ export const qrConverters = [
       } catch (error) {
         if (error?.code) throw error
         throw qrFailure('invalid_file')
+      } finally {
+        bitmap?.close?.()
       }
     },
   },

@@ -36,6 +36,11 @@ function hasPdfContract(tool) {
     || String(tool?.acceptTypes || '').toLowerCase().includes('pdf')
 }
 
+function hasImageContract(tool) {
+  return tool?.limits === TOOL_LIMITS.images
+    || String(tool?.acceptTypes || '').toLowerCase().includes('image/')
+}
+
 async function readFilePrefix(file, length) {
   const blob = file.slice(0, length)
   if (typeof blob.arrayBuffer === 'function') {
@@ -50,23 +55,41 @@ async function readFilePrefix(file, length) {
 }
 
 async function validateSignatures(tool, files) {
-  if (!hasPdfContract(tool)) return
   for (const file of files) {
-    const prefix = await readFilePrefix(file, 5)
-    if (String.fromCharCode(...prefix) !== '%PDF-') throw runtimeError('invalid_file')
+    if (hasPdfContract(tool)) {
+      const prefix = await readFilePrefix(file, 5)
+      if (String.fromCharCode(...prefix) !== '%PDF-') throw runtimeError('invalid_file')
+      continue
+    }
+    if (!hasImageContract(tool)) continue
+    const mime = String(file.type || '').toLowerCase()
+    const name = String(file.name || '').toLowerCase()
+    if (mime === 'image/png' || name.endsWith('.png')) {
+      const prefix = await readFilePrefix(file, 8)
+      const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+      if (!signature.every((byte, index) => prefix[index] === byte)) throw runtimeError('invalid_file')
+    } else if (mime === 'image/jpeg' || mime === 'image/jpg' || name.endsWith('.jpg') || name.endsWith('.jpeg')) {
+      const prefix = await readFilePrefix(file, 3)
+      if (prefix[0] !== 0xff || prefix[1] !== 0xd8 || prefix[2] !== 0xff) throw runtimeError('invalid_file')
+    }
   }
 }
 
 function normalizeResult(value) {
-  if (value?.kind === 'text' && typeof value.text === 'string') return value
-  if ((value?.kind === 'download' || value?.kind === 'image') && value.blob instanceof Blob) return value
-  if (value?.blob instanceof Blob && typeof value.filename === 'string') {
-    return { kind: 'download', blob: value.blob, filename: value.filename, ...(value.info ? { info: value.info } : {}) }
+  if (!value || typeof value !== 'object') throw runtimeError('conversion_failed')
+  if (value.info !== undefined && typeof value.info !== 'string') throw runtimeError('conversion_failed')
+  const info = value.info === undefined ? {} : { info: value.info }
+  if (value.kind === 'text' && typeof value.text === 'string') {
+    return { kind: 'text', text: value.text, ...info }
   }
-  if (typeof value?.text === 'string') {
-    return { kind: 'text', text: value.text, ...(value.info ? { info: value.info } : {}) }
+  if (
+    (value.kind === 'download' || value.kind === 'image')
+    && value.blob instanceof Blob
+    && typeof value.filename === 'string'
+    && value.filename.trim()
+  ) {
+    return { kind: value.kind, blob: value.blob, filename: value.filename, ...info }
   }
-  if (typeof value === 'string') return { kind: 'text', text: value }
   throw runtimeError('conversion_failed')
 }
 
@@ -181,11 +204,12 @@ export function createToolRuntime({ execute = executeTool, urlApi = URL } = {}) 
   }
 
   function present(result) {
+    const normalized = normalizeResult(result)
     stop()
-    const url = result.kind === 'download' || result.kind === 'image'
-      ? objectUrls.create(result.blob)
+    const url = normalized.kind === 'download' || normalized.kind === 'image'
+      ? objectUrls.create(normalized.blob)
       : null
-    return { result, ...(url ? { url } : {}) }
+    return { result: normalized, ...(url ? { url } : {}) }
   }
 
   return Object.freeze({

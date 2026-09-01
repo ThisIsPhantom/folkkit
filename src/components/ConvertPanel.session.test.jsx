@@ -10,13 +10,13 @@ const uppercaseTool = {
   id: 'test-uppercase',
   name: 'Uppercase',
   description: 'Converts text to uppercase.',
-  convert: (value) => value.toUpperCase(),
+  convert: (value) => ({ kind: 'text', text: value.toUpperCase() }),
 }
 const lowercaseTool = {
   id: 'test-lowercase',
   name: 'Lowercase',
   description: 'Converts text to lowercase.',
-  convert: (value) => value.toLowerCase(),
+  convert: (value) => ({ kind: 'text', text: value.toLowerCase() }),
 }
 
 function panelProps(overrides = {}) {

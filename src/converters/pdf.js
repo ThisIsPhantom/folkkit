@@ -34,12 +34,16 @@ export const pdfConverters = [
           image = await pdfDoc.embedJpg(uint8)
         } else {
           const bitmap = await createImageBitmap(file)
-          const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
-          const ctx = canvas.getContext('2d')
-          ctx.drawImage(bitmap, 0, 0)
-          const blob = await canvas.convertToBlob({ type: 'image/png' })
-          const pngBytes = new Uint8Array(await blob.arrayBuffer())
-          image = await pdfDoc.embedPng(pngBytes)
+          try {
+            const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(bitmap, 0, 0)
+            const blob = await canvas.convertToBlob({ type: 'image/png' })
+            const pngBytes = new Uint8Array(await blob.arrayBuffer())
+            image = await pdfDoc.embedPng(pngBytes)
+          } finally {
+            bitmap.close?.()
+          }
         }
 
         const page = pdfDoc.addPage([image.width, image.height])

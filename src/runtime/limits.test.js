@@ -16,6 +16,16 @@ describe('validateFiles', () => {
     expect(result).toEqual({ ok: false, code: 'unsupported_type', messageKey: 'errors.unsupportedType' })
   })
 
+  test('rejects conflicting PNG MIME and JPEG extension before decoding', () => {
+    const result = validateFiles(
+      { acceptTypes: 'image/*', limits: TOOL_LIMITS.images },
+      [fileOfSize('photo.jpg', 'image/png', 128)],
+      { deviceMemory: 8, viewportWidth: 1280 },
+    )
+
+    expect(result).toEqual({ ok: false, code: 'unsupported_type', messageKey: 'errors.unsupportedType' })
+  })
+
   test('uses the low-memory PDF per-file limit at four GiB of device memory', () => {
     const result = validateFiles(
       { acceptTypes: 'application/pdf,.pdf', limits: TOOL_LIMITS.pdf },
