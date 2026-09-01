@@ -954,7 +954,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                   </label>
                 )}
                 {input.length > 0 && (
-                  <span className="float-info" style={isColorInput ? { left: 48 } : undefined} title={`${new Blob([input]).size} bytes`}>
+                  <span className={`float-info${isColorInput ? ' float-info-color-offset' : ''}`} title={`${new Blob([input]).size} bytes`}>
                     {input.length} chars · {input.split(/\s+/).filter(Boolean).length} words · {input.split('\n').length} lines
                   </span>
                 )}
@@ -972,7 +972,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                 )}
                 <textarea
                   ref={outputRef}
-                  className="output mono"
+                  className={`output mono${wrapOutput ? '' : ' no-wrap'}`}
                   value={output}
                   readOnly
                   placeholder={outputPlaceholder}
@@ -980,7 +980,6 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                   onScroll={lineNumbers ? handleOutputScroll : undefined}
                   aria-label="Conversion output"
                   aria-live="polite"
-                  style={wrapOutput ? undefined : { whiteSpace: 'pre', overflowX: 'auto' }}
                 />
                 {output && (
                   <div className="float-actions">
@@ -1040,7 +1039,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                   </div>
                 )}
                 {colorPreview && (
-                  <div className="color-swatch" style={{ background: colorPreview }} />
+                  <input className="color-swatch" type="color" value={colorPreview} aria-label="Color preview" disabled tabIndex="-1" />
                 )}
                 {output && output.startsWith('data:image/') && (
                   <div className="base64-preview">

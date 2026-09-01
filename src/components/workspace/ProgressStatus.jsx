@@ -9,16 +9,12 @@ export default function ProgressStatus({ progress = 0, loadingRuntime = false, o
 
   return (
     <div className="progress-status" role="status" aria-live="polite">
-      <div
+      <progress
         className="progress-bar"
-        role="progressbar"
         aria-label={t('workspaceTools.progressLabel')}
-        aria-valuemin="0"
-        aria-valuemax="100"
-        aria-valuenow={value}
-      >
-        <div className="progress-fill" style={{ width: `${value}%` }} />
-      </div>
+        max="100"
+        value={value}
+      />
       <div className="progress-status-row">
         <span className="progress-text">{status}</span>
         <button type="button" className="pill-btn-sm" onClick={onCancel}>{t('workspaceTools.cancel')}</button>

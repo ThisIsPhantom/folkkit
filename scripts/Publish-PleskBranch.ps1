@@ -45,6 +45,28 @@ function Assert-CleanWorktree {
     if ($status) { throw 'Publishing requires a clean worktree.' }
 }
 
+function Assert-LocalPushSource {
+    param([string]$ExpectedCommit)
+    $currentBranch = Get-GitText @('branch', '--show-current')
+    if ($currentBranch -cne 'main') { throw 'Push requires the current branch to remain main.' }
+    if ((Get-GitText @('rev-parse', 'HEAD')) -ne $ExpectedCommit) {
+        throw "Push source HEAD changed after validation. Expected $ExpectedCommit."
+    }
+    Assert-CleanWorktree
+}
+
+function Assert-SynchronizedPushSource {
+    param([string]$ExpectedCommit)
+    Invoke-Git -Arguments @('fetch', '--no-tags', $Remote, 'main') | Out-Null
+    Assert-LocalPushSource -ExpectedCommit $ExpectedCommit
+    $upstream = Get-GitText @('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{upstream}')
+    if ($upstream -cne "$Remote/main") { throw "Push requires main to track $Remote/main." }
+    $counts = (Get-GitText @('rev-list', '--left-right', '--count', "HEAD...$Remote/main")) -split '\s+'
+    if ($counts.Count -ne 2 -or $counts[0] -ne '0' -or $counts[1] -ne '0') {
+        throw "Push requires synchronized main and $Remote/main with zero ahead and zero behind."
+    }
+}
+
 function Resolve-BunExecutable {
     if ($env:FOLKKIT_BUN_EXECUTABLE) {
         if (-not (Test-Path -LiteralPath $env:FOLKKIT_BUN_EXECUTABLE -PathType Leaf)) {
@@ -154,11 +176,16 @@ function Confirm-TreeMatchesDist {
     }
 }
 
-function Resolve-TargetParent {
-    $reference = "refs/remotes/$Remote/$TargetBranch^{commit}"
-    $result = Invoke-Git -Arguments @('rev-parse', '--verify', '--quiet', $reference) -AllowFailure
-    if ($result.ExitCode -eq 0) { return ($result.Output -join "`n").Trim() }
-    return $null
+function Get-FreshRemoteTargetParent {
+    $remoteResult = Invoke-Git -Arguments @('ls-remote', '--heads', $Remote, "refs/heads/$TargetBranch")
+    $remoteLine = ($remoteResult.Output -join "`n").Trim()
+    if (-not $remoteLine) { return $null }
+    $remoteCommit = ($remoteLine -split '\s+')[0]
+    if ($remoteCommit -notmatch '^[0-9a-f]{40}$') { throw "Remote $Remote/$TargetBranch returned an invalid commit." }
+    Invoke-Git -Arguments @('fetch', '--no-tags', $Remote, "+refs/heads/$TargetBranch`:refs/remotes/$Remote/$TargetBranch") | Out-Null
+    $fetchedCommit = Get-GitText @('rev-parse', '--verify', "refs/remotes/$Remote/$TargetBranch^{commit}")
+    if ($fetchedCommit -ne $remoteCommit) { throw "Remote $Remote/$TargetBranch changed while it was fetched." }
+    $remoteCommit
 }
 
 function New-HostingCommit {
@@ -202,23 +229,8 @@ try {
 
     if ($Push) {
         if ($SourceRef -cne 'main') { throw 'Push requires -SourceRef main.' }
-        $currentBranch = Get-GitText @('branch', '--show-current')
-        if ($currentBranch -cne 'main') { throw 'Push requires the current branch to be main.' }
-        if ((Get-GitText @('rev-parse', 'HEAD')) -ne $sourceCommit) { throw 'Push requires SourceRef main to equal HEAD.' }
         Invoke-Git -Arguments @('remote', 'get-url', $Remote) | Out-Null
-        Invoke-Git -Arguments @('fetch', '--no-tags', $Remote, 'main') | Out-Null
-        $upstream = Get-GitText @('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{upstream}')
-        if ($upstream -cne "$Remote/main") { throw "Push requires main to track $Remote/main." }
-        $counts = (Get-GitText @('rev-list', '--left-right', '--count', "HEAD...$Remote/main")) -split '\s+'
-        if ($counts.Count -ne 2 -or $counts[0] -ne '0' -or $counts[1] -ne '0') {
-            throw "Push requires synchronized main and $Remote/main with zero ahead and zero behind."
-        }
-        Assert-CleanWorktree
-
-        $remoteTarget = Invoke-Git -Arguments @('ls-remote', '--heads', $Remote, "refs/heads/$TargetBranch")
-        if (($remoteTarget.Output -join '').Trim()) {
-            Invoke-Git -Arguments @('fetch', '--no-tags', $Remote, "+refs/heads/$TargetBranch`:refs/remotes/$Remote/$TargetBranch") | Out-Null
-        }
+        Assert-SynchronizedPushSource -ExpectedCommit $sourceCommit
     }
 
     $script:bunExecutable = Resolve-BunExecutable
@@ -226,9 +238,15 @@ try {
     New-Item -ItemType Directory -Path $script:temporaryRoot -Force | Out-Null
 
     if ($Push) {
-        Invoke-Bun -WorkingDirectory $script:repoRoot -Arguments @('run', 'build:release')
+        $previousReleaseCommit = $env:FOLKKIT_RELEASE_COMMIT
+        $env:FOLKKIT_RELEASE_COMMIT = $sourceCommit
+        try {
+            Invoke-Bun -WorkingDirectory $script:repoRoot -Arguments @('run', 'build:release')
+        } finally {
+            if ($null -eq $previousReleaseCommit) { Remove-Item Env:FOLKKIT_RELEASE_COMMIT -ErrorAction SilentlyContinue }
+            else { $env:FOLKKIT_RELEASE_COMMIT = $previousReleaseCommit }
+        }
         $distPath = Join-Path $script:repoRoot 'dist'
-        Assert-CleanWorktree
     } else {
         $distPath = New-ValidationBuild -Commit $sourceCommit
     }
@@ -236,13 +254,23 @@ try {
     $distReport = Invoke-PleskTreeValidator -Path $distPath
     $hostingTree = New-HostingTree -DistPath $distPath
     Confirm-TreeMatchesDist -Tree $hostingTree -DistReport $distReport
-    $parent = Resolve-TargetParent
+    if ($Push) {
+        Assert-SynchronizedPushSource -ExpectedCommit $sourceCommit
+        $parent = Get-FreshRemoteTargetParent
+        Assert-LocalPushSource -ExpectedCommit $sourceCommit
+    } else {
+        $parent = $null
+    }
     $hostingCommit = New-HostingCommit -Tree $hostingTree -SourceCommit $sourceCommit -Parent $parent
 
     Write-Output "Plesk tree files: $($distReport.FileCount); forbidden files: $($distReport.ForbiddenFileCount); tree hash: $($distReport.TreeHash)."
     Write-Output "Generated hosting commit $hostingCommit from source $sourceCommit without checking out $TargetBranch."
 
     if ($Push) {
+        Assert-SynchronizedPushSource -ExpectedCommit $sourceCommit
+        $latestParent = Get-FreshRemoteTargetParent
+        if ($latestParent -ne $parent) { throw "Remote $Remote/$TargetBranch changed while the hosting commit was prepared." }
+        Assert-LocalPushSource -ExpectedCommit $sourceCommit
         Invoke-Git -Arguments @('push', $Remote, "${hostingCommit}:refs/heads/$TargetBranch") | Out-Null
         Write-Output "Updated $Remote/$TargetBranch by fast-forward push. No Hosttech deployment was performed."
     } else {

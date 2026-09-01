@@ -38,8 +38,7 @@ function mediaRuntimeUnavailableError() {
 export function createFFmpegRuntime({
   baseURL,
   createFFmpeg,
-  toBlobURL,
-  revokeObjectURL,
+  ensureAsset = async () => {},
   notify,
   isOnline = () => globalThis.navigator?.onLine !== false,
 }) {
@@ -47,21 +46,6 @@ export function createFFmpegRuntime({
   let activeInstance = null
   let ready = false
   let loadState = null
-
-  const revokeAll = (state) => {
-    if (!state) return
-    for (const url of state.assetUrls) revokeObjectURL(url)
-    state.assetUrls.clear()
-  }
-  const createAssetUrl = async (source, mimeType, state) => {
-    const url = await toBlobURL(source, mimeType)
-    if (state.generation !== generation) {
-      revokeObjectURL(url)
-      throw abortLoadError()
-    }
-    state.assetUrls.add(url)
-    return url
-  }
 
   const beginLoad = (state) => (async () => {
     notify('downloading')
@@ -74,11 +58,18 @@ export function createFFmpegRuntime({
         throw abortLoadError()
       }
       activeInstance = ffmpeg
+      const coreURL = `${baseURL}/ffmpeg-core.js`
+      const wasmURL = `${baseURL}/ffmpeg-core.wasm`
       phase = 'core'
-      const coreURL = await createAssetUrl(`${baseURL}/ffmpeg-core.js`, 'text/javascript', state)
-      const wasmURL = await createAssetUrl(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm', state)
+      await ensureAsset(coreURL, 'text/javascript')
+      if (state.generation !== generation) throw abortLoadError()
+      await ensureAsset(wasmURL, 'application/wasm')
+      if (state.generation !== generation) throw abortLoadError()
       phase = 'engine'
-      await ffmpeg.load({ coreURL, wasmURL })
+      await ffmpeg.load({
+        coreURL,
+        wasmURL,
+      })
       if (state.generation !== generation || activeInstance !== ffmpeg) throw abortLoadError()
       ready = true
       notify('ready')
@@ -97,15 +88,13 @@ export function createFFmpegRuntime({
         throw mediaRuntimeUnavailableError()
       }
       throw error
-    } finally {
-      revokeAll(state)
     }
   })()
 
   const get = () => {
     if (ready && activeInstance) return Promise.resolve(activeInstance)
     if (loadState?.generation === generation) return loadState.promise
-    const state = { generation, promise: null, assetUrls: new Set() }
+    const state = { generation, promise: null }
     state.promise = beginLoad(state).finally(() => {
       if (loadState === state) loadState = null
     })
@@ -116,12 +105,10 @@ export function createFFmpegRuntime({
   const terminate = () => {
     generation += 1
     ready = false
-    const state = loadState
     loadState = null
     const instance = activeInstance
     activeInstance = null
     try { instance?.terminate?.() } catch { /* cancellation cleanup is best effort */ }
-    revokeAll(state)
   }
 
   return Object.freeze({ get, terminate })
@@ -133,11 +120,13 @@ const ffmpegRuntime = createFFmpegRuntime({
     const { FFmpeg } = await import('@ffmpeg/ffmpeg')
     return new FFmpeg()
   },
-  toBlobURL: async (...args) => {
-    const { toBlobURL } = await import('@ffmpeg/util')
-    return toBlobURL(...args)
+  ensureAsset: async (url, expectedType) => {
+    const response = await fetch(url, { method: 'HEAD', cache: 'no-store' })
+    const contentType = response.headers.get('content-type')?.toLowerCase() || ''
+    if (!response.ok || !contentType.startsWith(expectedType)) {
+      throw new TypeError(`FFmpeg asset is unavailable: ${url}`)
+    }
   },
-  revokeObjectURL: (url) => URL.revokeObjectURL(url),
   notify: notifyLoadListeners,
 })
 

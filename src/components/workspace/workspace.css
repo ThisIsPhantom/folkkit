@@ -33,6 +33,28 @@
   gap: 8px;
 }
 
+progress.progress-bar {
+  width: 100%;
+  appearance: none;
+  border: 0;
+}
+
+progress.progress-bar::-webkit-progress-bar {
+  background: var(--bg-raised);
+  border-radius: var(--radius-sm);
+}
+
+progress.progress-bar::-webkit-progress-value {
+  background: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: inline-size 200ms ease;
+}
+
+progress.progress-bar::-moz-progress-bar {
+  background: var(--text-secondary);
+  border-radius: var(--radius-sm);
+}
+
 .workspace-text-result {
   margin: 0;
   padding: 16px;

@@ -37,9 +37,33 @@ test('media progress stops reaching the UI after its detach function runs', () =
   expect(progress).toEqual([40])
 })
 
+test('ffmpeg loads the core module and WASM directly from same-origin URLs', async () => {
+  const loadCalls = []
+  const checkedAssets = []
+  const runtime = createFFmpegRuntime({
+    baseURL: '/vendor/ffmpeg',
+    createFFmpeg: async () => ({
+      load: async options => loadCalls.push(options),
+      terminate() {},
+    }),
+    ensureAsset: async url => checkedAssets.push(url),
+    notify: () => {},
+  })
+
+  await runtime.get()
+
+  expect(loadCalls).toEqual([{
+    coreURL: '/vendor/ffmpeg/ffmpeg-core.js',
+    wasmURL: '/vendor/ffmpeg/ffmpeg-core.wasm',
+  }])
+  expect(checkedAssets).toEqual([
+    '/vendor/ffmpeg/ffmpeg-core.js',
+    '/vendor/ffmpeg/ffmpeg-core.wasm',
+  ])
+})
+
 test('terminating during ffmpeg.load stops the loading instance and prevents late activation', async () => {
   const firstLoad = deferred()
-  const revoked = []
   const notifications = []
   let createCount = 0
   const instances = []
@@ -55,8 +79,6 @@ test('terminating during ffmpeg.load stops the loading instance and prevents lat
       instances.push(instance)
       return instance
     },
-    toBlobURL: async (url) => `blob:${url}`,
-    revokeObjectURL: (url) => revoked.push(url),
     notify: (status) => notifications.push(status),
   })
 
@@ -72,49 +94,37 @@ test('terminating during ffmpeg.load stops the loading instance and prevents lat
 
   await expect(runtime.get()).resolves.toBe(instances[1])
   expect(createCount).toBe(2)
-  expect(revoked).toEqual(expect.arrayContaining([
-    'blob:/vendor/ffmpeg/ffmpeg-core.js',
-    'blob:/vendor/ffmpeg/ffmpeg-core.wasm',
-  ]))
 })
 
-test('ffmpeg runtime revokes core and wasm Blob URLs after success and failure', async () => {
-  const revoked = []
+test('ffmpeg runtime retries direct same-origin assets after a load failure', async () => {
+  const loadCalls = []
   let failLoad = false
   const runtime = createFFmpegRuntime({
     baseURL: '/vendor/ffmpeg',
     createFFmpeg: async () => ({
-      load: async () => {
+      load: async options => {
+        loadCalls.push(options)
         if (failLoad) throw new Error('load failed')
       },
       terminate() {},
     }),
-    toBlobURL: async (url) => `blob:${url}`,
-    revokeObjectURL: (url) => revoked.push(url),
     notify: () => {},
   })
 
   await runtime.get()
-  expect(revoked.splice(0)).toEqual([
-    'blob:/vendor/ffmpeg/ffmpeg-core.js',
-    'blob:/vendor/ffmpeg/ffmpeg-core.wasm',
-  ])
-
   runtime.terminate()
   failLoad = true
   await expect(runtime.get()).rejects.toThrow('load failed')
-  expect(revoked).toEqual([
-    'blob:/vendor/ffmpeg/ffmpeg-core.js',
-    'blob:/vendor/ffmpeg/ffmpeg-core.wasm',
+  expect(loadCalls).toEqual([
+    { coreURL: '/vendor/ffmpeg/ffmpeg-core.js', wasmURL: '/vendor/ffmpeg/ffmpeg-core.wasm' },
+    { coreURL: '/vendor/ffmpeg/ffmpeg-core.js', wasmURL: '/vendor/ffmpeg/ffmpeg-core.wasm' },
   ])
 })
 
 test('an offline FFmpeg core fetch failure exposes a stable media runtime error', async () => {
   const runtime = createFFmpegRuntime({
     baseURL: '/vendor/ffmpeg',
-    createFFmpeg: async () => ({ load: async () => {}, terminate() {} }),
-    toBlobURL: async () => { throw new TypeError('Failed to fetch') },
-    revokeObjectURL: () => {},
+    createFFmpeg: async () => ({ load: async () => { throw new TypeError('Failed to fetch') }, terminate() {} }),
     notify: () => {},
     isOnline: () => false,
   })
@@ -126,52 +136,11 @@ test('an offline FFmpeg wrapper import failure uses the same stable runtime erro
   const runtime = createFFmpegRuntime({
     baseURL: '/vendor/ffmpeg',
     createFFmpeg: async () => { throw new TypeError('Failed to fetch dynamically imported module') },
-    toBlobURL: async url => `blob:${url}`,
-    revokeObjectURL: () => {},
     notify: () => {},
     isOnline: () => false,
   })
 
   await expect(runtime.get()).rejects.toMatchObject({ code: 'media_runtime_unavailable' })
-})
-
-test('a stale load cannot revoke Blob URLs owned by its replacement load', async () => {
-  const firstLoad = deferred()
-  const secondLoad = deferred()
-  const revoked = []
-  let instanceCount = 0
-  let urlCount = 0
-  const runtime = createFFmpegRuntime({
-    baseURL: '/vendor/ffmpeg',
-    createFFmpeg: async () => {
-      instanceCount += 1
-      return {
-        load: instanceCount === 1 ? () => firstLoad.promise : () => secondLoad.promise,
-        terminate() {},
-      }
-    },
-    toBlobURL: async (url) => `blob:${++urlCount}:${url}`,
-    revokeObjectURL: (url) => revoked.push(url),
-    notify: () => {},
-  })
-
-  const stale = runtime.get()
-  await waitUntil(() => urlCount === 2)
-  runtime.terminate()
-  const replacement = runtime.get()
-  await waitUntil(() => urlCount === 4)
-
-  firstLoad.resolve()
-  await expect(stale).rejects.toMatchObject({ name: 'AbortError' })
-  expect(revoked).not.toContain('blob:3:/vendor/ffmpeg/ffmpeg-core.js')
-  expect(revoked).not.toContain('blob:4:/vendor/ffmpeg/ffmpeg-core.wasm')
-
-  secondLoad.resolve()
-  await replacement
-  expect(revoked).toEqual(expect.arrayContaining([
-    'blob:3:/vendor/ffmpeg/ffmpeg-core.js',
-    'blob:4:/vendor/ffmpeg/ffmpeg-core.wasm',
-  ]))
 })
 
 test('a stale load cannot deactivate a ready replacement instance', async () => {
@@ -194,8 +163,6 @@ test('a stale load cannot deactivate a ready replacement instance', async () => 
       instances.push(instance)
       return instance
     },
-    toBlobURL: async (url) => `blob:${instances.length}:${url}`,
-    revokeObjectURL: () => {},
     notify: () => {},
   })
 

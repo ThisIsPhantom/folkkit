@@ -54,8 +54,12 @@ function Invoke-Validator {
     )
     if ($ReviewedHtaccessPath) { $arguments += @('-ReviewedHtaccessPath', $ReviewedHtaccessPath) }
     $process = Start-Process -FilePath 'powershell.exe' -ArgumentList $arguments -NoNewWindow -Wait -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-    $output = if (Test-Path $stdout) { Get-Content -LiteralPath $stdout -Raw } else { '' }
-    $errorOutput = if (Test-Path $stderr) { Get-Content -LiteralPath $stderr -Raw } else { '' }
+    $output = ''
+    $errorOutput = ''
+    if (Test-Path $stdout) { $output = [string](Get-Content -LiteralPath $stdout -Raw) }
+    if (Test-Path $stderr) { $errorOutput = [string](Get-Content -LiteralPath $stderr -Raw) }
+    if ($null -eq $output) { $output = '' }
+    if ($null -eq $errorOutput) { $errorOutput = '' }
     $report = $null
     if ($output.Trim()) {
         try { $report = $output.Trim() | ConvertFrom-Json } catch { $report = $null }
@@ -72,11 +76,12 @@ try {
     New-ValidTree $validB
     $validReportA = Invoke-Validator $validA
     $validReportB = Invoke-Validator $validB
-    Assert-Equal $validReportA.ExitCode 0 'A valid runtime tree must pass.'
+    Assert-Equal $validReportA.ExitCode 0 "A valid runtime tree must pass. Error: $($validReportA.Error)"
     Assert-Equal $validReportA.Report.FileCount 10 'The validator must count every runtime file.'
     Assert-Equal $validReportA.Report.ForbiddenFileCount 0 'The valid fixture must contain no forbidden file.'
     Assert-Equal $validReportA.Report.TreeHash $validReportB.Report.TreeHash 'Tree hashes must not depend on the fixture root.'
     Assert-Equal $validReportA.Report.HostingSecurityPolicyValid $true 'The reviewed Hosttech configuration must enforce the security and fallback contract.'
+    Assert-Equal $validReportA.Report.FormActionNone $true 'The production policy must forbid all form submissions.'
 
     $insecureReviewPath = Join-Path $temporaryRoot 'insecure.htaccess'
     $insecureTree = Join-Path $temporaryRoot 'insecure-tree'
@@ -104,7 +109,8 @@ try {
     $forbiddenPaths = @(
         'src/app.jsx', 'tests/flow.spec.js', 'docs/internal.md', 'scripts/tool.mjs',
         'AGENTS.md', 'package.json', 'bun.lock', 'assets/app.js.map', '.env',
-        'secrets/api-token.txt', 'notes.txt'
+        'secrets/api-token.txt', 'notes.txt', 'assets/package.json', 'assets/secrets.json',
+        'assets/api-token.json', 'assets/.env.json'
     )
     foreach ($forbiddenPath in $forbiddenPaths) {
         $fixture = Join-Path $temporaryRoot ("forbidden-{0}" -f [Guid]::NewGuid().ToString('N'))
@@ -240,6 +246,116 @@ exit 0
     Assert-True ($aheadExitCode -ne 0) 'Push must reject a main branch that is ahead of origin/main.'
     Assert-True (($aheadOutput -join "`n") -match 'synchron') "The unsynchronised push rejection must identify the gate. Output: $($aheadOutput -join ' | ')"
     Assert-Equal $aheadRemoteAfter $aheadRemoteBefore 'The rejected unsynchronised push must not update the remote.'
+
+    $publishFixture = Join-Path $temporaryRoot 'publish-main'
+    $publishOrigin = Join-Path $temporaryRoot 'publish-origin.git'
+    & git init --bare $publishOrigin | Out-Null
+    & git init -b main $publishFixture | Out-Null
+    & git -C $publishFixture config user.name 'Folkkit Test'
+    & git -C $publishFixture config user.email 'folkkit-test@example.invalid'
+    New-Item -ItemType Directory -Path (Join-Path $publishFixture 'hosting') -Force | Out-Null
+    Copy-Item -LiteralPath $reviewedHtaccessPath -Destination (Join-Path $publishFixture 'hosting\.htaccess')
+    Write-FixtureFile $publishFixture '.gitignore' "dist/`n"
+    Write-FixtureFile $publishFixture 'README.md' 'first source'
+    & git -C $publishFixture add .
+    & git -C $publishFixture commit -m 'first source' | Out-Null
+    & git -C $publishFixture remote add origin $publishOrigin
+    & git -C $publishFixture push -u origin main | Out-Null
+    & git -C $publishFixture update-ref refs/remotes/origin/plesk HEAD
+
+    $pushBun = Join-Path $temporaryRoot 'push-bun.cmd'
+    $pushBunSource = @'
+@echo off
+if /I not "%~1"=="run" exit /b 23
+if /I not "%~2"=="build:release" exit /b 24
+if "%FOLKKIT_RELEASE_COMMIT%"=="" exit /b 31
+for /f %%H in ('git rev-parse HEAD') do set CURRENT_HEAD=%%H
+if not "%FOLKKIT_RELEASE_COMMIT%"=="%CURRENT_HEAD%" exit /b 32
+mkdir dist\assets 2>nul
+mkdir dist\vendor\ffmpeg 2>nul
+copy /Y "%FOLKKIT_REVIEWED_HTACCESS%" dist\.htaccess >nul
+>dist\index.html echo ^<!doctype html^>
+>dist\manifest.json echo {}
+>dist\favicon.svg echo ^<svg /^>
+>dist\theme-init.js echo void 0
+>dist\sw.js echo void 0
+>dist\assets\app-a1.js echo void 0
+>dist\assets\app-a1.css echo body{}
+>dist\vendor\ffmpeg\ffmpeg-core.js echo void 0
+>dist\vendor\ffmpeg\ffmpeg-core.wasm echo wasm
+if "%FOLKKIT_TEST_RACE_HEAD%"=="1" goto race
+exit /b 0
+:race
+>race.txt echo source moved during build
+git add race.txt
+git commit -m "race source" >nul
+exit /b 0
+'@
+    [System.IO.File]::WriteAllText($pushBun, $pushBunSource, [System.Text.Encoding]::ASCII)
+
+    $env:FOLKKIT_BUN_EXECUTABLE = $pushBun
+    $env:FOLKKIT_REVIEWED_HTACCESS = $reviewedHtaccessPath
+    $firstStatusBefore = (& git -C $publishFixture status --porcelain=v1) -join "`n"
+    Push-Location $publishFixture
+    try {
+        $firstPushOutput = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $publisherPath -SourceRef main -TargetBranch plesk -Remote origin -Push 2>&1
+        $firstPushExit = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    Assert-Equal $firstPushExit 0 "The first synchronized main push must succeed. Output: $($firstPushOutput -join ' | ')"
+    $firstStatusAfter = (& git -C $publishFixture status --porcelain=v1) -join "`n"
+    Assert-Equal $firstStatusAfter $firstStatusBefore 'The first push must leave the worktree unchanged.'
+    $firstPlesk = (& git --git-dir $publishOrigin rev-parse refs/heads/plesk).Trim()
+    $firstParents = ((& git --git-dir $publishOrigin rev-list --parents -n 1 $firstPlesk).Trim()) -split '\s+'
+    Assert-Equal $firstParents.Count 1 'An absent remote plesk branch must create a root commit even when a stale tracking ref exists.'
+
+    $firstArchive = Join-Path $temporaryRoot 'first-plesk.tar'
+    $firstTree = Join-Path $temporaryRoot 'first-plesk-tree'
+    New-Item -ItemType Directory -Path $firstTree -Force | Out-Null
+    & git --git-dir $publishOrigin -c core.autocrlf=false archive --format=tar "--output=$firstArchive" refs/heads/plesk
+    & tar -xf $firstArchive -C $firstTree
+    $firstDistReport = Invoke-Validator (Join-Path $publishFixture 'dist')
+    $firstTreeReport = Invoke-Validator $firstTree
+    Assert-Equal $firstTreeReport.Report.TreeHash $firstDistReport.Report.TreeHash 'The first remote hosting tree must exactly match dist.'
+
+    Write-FixtureFile $publishFixture 'README.md' 'second source'
+    & git -C $publishFixture add README.md
+    & git -C $publishFixture commit -m 'second source' | Out-Null
+    & git -C $publishFixture push origin main | Out-Null
+    $secondStatusBefore = (& git -C $publishFixture status --porcelain=v1) -join "`n"
+    Push-Location $publishFixture
+    try {
+        $secondPushOutput = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $publisherPath -SourceRef main -TargetBranch plesk -Remote origin -Push 2>&1
+        $secondPushExit = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    Assert-Equal $secondPushExit 0 "The second synchronized main push must succeed. Output: $($secondPushOutput -join ' | ')"
+    $secondStatusAfter = (& git -C $publishFixture status --porcelain=v1) -join "`n"
+    Assert-Equal $secondStatusAfter $secondStatusBefore 'The second push must leave the worktree unchanged.'
+    $secondPlesk = (& git --git-dir $publishOrigin rev-parse refs/heads/plesk).Trim()
+    Assert-True ($secondPlesk -ne $firstPlesk) 'The second push must create a new hosting commit.'
+    Assert-Equal ((& git --git-dir $publishOrigin rev-parse "$secondPlesk^").Trim()) $firstPlesk 'The second hosting commit must extend the first one linearly.'
+
+    $remoteBeforeRace = (& git --git-dir $publishOrigin rev-parse refs/heads/plesk).Trim()
+    $env:FOLKKIT_TEST_RACE_HEAD = '1'
+    Push-Location $publishFixture
+    $previousErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $raceOutput = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $publisherPath -SourceRef main -TargetBranch plesk -Remote origin -Push 2>&1
+        $raceExit = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorAction
+        Pop-Location
+        Remove-Item Env:FOLKKIT_TEST_RACE_HEAD -ErrorAction SilentlyContinue
+        Remove-Item Env:FOLKKIT_BUN_EXECUTABLE -ErrorAction SilentlyContinue
+        Remove-Item Env:FOLKKIT_REVIEWED_HTACCESS -ErrorAction SilentlyContinue
+    }
+    Assert-True ($raceExit -ne 0) 'A source commit race during the build must abort before updating plesk.'
+    Assert-True (($raceOutput -join "`n") -match 'source|HEAD|synchron') 'The source race rejection must identify the changed source state.'
+    Assert-Equal ((& git --git-dir $publishOrigin rev-parse refs/heads/plesk).Trim()) $remoteBeforeRace 'A source race must leave the remote plesk ref unchanged.'
 
     Write-Output 'Plesk hosting contract tests passed.'
 } finally {

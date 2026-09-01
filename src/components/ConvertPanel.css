@@ -261,8 +261,21 @@
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
+  border: 0;
+  padding: 0;
+  opacity: 1;
+  pointer-events: none;
   box-shadow: 0 2px 0 var(--shadow);
   transition: background 200ms ease;
+}
+
+.float-info-color-offset {
+  left: 48px;
+}
+
+textarea.output.no-wrap {
+  white-space: pre;
+  overflow-x: auto;
 }
 
 .color-swatch + .float-info,
@@ -451,6 +464,10 @@
   background: var(--text-secondary);
   border-radius: var(--radius-sm);
   transition: width 200ms ease;
+}
+
+.error-retry {
+  margin-top: 12px;
 }
 
 .progress-text {

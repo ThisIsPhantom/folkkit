@@ -18,8 +18,7 @@ class ErrorBoundary extends Component {
             Something went wrong with this converter.
             <br />
             <button
-              className="pill-btn-sm"
-              style={{ marginTop: 12 }}
+              className="pill-btn-sm error-retry"
               onClick={() => this.setState({ hasError: false, error: null })}
             >
               Try again

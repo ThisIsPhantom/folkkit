@@ -32,4 +32,13 @@ export default defineConfig([
       globals: globals.node,
     },
   },
+  {
+    files: ['src/**/*.jsx'],
+    rules: {
+      'no-restricted-syntax': ['error', {
+        selector: 'JSXAttribute[name.name="style"]',
+        message: 'React inline styles are forbidden by the production Content Security Policy.',
+      }],
+    },
+  },
 ])

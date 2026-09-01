@@ -18,11 +18,23 @@ function Get-RelativeHostingPath {
 
 function Test-AllowedHostingPath {
     param([string]$RelativePath)
+    $lowerPath = $RelativePath.ToLowerInvariant()
+    $segments = @($lowerPath -split '/')
+    $fileName = $segments[-1]
+    $forbiddenSegments = @(
+        '.git', '.github', 'docs', 'hosting', 'node_modules', 'scripts', 'secrets', 'src', 'tests'
+    )
+    if (@($segments | Where-Object { $forbiddenSegments -contains $_ }).Count -gt 0) { return $false }
+    if ($fileName -match '^(?:package(?:-lock)?\.json|bun\.lockb?|pnpm-lock\.yaml|yarn\.lock)$') { return $false }
+    if ($fileName -match '^\.env(?:\.|$)') { return $false }
+    if ($fileName -match '(?:^|[-_.])(?:api[-_.]?token|credentials?|private[-_.]?key|secrets?|tokens?)(?:[-_.]|$)') { return $false }
+    if ($RelativePath -ne 'manifest.json' -and $fileName -match 'manifest') { return $false }
+
     $exactFiles = @(
         '.htaccess', 'favicon.svg', 'index.html', 'manifest.json', 'sw.js', 'theme-init.js'
     )
     if ($exactFiles -contains $RelativePath) { return $true }
-    if ($RelativePath -match '^assets/[A-Za-z0-9._-]+\.(?:avif|css|gif|ico|jpe?g|js|json|png|svg|wasm|webp|woff2?)$') { return $true }
+    if ($RelativePath -match '^assets/[A-Za-z0-9._-]+\.(?:avif|css|gif|ico|jpe?g|js|png|svg|wasm|webp|woff2?)$') { return $true }
     if ($RelativePath -match '^vendor/ffmpeg/ffmpeg-core\.(?:js|wasm)$') { return $true }
     return $false
 }
@@ -39,6 +51,18 @@ function Get-NormalizedTextHash {
     }
 }
 
+function Get-FileSha256 {
+    param([string]$Path)
+    $stream = [System.IO.File]::OpenRead($Path)
+    $algorithm = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        ([System.BitConverter]::ToString($algorithm.ComputeHash($stream))).Replace('-', '').ToLowerInvariant()
+    } finally {
+        $algorithm.Dispose()
+        $stream.Dispose()
+    }
+}
+
 function Test-HostingSecurityPolicy {
     param([string]$Path)
     $text = [System.IO.File]::ReadAllText($Path).Replace("`r`n", "`n").Replace("`r", "`n")
@@ -47,9 +71,9 @@ function Test-HostingSecurityPolicy {
     $csp = $cspMatch.Groups[1].Value
     $requiredCspDirectives = @(
         "default-src 'self'", "base-uri 'self'", "object-src 'none'", "frame-ancestors 'none'",
-        "form-action 'self'", "script-src 'self' 'wasm-unsafe-eval'", "style-src 'self'",
+        "form-action 'none'", "script-src 'self' 'wasm-unsafe-eval'", "style-src 'self'",
         "img-src 'self' data: blob:", "font-src 'self'", "media-src 'self' blob:",
-        "worker-src 'self' blob:", "connect-src 'self' blob:", "manifest-src 'self'"
+        "worker-src 'self'", "connect-src 'self'", "manifest-src 'self'"
     )
     foreach ($directive in $requiredCspDirectives) {
         if ($csp -notmatch "(?:^|;\s*)$([regex]::Escape($directive))(?:\s*;|$)") { return $false }
@@ -58,6 +82,8 @@ function Test-HostingSecurityPolicy {
 
     $requiredPatterns = @(
         '(?m)^\s*Options\s+-Indexes\s*$',
+        '(?m)^\s*AddType text/javascript \.js \.mjs\s*$',
+        '(?m)^\s*AddType application/wasm \.wasm\s*$',
         '(?m)^\s*Header always set X-Content-Type-Options "nosniff"\s*$',
         '(?m)^\s*Header always set X-Frame-Options "DENY"\s*$',
         '(?m)^\s*Header always set Referrer-Policy "no-referrer"\s*$',
@@ -106,7 +132,7 @@ try {
     }
 
     $hashLines = foreach ($file in $files) {
-        $contentHash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        $contentHash = Get-FileSha256 -Path $file.FullName
         "{0}`0{1}`0{2}" -f $file.Path, $file.Length, $contentHash
     }
     $hashPayload = [System.Text.Encoding]::UTF8.GetBytes(($hashLines -join "`n"))
@@ -124,6 +150,9 @@ try {
         MissingRequiredFileCount = $missingRequired.Count
         HostingConfigMatches = $hostingConfigMatches
         HostingSecurityPolicyValid = $hostingSecurityPolicyValid
+        FormActionNone = if ($hostingSecurityPolicyValid) {
+            ([System.IO.File]::ReadAllText($ReviewedHtaccessPath) -match "form-action 'none'")
+        } else { $false }
         ForbiddenFiles = @($forbidden | ForEach-Object { $_.Path })
         MissingRequiredFiles = @($missingRequired | ForEach-Object { $_ })
     }
