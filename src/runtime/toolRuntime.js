@@ -77,8 +77,10 @@ async function validateSignatures(tool, files) {
 
 function normalizeResult(value) {
   if (!value || typeof value !== 'object') throw runtimeError('conversion_failed')
-  if (value.info !== undefined && typeof value.info !== 'string') throw runtimeError('conversion_failed')
-  const info = value.info === undefined ? {} : { info: value.info }
+  const hasOwnInfo = Object.hasOwn(value, 'info')
+  const ownInfo = hasOwnInfo ? value.info : undefined
+  if (ownInfo !== undefined && typeof ownInfo !== 'string') throw runtimeError('conversion_failed')
+  const info = ownInfo === undefined ? {} : { info: ownInfo }
   if (
     value.kind === 'text'
     && hasExactResultKeys(value, ['kind', 'text', 'info'], ['kind', 'text'])

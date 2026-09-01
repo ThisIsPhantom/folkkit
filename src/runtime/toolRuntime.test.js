@@ -133,6 +133,32 @@ describe('executeTool', () => {
   })
 
   test.each([
+    { kind: 'text', own: { kind: 'text', text: 'safe' }, expected: { kind: 'text', text: 'safe' } },
+    {
+      kind: 'download',
+      own: { kind: 'download', blob: new Blob(['safe']), filename: 'safe.bin' },
+      expected: { kind: 'download', blob: expect.any(Blob), filename: 'safe.bin' },
+    },
+    {
+      kind: 'image',
+      own: { kind: 'image', blob: new Blob(['safe']), filename: 'safe.png' },
+      expected: { kind: 'image', blob: expect.any(Blob), filename: 'safe.png' },
+    },
+  ])('does not read inherited info for $kind results', async ({ own, expected }) => {
+    let getterCalls = 0
+    const prototype = Object.defineProperty({}, 'info', {
+      get() {
+        getterCalls += 1
+        return 'inherited private info'
+      },
+    })
+    const value = Object.assign(Object.create(prototype), own)
+
+    await expect(executeTool({ tool: { convert: async () => value }, text: 'input' })).resolves.toEqual(expected)
+    expect(getterCalls).toBe(0)
+  })
+
+  test.each([
     { kind: 'download', blob: new Blob(['x']), filename: '' },
     { kind: 'image', blob: new Blob(['x']), filename: '   ' },
     { kind: 'download', blob: 'not-a-blob', filename: 'result.bin' },
@@ -347,4 +373,23 @@ test('manual presentation enforces and sanitizes the exact ToolResult union', ()
     blob: expect.any(Blob),
     filename: 'safe.txt',
   })
+
+  let getterCalls = 0
+  const inheritedInfo = Object.defineProperty({}, 'info', {
+    get() {
+      getterCalls += 1
+      return 'inherited private info'
+    },
+  })
+  const inheritedResult = Object.assign(Object.create(inheritedInfo), {
+    kind: 'image',
+    blob: new Blob(['safe']),
+    filename: 'safe.png',
+  })
+  expect(runtime.present(inheritedResult).result).toEqual({
+    kind: 'image',
+    blob: expect.any(Blob),
+    filename: 'safe.png',
+  })
+  expect(getterCalls).toBe(0)
 })
