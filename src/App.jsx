@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { getFormatById, releasedFormats } from './formats'
 import { useTheme } from './hooks/useTheme'
 import { useI18n } from './i18n'
-import { findReleasedTool, getReleasedCategories, getReleasedTools } from './catalog/releaseCatalog'
+import { getReleasedCategories, getReleasedTools } from './catalog/releaseCatalog'
 import ConvertPanel from './components/ConvertPanel'
 import History from './components/History'
 import KeyboardHelp from './components/KeyboardHelp'
@@ -50,12 +50,16 @@ function App() {
   const [convertFrom, setConvertFrom] = useState(() => readUrlState(window.location.search, window.location.hash).from)
   const [convertTo, setConvertTo] = useState(() => readUrlState(window.location.search, window.location.hash).to)
   const [reuseRequest, setReuseRequest] = useState(null)
-  const [activeConverter, setActiveConverter] = useState(() => {
+  const [activeToolId, setActiveToolId] = useState(() => {
     // Check ?tool= param first, then #tool/ hash for backward compat
     const { toolId } = readUrlState(window.location.search, window.location.hash)
-    if (toolId) return findReleasedTool(toolId, locale)
+    if (releasedTools.some(tool => tool.id === toolId)) return toolId
     return null
   })
+  const activeConverter = useMemo(
+    () => releasedTools.find(tool => tool.id === activeToolId) || null,
+    [activeToolId, releasedTools],
+  )
 
   const [showHelp, setShowHelp] = useState(false)
   const [pageDragging, setPageDragging] = useState(false)
@@ -118,7 +122,7 @@ function App() {
   }, [activeConverter, convertFrom, convertTo])
 
   const handleHistorySelect = useCallback((item) => {
-    if (activeConverter) setActiveConverter(null)
+    if (activeConverter) setActiveToolId(null)
     setConvertFrom(item.from)
     setConvertTo(item.to)
     setReuseRequest({ id: ++reuseRequestIdRef.current, value: item.input })
@@ -153,11 +157,11 @@ function App() {
       if (toolId) {
         const c = releasedTools.find(tool => tool.id === toolId)
         if (c) {
-          setActiveConverter(c)
+          setActiveToolId(c.id)
           return
         }
       }
-      setActiveConverter(null)
+      setActiveToolId(null)
       setConvertFrom(from)
       setConvertTo(to)
     }
@@ -173,7 +177,7 @@ function App() {
       const p = new URLSearchParams({ from: convertFrom, to: convertTo })
       history.pushState(null, '', '?' + p.toString())
     }
-    setActiveConverter(converter)
+    setActiveToolId(converter?.id || null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [convertFrom, convertTo])
 
@@ -242,7 +246,7 @@ function App() {
 
       // Escape to clear converter
       if (e.key === 'Escape' && activeConverter) {
-        setActiveConverter(null)
+        setActiveToolId(null)
         const p = new URLSearchParams({ from: convertFrom, to: convertTo })
         history.pushState(null, '', '?' + p.toString())
         return

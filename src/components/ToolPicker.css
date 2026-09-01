@@ -203,6 +203,16 @@
   text-transform: capitalize;
 }
 
+.tool-picker-tool-tier {
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 0.64rem;
+  line-height: 1.2;
+  padding: 2px 5px;
+}
+
 /* Tool card grid inside picker */
 .tool-picker-tool-grid {
   display: grid;

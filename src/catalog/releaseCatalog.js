@@ -36,6 +36,7 @@ function getLocalizedTool(entry, locale) {
   return {
     ...converter,
     tier: entry.tier,
+    tierLabel: entry.tier === 'experimental' ? translate(messages, 'labels.experimental') : null,
     name: translate(messages, `tools.${entry.translationKey}.name`),
     description: translate(messages, `tools.${entry.translationKey}.description`),
     categoryName: translate(messages, `categories.${entry.category}`),

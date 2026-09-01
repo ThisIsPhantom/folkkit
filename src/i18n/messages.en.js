@@ -2,6 +2,9 @@ const messagesEn = Object.freeze({
   catalog: Object.freeze({
     toolCount: '{count} tools',
   }),
+  labels: Object.freeze({
+    experimental: 'Experimental',
+  }),
   categories: Object.freeze({
     encode: 'QR and encoding',
     document: 'PDF and documents',

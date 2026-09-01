@@ -108,6 +108,11 @@ function clampHighlightedIndex(index, length) {
   return index >= length ? length - 1 : index
 }
 
+function ExperimentalBadge({ tool }) {
+  if (tool.tier !== 'experimental') return null
+  return <span className="tool-picker-tool-tier" aria-label={tool.tierLabel}>{tool.tierLabel}</span>
+}
+
 function ToolPickerContent({
   open,
   onClose,
@@ -419,6 +424,7 @@ function ToolPickerContent({
                     >
                       <span className="tool-picker-tool-name">{c.name}</span>
                       <span className="tool-picker-tool-cat">{c.categoryName || c.category}</span>
+                      <ExperimentalBadge tool={c} />
                     </div>
                   )
                 })}
@@ -512,6 +518,7 @@ function ToolPickerContent({
                     >
                       <span className="tool-picker-tool-card-name">{c.name}</span>
                       <span className="tool-picker-tool-card-desc">{c.description}</span>
+                      <ExperimentalBadge tool={c} />
                     </div>
                   )
                 })}
