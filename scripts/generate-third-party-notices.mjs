@@ -391,20 +391,35 @@ export async function generateThirdPartyNotices({
 }
 
 export async function writeThirdPartyNotices(options = {}) {
-  const outputPath = options.outputPath || join(options.projectRoot || defaultProjectRoot, 'THIRD_PARTY_NOTICES.md')
+  const projectRoot = options.projectRoot || defaultProjectRoot
+  const outputPath = options.outputPath || join(projectRoot, 'THIRD_PARTY_NOTICES.md')
+  const browserOutputPath = options.browserOutputPath || join(projectRoot, 'src', 'content', 'third-party-notices.txt')
   const output = await generateThirdPartyNotices(options)
   await writeFile(outputPath, output, 'utf8')
+  await writeFile(browserOutputPath, generateBrowserThirdPartyNotices(output), 'utf8')
   return output
 }
 
-export async function checkThirdPartyNotices({ expectedContent, outputPath, ...options } = {}) {
+export function generateBrowserThirdPartyNotices(canonicalNotices) {
+  return String(canonicalNotices)
+    .replace(/\[([^\]]+)]\(https?:\/\/[^)]+\)/g, '$1')
+    .replace(/<https?:\/\/[^>]+>/g, '[external reference listed in repository notices]')
+    .replace(/https?:\/\/[^\s)\]>]+/g, '[external reference listed in repository notices]')
+}
+
+export async function checkThirdPartyNotices({ expectedContent, outputPath, browserOutputPath, ...options } = {}) {
+  const projectRoot = options.projectRoot || defaultProjectRoot
   const generated = await generateThirdPartyNotices(options)
   const current = expectedContent ?? await readFile(
-    outputPath || join(options.projectRoot || defaultProjectRoot, 'THIRD_PARTY_NOTICES.md'),
+    outputPath || join(projectRoot, 'THIRD_PARTY_NOTICES.md'),
     'utf8',
   )
   if (generated !== current) {
     throw new Error('THIRD_PARTY_NOTICES.md is stale. Run `bun run generate:notices` and commit the exact output.')
+  }
+  const browserCopy = await readFile(browserOutputPath || join(projectRoot, 'src', 'content', 'third-party-notices.txt'), 'utf8')
+  if (browserCopy !== generateBrowserThirdPartyNotices(generated)) {
+    throw new Error('Browser third-party notices are stale. Run `bun run generate:notices` and commit the exact output.')
   }
   return generated
 }

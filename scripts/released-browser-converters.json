@@ -1,0 +1,13 @@
+{
+  "color": ["color-convert"],
+  "data": ["csv-to-json", "json-escape", "json-minify", "json-prettify"],
+  "hash": ["sha256"],
+  "imageFormat": ["jpg-to-png", "png-to-jpg"],
+  "media": ["audio-to-mp3"],
+  "number": ["bin-to-dec", "dec-to-bin", "dec-to-hex", "dec-to-oct", "hex-to-dec", "oct-to-dec"],
+  "pdf": ["images-to-pdf", "merge-pdf", "pdf-extract-range", "pdf-metadata", "pdf-page-count", "pdf-rotate", "pdf-split", "text-to-pdf"],
+  "qr": ["text-to-qr"],
+  "text": ["atbash", "base64-decode", "base64-encode", "binary-decode", "binary-encode", "hex-decode", "hex-encode", "html-decode", "html-encode", "rot13", "unicode-escape", "unicode-unescape", "url-decode", "url-encode"],
+  "utility": ["aspect-ratio", "bmi-calc", "char-count", "loan-calc", "percentage-calc", "reverse-text"],
+  "web": ["base64url-decode", "base64url-encode", "css-minify", "json-validate", "slug-gen"]
+}

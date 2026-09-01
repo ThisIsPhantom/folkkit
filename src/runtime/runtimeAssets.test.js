@@ -173,6 +173,17 @@ test('rejects unquoted external HTML navigation outside the exact reviewed allow
   expect(() => assertNoExternalRuntimeOrigins('index.html', '<a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL</a>')).not.toThrow()
 })
 
+test.each([
+  ['app.js', 'new URL("/collect", "https://attacker.example")'],
+  ['app.js', 'new URL("/issues", "https://github.com/react/react")'],
+  ['app.js', 'window.open("https://attacker.example/leave", "_blank")'],
+  ['index.html', '<a href=https://github.com/facebook/react>not reviewed here</a>'],
+  ['index.html', '<a href="https://www.gnu.org/licenses/agpl-3.0.html" href="https://attacker.example">duplicate</a>'],
+  ['index.html', '<script src=https://attacker.example/app.js></script>'],
+])('rejects reviewer literal PoC in %s', (artifactName, contents) => {
+  expect(() => assertNoExternalRuntimeOrigins(artifactName, contents)).toThrow(/external runtime origin/i)
+})
+
 test('scans SVG, manifest JSON, MJS and nested worker artifacts in the final build tree', async () => {
   const distDirectory = await createTemporaryDirectory()
   await mkdir(join(distDirectory, 'nested'), { recursive: true })

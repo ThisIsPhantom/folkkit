@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
+import { readFile } from 'node:fs/promises'
 import { converterModuleIds } from '../src/converters/index.js'
 import { formatAuditCatalog, releaseCatalog } from '../src/catalog/releaseCatalog.js'
 import { formats } from '../src/formats.js'
@@ -194,6 +195,19 @@ export async function runCatalogAudit() {
     evidenceRegistry: catalogEvidenceRegistry,
     evidenceRunResults,
   })
+  const browserManifest = JSON.parse(await readFile(resolve('scripts', 'released-browser-converters.json'), 'utf8'))
+  const expectedBrowserManifest = {}
+  for (const entry of releaseCatalog.filter(item => item.tier !== 'hidden')) {
+    if (!expectedBrowserManifest[entry.module]) expectedBrowserManifest[entry.module] = []
+    expectedBrowserManifest[entry.module].push(entry.id)
+  }
+  for (const ids of Object.values(expectedBrowserManifest)) ids.sort()
+  const canonicalizeBrowserManifest = manifest => Object.fromEntries(
+    Object.keys(manifest).sort().map(moduleId => [moduleId, [...manifest[moduleId]].sort()]),
+  )
+  if (JSON.stringify(canonicalizeBrowserManifest(browserManifest)) !== JSON.stringify(canonicalizeBrowserManifest(expectedBrowserManifest))) {
+    errors.push('Released browser converter manifest does not match the canonical released catalog.')
+  }
 
   for (const converter of rawConverters) {
     const audit = releaseCatalog.find(entry => entry.id === converter.id)

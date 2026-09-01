@@ -149,8 +149,8 @@ export async function preflightMediaFile(file, {
   const type = String(file?.type || '').toLowerCase()
   const name = String(file?.name || '').toLowerCase()
   if (type === 'audio/wav' || type === 'audio/wave' || name.endsWith('.wav')) {
-    const prefix = new Uint8Array(await file.slice(0, 44).arrayBuffer())
-    const duration = readWavDurationSeconds(prefix)
+    const prefix = new Uint8Array(await file.slice(0, Math.min(Number(file.size) || 0, 64 * 1024)).arrayBuffer())
+    const duration = readWavDurationSeconds(prefix, Number(file.size))
     if (duration === null || duration > MEDIA_LIMITS.maxDurationSeconds) throw resourceLimitError()
     return { durationSeconds: duration, reliable: true }
   }

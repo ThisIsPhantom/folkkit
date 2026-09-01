@@ -7,7 +7,7 @@ import legalDe from './legal.de'
 import legalEn from './legal.en'
 import { createBuildInfo } from '../buildInfo'
 import { createPublicOperator, getPublicOperatorErrors } from './publicOperator'
-import { generateThirdPartyNotices } from '../../scripts/generate-third-party-notices.mjs'
+import { generateBrowserThirdPartyNotices, generateThirdPartyNotices } from '../../scripts/generate-third-party-notices.mjs'
 
 const temporaryDirectories = []
 
@@ -279,6 +279,16 @@ test('third-party notices are deterministic and cover locked transitive packages
   expect(first).toContain('GNU LESSER GENERAL PUBLIC LICENSE\nVersion 2.1 fixture text.')
   expect(first).toContain('GNU AFFERO GENERAL PUBLIC LICENSE\nVersion 3 fixture text.')
   expect(first).toContain('No font files are distributed')
+})
+
+test('browser notice copy preserves text but contains no external URL literal', async () => {
+  const fixture = await createNoticeFixture()
+  const canonical = await generateThirdPartyNotices(fixture)
+  const browserCopy = generateBrowserThirdPartyNotices(canonical)
+
+  expect(browserCopy).toContain('runtime-a 1.0.0')
+  expect(browserCopy).toContain('Runtime A license text.')
+  expect(browserCopy).not.toMatch(/(?:https?:)?\/\//)
 })
 
 test('third-party notice generation fails when a locked runtime package lacks license metadata', async () => {

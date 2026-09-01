@@ -29,6 +29,11 @@ test('official Playwright install contract provisions Chromium, Firefox and WebK
   expect(workflow).toContain('bun run test:e2e:install')
 })
 
+test('normal production build enforces the final runtime artifact policy', async () => {
+  const packageJson = JSON.parse(await readFile(join(process.cwd(), 'package.json'), 'utf8'))
+  expect(packageJson.scripts.build).toMatch(/node scripts\/assert-runtime-artifacts\.mjs$/)
+})
+
 test.each([
   ['mutable action tag', 'uses: actions/checkout@v4\n'],
   ['checkout credential persistence', `uses: actions/checkout@${'1'.repeat(40)} # v4\nwith:\n  persist-credentials: true\n`],

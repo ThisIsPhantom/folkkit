@@ -51,6 +51,7 @@ test('reliable WAV metadata rejects excessive duration before FFmpeg work', asyn
   view.setUint32(28, 16000, true)
   bytes.set(new TextEncoder().encode('data'), 36)
   view.setUint32(40, Math.ceil(16000 * (MEDIA_LIMITS.maxDurationSeconds + 1)), true)
+  view.setUint32(4, view.getUint32(40, true) + 36, true)
 
   await expect(preflightMediaFile(new File([bytes], 'long.wav', { type: 'audio/wav' }))).rejects.toMatchObject({ code: 'resource_limit' })
 })

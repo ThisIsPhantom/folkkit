@@ -6,14 +6,9 @@ import { env } from 'node:process'
 import { assertPassiveAdsenseOwnershipMeta } from './scripts/assert-ownership-meta.mjs'
 import { resolveBuildCommit } from './scripts/resolve-build-commit.mjs'
 import { pruneReleasedConverters } from './scripts/prune-released-converters.mjs'
-import { releaseCatalog } from './src/catalog/releaseCatalog.js'
-
-const releasedConverterIdsByModule = new Map()
-for (const entry of releaseCatalog) {
-  if (entry.tier === 'hidden') continue
-  if (!releasedConverterIdsByModule.has(entry.module)) releasedConverterIdsByModule.set(entry.module, new Set())
-  releasedConverterIdsByModule.get(entry.module).add(entry.id)
-}
+const releasedConverterIdsByModule = new Map(Object.entries(JSON.parse(
+  readFileSync(resolve('scripts', 'released-browser-converters.json'), 'utf8'),
+)).map(([moduleId, ids]) => [moduleId, new Set(ids)]))
 
 function pruneHiddenBrowserConverters() {
   return {
@@ -21,8 +16,9 @@ function pruneHiddenBrowserConverters() {
     enforce: 'pre',
     transform(code, id) {
       const match = id.replaceAll('\\', '/').match(/\/src\/converters\/([A-Za-z]+)\.js$/)
-      if (!match || ['index', 'loadConverter'].includes(match[1])) return null
+      if (!match || ['loadConverter'].includes(match[1])) return null
       const moduleId = match[1]
+      if (moduleId === 'index') return null
       return {
         code: pruneReleasedConverters(code, releasedConverterIdsByModule.get(moduleId) || new Set(), moduleId),
         map: null,

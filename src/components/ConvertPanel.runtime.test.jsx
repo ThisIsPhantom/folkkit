@@ -345,6 +345,7 @@ test('line-number UI never materializes more than the bounded rendering limit', 
   await user.click(screen.getByTitle('Show line numbers'))
 
   expect(document.querySelectorAll('.line-num')).toHaveLength(0)
+  expect(screen.getByText(/5000\+ lines/)).toBeVisible()
 })
 
 test('a new format run aborts a slow prior run and its late result cannot overwrite output', async () => {

@@ -670,6 +670,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
 
   const outputLineScan = useMemo(() => countLinesBounded(output, LINE_NUMBER_RENDER_LIMIT), [output])
   const outputLineCount = outputLineScan.count
+  const outputLineLabel = outputLineScan.overflow ? `${LINE_NUMBER_RENDER_LIMIT}+` : String(outputLineCount)
 
   // Color preview for color conversions
   const isColorOutput = !isToolMode && ['color-hex', 'color-rgb', 'color-hsl', 'color-hsv'].includes(to)
@@ -1076,7 +1077,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
                 )}
                 {output && output !== '(conversion error)' && (
                   <span className="float-info" title={`${new Blob([output]).size} bytes`}>
-                    {output.length} chars · {output.split('\n').length} lines
+                    {output.length} chars · {outputLineLabel} lines
                   </span>
                 )}
               </div>

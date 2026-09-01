@@ -1,4 +1,4 @@
-import thirdPartyNotices from '../../THIRD_PARTY_NOTICES.md?raw'
+import thirdPartyNotices from '../content/third-party-notices.txt?raw'
 import legalDe from '../content/legal.de'
 import legalEn from '../content/legal.en'
 import { useI18n } from '../i18n'

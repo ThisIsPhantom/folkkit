@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { afterEach, expect, test } from 'vitest'
-import { generateThirdPartyNotices } from './generate-third-party-notices.mjs'
+import { generateBrowserThirdPartyNotices, generateThirdPartyNotices } from './generate-third-party-notices.mjs'
 import { validateReleaseSource } from './validate-release-source.mjs'
 import * as releaseBuilder from './build-release.mjs'
 
@@ -50,6 +50,7 @@ async function createReleaseRepository() {
   const repoRoot = await mkdtemp(join(tmpdir(), 'folkkit-release-source-'))
   temporaryDirectories.push(repoRoot)
   await mkdir(join(repoRoot, 'scripts', 'license-texts'), { recursive: true })
+  await mkdir(join(repoRoot, 'src', 'content'), { recursive: true })
   await mkdir(join(repoRoot, 'node_modules', 'runtime-a'), { recursive: true })
 
   const lockfile = {
@@ -99,7 +100,9 @@ async function createReleaseRepository() {
     runtimeAssetsPath: join(repoRoot, 'scripts', 'runtime-assets.json'),
     nodeModulesPath: join(repoRoot, 'node_modules'),
   }
-  await writeFile(join(repoRoot, 'THIRD_PARTY_NOTICES.md'), await generateThirdPartyNotices(noticeOptions))
+  const notices = await generateThirdPartyNotices(noticeOptions)
+  await writeFile(join(repoRoot, 'THIRD_PARTY_NOTICES.md'), notices)
+  await writeFile(join(repoRoot, 'src', 'content', 'third-party-notices.txt'), generateBrowserThirdPartyNotices(notices))
 
   git(repoRoot, ['init', '-b', 'main'])
   git(repoRoot, ['config', 'user.name', 'Folkkit Test'])

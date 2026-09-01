@@ -87,7 +87,7 @@ test('output and declared capacity budgets are finite', () => {
 })
 
 test('reads reliable WAV duration and rejects impossible headers', () => {
-  const bytes = new Uint8Array(44)
+  const bytes = new Uint8Array(32044)
   const view = new DataView(bytes.buffer)
   bytes.set(new TextEncoder().encode('RIFF'), 0)
   bytes.set(new TextEncoder().encode('WAVE'), 8)
@@ -99,6 +99,30 @@ test('reads reliable WAV duration and rejects impossible headers', () => {
   view.setUint32(28, 16000, true)
   bytes.set(new TextEncoder().encode('data'), 36)
   view.setUint32(40, 32000, true)
-  expect(readWavDurationSeconds(bytes)).toBe(2)
-  expect(readWavDurationSeconds(new Uint8Array(44))).toBeNull()
+  view.setUint32(4, bytes.byteLength - 8, true)
+  expect(readWavDurationSeconds(bytes.subarray(0, 64 * 1024), bytes.byteLength)).toBe(2)
+  expect(readWavDurationSeconds(new Uint8Array(44), 44)).toBeNull()
+})
+
+test('WAV parser rejects truncated declared data and inconsistent RIFF or chunk sizes', () => {
+  const truncated = new Uint8Array(44)
+  const view = new DataView(truncated.buffer)
+  truncated.set(new TextEncoder().encode('RIFF'), 0)
+  truncated.set(new TextEncoder().encode('WAVE'), 8)
+  truncated.set(new TextEncoder().encode('fmt '), 12)
+  view.setUint32(4, 32036, true)
+  view.setUint32(16, 16, true)
+  view.setUint32(28, 16000, true)
+  truncated.set(new TextEncoder().encode('data'), 36)
+  view.setUint32(40, 32000, true)
+  expect(readWavDurationSeconds(truncated, truncated.byteLength)).toBeNull()
+
+  view.setUint32(4, 8, true)
+  expect(readWavDurationSeconds(truncated, truncated.byteLength)).toBeNull()
+
+  const malformedChunk = truncated.slice()
+  const malformedView = new DataView(malformedChunk.buffer)
+  malformedView.setUint32(4, malformedChunk.byteLength - 8, true)
+  malformedView.setUint32(16, 65535, true)
+  expect(readWavDurationSeconds(malformedChunk, malformedChunk.byteLength)).toBeNull()
 })

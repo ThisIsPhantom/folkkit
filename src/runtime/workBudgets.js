@@ -150,15 +150,39 @@ export function assertImageDimensionBudget(dimensions, limits) {
   return pixels
 }
 
-export function readWavDurationSeconds(bytes) {
+export function readWavDurationSeconds(bytes, fileSize = bytes?.byteLength) {
   const value = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || 0)
-  if (value.length < 44) return null
+  const actualFileSize = Number(fileSize)
+  if (value.length < 12 || !Number.isSafeInteger(actualFileSize) || actualFileSize < 12) return null
   const text = (offset, length) => String.fromCharCode(...value.slice(offset, offset + length))
-  if (text(0, 4) !== 'RIFF' || text(8, 4) !== 'WAVE' || text(12, 4) !== 'fmt ' || text(36, 4) !== 'data') return null
+  if (text(0, 4) !== 'RIFF' || text(8, 4) !== 'WAVE') return null
   const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
-  const byteRate = view.getUint32(28, true)
-  const dataBytes = view.getUint32(40, true)
-  if (!byteRate || !dataBytes) return null
-  const duration = dataBytes / byteRate
-  return Number.isFinite(duration) && duration > 0 ? duration : null
+  const riffEnd = view.getUint32(4, true) + 8
+  if (riffEnd < 12 || riffEnd > actualFileSize) return null
+  let byteRate = null
+  let dataBytes = null
+  let offset = 12
+  while (offset + 8 <= value.byteLength && offset + 8 <= riffEnd) {
+    const chunkId = text(offset, 4)
+    const chunkSize = view.getUint32(offset + 4, true)
+    const dataOffset = offset + 8
+    const dataEnd = dataOffset + chunkSize
+    if (!Number.isSafeInteger(dataEnd) || dataEnd > actualFileSize || dataEnd > riffEnd) return null
+    if (chunkId === 'fmt ') {
+      if (chunkSize < 16 || dataOffset + 16 > value.byteLength) return null
+      byteRate = view.getUint32(dataOffset + 8, true)
+      if (!byteRate) return null
+    } else if (chunkId === 'data') {
+      if (chunkSize < 1) return null
+      dataBytes = chunkSize
+    }
+    if (byteRate !== null && dataBytes !== null) {
+      const duration = dataBytes / byteRate
+      return Number.isFinite(duration) && duration > 0 ? duration : null
+    }
+    const nextOffset = dataEnd + (chunkSize % 2)
+    if (nextOffset <= offset || nextOffset > value.byteLength) return null
+    offset = nextOffset
+  }
+  return null
 }
