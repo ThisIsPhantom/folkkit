@@ -45,6 +45,16 @@ export function assertCsvBudget(input, parseRow) {
   let inHeader = true
   for (let index = 0; index < value.length; index += 1) {
     const character = value[index]
+    if (character === '\n' || character === '\r') {
+      if (character === '\r' && value[index + 1] === '\n') index += 1
+      columns = Math.max(columns, currentColumns)
+      rows += 1
+      if (rows > CSV_LIMITS.maxRows) throw resourceLimitError()
+      currentColumns = 1
+      inQuotes = false
+      inHeader = false
+      continue
+    }
     if (character === '"') {
       if (inQuotes && value[index + 1] === '"') { totalCellCharacters += 1; if (inHeader) headerCharacters += 1; index += 1 }
       else inQuotes = !inQuotes
@@ -53,15 +63,6 @@ export function assertCsvBudget(input, parseRow) {
     if (!inQuotes && character === ',') {
       currentColumns += 1
       if (currentColumns > CSV_LIMITS.maxColumns) throw resourceLimitError()
-      continue
-    }
-    if (!inQuotes && (character === '\n' || character === '\r')) {
-      if (character === '\r' && value[index + 1] === '\n') index += 1
-      columns = Math.max(columns, currentColumns)
-      rows += 1
-      if (rows > CSV_LIMITS.maxRows) throw resourceLimitError()
-      currentColumns = 1
-      inHeader = false
       continue
     }
     totalCellCharacters += 1
@@ -170,8 +171,29 @@ export function readWavDurationSeconds(bytes, fileSize = bytes?.byteLength) {
     if (!Number.isSafeInteger(dataEnd) || dataEnd > actualFileSize || dataEnd > riffEnd) return null
     if (chunkId === 'fmt ') {
       if (chunkSize < 16 || dataOffset + 16 > value.byteLength) return null
-      byteRate = view.getUint32(dataOffset + 8, true)
-      if (!byteRate) return null
+      const audioFormat = view.getUint16(dataOffset, true)
+      const channels = view.getUint16(dataOffset + 2, true)
+      const sampleRate = view.getUint32(dataOffset + 4, true)
+      const declaredByteRate = view.getUint32(dataOffset + 8, true)
+      const blockAlign = view.getUint16(dataOffset + 12, true)
+      const bitsPerSample = view.getUint16(dataOffset + 14, true)
+      const supportedBits = audioFormat === 1
+        ? [8, 16, 24, 32]
+        : audioFormat === 3
+          ? [32, 64]
+          : []
+      const expectedBlockAlign = channels * bitsPerSample / 8
+      const expectedByteRate = sampleRate * expectedBlockAlign
+      if (
+        channels < 1 || channels > 8
+        || sampleRate < 8000 || sampleRate > 384000
+        || !supportedBits.includes(bitsPerSample)
+        || !Number.isInteger(expectedBlockAlign) || expectedBlockAlign < 1
+        || blockAlign !== expectedBlockAlign
+        || !Number.isSafeInteger(expectedByteRate) || expectedByteRate > 0xffffffff
+        || declaredByteRate !== expectedByteRate
+      ) return null
+      byteRate = expectedByteRate
     } else if (chunkId === 'data') {
       if (chunkSize < 1) return null
       dataBytes = chunkSize

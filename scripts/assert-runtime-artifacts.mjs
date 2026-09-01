@@ -2,32 +2,27 @@ import { readFile, readdir } from 'node:fs/promises'
 import { readFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { parse } from 'acorn'
+import { parse as parseJavaScript } from 'acorn'
+import { parse as parseHtml } from 'parse5'
 import { converterModuleIds } from '../src/converters/index.js'
 
 const forbiddenTestServiceWorker = /(?:__folkkit-test__|folkkit-app-test-old)/i
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 const runtimeArtifactExtensions = new Set(['.css', '.html', '.js', '.json', '.mjs', '.svg'])
 const releasedBrowserConverters = JSON.parse(readFileSync(join(projectRoot, 'scripts', 'released-browser-converters.json'), 'utf8'))
-const externalOrigin = String.raw`(?:https?:)?//[^\s'"<>]+`
-const automaticSinkPatterns = Object.freeze({
-  css: [
-    new RegExp(String.raw`(?:@import\s+(?:url\()?|url\()\s*['"]?${externalOrigin}`, 'i'),
-  ],
-  html: [
-    new RegExp(String.raw`<(?:script|img|iframe|source|video|audio|link|object|embed)\b[^>]*(?:src|href|data)\s*=\s*['"]${externalOrigin}`, 'i'),
-    new RegExp(String.raw`<form\b[^>]*action\s*=\s*['"]${externalOrigin}`, 'i'),
-  ],
-  svg: [
-    new RegExp(String.raw`<(?:image|script|use)\b[^>]*(?:href|xlink:href)\s*=\s*['"]${externalOrigin}`, 'i'),
-    new RegExp(String.raw`url\(\s*['"]?${externalOrigin}`, 'i'),
-  ],
-})
+const htmlUrlAttributeNames = new Set(['action', 'data', 'formaction', 'href', 'poster', 'src', 'srcset'])
 
 const reviewedLegalNavigation = new Set(JSON.parse(readFileSync(join(projectRoot, 'scripts', 'reviewed-browser-navigation.json'), 'utf8')))
 
+function externalUrlMatches(value) {
+  return [...String(value || '').matchAll(/(?:^|[\s'"`(<\[=:,])((?:https?:)?\/\/[^\s'"`<>\])}]+)/gi)].map(match => ({
+    value: match[1],
+    index: match.index + match[0].lastIndexOf(match[1]),
+  }))
+}
+
 function externalUrls(value) {
-  return [...String(value || '').matchAll(/(?:^|[\s'"`(<\[=:,])((?:https?:)?\/\/[^\s'"`<>\])}]+)/gi)].map(match => match[1])
+  return externalUrlMatches(value).map(match => match.value)
 }
 
 function isReviewedLegalNavigation(value) {
@@ -38,7 +33,7 @@ function isReviewedLegalNavigation(value) {
 function hasExternalJavaScriptSink(contents) {
   let ast
   try {
-    ast = parse(contents, { ecmaVersion: 'latest', sourceType: 'module', allowHashBang: true })
+    ast = parseJavaScript(contents, { ecmaVersion: 'latest', sourceType: 'module', allowHashBang: true })
   } catch (error) {
     throw new Error(`JavaScript runtime artifact could not be parsed: ${error.message}`)
   }
@@ -212,36 +207,94 @@ function hasExternalManifestSink(contents) {
   return visit(value)
 }
 
-function hasUnreviewedHtmlNavigation(contents) {
-  for (const tagMatch of contents.matchAll(/<([A-Za-z][A-Za-z0-9:-]*)\b[^>]*>/g)) {
-    const tagName = tagMatch[1].toLowerCase()
-    for (const attributeMatch of tagMatch[0].matchAll(/\b(href|src|action|formaction|poster|data)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi)) {
-      const attribute = attributeMatch[1].toLowerCase()
-      const value = attributeMatch[2] || attributeMatch[3] || attributeMatch[4] || ''
-      if (!/^(?:https?:)?\/\//i.test(value)) continue
-      if (tagName === 'a' && attribute === 'href' && isReviewedLegalNavigation(value)) continue
-      return true
+function hasDuplicateUrlAttribute(startTag) {
+  let index = 1
+  while (index < startTag.length && !/[\s/>]/.test(startTag[index])) index += 1
+  const seen = new Set()
+  while (index < startTag.length) {
+    while (/\s/.test(startTag[index] || '')) index += 1
+    if (startTag[index] === '>' || (startTag[index] === '/' && startTag[index + 1] === '>')) return false
+    const nameStart = index
+    while (index < startTag.length && !/[\s=/>]/.test(startTag[index])) index += 1
+    const name = startTag.slice(nameStart, index).toLowerCase()
+    if (!name) { index += 1; continue }
+    if (htmlUrlAttributeNames.has(name)) {
+      if (seen.has(name)) return true
+      seen.add(name)
+    }
+    while (/\s/.test(startTag[index] || '')) index += 1
+    if (startTag[index] !== '=') continue
+    index += 1
+    while (/\s/.test(startTag[index] || '')) index += 1
+    const quote = startTag[index] === '"' || startTag[index] === "'" ? startTag[index] : null
+    if (quote) {
+      index += 1
+      while (index < startTag.length && startTag[index] !== quote) index += 1
+      if (startTag[index] === quote) index += 1
+    } else {
+      while (index < startTag.length && !/[\s>]/.test(startTag[index])) index += 1
     }
   }
   return false
 }
 
+function hasExternalMarkupViolation(contents, { allowReviewedSvgNamespaces = false } = {}) {
+  let document
+  try {
+    document = parseHtml(contents, { sourceCodeLocationInfo: true })
+  } catch {
+    return true
+  }
+  const reviewedLiteralRanges = []
+  let automaticViolation = false
+  const visit = node => {
+    if (automaticViolation || !node) return
+    if (node.tagName) {
+      const attributes = new Map((node.attrs || []).map(attribute => [attribute.name.toLowerCase(), attribute.value]))
+      const startTagLocation = node.sourceCodeLocation?.startTag
+      if (startTagLocation && hasDuplicateUrlAttribute(contents.slice(startTagLocation.startOffset, startTagLocation.endOffset))) {
+        automaticViolation = true
+        return
+      }
+      for (const [name, value] of attributes) {
+        if (allowReviewedSvgNamespaces && ['xmlns', 'xmlns:xlink'].includes(name) && isReviewedLegalNavigation(value)) {
+          const range = node.sourceCodeLocation?.attrs?.[name]
+          if (range) reviewedLiteralRanges.push([range.startOffset, range.endOffset])
+          continue
+        }
+        if (!htmlUrlAttributeNames.has(name) || externalUrls(value).length === 0) continue
+        if (node.tagName === 'a' && name === 'href' && isReviewedLegalNavigation(value)) {
+          const range = node.sourceCodeLocation?.attrs?.[name]
+          if (range) reviewedLiteralRanges.push([range.startOffset, range.endOffset])
+          continue
+        }
+        automaticViolation = true
+        return
+      }
+      if (node.tagName === 'meta' && attributes.get('http-equiv')?.trim().toLowerCase() === 'refresh' && externalUrls(attributes.get('content')).length > 0) {
+        automaticViolation = true
+        return
+      }
+    }
+    for (const child of node.childNodes || []) visit(child)
+    if (node.content) visit(node.content)
+  }
+  visit(document)
+  if (automaticViolation) return true
+  return externalUrlMatches(contents).some(match => {
+    if (!isReviewedLegalNavigation(match.value)) return true
+    return !reviewedLiteralRanges.some(([start, end]) => match.index >= start && match.index < end)
+  })
+}
+
 export function assertNoExternalRuntimeOrigins(artifactName, contents) {
   const lowerName = artifactName.toLowerCase()
-  const patterns = lowerName.endsWith('.css')
-    ? automaticSinkPatterns.css
-    : lowerName.endsWith('.html')
-      ? automaticSinkPatterns.html
-      : lowerName.endsWith('.svg')
-        ? automaticSinkPatterns.svg
-        : lowerName.endsWith('.json')
-          ? []
-          : []
   const javascriptSink = (lowerName.endsWith('.js') || lowerName.endsWith('.mjs')) ? hasExternalJavaScriptSink(contents) : null
   if (
-    patterns.some(pattern => pattern.test(contents))
-    || javascriptSink
-    || (lowerName.endsWith('.html') && hasUnreviewedHtmlNavigation(contents))
+    javascriptSink
+    || (lowerName.endsWith('.html') && hasExternalMarkupViolation(contents))
+    || (lowerName.endsWith('.svg') && hasExternalMarkupViolation(contents, { allowReviewedSvgNamespaces: true }))
+    || (lowerName.endsWith('.css') && externalUrls(contents).length > 0)
     || (lowerName.endsWith('.json') && hasExternalManifestSink(contents))
   ) {
     throw new Error(`${artifactName} contains an external runtime origin in an automatic sink${javascriptSink ? `: ${javascriptSink}` : ''}.`)

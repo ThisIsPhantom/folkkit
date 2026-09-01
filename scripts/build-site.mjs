@@ -9,6 +9,7 @@ import { resolveBuildCommit } from './resolve-build-commit.mjs'
 import { assertExactRuntimeAssets, syncRuntimeAssets } from './sync-runtime-assets.mjs'
 import { runPublicConfigValidation } from './validate-public-config.mjs'
 import { assertBuiltRuntimeArtifacts } from './assert-runtime-artifacts.mjs'
+import { assertCatalogAudit } from './audit-catalog.mjs'
 
 const supportedModes = new Set(['validation', 'release'])
 const normalizedStaticFiles = Object.freeze(['favicon.svg', 'index.html', 'manifest.json', 'theme-init.js'])
@@ -35,6 +36,7 @@ export async function runSiteBuild({
   generateWorker = options => generateServiceWorker(options),
   checkBudget = options => checkBundleBudget(options),
   assertArtifacts = options => assertBuiltRuntimeArtifacts(options),
+  auditCatalog = options => assertCatalogAudit(options),
 } = {}) {
   if (!supportedModes.has(mode)) throw new Error(`Unsupported site build mode: ${mode}`)
   if (mode === 'release') runPublicConfigValidation(env)
@@ -43,6 +45,9 @@ export async function runSiteBuild({
   const publicVendorDirectory = join(repoRoot, 'public', 'vendor')
   const distDirectory = join(repoRoot, 'dist')
 
+  await auditCatalog({
+    browserManifestPath: join(repoRoot, 'scripts', 'released-browser-converters.json'),
+  })
   await syncAssets({
     sourceDirectory: join(repoRoot, 'node_modules', '@ffmpeg', 'core', 'dist', 'esm'),
     destinationDirectory: join(publicVendorDirectory, 'ffmpeg'),

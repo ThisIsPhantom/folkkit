@@ -31,6 +31,34 @@ function jpegDimensions(width, height) {
   ])
 }
 
+function wavHeader({
+  audioFormat = 1,
+  channels = 1,
+  sampleRate = 8000,
+  bitsPerSample = 16,
+  blockAlign = 2,
+  byteRate = 16000,
+  dataBytes = 32000,
+} = {}) {
+  const bytes = new Uint8Array(44)
+  const view = new DataView(bytes.buffer)
+  const fileSize = dataBytes + 44
+  bytes.set(new TextEncoder().encode('RIFF'), 0)
+  view.setUint32(4, fileSize - 8, true)
+  bytes.set(new TextEncoder().encode('WAVE'), 8)
+  bytes.set(new TextEncoder().encode('fmt '), 12)
+  view.setUint32(16, 16, true)
+  view.setUint16(20, audioFormat, true)
+  view.setUint16(22, channels, true)
+  view.setUint32(24, sampleRate, true)
+  view.setUint32(28, byteRate, true)
+  view.setUint16(32, blockAlign, true)
+  view.setUint16(34, bitsPerSample, true)
+  bytes.set(new TextEncoder().encode('data'), 36)
+  view.setUint32(40, dataBytes, true)
+  return { bytes, fileSize }
+}
+
 test('parses PNG IHDR and JPEG SOF dimensions from bounded prefixes', () => {
   expect(parseImageDimensions(pngDimensions(1200, 800))).toEqual({ kind: 'png', width: 1200, height: 800 })
   expect(parseImageDimensions(jpegDimensions(640, 480))).toEqual({ kind: 'jpeg', width: 640, height: 480 })
@@ -68,6 +96,22 @@ test('CSV budget rejects 2.9 million control characters using worst-case JSON es
   expect(parseRow).not.toHaveBeenCalled()
 })
 
+test('CSV budget counts every raw newline before split even while quotes are open', () => {
+  const parseRow = vi.fn(line => [line])
+  const input = `header\n"${'\n'.repeat(100_000)}"`
+
+  expect(() => assertCsvBudget(input, parseRow)).toThrow(/resource_limit/)
+  expect(parseRow).not.toHaveBeenCalled()
+})
+
+test('CSV budget accepts a valid input at the raw row limit', () => {
+  const parseRow = vi.fn(line => [line])
+  const input = ['header', ...Array.from({ length: CSV_LIMITS.maxRows - 1 }, () => 'value')].join('\n')
+
+  expect(assertCsvBudget(input, parseRow)).toHaveLength(CSV_LIMITS.maxRows)
+  expect(parseRow).toHaveBeenCalledTimes(CSV_LIMITS.maxRows)
+})
+
 test('bounded line scan stops at the rendering limit without splitting the full output', () => {
   expect(countLinesBounded('a\nb\nc', 5)).toEqual({ count: 3, overflow: false })
   expect(countLinesBounded('\n'.repeat(6000), 5000)).toEqual({ count: 5001, overflow: true })
@@ -87,21 +131,29 @@ test('output and declared capacity budgets are finite', () => {
 })
 
 test('reads reliable WAV duration and rejects impossible headers', () => {
-  const bytes = new Uint8Array(32044)
-  const view = new DataView(bytes.buffer)
-  bytes.set(new TextEncoder().encode('RIFF'), 0)
-  bytes.set(new TextEncoder().encode('WAVE'), 8)
-  bytes.set(new TextEncoder().encode('fmt '), 12)
-  view.setUint32(16, 16, true)
-  view.setUint16(20, 1, true)
-  view.setUint16(22, 1, true)
-  view.setUint32(24, 8000, true)
-  view.setUint32(28, 16000, true)
-  bytes.set(new TextEncoder().encode('data'), 36)
-  view.setUint32(40, 32000, true)
-  view.setUint32(4, bytes.byteLength - 8, true)
-  expect(readWavDurationSeconds(bytes.subarray(0, 64 * 1024), bytes.byteLength)).toBe(2)
+  const pcm = wavHeader()
+  const float = wavHeader({ audioFormat: 3, bitsPerSample: 32, blockAlign: 4, byteRate: 32000, dataBytes: 64000 })
+  expect(readWavDurationSeconds(pcm.bytes, pcm.fileSize)).toBe(2)
+  expect(readWavDurationSeconds(float.bytes, float.fileSize)).toBe(2)
   expect(readWavDurationSeconds(new Uint8Array(44), 44)).toBeNull()
+})
+
+test('WAV parser rejects a forged max byte rate that hides a 13107.2 second PCM duration', () => {
+  const forged = wavHeader({ dataBytes: 209_715_200, byteRate: 0xffffffff })
+
+  expect(readWavDurationSeconds(forged.bytes, forged.fileSize)).toBeNull()
+})
+
+test.each([
+  ['compressed audio format', { audioFormat: 6 }],
+  ['zero channels', { channels: 0 }],
+  ['sample rate outside the sane range', { sampleRate: 7999, byteRate: 15998 }],
+  ['unsupported PCM bit depth', { bitsPerSample: 12 }],
+  ['inconsistent block alignment', { blockAlign: 3, byteRate: 24000 }],
+  ['inconsistent byte rate', { byteRate: 16001 }],
+])('WAV parser rejects %s', (_label, overrides) => {
+  const fixture = wavHeader(overrides)
+  expect(readWavDurationSeconds(fixture.bytes, fixture.fileSize)).toBeNull()
 })
 
 test('WAV parser rejects truncated declared data and inconsistent RIFF or chunk sizes', () => {

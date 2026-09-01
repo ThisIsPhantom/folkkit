@@ -181,7 +181,9 @@ async function loadRawConverters() {
   return rawConverters
 }
 
-export async function runCatalogAudit() {
+export async function runCatalogAudit({
+  browserManifestPath = resolve('scripts', 'released-browser-converters.json'),
+} = {}) {
   const rawConverters = await loadRawConverters()
   const rawFormats = formats.map(format => ({ id: format.id }))
   const evidenceRunResults = await runEvidenceRegistry()
@@ -195,7 +197,7 @@ export async function runCatalogAudit() {
     evidenceRegistry: catalogEvidenceRegistry,
     evidenceRunResults,
   })
-  const browserManifest = JSON.parse(await readFile(resolve('scripts', 'released-browser-converters.json'), 'utf8'))
+  const browserManifest = JSON.parse(await readFile(browserManifestPath, 'utf8'))
   const expectedBrowserManifest = {}
   for (const entry of releaseCatalog.filter(item => item.tier !== 'hidden')) {
     if (!expectedBrowserManifest[entry.module]) expectedBrowserManifest[entry.module] = []
@@ -228,8 +230,16 @@ export async function runCatalogAudit() {
   return { ok: true, errors: [], rawConverterCount: rawConverters.length, rawFormatCount: rawFormats.length, releasedTools, hiddenTools, releasedFormats, hiddenFormats }
 }
 
+export async function assertCatalogAudit(options) {
+  const result = await runCatalogAudit(options)
+  if (!result.ok) throw new Error(`Catalog audit failed:\n${result.errors.join('\n')}`)
+  return result
+}
+
 const invokedPath = process.argv[1] ? resolve(process.argv[1]) : ''
 if (invokedPath === resolve(fileURLToPath(import.meta.url))) {
-  const result = await runCatalogAudit()
-  if (!result.ok) process.exitCode = 1
+  assertCatalogAudit().catch(error => {
+    console.error(error.message)
+    process.exitCode = 1
+  })
 }

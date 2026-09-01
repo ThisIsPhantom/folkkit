@@ -18,7 +18,7 @@
     "predev": "node scripts/sync-runtime-assets.mjs",
     "dev": "vite",
     "prebuild": "node scripts/sync-runtime-assets.mjs",
-    "build": "vite build && node scripts/generate-service-worker.mjs && node scripts/check-bundle-budget.mjs && node scripts/assert-runtime-artifacts.mjs",
+    "build": "node scripts/audit-catalog.mjs && vite build && node scripts/generate-service-worker.mjs && node scripts/check-bundle-budget.mjs && node scripts/assert-runtime-artifacts.mjs",
     "build:site": "bun run scripts/build-site.mjs",
     "generate:notices": "node scripts/generate-third-party-notices.mjs",
     "check:notices": "node scripts/generate-third-party-notices.mjs --check",
@@ -63,6 +63,7 @@
     "eslint-plugin-react-refresh": "^0.4.26",
     "globals": "^16.5.0",
     "jsdom": "^30.0.1",
+    "parse5": "8.0.1",
     "vite": "^7.3.6",
     "vitest": "^4.1.11"
   }

@@ -1,8 +1,11 @@
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import process from 'node:process'
 import { afterEach, expect, test } from 'vitest'
 import { runSiteBuild } from './build-site.mjs'
+import { runCatalogAudit } from './audit-catalog.mjs'
+import { releaseCatalog } from '../src/catalog/releaseCatalog.js'
 
 const temporaryDirectories = []
 const exactCommit = 'a'.repeat(40)
@@ -28,6 +31,7 @@ async function createProjectFixture() {
 
 function createPipelineDoubles(root, calls) {
   return {
+    auditCatalog: async () => calls.push('catalog'),
     syncAssets: async () => calls.push('sync'),
     assertRuntimeAssets: async ({ vendorDirectory }) => {
       calls.push(vendorDirectory.includes(`${join('dist', 'vendor')}`) ? 'assert:dist' : 'assert:public')
@@ -63,7 +67,7 @@ test('validation build runs the complete site pipeline and keeps only hosting ru
     ...createPipelineDoubles(root, calls),
   })
 
-  expect(calls).toEqual(['sync', 'assert:public', 'notices', 'vite', 'service-worker', 'budget', 'assert:dist', 'artifact-gate'])
+  expect(calls).toEqual(['catalog', 'sync', 'assert:public', 'notices', 'vite', 'service-worker', 'budget', 'assert:dist', 'artifact-gate'])
   expect(await readFile(join(root, 'dist', '.htaccess'), 'utf8')).toBe('fixture-hosting-contract\n')
   expect(await readFile(join(root, 'dist', 'index.html'), 'utf8')).toBe('<!doctype html>\n')
   expect(await readFile(join(root, 'dist', 'manifest.json'), 'utf8')).toBe('{}\n')
@@ -72,6 +76,32 @@ test('validation build runs the complete site pipeline and keeps only hosting ru
   await expect(readFile(join(root, 'dist', 'sw.template.js'))).rejects.toMatchObject({ code: 'ENOENT' })
   await expect(readFile(join(root, 'dist', '.vite', 'manifest.json'))).rejects.toMatchObject({ code: 'ENOENT' })
   expect(result).toMatchObject({ commit: exactCommit, mode: 'validation' })
+})
+
+test('a 49-entry browser manifest with one hidden substitution fails before Vite', async () => {
+  const root = await createProjectFixture()
+  const calls = []
+  const manifest = JSON.parse(await readFile(join(process.cwd(), 'scripts', 'released-browser-converters.json'), 'utf8'))
+  const hiddenText = releaseCatalog.find(entry => entry.module === 'text' && entry.tier === 'hidden')
+  expect(hiddenText).toBeDefined()
+  manifest.text[0] = hiddenText.id
+  expect(Object.values(manifest).flat()).toHaveLength(49)
+  const manifestPath = join(root, 'released-browser-converters.json')
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`)
+
+  await expect(runSiteBuild({
+    repoRoot: root,
+    env: { FOLKKIT_RELEASE_COMMIT: exactCommit },
+    mode: 'validation',
+    ...createPipelineDoubles(root, calls),
+    auditCatalog: async () => {
+      calls.push('catalog')
+      const result = await runCatalogAudit({ browserManifestPath: manifestPath })
+      if (!result.ok) throw new Error(result.errors.join('\n'))
+    },
+  })).rejects.toThrow(/browser converter manifest.*canonical released catalog/i)
+
+  expect(calls).toEqual(['catalog'])
 })
 
 test('public release artifact rejects missing operator values before any build step', async () => {

@@ -184,6 +184,40 @@ test.each([
   expect(() => assertNoExternalRuntimeOrigins(artifactName, contents)).toThrow(/external runtime origin/i)
 })
 
+test.each([
+  ['index.html', "<script title='>' src='https://attacker.example/app.js'></script>"],
+  ['index.html', '<img srcset="https://attacker.example/a.png 1x, /local.png 2x">'],
+  ['index.html', '<a href="https://www.gnu.org/licenses/agpl-3.0.html" href="https://www.gnu.org/licenses/agpl-3.0.html">duplicate</a>'],
+  ['index.html', '<meta http-equiv="refresh" content="0; url=https://attacker.example/leave">'],
+  ['index.html', '<p>https://attacker.example/plain-text</p>'],
+  ['app.css', '.hero { background-image: image-set("https://attacker.example/a.png" 1x, "/b.png" 2x); }'],
+  ['app.css', '.hero { background: image-set("https://github.com/react/react" 1x); }'],
+])('rejects fail-closed HTML or CSS reviewer PoC in %s', (artifactName, contents) => {
+  expect(() => assertNoExternalRuntimeOrigins(artifactName, contents)).toThrow(/external runtime origin/i)
+})
+
+test('allows quote-aware local HTML attributes, local CSS URLs and exact reviewed anchor navigation', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'index.html',
+    "<script title='>' src='/app.js'></script><img srcset='/a.png 1x, /b.png 2x'><meta http-equiv='refresh' content='0; url=/local'><a href='https://www.gnu.org/licenses/agpl-3.0.html'>AGPL</a>",
+  )).not.toThrow()
+  expect(() => assertNoExternalRuntimeOrigins(
+    'app.css',
+    '.hero { background-image: image-set(url("/a.png") 1x, "/b.png" 2x); }',
+  )).not.toThrow()
+})
+
+test('allows a reviewed SVG namespace but rejects the same reviewed URL in an SVG runtime href', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'favicon.svg',
+    '<svg xmlns="http://www.w3.org/2000/svg"><image href="/local.png" /></svg>',
+  )).not.toThrow()
+  expect(() => assertNoExternalRuntimeOrigins(
+    'favicon.svg',
+    '<svg xmlns="http://www.w3.org/2000/svg"><image href="https://github.com/react/react" /></svg>',
+  )).toThrow(/external runtime origin/i)
+})
+
 test('scans SVG, manifest JSON, MJS and nested worker artifacts in the final build tree', async () => {
   const distDirectory = await createTemporaryDirectory()
   await mkdir(join(distDirectory, 'nested'), { recursive: true })

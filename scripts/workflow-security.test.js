@@ -31,6 +31,7 @@ test('official Playwright install contract provisions Chromium, Firefox and WebK
 
 test('normal production build enforces the final runtime artifact policy', async () => {
   const packageJson = JSON.parse(await readFile(join(process.cwd(), 'package.json'), 'utf8'))
+  expect(packageJson.scripts.build).toMatch(/^node scripts\/audit-catalog\.mjs && vite build/)
   expect(packageJson.scripts.build).toMatch(/node scripts\/assert-runtime-artifacts\.mjs$/)
 })
 
