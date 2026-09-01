@@ -1,6 +1,7 @@
 export function runtimeAssetUrl(path) {
-  const baseUrl = import.meta.env.BASE_URL.endsWith('/')
-    ? import.meta.env.BASE_URL
-    : `${import.meta.env.BASE_URL}/`
+  const configuredBaseUrl = import.meta.env?.BASE_URL || '/'
+  const baseUrl = configuredBaseUrl.endsWith('/')
+    ? configuredBaseUrl
+    : `${configuredBaseUrl}/`
   return `${baseUrl}${path.replace(/^\/+/, '')}`
 }

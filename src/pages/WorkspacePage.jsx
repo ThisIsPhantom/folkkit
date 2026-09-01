@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getFormatById, releasedFormats } from '../formats'
 import { useI18n } from '../i18n'
 import { getReleasedCategories, getReleasedTools } from '../catalog/releaseCatalog'
+import { loadConverter } from '../converters/loadConverter'
 import ConvertPanel from '../components/ConvertPanel'
 import ErrorBoundary from '../components/ErrorBoundary'
 import History from '../components/History'
@@ -49,16 +50,32 @@ export default function WorkspacePage() {
   const [convertTo, setConvertTo] = useState(initialUrlState.to)
   const [reuseRequest, setReuseRequest] = useState(null)
   const [activeToolId, setActiveToolId] = useState(() => releasedTools.some((tool) => tool.id === initialUrlState.toolId) ? initialUrlState.toolId : null)
+  const [loadedConverter, setLoadedConverter] = useState(null)
   const [showHelp, setShowHelp] = useState(false)
   const [pageDragging, setPageDragging] = useState(false)
   const dragCountRef = useRef(0)
   const reuseRequestIdRef = useRef(0)
-  const activeConverter = useMemo(() => releasedTools.find((tool) => tool.id === activeToolId) || null, [activeToolId, releasedTools])
+  const activeToolMetadata = useMemo(() => releasedTools.find((tool) => tool.id === activeToolId) || null, [activeToolId, releasedTools])
+  const activeConverter = useMemo(() => {
+    if (!activeToolMetadata || loadedConverter?.id !== activeToolMetadata.id) return null
+    return { ...loadedConverter.converter, ...activeToolMetadata }
+  }, [activeToolMetadata, loadedConverter])
+
+  useEffect(() => {
+    if (!activeToolId) return undefined
+    let current = true
+    loadConverter(activeToolId).then((converter) => {
+      if (current && converter) setLoadedConverter({ id: activeToolId, converter })
+    }).catch(() => {
+      if (current) setLoadedConverter(null)
+    })
+    return () => { current = false }
+  }, [activeToolId])
 
   useEffect(() => {
     const fromName = getFormatById(convertFrom)?.name || convertFrom
     const toName = getFormatById(convertTo)?.name || convertTo
-    const thing = activeConverter ? activeConverter.name : `${fromName} to ${toName}`
+    const thing = activeToolMetadata ? activeToolMetadata.name : `${fromName} to ${toName}`
     const title = `${thing} · Folkkit`
     const description = locale === 'de'
       ? `${thing} lokal im Browser verwenden. Dateiinhalte werden nicht hochgeladen.`
@@ -68,13 +85,13 @@ export default function WorkspacePage() {
     ensureMeta('meta[property="og:title"]', { property: 'og:title' }).setAttribute('content', title)
     ensureMeta('meta[property="og:description"]', { property: 'og:description' }).setAttribute('content', description)
     const canonical = new URL(window.location.pathname, window.location.origin)
-    if (activeConverter) canonical.searchParams.set('tool', activeConverter.id)
+    if (activeToolMetadata) canonical.searchParams.set('tool', activeToolMetadata.id)
     else {
       canonical.searchParams.set('from', convertFrom)
       canonical.searchParams.set('to', convertTo)
     }
     ensureCanonical().setAttribute('href', canonical.toString())
-  }, [activeConverter, convertFrom, convertTo, locale])
+  }, [activeToolMetadata, convertFrom, convertTo, locale])
 
   useEffect(() => {
     const handlePop = () => {
@@ -126,7 +143,7 @@ export default function WorkspacePage() {
       event.preventDefault()
       dragCountRef.current = 0
       setPageDragging(false)
-      if (activeConverter) return
+      if (activeToolMetadata) return
       const file = event.dataTransfer?.files?.[0]
       const converterId = file ? getConverterForFile(file) : null
       const converter = releasedTools.find((tool) => tool.id === converterId)
@@ -142,11 +159,11 @@ export default function WorkspacePage() {
       document.removeEventListener('dragover', handleDragOver)
       document.removeEventListener('drop', handleDrop)
     }
-  }, [activeConverter, handleConverterChange, releasedTools])
+  }, [activeToolMetadata, handleConverterChange, releasedTools])
 
   useEffect(() => {
     const handlePaste = (event) => {
-      if (activeConverter || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return
+      if (activeToolMetadata || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return
       const imageItem = Array.from(event.clipboardData?.items || []).find((item) => item.type.startsWith('image/'))
       if (!imageItem) return
       const converter = releasedTools.find((tool) => tool.id === 'image-resize')
@@ -157,12 +174,12 @@ export default function WorkspacePage() {
     }
     document.addEventListener('paste', handlePaste)
     return () => document.removeEventListener('paste', handlePaste)
-  }, [activeConverter, handleConverterChange, releasedTools])
+  }, [activeToolMetadata, handleConverterChange, releasedTools])
 
   useEffect(() => {
     const handleKey = (event) => {
       const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
-      if (event.key === 'Escape' && activeConverter) {
+      if (event.key === 'Escape' && activeToolMetadata) {
         const params = new URLSearchParams({ from: convertFrom, to: convertTo })
         history.pushState(null, '', `${window.location.pathname}?${params}`)
         setActiveToolId(null)
@@ -173,18 +190,20 @@ export default function WorkspacePage() {
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeConverter, convertFrom, convertTo])
+  }, [activeToolMetadata, convertFrom, convertTo])
 
   return (
     <div className="workspace-page">
       <header className="workspace-heading heading-group">
         <p className="eyebrow">{t('workspace.eyebrow')}</p>
-        <h1 className="display">{activeConverter?.name || t('workspace.title')}</h1>
+        <h1 className="display">{activeToolMetadata?.name || t('workspace.title')}</h1>
         <p>{t('workspace.intro')}</p>
       </header>
       <div className="workspace-surface">
-        <ErrorBoundary key={activeConverter?.id || 'format'}>
-          <ConvertPanel
+        <ErrorBoundary key={activeToolMetadata?.id || 'format'}>
+          {activeToolMetadata && !activeConverter ? (
+            <p role="status">{t('workspaceTools.loadingTool')}</p>
+          ) : <ConvertPanel
             from={convertFrom}
             to={convertTo}
             onFromChange={setConvertFrom}
@@ -196,12 +215,12 @@ export default function WorkspacePage() {
             releasedFormats={releasedFormats}
             releasedTools={releasedTools}
             categories={releasedCategories}
-          />
+          />}
         </ErrorBoundary>
-        {!activeConverter && <History onSelect={handleHistorySelect} />}
+        {!activeToolMetadata && <History onSelect={handleHistorySelect} />}
       </div>
       <KeyboardHelp open={showHelp} onClose={() => setShowHelp(false)} />
-      {pageDragging && !activeConverter && <div className="drop-overlay"><div className="drop-overlay-content">{t('workspace.dropOverlay')}</div></div>}
+      {pageDragging && !activeToolMetadata && <div className="drop-overlay"><div className="drop-overlay-content">{t('workspace.dropOverlay')}</div></div>}
     </div>
   )
 }

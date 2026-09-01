@@ -4,7 +4,6 @@ import { useToast } from '../hooks/useToast'
 import { formats, getTargets, getConvertFn, getFormatById } from '../formats'
 import { useI18n } from '../i18n'
 import { historyStore } from '../privacy/historyStore'
-import { onFFmpegLoad } from '../converters/media'
 import { createToolRuntime } from '../runtime/toolRuntime'
 import { rgbToHex, parseRgb, parseHsl, hslToRgb, hsvToRgb, parseHsv } from '../utils/color'
 import FileDropZone from './workspace/FileDropZone'
@@ -323,11 +322,11 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
 
   // FFmpeg status
   useEffect(() => {
-    if (!isMedia) return
-    return onFFmpegLoad((status) => {
+    if (!isMedia || !activeConverter.onRuntimeStatus) return
+    return activeConverter.onRuntimeStatus((status) => {
       setFfmpegStatus(status === 'ready' ? null : status)
     })
-  }, [isMedia])
+  }, [activeConverter, isMedia])
 
   // Auto-resize textareas
   useEffect(() => {
@@ -856,7 +855,10 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
       </div>
 
       {isToolMode && (
-        <p className="tool-description">{activeConverter.description}</p>
+        <>
+          <p className="tool-description">{activeConverter.description}</p>
+          {activeConverter.notice && <p className="tool-description" role="note">{activeConverter.notice}</p>}
+        </>
       )}
 
       {!isToolMode && favPairs.length > 0 && (

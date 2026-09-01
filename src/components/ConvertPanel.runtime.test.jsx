@@ -25,6 +25,18 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
+test('renders a localized non-advice notice supplied by released metadata', () => {
+  renderWithProviders(<ConvertPanel {...panelProps({
+    id: 'loan-calc',
+    name: 'Kreditrate berechnen',
+    description: 'Lokale Berechnung',
+    notice: 'Nur eine lokale Rechenhilfe, keine Finanzberatung.',
+    convert: value => value,
+  })} />)
+
+  expect(screen.getByText('Nur eine lokale Rechenhilfe, keine Finanzberatung.')).toBeVisible()
+})
+
 test('Cancel aborts active file work, terminates the converter, and keeps the input reusable', async () => {
   const user = userEvent.setup()
   let terminated = 0

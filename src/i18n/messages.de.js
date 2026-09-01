@@ -64,6 +64,7 @@ const messagesDe = Object.freeze({
     progressLabel: 'Fortschritt',
     processing: 'Verarbeitung läuft: {progress}',
     loadingRuntime: 'Medienmodul wird lokal geladen.',
+    loadingTool: 'Werkzeug wird lokal geladen.',
     cancel: 'Abbrechen',
     download: 'Herunterladen',
     copy: 'Kopieren',
@@ -85,12 +86,132 @@ const messagesDe = Object.freeze({
   }),
   categories: Object.freeze({
     encode: 'QR und Codierung',
+    hash: 'Prüfwerte',
+    data: 'Daten',
+    number: 'Zahlen',
+    color: 'Farben',
+    utility: 'Hilfsmittel',
+    image: 'Bilder',
+    media: 'Audio und Video',
     document: 'PDF und Dokumente',
   }),
   tools: Object.freeze({
+    base64Encode: Object.freeze({
+      name: 'Base64 codieren',
+      description: 'Text lokal in Base64 umwandeln',
+      placeholder: 'Text eingeben oder einfügen',
+    }),
+    base64Decode: Object.freeze({
+      name: 'Base64 decodieren',
+      description: 'Base64 lokal in Text zurückwandeln',
+    }),
+    urlEncode: Object.freeze({
+      name: 'URL codieren',
+      description: 'Text für eine URL percent-codieren',
+    }),
+    urlDecode: Object.freeze({
+      name: 'URL decodieren',
+      description: 'Percent-codierten URL-Text zurückwandeln',
+    }),
+    htmlEncode: Object.freeze({
+      name: 'HTML-Zeichen maskieren',
+      description: 'HTML-Sonderzeichen durch Entities ersetzen',
+    }),
+    htmlDecode: Object.freeze({
+      name: 'HTML-Entities decodieren',
+      description: 'HTML-Entities in Zeichen zurückwandeln',
+    }),
+    hexEncode: Object.freeze({
+      name: 'Text in Hex',
+      description: 'Text lokal in Hexadezimalwerte umwandeln',
+    }),
+    hexDecode: Object.freeze({
+      name: 'Hex in Text',
+      description: 'Hexadezimalwerte lokal in Text umwandeln',
+    }),
+    binaryEncode: Object.freeze({
+      name: 'Text in Binär',
+      description: 'Text lokal in Binärwerte umwandeln',
+    }),
+    binaryDecode: Object.freeze({
+      name: 'Binär in Text',
+      description: 'Binärwerte lokal in Text umwandeln',
+    }),
+    unicodeEscape: Object.freeze({
+      name: 'Unicode maskieren',
+      description: 'Text in Unicode-Escape-Sequenzen umwandeln',
+    }),
+    unicodeUnescape: Object.freeze({
+      name: 'Unicode-Escapes decodieren',
+      description: 'Unicode-Escape-Sequenzen in Text zurückwandeln',
+    }),
+    rot13: Object.freeze({
+      name: 'ROT13',
+      description: 'ROT13 lokal auf Text anwenden',
+    }),
+    atbash: Object.freeze({
+      name: 'Atbash',
+      description: 'Das lateinische Alphabet lokal spiegeln',
+    }),
+    sha256: Object.freeze({
+      name: 'SHA-256-Prüfwert',
+      description: 'Einen SHA-256-Prüfwert berechnen, ohne eine Passwort- oder Sicherheitsprüfung zu versprechen',
+    }),
+    jsonPrettify: Object.freeze({
+      name: 'JSON formatieren',
+      description: 'JSON mit Einrückungen lesbar formatieren',
+    }),
+    jsonMinify: Object.freeze({
+      name: 'JSON minimieren',
+      description: 'Unnötige Leerzeichen aus JSON entfernen',
+    }),
+    jsonEscape: Object.freeze({
+      name: 'JSON-String maskieren',
+      description: 'Text als JSON-String maskieren',
+    }),
+    csvToJson: Object.freeze({
+      name: 'CSV in JSON',
+      description: 'Eine begrenzte CSV-Tabelle lokal in ein JSON-Array umwandeln',
+    }),
+    decToHex: Object.freeze({ name: 'Dezimal in Hex', description: 'Eine Dezimalzahl in Hexadezimal umwandeln' }),
+    hexToDec: Object.freeze({ name: 'Hex in Dezimal', description: 'Eine Hexadezimalzahl in Dezimal umwandeln' }),
+    decToBin: Object.freeze({ name: 'Dezimal in Binär', description: 'Eine Dezimalzahl in Binär umwandeln' }),
+    binToDec: Object.freeze({ name: 'Binär in Dezimal', description: 'Eine Binärzahl in Dezimal umwandeln' }),
+    decToOct: Object.freeze({ name: 'Dezimal in Oktal', description: 'Eine Dezimalzahl in Oktal umwandeln' }),
+    octToDec: Object.freeze({ name: 'Oktal in Dezimal', description: 'Eine Oktalzahl in Dezimal umwandeln' }),
+    colorConvert: Object.freeze({
+      name: 'Farbwert umwandeln',
+      description: 'Zwischen HEX, RGB und HSL umwandeln',
+    }),
+    cssMinify: Object.freeze({
+      name: 'CSS minimieren',
+      description: 'Kommentare und unnötige Leerzeichen aus CSS entfernen',
+    }),
+    jsonValidate: Object.freeze({
+      name: 'JSON-Syntax prüfen',
+      description: 'JSON-Syntax lokal parsen und Fehler anzeigen',
+    }),
+    base64urlEncode: Object.freeze({ name: 'Base64URL codieren', description: 'Text in URL-sicheres Base64 umwandeln' }),
+    base64urlDecode: Object.freeze({ name: 'Base64URL decodieren', description: 'URL-sicheres Base64 in Text zurückwandeln' }),
+    slugGen: Object.freeze({ name: 'URL-Slug erstellen', description: 'Text in einen einfachen URL-Slug umwandeln' }),
+    charCount: Object.freeze({ name: 'Zeichen und Wörter zählen', description: 'Zeichen, Wörter, Zeilen und Bytes lokal zählen' }),
+    reverseText: Object.freeze({ name: 'Text umkehren', description: 'Die Reihenfolge der Zeichen umkehren' }),
+    loanCalc: Object.freeze({
+      name: 'Kreditrate berechnen',
+      description: 'Monatsrate, Gesamtkosten und Tilgungsverlauf aus Betrag, Zinssatz und Laufzeit schätzen',
+      placeholder: '250000 4.5% 30',
+      notice: 'Nur eine lokale Rechenhilfe, keine Finanzberatung.',
+    }),
+    bmiCalc: Object.freeze({
+      name: 'BMI berechnen',
+      description: 'Den Body-Mass-Index aus Gewicht und Grösse berechnen',
+      placeholder: '70kg 175cm',
+      notice: 'Nur eine allgemeine Rechenhilfe, keine medizinische Beratung.',
+    }),
     textToQr: Object.freeze({
       name: 'Text in QR-Code',
       description: 'QR-Code aus Text oder einem Link erstellen',
+      placeholder: 'Text oder Link eingeben',
     }),
     qrToText: Object.freeze({
       name: 'QR-Code lesen',
@@ -111,14 +232,17 @@ const messagesDe = Object.freeze({
     pdfSplit: Object.freeze({
       name: 'PDF-Seite extrahieren',
       description: 'Eine einzelne Seite aus einer PDF-Datei extrahieren',
+      parameterPlaceholder: 'Seitennummer, zum Beispiel 1',
     }),
     pdfExtractRange: Object.freeze({
       name: 'PDF-Seiten extrahieren',
       description: 'Einen Seitenbereich aus einer PDF-Datei extrahieren',
+      parameterPlaceholder: 'Seitenbereich, zum Beispiel 1-5 oder 1,3,5',
     }),
     textToPdf: Object.freeze({
       name: 'Text in PDF',
       description: 'Klartext in ein einfaches PDF-Dokument umwandeln',
+      placeholder: 'Text eingeben oder einfügen',
     }),
     pdfMetadata: Object.freeze({
       name: 'PDF-Metadaten',
@@ -127,6 +251,7 @@ const messagesDe = Object.freeze({
     pdfRotate: Object.freeze({
       name: 'PDF-Seiten drehen',
       description: 'Alle Seiten einer PDF-Datei drehen',
+      parameterPlaceholder: 'Grad: 90, 180 oder 270',
     }),
   }),
 })

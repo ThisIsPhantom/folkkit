@@ -25,7 +25,7 @@ test('keeps a selected core tool session and route stable while locale metadata 
   const user = userEvent.setup()
   renderWithProviders(<><App /><EnglishSwitcher /></>)
 
-  const input = screen.getByLabelText('Tool input text')
+  const input = await screen.findByLabelText('Tool input text')
   await user.type(input, 'https://folkkit.example')
 
   expect(screen.getByRole('heading', { name: 'Text in QR-Code' })).toBeInTheDocument()

@@ -20,6 +20,41 @@ const expectedReleasedIds = [
   'text-to-pdf',
   'pdf-metadata',
   'pdf-rotate',
+  'base64-encode',
+  'base64-decode',
+  'url-encode',
+  'url-decode',
+  'html-encode',
+  'html-decode',
+  'hex-encode',
+  'hex-decode',
+  'binary-encode',
+  'binary-decode',
+  'unicode-escape',
+  'unicode-unescape',
+  'rot13',
+  'atbash',
+  'sha256',
+  'json-prettify',
+  'json-minify',
+  'json-escape',
+  'csv-to-json',
+  'css-minify',
+  'json-validate',
+  'base64url-encode',
+  'base64url-decode',
+  'slug-gen',
+  'dec-to-hex',
+  'hex-to-dec',
+  'dec-to-bin',
+  'bin-to-dec',
+  'dec-to-oct',
+  'oct-to-dec',
+  'color-convert',
+  'char-count',
+  'reverse-text',
+  'loan-calc',
+  'bmi-calc',
   'qr-to-text',
 ]
 
@@ -41,7 +76,7 @@ describe('released catalog', () => {
   })
 
   it('uses only the four supported release tiers', () => {
-    expect(new Set(releaseCatalog.map(tool => tool.tier))).toEqual(new Set(['core', 'experimental', 'hidden']))
+    expect(new Set(releaseCatalog.map(tool => tool.tier))).toEqual(new Set(['core', 'advanced', 'experimental', 'hidden']))
     expect(releaseCatalog.every(tool => ['core', 'advanced', 'experimental', 'hidden'].includes(tool.tier))).toBe(true)
   })
 
