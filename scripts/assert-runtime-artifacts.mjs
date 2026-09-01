@@ -30,6 +30,48 @@ function isReviewedLegalNavigation(value) {
     || /^https:\/\/github\.com\/ThisIsPhantom\/folkkit\/tree\/[0-9a-f]{40}$/.test(value)
 }
 
+function normalizedCssCodePoint(codePoint) {
+  if (codePoint === 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) return '\ufffd'
+  return String.fromCodePoint(codePoint)
+}
+
+function decodeCssEscapes(contents) {
+  const input = String(contents)
+    .replaceAll('\r\n', '\n')
+    .replaceAll('\r', '\n')
+    .replaceAll('\f', '\n')
+  let decoded = ''
+  let index = 0
+  while (index < input.length) {
+    const codePoint = input.codePointAt(index)
+    const character = String.fromCodePoint(codePoint)
+    if (character !== '\\') {
+      decoded += normalizedCssCodePoint(codePoint)
+      index += character.length
+      continue
+    }
+    if (index + 1 >= input.length) throw new Error('Trailing CSS escape.')
+    if (input[index + 1] === '\n') {
+      index += 2
+      continue
+    }
+    if (/[0-9a-f]/i.test(input[index + 1])) {
+      let end = index + 1
+      while (end < input.length && end < index + 7 && /[0-9a-f]/i.test(input[end])) end += 1
+      const escapedCodePoint = Number.parseInt(input.slice(index + 1, end), 16)
+      decoded += normalizedCssCodePoint(escapedCodePoint)
+      if (/[\t\n ]/.test(input[end] || '')) end += 1
+      index = end
+      continue
+    }
+    const escapedCodePoint = input.codePointAt(index + 1)
+    const escapedCharacter = String.fromCodePoint(escapedCodePoint)
+    decoded += normalizedCssCodePoint(escapedCodePoint)
+    index += 1 + escapedCharacter.length
+  }
+  return decoded
+}
+
 function hasExternalJavaScriptSink(contents) {
   let ast
   try {
@@ -290,11 +332,19 @@ function hasExternalMarkupViolation(contents, { allowReviewedSvgNamespaces = fal
 export function assertNoExternalRuntimeOrigins(artifactName, contents) {
   const lowerName = artifactName.toLowerCase()
   const javascriptSink = (lowerName.endsWith('.js') || lowerName.endsWith('.mjs')) ? hasExternalJavaScriptSink(contents) : null
+  let cssSink = false
+  if (lowerName.endsWith('.css')) {
+    try {
+      cssSink = externalUrls(decodeCssEscapes(contents)).length > 0
+    } catch {
+      cssSink = true
+    }
+  }
   if (
     javascriptSink
     || (lowerName.endsWith('.html') && hasExternalMarkupViolation(contents))
     || (lowerName.endsWith('.svg') && hasExternalMarkupViolation(contents, { allowReviewedSvgNamespaces: true }))
-    || (lowerName.endsWith('.css') && externalUrls(contents).length > 0)
+    || cssSink
     || (lowerName.endsWith('.json') && hasExternalManifestSink(contents))
   ) {
     throw new Error(`${artifactName} contains an external runtime origin in an automatic sink${javascriptSink ? `: ${javascriptSink}` : ''}.`)

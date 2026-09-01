@@ -218,6 +218,36 @@ test('allows a reviewed SVG namespace but rejects the same reviewed URL in an SV
   )).toThrow(/external runtime origin/i)
 })
 
+test.each([
+  String.raw`.x{background:url(https:\2f\2f attacker.example/x.png)}`,
+  String.raw`.x{background:url(https:\00002f\00002f attacker.example/zero.png)}`,
+  String.raw`.x{background:url(h\74tps:\2f\2f attacker.example/scheme.png)}`,
+  String.raw`.x{background:url(H\000074TpS:\2F\00002f attacker.example/mixed.png)}`,
+  String.raw`.x{background:url(h\ttps:\/\/attacker.example/simple.png)}`,
+  String.raw`.x{background:url(https:\2f\2f attacker\2e example/dot.png)}`,
+  '.x{background:url(ht\\\ntps:\\2f\\2f attacker.example/continued.png)}',
+  String.raw`.x{background:url(https:\2f` + '\t' + String.raw`\2f attacker.example/tab.png)}`,
+  String.raw`.x{background-image:image-set(url(https:\2f\2f attacker.example/image-set.png) 1x)}`,
+  String.raw`@import url(https:\2f\2f attacker.example/import.css);`,
+])('rejects an external CSS URL after standards-aligned escape decoding: %s', contents => {
+  expect(() => assertNoExternalRuntimeOrigins('escaped.css', contents)).toThrow(/external runtime origin/i)
+})
+
+test('allows escaped same-origin CSS paths, normalized invalid code points and ordinary CSS', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'local.css',
+    String.raw`.x{background:url(\2f assets\2f image.png)} @import "\2f styles\2f base.css";`,
+  )).not.toThrow()
+  expect(() => assertNoExternalRuntimeOrigins(
+    'ordinary.css',
+    String.raw`.x::before{content:"\0 \d800 \110000"}.y{color:rgb(10 20 30)}`,
+  )).not.toThrow()
+})
+
+test('fails closed on a trailing CSS escape', () => {
+  expect(() => assertNoExternalRuntimeOrigins('malformed.css', 'body{color:red}\\')).toThrow(/external runtime origin/i)
+})
+
 test('scans SVG, manifest JSON, MJS and nested worker artifacts in the final build tree', async () => {
   const distDirectory = await createTemporaryDirectory()
   await mkdir(join(distDirectory, 'nested'), { recursive: true })
