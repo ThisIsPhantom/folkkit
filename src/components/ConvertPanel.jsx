@@ -6,7 +6,7 @@ import { getFormatPairTextLimit, isReleasedFormatPair } from '../catalog/evidenc
 import { useI18n } from '../i18n'
 import { historyStore } from '../privacy/historyStore'
 import { createToolRuntime, ToolRuntimeError } from '../runtime/toolRuntime'
-import { rgbToHex, parseRgb, parseHsl, hslToRgb, hsvToRgb, parseHsv } from '../utils/color'
+import { rgbToHex, parseRgb, parseHsl, hslToRgb, hsvToRgb, parseHsv, normalizeColorToHex } from '../utils/color'
 import FileDropZone from './workspace/FileDropZone'
 import ProgressStatus from './workspace/ProgressStatus'
 import ResultActions from './workspace/ResultActions'
@@ -651,11 +651,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, activeConvert
   const isColorOutput = !isToolMode && ['color-hex', 'color-rgb', 'color-hsl', 'color-hsv'].includes(to)
   const colorPreview = useMemo(() => {
     if (!isColorOutput || !output || output.startsWith('(')) return null
-    if (to === 'color-hsv') {
-      const hsv = parseHsv(output)
-      return hsv ? rgbToHex(hsvToRgb(hsv)) : null
-    }
-    return output
+    return normalizeColorToHex(to, output)
   }, [isColorOutput, to, output])
 
   // File handling for non-media file converters

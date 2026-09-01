@@ -86,6 +86,16 @@ test('changing a format pair retains the current input', async () => {
   expect(screen.getByRole('textbox', { name: 'Input text' })).toHaveValue('Folkkit')
 })
 
+test('keeps released HEX to RGB text while normalizing the native color preview to HEX', async () => {
+  const user = userEvent.setup()
+  renderWithProviders(<ConvertPanel {...panelProps({ from: 'color-hex', to: 'color-rgb' })} />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Input text' }), '#ff0000')
+
+  expect(await screen.findByRole('textbox', { name: 'Conversion output' })).toHaveValue('rgb(255, 0, 0)')
+  expect(screen.getByLabelText('Color preview')).toHaveValue('#ff0000')
+})
+
 test('a new reuse request applies its value once', async () => {
   const user = userEvent.setup()
   const view = renderWithProviders(<ConvertPanel {...panelProps()} />)

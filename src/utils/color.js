@@ -87,3 +87,32 @@ export function parseHsv(s) {
   const m = s.match(/(\d+)\s*[,\s]\s*(\d+)%?\s*[,\s]\s*(\d+)%?/)
   return m ? { h: +m[1], s: +m[2], v: +m[3] } : null
 }
+
+function validRgb(rgb) {
+  return rgb && [rgb.r, rgb.g, rgb.b].every(value => Number.isInteger(value) && value >= 0 && value <= 255)
+}
+
+function validHueColor(color, lightnessKey) {
+  return color
+    && Number.isInteger(color.h) && color.h >= 0 && color.h <= 360
+    && Number.isInteger(color.s) && color.s >= 0 && color.s <= 100
+    && Number.isInteger(color[lightnessKey]) && color[lightnessKey] >= 0 && color[lightnessKey] <= 100
+}
+
+export function normalizeColorToHex(format, value) {
+  const text = String(value || '').trim()
+  let rgb = null
+  if (format === 'color-hex') {
+    rgb = hexToRgb(text)
+  } else if (format === 'color-rgb') {
+    const parsed = parseRgb(text)
+    if (validRgb(parsed)) rgb = parsed
+  } else if (format === 'color-hsl') {
+    const parsed = parseHsl(text)
+    if (validHueColor(parsed, 'l')) rgb = hslToRgb(parsed)
+  } else if (format === 'color-hsv') {
+    const parsed = parseHsv(text)
+    if (validHueColor(parsed, 'v')) rgb = hsvToRgb(parsed)
+  }
+  return validRgb(rgb) ? rgbToHex(rgb) : null
+}
