@@ -85,6 +85,14 @@ try {
     Assert-Equal $validReportA.Report.HttpsRedirectValid $true 'HTTP must redirect permanently to the same HTTPS host and request before the SPA fallback.'
     Assert-Equal $validReportA.Report.HstsValid $true 'HTTPS responses must send the reviewed conservative HSTS policy.'
 
+    $shortPathCommand = 'for %I in ("{0}") do @echo %~sI' -f $validA
+    $validAShortPath = (& cmd.exe /d /c $shortPathCommand).Trim()
+    Assert-True ($validAShortPath -ne $validA) 'The regression fixture must expose a distinct Windows short-path alias.'
+    $shortPathReport = Invoke-Validator $validAShortPath
+    Assert-Equal $shortPathReport.ExitCode 0 "The validator must accept a valid tree through a Windows short-path alias. Error: $($shortPathReport.Error)"
+    Assert-Equal $shortPathReport.Report.FileCount 10 'The short-path alias must retain the complete hosting tree.'
+    Assert-Equal $shortPathReport.Report.TreeHash $validReportA.Report.TreeHash 'The hosting tree hash must not depend on long or short root spelling.'
+
     $insecureReviewPath = Join-Path $temporaryRoot 'insecure.htaccess'
     $insecureTree = Join-Path $temporaryRoot 'insecure-tree'
     New-ValidTree $insecureTree

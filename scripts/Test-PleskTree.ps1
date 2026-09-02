@@ -10,10 +10,34 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-function Get-RelativeHostingPath {
-    param([string]$Root, [string]$FullName)
-    $relative = $FullName.Substring($Root.Length).TrimStart([char[]]@('\', '/'))
-    $relative.Replace('\', '/')
+function Get-HostingFiles {
+    param(
+        [string]$Directory,
+        [string]$RelativePrefix = ''
+    )
+
+    foreach ($entry in @(Get-ChildItem -LiteralPath $Directory -Force)) {
+        $relativePath = if ($RelativePrefix) {
+            "$RelativePrefix/$($entry.Name)"
+        } else {
+            $entry.Name
+        }
+
+        if ($entry.PSIsContainer) {
+            if ([bool]($entry.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+                throw "Hosting source may not contain reparse-point directories: $relativePath"
+            }
+            Get-HostingFiles -Directory $entry.FullName -RelativePrefix $relativePath
+            continue
+        }
+
+        [pscustomobject]@{
+            Path = $relativePath.Replace('\', '/')
+            FullName = $entry.FullName
+            Length = $entry.Length
+            IsReparsePoint = [bool]($entry.Attributes -band [System.IO.FileAttributes]::ReparsePoint)
+        }
+    }
 }
 
 function Test-AllowedHostingPath {
@@ -112,14 +136,7 @@ try {
         throw "Hosting source is not a directory: $resolvedSource"
     }
 
-    $files = @(Get-ChildItem -LiteralPath $resolvedSource -Recurse -Force -File | ForEach-Object {
-        [pscustomobject]@{
-            Path = Get-RelativeHostingPath -Root $resolvedSource -FullName $_.FullName
-            FullName = $_.FullName
-            Length = $_.Length
-            IsReparsePoint = [bool]($_.Attributes -band [System.IO.FileAttributes]::ReparsePoint)
-        }
-    } | Sort-Object Path)
+    $files = @(Get-HostingFiles -Directory $resolvedSource | Sort-Object Path)
 
     $forbidden = @($files | Where-Object { $_.IsReparsePoint -or -not (Test-AllowedHostingPath $_.Path) })
     $requiredFiles = @('.htaccess', 'favicon.svg', 'index.html', 'manifest.json', 'sw.js', 'theme-init.js')
