@@ -19,6 +19,7 @@ const categories = [{ id: 'document', name: 'PDF und Dokumente' }]
 
 afterEach(() => {
   localStorage.clear()
+  vi.unstubAllGlobals()
 })
 
 beforeEach(() => {
@@ -143,6 +144,44 @@ describe('ToolPicker', () => {
     )
 
     expect(screen.getByRole('combobox', { name: label })).toHaveAttribute('placeholder', placeholder)
+  })
+
+  it('closes on Escape before the scheduled search autofocus runs', async () => {
+    const animationFrames = []
+    vi.stubGlobal('requestAnimationFrame', callback => {
+      animationFrames.push(callback)
+      return animationFrames.length
+    })
+    const user = userEvent.setup()
+
+    function Harness() {
+      const [open, setOpen] = useState(false)
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>Werkzeugauswahl öffnen</button>
+          <ToolPicker
+            open={open}
+            onClose={() => setOpen(false)}
+            onSelectFormat={vi.fn()}
+            onSelectConverter={vi.fn()}
+            mode="from"
+            releasedFormats={[]}
+            releasedTools={releasedTools}
+            categories={categories}
+          />
+        </>
+      )
+    }
+
+    renderWithProviders(<Harness />)
+    const trigger = screen.getByRole('button', { name: 'Werkzeugauswahl öffnen' })
+    await user.click(trigger)
+    expect(screen.getByRole('combobox', { name: 'Konvertierungen durchsuchen' })).toBeInTheDocument()
+    expect(trigger).toHaveFocus()
+
+    await user.keyboard('{Escape}')
+
+    expect(screen.queryByRole('combobox', { name: 'Konvertierungen durchsuchen' })).not.toBeInTheDocument()
   })
 
   it('selects the active option with the keyboard and restores focus to its trigger on Escape', async () => {

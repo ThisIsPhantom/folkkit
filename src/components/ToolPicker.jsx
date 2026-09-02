@@ -332,6 +332,18 @@ function ToolPickerContent({
     }
   }
 
+  useEffect(() => {
+    if (!open) return
+    const handleDocumentKeyDown = (event) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      event.stopPropagation()
+      onClose()
+    }
+    document.addEventListener('keydown', handleDocumentKeyDown)
+    return () => document.removeEventListener('keydown', handleDocumentKeyDown)
+  }, [open, onClose])
+
   // Close on outside click
   useEffect(() => {
     if (!open) return
