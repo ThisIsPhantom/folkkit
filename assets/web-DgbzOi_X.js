@@ -1,0 +1,12 @@
+const a="(Base64 APIs are not available in this runtime)",i="(invalid Base64 input or non-UTF-8 content)";function l(t){if(typeof btoa!="function")return{error:a};try{const e=new TextEncoder().encode(t);let r="";const o=32768;for(let n=0;n<e.length;n+=o)r+=String.fromCharCode(...e.subarray(n,n+o));return{value:btoa(r)}}catch(e){return{error:`(failed to encode text as Base64: ${e&&e.message?e.message:"unknown error"})`}}}function d(t){if(typeof atob!="function")return{error:a};try{const e=atob(t),r=new Uint8Array(e.length);for(let n=0;n<e.length;n++)r[n]=e.charCodeAt(n);let o;try{o=new TextDecoder("utf-8",{fatal:!0})}catch{o=new TextDecoder("utf-8")}return{value:o.decode(r)}}catch{return{error:i}}}const g=[{id:"css-minify",name:"CSS Minify",category:"data",description:"Minify CSS by removing whitespace and comments",convert:t=>t.replace(/\/\*[\s\S]*?\*\//g,"").replace(/\s+/g," ").replace(/\s*([{}:;,>+~])\s*/g,"$1").replace(/;}/g,"}").trim()},{id:"json-validate",name:"JSON Validator",category:"data",description:"Validate JSON and show errors with line numbers",convert:t=>{try{const e=JSON.parse(t),r=typeof e=="object"&&e!==null?Array.isArray(e)?`${e.length} items`:`${Object.keys(e).length} keys`:typeof e;return["Valid JSON","",`Type: ${Array.isArray(e)?"array":typeof e}`,`Content: ${r}`,`Size: ${t.length} chars`,`Minified: ${JSON.stringify(e).length} chars`].join(`
+`)}catch(e){const r=e.message.match(/position (\d+)/);if(r){const o=parseInt(r[1]),n=t.slice(0,o).split(`
+`),s=n.length,c=n[n.length-1].length+1;return`Invalid JSON
+
+Error at line ${s}, column ${c}:
+${e.message}`}return`Invalid JSON
+
+${e.message}`}}},{id:"base64url-encode",name:"Base64URL Encode",category:"encode",description:"Encode text to URL-safe Base64 (RFC 4648)",convert:t=>{const e=l(t);return e.error?e.error:e.value.replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}},{id:"base64url-decode",name:"Base64URL Decode",category:"encode",description:"Decode URL-safe Base64 back to text",convert:t=>{let e=t.replace(/-/g,"+").replace(/_/g,"/");for(;e.length%4;)e+="=";const r=d(e);return r.error?r.error:r.value}},{id:"slug-gen",name:"Slug Generator",category:"utility",description:"Convert text to URL-safe slugs",convert:t=>t.trim().split(`
+`).map(r=>{const o=r.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s-]/g,"").replace(/\s+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");return`${r.trim()}
+  → ${o}`}).join(`
+
+`)}];export{g as webConverters};
