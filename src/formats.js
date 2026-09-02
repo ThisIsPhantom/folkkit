@@ -1,8 +1,8 @@
 // Format definitions and conversion graph
 // This powers the "Apple Translate" style UI where you pick From → To
-import { objToYaml, yamlToJson, parseToml } from './utils/parsers'
-import { hexToRgb, rgbToHsl, hslToRgb, parseRgb, parseHsl, rgbToHsv, hsvToRgb, parseHsv } from './utils/color'
-import { getFormatEvidence, getReleasedEvidenceTargets, releasedFormatIds } from './catalog/evidenceRegistry'
+import { objToYaml, yamlToJson, parseToml } from './utils/parsers.js'
+import { hexToRgb, rgbToHsl, hslToRgb, parseRgb, parseHsl, rgbToHsv, hsvToRgb, parseHsv } from './utils/color.js'
+import { getFormatEvidence, getReleasedEvidenceTargets, releasedFormatIds } from './catalog/evidenceRegistry.js'
 
 export const formats = [
   { id: 'text', name: 'Text', group: 'Text', placeholder: 'Type or paste text...' },

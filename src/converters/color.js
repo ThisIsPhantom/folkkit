@@ -1,4 +1,4 @@
-import { hexToRgb, rgbToHsl, hslToRgb, rgbToHex } from '../utils/color'
+import { hexToRgb, rgbToHsl, hslToRgb, rgbToHex } from '../utils/color.js'
 
 function parseRgbString(input) {
   const match = input.match(/rgba?\(\s*(\d+)\s*[,\s]\s*(\d+)\s*[,\s]\s*(\d+)/)

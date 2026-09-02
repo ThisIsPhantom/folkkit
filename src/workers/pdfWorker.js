@@ -1,4 +1,4 @@
-import { runPdfOperation } from './pdfWorkerOperations'
+import { runPdfOperation } from './pdfWorkerOperations.js'
 
 self.onmessage = async ({ data }) => {
   try {

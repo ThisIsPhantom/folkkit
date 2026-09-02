@@ -1,5 +1,5 @@
-import { PDF_WORK_LIMITS, resourceLimitError } from './workBudgets'
-import { createPdfWorker } from './createPdfWorker'
+import { PDF_WORK_LIMITS, resourceLimitError } from './workBudgets.js'
+import { createPdfWorker } from './createPdfWorker.js'
 
 const activeWorkers = new Set()
 
@@ -39,7 +39,7 @@ export async function runPdfWorkerTask({
 } = {}) {
   if (WorkerCtor === null && import.meta.env?.MODE === 'test') {
     if (import.meta.env?.MODE === 'test') {
-      const { runPdfOperation } = await import('../workers/pdfWorkerOperations')
+      const { runPdfOperation } = await import('../workers/pdfWorkerOperations.js')
       const payloadFiles = await Promise.all(Array.from(files).map(async file => ({
         name: String(file.name || 'document.pdf'),
         type: String(file.type || 'application/pdf'),

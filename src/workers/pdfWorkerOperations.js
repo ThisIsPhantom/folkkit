@@ -1,5 +1,5 @@
 import { PDFDocument, degrees } from 'pdf-lib'
-import { OUTPUT_LIMIT_BYTES, PDF_WORK_LIMITS, resourceLimitError } from '../runtime/workBudgets'
+import { OUTPUT_LIMIT_BYTES, PDF_WORK_LIMITS, resourceLimitError } from '../runtime/workBudgets.js'
 
 function invalidFileError() {
   const error = new Error('invalid_file')

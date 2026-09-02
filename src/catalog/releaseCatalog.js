@@ -1,8 +1,8 @@
-import { categories, converterModuleIds } from '../converters'
-import { formats } from '../formats'
-import { getMessages, normalizeLocale, translate } from '../i18n'
-import { TOOL_LIMITS } from '../runtime/limits'
-import { getFormatEvidence } from './evidenceRegistry'
+import { categories, converterModuleIds } from '../converters/index.js'
+import { formats } from '../formats.js'
+import { getMessages, normalizeLocale, translate } from '../i18n/index.js'
+import { TOOL_LIMITS } from '../runtime/limits.js'
+import { getFormatEvidence } from './evidenceRegistry.js'
 
 export const releaseTiers = Object.freeze(['core', 'advanced', 'experimental', 'hidden'])
 

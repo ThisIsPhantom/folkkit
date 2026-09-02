@@ -1,5 +1,5 @@
 // Image format conversions using Canvas API — zero external dependencies
-import { assertImageDimensionBudget, getImageDimensionLimits } from '../runtime/workBudgets'
+import { assertImageDimensionBudget, getImageDimensionLimits } from '../runtime/workBudgets.js'
 
 const nativeCreateImageBitmap = typeof globalThis.createImageBitmap === 'function'
   ? globalThis.createImageBitmap.bind(globalThis)

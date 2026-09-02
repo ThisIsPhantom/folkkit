@@ -1,4 +1,4 @@
-import { BASE58_TEXT_LIMIT, TEXT_LIMIT } from '../runtime/limits'
+import { BASE58_TEXT_LIMIT, TEXT_LIMIT } from '../runtime/limits.js'
 
 export const evidenceLimitBytes = Object.freeze({
   'text-5-mib': TEXT_LIMIT,

@@ -1,5 +1,5 @@
 // Web-related converters — regex, cron, CSS minify, diff, etc.
-import { objToYaml, yamlToJson, parseYamlValue as _parseYamlValue, parseToml } from '../utils/parsers'
+import { objToYaml, yamlToJson, parseYamlValue as _parseYamlValue, parseToml } from '../utils/parsers.js'
 
 const REGEX_PATTERN_MAX_LENGTH = 500
 const REGEX_INPUT_MAX_LENGTH = 200000

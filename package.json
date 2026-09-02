@@ -18,7 +18,7 @@
     "predev": "node scripts/sync-runtime-assets.mjs",
     "dev": "vite",
     "prebuild": "node scripts/sync-runtime-assets.mjs",
-    "build": "node scripts/audit-catalog.mjs && vite build && node scripts/generate-service-worker.mjs && node scripts/check-bundle-budget.mjs && node scripts/assert-runtime-artifacts.mjs",
+    "build": "bun scripts/audit-catalog.mjs && vite build && node scripts/generate-service-worker.mjs && node scripts/check-bundle-budget.mjs && node scripts/assert-runtime-artifacts.mjs",
     "build:site": "bun run scripts/build-site.mjs",
     "generate:notices": "node scripts/generate-third-party-notices.mjs",
     "check:notices": "node scripts/generate-third-party-notices.mjs --check",

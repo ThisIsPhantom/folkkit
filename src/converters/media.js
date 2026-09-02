@@ -1,9 +1,9 @@
 // Media converters use the browser's MediaRecorder, Canvas, and Web Audio APIs
 // For more complex conversions, we use ffmpeg.wasm loaded on demand
 
-import { runtimeAssetUrl } from '../runtime/runtimeAssets'
-import { TOOL_LIMITS } from '../runtime/limits'
-import { MEDIA_LIMITS, readWavDurationSeconds, resourceLimitError } from '../runtime/workBudgets'
+import { runtimeAssetUrl } from '../runtime/runtimeAssets.js'
+import { TOOL_LIMITS } from '../runtime/limits.js'
+import { MEDIA_LIMITS, readWavDurationSeconds, resourceLimitError } from '../runtime/workBudgets.js'
 
 let ffmpegLoadListeners = []
 let ffmpegTempFileCounter = 0

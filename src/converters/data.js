@@ -1,4 +1,4 @@
-import { assertCsvBudget } from '../runtime/workBudgets'
+import { assertCsvBudget } from '../runtime/workBudgets.js'
 
 function utf8ToBase64(input) {
   const bytes = new TextEncoder().encode(input)

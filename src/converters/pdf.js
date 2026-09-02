@@ -1,8 +1,8 @@
 // Lazy-load pdf-lib only when a PDF converter is used
 
-import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits'
-import { assertTextPdfBudget } from '../runtime/workBudgets'
-import { runPdfWorkerTask, terminatePdfWorkers } from '../runtime/pdfWorkerClient'
+import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits.js'
+import { assertTextPdfBudget } from '../runtime/workBudgets.js'
+import { runPdfWorkerTask, terminatePdfWorkers } from '../runtime/pdfWorkerClient.js'
 
 async function loadPdfLib() {
   const { PDFDocument } = await import('pdf-lib')

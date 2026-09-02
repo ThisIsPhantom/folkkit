@@ -1,7 +1,7 @@
-import messagesDe from './messages.de'
-import messagesEn from './messages.en'
+import messagesDe from './messages.de.js'
+import messagesEn from './messages.en.js'
 
-export { useI18n } from './context'
+export { useI18n } from './context.js'
 
 export const messagesByLocale = Object.freeze({
   de: messagesDe,

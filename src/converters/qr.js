@@ -1,5 +1,5 @@
-import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits'
-import { QR_TEXT_LIMIT_BYTES, resourceLimitError } from '../runtime/workBudgets'
+import { IMAGE_ACCEPT_TYPES, TOOL_LIMITS } from '../runtime/limits.js'
+import { QR_TEXT_LIMIT_BYTES, resourceLimitError } from '../runtime/workBudgets.js'
 
 function qrFailure(code) {
   const error = new Error(code)

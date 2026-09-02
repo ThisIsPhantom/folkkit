@@ -1,19 +1,19 @@
-import { releaseCatalog } from '../catalog/releaseCatalog'
+import { releaseCatalog } from '../catalog/releaseCatalog.js'
 
 const moduleLoaders = new Map([
-  ['text', () => import('./text')],
-  ['qr', () => import('./qr')],
-  ['image', () => import('./image')],
-  ['hash', () => import('./hash')],
-  ['crypto', () => import('./crypto')],
-  ['data', () => import('./data')],
-  ['web', () => import('./web')],
-  ['number', () => import('./number')],
-  ['color', () => import('./color')],
-  ['utility', () => import('./utility')],
-  ['imageFormat', () => import('./imageFormat')],
-  ['media', () => import('./media')],
-  ['pdf', () => import('./pdf')],
+  ['text', () => import('./text.js')],
+  ['qr', () => import('./qr.js')],
+  ['image', () => import('./image.js')],
+  ['hash', () => import('./hash.js')],
+  ['crypto', () => import('./crypto.js')],
+  ['data', () => import('./data.js')],
+  ['web', () => import('./web.js')],
+  ['number', () => import('./number.js')],
+  ['color', () => import('./color.js')],
+  ['utility', () => import('./utility.js')],
+  ['imageFormat', () => import('./imageFormat.js')],
+  ['media', () => import('./media.js')],
+  ['pdf', () => import('./pdf.js')],
 ])
 
 function selectModuleConverters(moduleId, loadedModule) {

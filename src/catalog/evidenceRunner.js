@@ -1,7 +1,7 @@
-import { getConvertFn } from '../formats'
-import { loadConverter } from '../converters/loadConverter'
-import { catalogEvidenceRegistry } from './evidenceRegistry'
-import { browserEvidenceLinkErrors } from './browserEvidence'
+import { getConvertFn } from '../formats.js'
+import { loadConverter } from '../converters/loadConverter.js'
+import { catalogEvidenceRegistry } from './evidenceRegistry.js'
+import { browserEvidenceLinkErrors } from './browserEvidence.js'
 
 function assertion(state, condition, message, { behavior = false } = {}) {
   state.assertions += 1
