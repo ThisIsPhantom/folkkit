@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 import { afterEach, expect, test } from 'vitest'
+import playwrightConfig from '../playwright.config.js'
 
 const node = process.execPath
 const validator = join(process.cwd(), 'scripts', 'validate-workflow-security.mjs')
@@ -33,6 +34,10 @@ test('normal production build enforces the final runtime artifact policy', async
   const packageJson = JSON.parse(await readFile(join(process.cwd(), 'package.json'), 'utf8'))
   expect(packageJson.scripts.build).toMatch(/^bun scripts\/audit-catalog\.mjs && vite build/)
   expect(packageJson.scripts.build).toMatch(/node scripts\/assert-runtime-artifacts\.mjs$/)
+})
+
+test('Playwright quotes the runtime executable used to start the preview server', () => {
+  expect(playwrightConfig.webServer.command.startsWith(`"${process.execPath}" `)).toBe(true)
 })
 
 test.each([
