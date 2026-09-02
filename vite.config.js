@@ -30,8 +30,14 @@ function pruneHiddenBrowserConverters() {
 function assertBuiltOwnershipMetadata() {
   return {
     name: 'assert-built-ownership-metadata',
-    closeBundle() {
-      const builtHtml = readFileSync(resolve('dist', 'index.html'), 'utf8')
+    writeBundle(_outputOptions, bundle) {
+      const indexAsset = Object.values(bundle).find(output => (
+        output.type === 'asset' && output.fileName === 'index.html'
+      ))
+      if (!indexAsset) throw new Error('Built output must contain index.html for ownership metadata validation.')
+      const builtHtml = typeof indexAsset.source === 'string'
+        ? indexAsset.source
+        : new TextDecoder().decode(indexAsset.source)
       assertPassiveAdsenseOwnershipMeta(builtHtml)
     },
   }
