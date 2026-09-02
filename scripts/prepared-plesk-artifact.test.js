@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 import { afterEach, expect, test } from 'vitest'
 import { preparePleskArtifact, pushPreparedPleskArtifact, verifyPreparedPleskArtifact } from './prepared-plesk-artifact.mjs'
+import * as preparedArtifactModule from './prepared-plesk-artifact.mjs'
 
 const temporaryDirectories = []
 
@@ -31,6 +32,19 @@ function git(cwd, ...args) {
   if (result.status !== 0) throw new Error(result.stderr || result.stdout)
   return result.stdout.trim()
 }
+
+test('GitHub authentication is expressed as reusable config for every remote Git command', () => {
+  expect(preparedArtifactModule.githubRemoteAuthArgs).toBeTypeOf('function')
+  expect(preparedArtifactModule.githubRemoteAuthArgs(
+    'https://github.com/example/folkkit.git',
+    'test-token',
+  )).toEqual([
+    '-c',
+    'http.extraheader=AUTHORIZATION: basic eC1hY2Nlc3MtdG9rZW46dGVzdC10b2tlbg==',
+  ])
+  expect(preparedArtifactModule.githubRemoteAuthArgs('https://example.test/folkkit.git', 'test-token')).toEqual([])
+  expect(preparedArtifactModule.githubRemoteAuthArgs('https://github.com/example/folkkit.git', '')).toEqual([])
+})
 
 test('prepared artifact binds source commit, tree hash, and archive bytes with SHA-256', async () => {
   const root = await fixtureRoot('prepared-artifact')

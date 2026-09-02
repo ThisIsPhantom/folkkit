@@ -58,6 +58,12 @@ function computePreparedDigest(manifestBytes, archiveBytes) {
   ]))
 }
 
+export function githubRemoteAuthArgs(remoteUrl, token) {
+  if (!token || !/^https:\/\/github\.com\//i.test(remoteUrl)) return []
+  const auth = Buffer.from(`x-access-token:${token}`).toString('base64')
+  return ['-c', `http.extraheader=AUTHORIZATION: basic ${auth}`]
+}
+
 export async function preparePleskArtifact({ distDirectory, outputDirectory, sourceCommit }) {
   assertSourceCommit(sourceCommit)
   const resolvedDist = resolve(distDirectory)
@@ -149,11 +155,14 @@ export async function pushPreparedPleskArtifact({
   const root = resolve(repoRoot)
   const git = (...args) => run('git', ['-C', root, ...args], { env })
   try {
+    const remoteUrl = await git('remote', 'get-url', remote)
+    const remoteAuthArgs = githubRemoteAuthArgs(remoteUrl, env.GITHUB_TOKEN)
+    const remoteGit = (...args) => run('git', ['-C', root, ...remoteAuthArgs, ...args], { env })
     const head = await git('rev-parse', 'HEAD')
     if (head !== verified.manifest.sourceCommit) throw new Error('Prepared artifact source commit does not match HEAD.')
     if (await git('branch', '--show-current') !== 'main') throw new Error('Prepared artifact push requires main.')
     if (await git('status', '--porcelain=v1', '--untracked-files=normal')) throw new Error('Prepared artifact push requires a clean worktree.')
-    await git('fetch', '--no-tags', remote, 'main')
+    await remoteGit('fetch', '--no-tags', remote, 'main')
     const counts = (await git('rev-list', '--left-right', '--count', `HEAD...${remote}/main`)).split(/\s+/)
     if (counts[0] !== '0' || counts[1] !== '0') throw new Error('Prepared artifact push requires synchronized main.')
     await validateHostingTree(verified.hostingDirectory, root, env)
@@ -166,12 +175,12 @@ export async function pushPreparedPleskArtifact({
       await indexedGit('read-tree', '--empty')
       await indexedGit('-c', 'core.autocrlf=false', `--work-tree=${verified.hostingDirectory}`, 'add', '--all', '--force', '--', '.')
       const tree = await indexedGit('write-tree')
-      const remoteLine = await git('ls-remote', '--heads', remote, `refs/heads/${targetBranch}`)
+      const remoteLine = await remoteGit('ls-remote', '--heads', remote, `refs/heads/${targetBranch}`)
       let parent = ''
       if (remoteLine) {
         parent = remoteLine.split(/\s+/)[0]
         if (!/^[0-9a-f]{40}$/.test(parent)) throw new Error('Remote hosting branch returned an invalid commit.')
-        await git('fetch', '--no-tags', remote, `+refs/heads/${targetBranch}:refs/remotes/${remote}/${targetBranch}`)
+        await remoteGit('fetch', '--no-tags', remote, `+refs/heads/${targetBranch}:refs/remotes/${remote}/${targetBranch}`)
       }
       const sourceDate = await git('show', '-s', '--format=%cI', head)
       const commitEnv = {
@@ -186,16 +195,9 @@ export async function pushPreparedPleskArtifact({
       const commitArgs = ['-C', root, 'commit-tree', tree, '-m', `Hosting build from ${head}`]
       if (parent) commitArgs.push('-p', parent)
       const hostingCommit = await run('git', commitArgs, { env: commitEnv })
-      const latestParent = (await git('ls-remote', '--heads', remote, `refs/heads/${targetBranch}`)).split(/\s+/)[0] || ''
+      const latestParent = (await remoteGit('ls-remote', '--heads', remote, `refs/heads/${targetBranch}`)).split(/\s+/)[0] || ''
       if (latestParent !== parent) throw new Error('Remote hosting branch changed while the prepared artifact was verified.')
-      const pushArgs = ['-C', root]
-      const remoteUrl = await git('remote', 'get-url', remote)
-      if (env.GITHUB_TOKEN && /^https:\/\/github\.com\//i.test(remoteUrl)) {
-        const auth = Buffer.from(`x-access-token:${env.GITHUB_TOKEN}`).toString('base64')
-        pushArgs.push('-c', `http.extraheader=AUTHORIZATION: basic ${auth}`)
-      }
-      pushArgs.push('push', remote, `${hostingCommit}:refs/heads/${targetBranch}`)
-      await run('git', pushArgs, { env })
+      await remoteGit('push', remote, `${hostingCommit}:refs/heads/${targetBranch}`)
       return { hostingCommit, sourceCommit: head, treeHash: verified.manifest.treeHash }
     } finally {
       await rm(temporaryIndexRoot, { recursive: true, force: true })
