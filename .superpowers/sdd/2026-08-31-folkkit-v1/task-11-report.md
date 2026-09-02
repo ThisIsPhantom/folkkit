@@ -167,3 +167,50 @@ Ergebnis innerhalb des Briefs: 11 Addressed, 0 Open. Die unten genannten externe
 - Der reale öffentliche Release bleibt bis zur Freigabe von Betreibername, Postadresse und Kontakt-E-Mail gesperrt.
 
 Es erfolgten weiterhin kein Push, kein Merge, keine Veröffentlichung, kein Sichtbarkeitswechsel, kein Hosttech-Zugriff, kein DNS-Eingriff, kein Domainkauf und kein Deployment.
+
+## Autorisierte Abschlussfortsetzung vom 2. September 2026
+
+### Anlass und Ergebnis
+
+Die finale Gesamtprüfung nach dem ersten Dokumentationscommit fand zwei tragende Restpunkte: verschachtelte CSS-Bildfunktionen wurden nicht rekursiv auf externe URLs geprüft, und Tastaturhilfe sowie Formatpaar-Metadaten blieben im deutschen Modus teilweise englisch. Der Benutzer autorisierte die Fortsetzung ausdrücklich mit `Gut, weiter`.
+
+Der unveränderlich geprüfte neue Codekandidat ist `C = 5812da09f06790cfe5fbd8773789ffef421641d4`. Er schliesst beide Restpunkte. Die einmalige unabhängige Patch-Review fand drei äquivalente Fälle: ein per CSS-Escape eingeschobenes Tabulatorzeichen im HTTPS-Schema, ein dynamischer Bildwert über eine CSS Custom Property und das wirkungslose Grossbuchstaben-Kopierkürzel. Alle drei wurden gegen vorher rote Tests geschlossen.
+
+### Sicherheitsgrenze
+
+- Jede CSS-Funktion ausser dem terminalen `url()` wird rekursiv nach verschachtelten URL-Sinks untersucht.
+- Direkte URL-Strings werden nur in `image()`, `image-set()` und `-webkit-image-set()` als Bildquellen behandelt. Strings in Funktionen wie `type()` bleiben normale Werte.
+- URL-tragende CSS Custom Properties in Bildfunktionen stoppen fail-closed. ASCII-URL-Steuerzeichen werden vor der HTTP(S)-Prüfung entfernt.
+- Eingebettete `<style>`-Blöcke, `style`-Attribute und URL-tragende SVG-Darstellungsattribute verwenden dieselbe CSS-Prüfung.
+- Tiefe lokale `calc()`-Ausdrücke ohne URL-Sink, relative Pfade und externer Text ausserhalb eines URL-Kontexts bleiben zulässig.
+
+### Lokalisierung und Interaktion
+
+- Die Tastaturhilfe bezieht sämtliche sichtbaren Texte aus den DE/EN-Wörterbüchern.
+- Sie besitzt Dialogsemantik, fokussiert eine sichtbare Schliessen-Aktion und stellt den vorherigen Fokus beim Schliessen wieder her.
+- Ctrl und Command werden gemeinsam angezeigt. Das Kürzel Ctrl/Command + Shift + C verarbeitet Gross- und Kleinbuchstaben und kopiert das aktuelle Ergebnis.
+- Escape schliesst die Hilfe, ohne einen aktiven Werkzeugpfad zu verlassen.
+- Formatpaar-Titel, Beschreibung und Open-Graph-Metadaten verwenden sprachabhängige Vorlagen. Deutsch zeigt beispielsweise `Text in Base64 · Folkkit`, Englisch `Text to Base64 · Folkkit`.
+
+### RED und GREEN
+
+- Erste RED-Suite: 13 von 88 fokussierten Tests scheiterten genau an den verschachtelten CSS-Sinks, Inline-CSS, fehlender Hilfe-Lokalisierung, Dialogsemantik und englischen Formatmetadaten.
+- Zweite RED-Suite nach unabhängiger Patch-Review: vier Tests scheiterten an URL-Steuerzeichen, Custom-Property-Indirektion, tiefer lokaler Verschachtelung und Grossbuchstaben-Shortcut.
+- Fokussiertes GREEN: vier Testdateien, 100 von 100 Tests bestanden.
+- Reale Browsergrenze: 9 von 9 Chromium-PoCs erzeugten den externen Requestversuch und wurden anschliessend vom Release-Gate abgewiesen.
+
+### Vollständige Evidenz auf neuem `C`
+
+- `bun run verify`: ESLint ohne Befund; Vitest 45 Dateien und 488 von 488 Tests; Produktionsbuild, Katalogaudit, Bundle-Budget und Runtime-Artefaktprüfung bestanden.
+- Katalog: 499 Konverter, davon 49 freigegeben und 450 verborgen; 223 Formate, davon 18 freigegeben und 205 verborgen.
+- Bundle: initiales JavaScript 169.7 KiB gzip bei einem Budget von 200.0 KiB; PDF-Worker 178.1 KiB gzip.
+- Chromium Desktop: 52 von 52 Tests bestanden.
+- WebKit Desktop und Chromium Mobile 390 x 844: Kernmatrix je 1 von 1 bestanden.
+- Produktions-CSP: reale MP3-Konvertierung 1 von 1 bestanden.
+- Dependency-Audit: Exitcode 0 ohne High-Befund.
+- Drittanbieterhinweise: aktuell; SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e`.
+- Secret-Scan: 219 getrackte Dateien, 0 Kandidaten.
+- `build:release`: erwarteter Abbruch vor dem Build wegen fehlendem Betreibername, fehlender Postadresse und fehlender Kontakt-E-Mail.
+- Plesk `ValidateOnly`: 30 Dateien, 0 verbotene Dateien, Baumhash `71bc4be9bc49e53dfdf9c7ad6ced03dae18fccbea093c32a2b9a603f9d79ef8f`. Der isolierte, nicht referenzierte Hostingcommit war `2d1d472f37eca0c5aa6af6fcf5ff5b5228879a2c`.
+
+Der nachfolgende reine Dokumentationscommit `D` zeichnet diese Evidenz auf. `D` ist selbst kein validierter Releasequellstand und muss vor einer Veröffentlichung erneut vollständig geprüft werden. Die externen Gates für Firefox, manuellen Screenreader-Smoke und Live-Hosttech-Header bleiben unverändert bestehen.

@@ -2,7 +2,7 @@
 
 ## Status
 
-Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Unveränderlich geprüfter Codekandidat der abschliessenden Fixwelle: `09504747e6f548754587c893c3542eb93a3e3b4c`. Die abschliessende Fixwelle ist umgesetzt; die finale unabhängige Re-Review steht aus.
+Der lokale V1-Kandidat ist technisch geprüft, aber nicht öffentlich freigegeben. Unveränderlich geprüfter Codekandidat der ausdrücklich autorisierten Abschlussfortsetzung: `5812da09f06790cfe5fbd8773789ffef421641d4`. Die gezielte unabhängige Patch-Review ist abgeschlossen. Ihre drei zusätzlichen Umgehungs- und Kompatibilitätsbefunde wurden testgetrieben geschlossen und auf diesem Kandidaten verifiziert.
 
 Alle automatisierten Nachweise in dieser Checkliste beziehen sich auf diesen Codekandidaten `C`. Der spätere reine Dokumentationscommit `D`, der diese Checkliste und den Task-11-Bericht aufnimmt, wurde nicht als Releasequelle validiert und muss vor einer Veröffentlichung erneut vollständig geprüft werden.
 
@@ -13,8 +13,8 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Gate | Ergebnis |
 | --- | --- |
 | ESLint | bestanden |
-| Unit- und Vertragstests | 44 Testdateien, 468 Tests bestanden |
-| Chromium Desktop | 49 von 49 E2E-Tests bestanden |
+| Unit- und Vertragstests | 45 Testdateien, 488 Tests bestanden |
+| Chromium Desktop | 52 von 52 E2E-Tests bestanden |
 | WebKit Desktop | Kernmatrix 1 von 1 bestanden |
 | Chromium Mobile 390 x 844 | Kernmatrix 1 von 1 bestanden |
 | Firefox Desktop | lokal blockiert, siehe Browsermatrix |
@@ -25,12 +25,13 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 | Offline | Shell, Text, QR und PDF bestanden; fehlendes FFmpeg-Modul wurde nach Wiederverbindung erfolgreich nachgeladen |
 | Katalogaudit | 499 Konverter, 49 freigegeben und 450 verborgen; 223 Formate, 18 freigegeben und 205 verborgen |
 | Formatpaare | 19 freigegebene Paare, 19 `compatible`, 0 `incompatible-but-implemented` |
-| Bundle | initial 169.3 KiB gzip von 200 KiB; PDF-Worker 178.1 KiB gzip von 220 KiB |
+| CSS-Sicherheitsgrenze | 9 von 9 reale Chromium-PoCs bestanden, inklusive verschachtelter Bildfunktion, URL-Steuerzeichen und Custom Property |
+| Bundle | initial 169.7 KiB gzip von 200 KiB; PDF-Worker 178.1 KiB gzip von 220 KiB |
 | Drittanbieterhinweise | aktuell; SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e` |
 | Supply Chain | `bun audit --audit-level=high` ohne Befund |
-| Secret-Scan | 217 getrackte Dateien, 0 Kandidaten beim Kandidatenlauf auf `C` |
+| Secret-Scan | 219 getrackte Dateien, 0 Kandidaten beim Kandidatenlauf auf `C` |
 | Plesk-Vertrag | Bare-Remote-Verträge bestanden |
-| Plesk `ValidateOnly` | Für `C`: 30 Dateien, 0 verboten, Baumhash `4c68c0bb309bd50a4b14c66e457bc7b6a9e9b60bed87532fe3278d3ef1f0dc76` |
+| Plesk `ValidateOnly` | Für `C`: 30 Dateien, 0 verboten, Baumhash `71bc4be9bc49e53dfdf9c7ad6ced03dae18fccbea093c32a2b9a603f9d79ef8f` |
 
 ## Browsermatrix
 
@@ -43,7 +44,7 @@ Es erfolgten kein Push, kein Merge, keine Änderung der Repository-Sichtbarkeit,
 
 Der historische Standardscan `d182b66a-b0a8-45f4-93b5-3784092bde95` gilt ausschliesslich für `98d58ed1cd9926a33ec1ee6f94d2fb28b4705f4e`. Seine Artefakte wurden nicht verändert oder als Nachscan bezeichnet. Er deckte 185 von 185 getrackten Dateien ab und meldete 11 validierte Befunde, 4 mittel und 7 niedrig, ohne hohe oder kritische Befunde.
 
-Der aktuelle Kandidat enthält Korrekturen und gezielte Nachweise für alle 11 Befunde. Die abschliessende Fixwelle ist umgesetzt; die finale unabhängige Re-Review steht aus:
+Der aktuelle Kandidat enthält Korrekturen und gezielte Nachweise für alle 11 Befunde des historischen Scans. Die spätere Gesamtprüfung meldete zwei zusätzliche tragende Restbefunde. Beide sind in `5812da09f06790cfe5fbd8773789ffef421641d4` geschlossen:
 
 1. Actions sind an vollständige SHAs gebunden.
 2. Artefaktaufbau und schreibberechtigter Push sind getrennt; Archiv, Baum und Quellcommit sind mit SHA-256 gebunden.
@@ -66,7 +67,7 @@ Fixrunde 1 ergänzte folgende Nachweise:
 5. Jedes der 19 freigegebenen Formatpaare deklariert seinen Zustand einzeln. Eine Rückkehr zu einem früher bestätigten Paar beginnt wieder unbestätigt.
 6. Der offizielle Playwright-Installationsvertrag umfasst Chromium, Firefox und WebKit.
 7. Der Clipboard-Fallback kopiert ausschliesslich die inhaltsfreie Werkzeug-URL.
-8. Checkliste und Projektmemory verwenden ausschliesslich post-fix Evidenz und halten fest: Die abschliessende Fixwelle ist umgesetzt; die finale unabhängige Re-Review steht aus.
+8. Checkliste und Projektmemory verwenden ausschliesslich Evidenz eines unveränderlichen Codekandidaten und trennen einen späteren Dokumentationscommit davon.
 
 Fixrunde 2 ergänzte folgende P1-Nachweise:
 
@@ -92,6 +93,15 @@ Fixrunde 5 behandelte CSS-Escapes, schloss den gemeldeten CSS-Befund aber noch n
 
 1. CSS-Escapes werden vor der Prüfung URL-tragender CSS-Kontexte decodiert. Ein bis sechs Hexstellen, optionaler Whitespace, einfache Escapes und Zeilenfortsetzungen sind abgedeckt; ungültige Codepoints werden sicher normalisiert und ein unvollständiger Escape stoppt fail-closed.
 2. Die abschliessende Fixwelle tokenisiert `url()`, `image-set()` und `@import` nach der Escape-Decodierung. HTTP(S)-Sonderschemas werden auch ohne `//` und mit Backslashes als Browser-Trennzeichen abgewiesen. Sechs Chromium-PoCs belegen reale Requestversuche für die beiden gemeldeten Formen in allen drei Kontexten; das Release-Gate weist alle sechs ab.
+
+### Autorisierte Abschlussfortsetzung
+
+Die Gesamtprüfung nach der ersten Abschlusswelle fand noch zwei tragende Restpunkte: externe URLs in verschachtelten CSS-Bildfunktionen sowie englische Tastaturhilfe und Formatmetadaten im deutschen Modus. Die Fortsetzung behebt beide Grenzen:
+
+1. Jede CSS-Funktion ausser dem terminalen `url()` wird rekursiv untersucht. Direkte URL-Strings gelten nur in `image()`, `image-set()` und `-webkit-image-set()` als Bildquelle. Die gleiche Prüfung erfasst eingebettete `<style>`-Blöcke, `style`-Attribute und URL-tragende SVG-Darstellungsattribute.
+2. Die unabhängige Patch-Review fand drei äquivalente Fälle: per Escape eingeschobene URL-Steuerzeichen, dynamische Bildwerte über CSS Custom Properties und ein wirkungsloses Grossbuchstaben-Kopierkürzel. Alle drei wurden mit vorher roten Tests geschlossen. Tiefe lokale `calc()`-Ausdrücke und externer Text ausserhalb eines URL-Sinks bleiben erlaubt.
+3. Die Tastaturhilfe verwendet vollständig die DE/EN-Wörterbücher, besitzt Dialogsemantik, eine fokussierte Schliessen-Aktion und korrekt bezeichnete Ctrl/Command-Tastenkappen. Escape schliesst die Hilfe, ohne den aktiven Werkzeugpfad zu verlassen.
+4. Formatpaar-Titel und Beschreibungen werden sprachabhängig erzeugt. Deutsch verwendet beispielsweise `Text in Base64 · Folkkit`, Englisch `Text to Base64 · Folkkit`.
 
 ## Formatkompatibilität
 
