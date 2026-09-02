@@ -8,6 +8,9 @@ const cases = [
   ['image-set with a slashless escaped scheme', String.raw`.probe{background-image:image-set(url(h\74tps:attacker.example/image-set-scheme.png) 1x)}`],
   ['@import with escaped backslashes', String.raw`@import url(https:\5c\5c attacker.example/import-backslash.css);`],
   ['@import with a slashless escaped scheme', String.raw`@import url(h\74tps:attacker.example/import-scheme.css);`],
+  ['nested -webkit-cross-fade URL', '.probe{background-image:-webkit-cross-fade(url(https://attacker.example/cross-fade.png),url(/local.png),50%)}'],
+  ['escaped tab inside the HTTPS scheme', String.raw`.probe{background-image:url(h\9 ttps:\2f\2f attacker.example/tab-in-scheme.png)}`],
+  ['custom property inside image-set', String.raw`.probe{--remote:"https://attacker.example/custom-property.png";background-image:image-set(var(--remote) 1x)}`],
 ]
 
 for (const [label, css] of cases) {

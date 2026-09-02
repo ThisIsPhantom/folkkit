@@ -244,6 +244,40 @@ test.each([
   expect(() => assertNoExternalRuntimeOrigins('special-scheme.css', contents)).toThrow(/external runtime origin/i)
 })
 
+test.each([
+  String.raw`.x{background:url(h\9 ttps:\2f\2f attacker.example/tab-in-scheme.png)}`,
+  String.raw`.x{--remote:"https://attacker.example/custom-property.png";background-image:image-set(var(--remote) 1x)}`,
+  String.raw`.x{--remote:"https://attacker.example/direct-custom-property.png";background-image:var(--remote)}`,
+  String.raw`.x{--remote:url(https://attacker.example/custom-property-url.png);background-image:-webkit-cross-fade(var(--remote),url(/local.png),50%)}`,
+])('rejects browser-normalized or dynamic CSS image URL indirection: %s', contents => {
+  expect(() => assertNoExternalRuntimeOrigins('indirect-image.css', contents)).toThrow(/external runtime origin/i)
+})
+
+test.each([
+  '.probe{background-image:-webkit-cross-fade(url(https://attacker.example/a.png),url(/b.png),50%)}',
+  '.probe{background-image:cross-fade(url(https://attacker.example/a.png),url(/b.png),50%)}',
+  '.probe{background-image:image(url(https://attacker.example/a.png),red)}',
+  '.probe{background-image:cross-fade(image-set(url(https://attacker.example/a.png) 1x),url(/b.png),50%)}',
+  '.probe{background-image:image("https://attacker.example/a.png",red)}',
+])('rejects an external URL nested inside a CSS image function: %s', contents => {
+  expect(() => assertNoExternalRuntimeOrigins('nested-image.css', contents)).toThrow(/external runtime origin/i)
+})
+
+test('recursively scans CSS functions without treating unrelated nested strings as URLs', () => {
+  expect(() => assertNoExternalRuntimeOrigins(
+    'local-nested.css',
+    '.a{background:-webkit-cross-fade(url(/a.png),url(./b.png),50%)}.b{background:image-set(url(/a.png) type("image/avif") 1x)}',
+  )).not.toThrow()
+})
+
+test.each([
+  ['index.html', String.raw`<style>.x{background:-webkit-cross-fade(url(h\74tps:attacker.example/a.png),url(/b.png),50%)}</style>`],
+  ['index.html', String.raw`<div style="background:image(url(h\74tps:attacker.example/a.png),red)"></div>`],
+  ['icon.svg', String.raw`<rect fill="url(h\74tps:attacker.example/paint.svg)" />`],
+])('rejects escaped external CSS sinks embedded in %s', (artifactName, contents) => {
+  expect(() => assertNoExternalRuntimeOrigins(artifactName, contents)).toThrow(/external runtime origin/i)
+})
+
 test('allows escaped same-origin CSS paths, normalized invalid code points and ordinary CSS', () => {
   expect(() => assertNoExternalRuntimeOrigins(
     'local.css',
@@ -260,6 +294,11 @@ test('allows external-looking text outside URL-bearing CSS contexts', () => {
     'content.css',
     '.x::before{content:"https://example.invalid is documentation"}',
   )).not.toThrow()
+})
+
+test('allows deeply nested local calculations that contain no URL-bearing token', () => {
+  const value = `${'calc('.repeat(65)}1px${')'.repeat(65)}`
+  expect(() => assertNoExternalRuntimeOrigins('deep-local.css', `.x{width:${value}}`)).not.toThrow()
 })
 
 test('fails closed on a trailing CSS escape', () => {

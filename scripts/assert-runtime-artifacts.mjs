@@ -11,6 +11,39 @@ const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 const runtimeArtifactExtensions = new Set(['.css', '.html', '.js', '.json', '.mjs', '.svg'])
 const releasedBrowserConverters = JSON.parse(readFileSync(join(projectRoot, 'scripts', 'released-browser-converters.json'), 'utf8'))
 const htmlUrlAttributeNames = new Set(['action', 'data', 'formaction', 'href', 'poster', 'src', 'srcset'])
+const cssStringSourceFunctions = new Set(['image', 'image-set', '-webkit-image-set'])
+const cssImageValueFunctions = new Set(['image', 'image-set', '-webkit-image-set', 'cross-fade', '-webkit-cross-fade'])
+const cssUrlPropertyNames = new Set([
+  'background',
+  'background-image',
+  'border-image',
+  'border-image-source',
+  'clip-path',
+  'cursor',
+  'fill',
+  'filter',
+  'list-style',
+  'list-style-image',
+  'marker-end',
+  'marker-mid',
+  'marker-start',
+  'mask',
+  'mask-image',
+  'offset-path',
+  'shape-outside',
+  'stroke',
+])
+const svgCssUrlAttributeNames = new Set([
+  'clip-path',
+  'cursor',
+  'fill',
+  'filter',
+  'marker-end',
+  'marker-mid',
+  'marker-start',
+  'mask',
+  'stroke',
+])
 
 const reviewedLegalNavigation = new Set(JSON.parse(readFileSync(join(projectRoot, 'scripts', 'reviewed-browser-navigation.json'), 'utf8')))
 
@@ -150,7 +183,8 @@ function cssUrlFunctionValue(body) {
   return stripCssComments(body).trim()
 }
 
-function cssUrlCandidates(contents, { stringsAreUrls = false } = {}) {
+function cssUrlCandidates(contents, { stringsAreUrls = false, dynamicValuesAreUrls = false, depth = 0 } = {}) {
+  if (depth > 64) throw new Error('CSS function nesting is too deep.')
   const candidates = []
   let index = 0
   while (index < contents.length) {
@@ -187,9 +221,15 @@ function cssUrlCandidates(contents, { stringsAreUrls = false } = {}) {
       const openIndex = skipCssIgnorable(contents, end)
       if (contents[openIndex] === '(') {
         const fn = readCssFunctionBody(contents, openIndex)
-        if (name === 'url') candidates.push(cssUrlFunctionValue(fn.body))
-        if (name === 'image-set' || name === '-webkit-image-set') {
-          candidates.push(...cssUrlCandidates(fn.body, { stringsAreUrls: true }))
+        if (name === 'var' && dynamicValuesAreUrls) throw new Error('Dynamic CSS image URL.')
+        if (name === 'url') {
+          candidates.push(cssUrlFunctionValue(fn.body))
+        } else if (/(?:url|var|image|cross-fade)\s*\(/i.test(fn.body) || cssImageValueFunctions.has(name)) {
+          candidates.push(...cssUrlCandidates(fn.body, {
+            stringsAreUrls: cssStringSourceFunctions.has(name),
+            dynamicValuesAreUrls: cssImageValueFunctions.has(name),
+            depth: depth + 1,
+          }))
         }
         index = fn.end
         continue
@@ -203,10 +243,68 @@ function cssUrlCandidates(contents, { stringsAreUrls = false } = {}) {
   return candidates
 }
 
+function cssDeclarations(contents) {
+  const declarations = []
+  let segmentStart = 0
+  let index = 0
+  let functionDepth = 0
+  while (index < contents.length) {
+    if (contents[index] === '"' || contents[index] === "'") {
+      index = readCssString(contents, index).end
+      continue
+    }
+    if (contents[index] === '/' && contents[index + 1] === '*') {
+      index = skipCssIgnorable(contents, index)
+      continue
+    }
+    if (contents[index] === '(') functionDepth += 1
+    if (contents[index] === ')') functionDepth = Math.max(0, functionDepth - 1)
+    if (functionDepth === 0 && contents[index] === ':') {
+      const name = contents.slice(segmentStart, index).trim().toLowerCase()
+      if (/^(?:--[-_a-z0-9]+|[-_a-z][-_a-z0-9]*)$/i.test(name)) {
+        const valueStart = index + 1
+        let valueEnd = valueStart
+        let valueDepth = 0
+        while (valueEnd < contents.length) {
+          if (contents[valueEnd] === '"' || contents[valueEnd] === "'") {
+            valueEnd = readCssString(contents, valueEnd).end
+            continue
+          }
+          if (contents[valueEnd] === '/' && contents[valueEnd + 1] === '*') {
+            valueEnd = skipCssIgnorable(contents, valueEnd)
+            continue
+          }
+          if (contents[valueEnd] === '(') valueDepth += 1
+          if (contents[valueEnd] === ')') valueDepth = Math.max(0, valueDepth - 1)
+          if (valueDepth === 0 && (contents[valueEnd] === ';' || contents[valueEnd] === '}')) break
+          valueEnd += 1
+        }
+        declarations.push({ name, value: contents.slice(valueStart, valueEnd) })
+        index = valueEnd
+        segmentStart = valueEnd + 1
+        continue
+      }
+    }
+    if (functionDepth === 0 && (contents[index] === '{' || contents[index] === ';' || contents[index] === '}')) {
+      segmentStart = index + 1
+    }
+    index += 1
+  }
+  return declarations
+}
+
 function hasExternalCssSink(contents) {
   const decoded = decodeCssEscapes(contents)
-  return cssUrlCandidates(decoded).some((candidate) => {
-    const normalized = candidate.trim().replaceAll('\\', '/')
+  const candidates = cssUrlCandidates(decoded)
+  for (const { name, value } of cssDeclarations(decoded)) {
+    if (name.startsWith('--')) {
+      candidates.push(...cssUrlCandidates(value, { stringsAreUrls: true }))
+    } else if (cssUrlPropertyNames.has(name)) {
+      candidates.push(...cssUrlCandidates(value, { stringsAreUrls: true }))
+    }
+  }
+  return candidates.some((candidate) => {
+    const normalized = candidate.trim().replace(/[\t\n\r]/g, '').replaceAll('\\', '/')
     return /^(?:https?:|\/\/)/i.test(normalized)
   })
 }
@@ -449,6 +547,32 @@ function hasExternalMarkupViolation(contents, { allowReviewedSvgNamespaces = fal
           if (range) reviewedLiteralRanges.push([range.startOffset, range.endOffset])
           continue
         }
+        automaticViolation = true
+        return
+      }
+      try {
+        if (attributes.has('style') && hasExternalCssSink(attributes.get('style'))) {
+          automaticViolation = true
+          return
+        }
+        const isSvg = allowReviewedSvgNamespaces || node.namespaceURI === 'http://www.w3.org/2000/svg'
+        if (isSvg && [...attributes].some(([name, value]) => (
+          svgCssUrlAttributeNames.has(name) && hasExternalCssSink(value)
+        ))) {
+          automaticViolation = true
+          return
+        }
+        if (node.tagName === 'style') {
+          const styleText = (node.childNodes || [])
+            .filter(child => child.nodeName === '#text')
+            .map(child => child.value || '')
+            .join('')
+          if (hasExternalCssSink(styleText)) {
+            automaticViolation = true
+            return
+          }
+        }
+      } catch {
         automaticViolation = true
         return
       }

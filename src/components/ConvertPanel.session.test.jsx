@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, expect, test } from 'vitest'
+import { beforeEach, expect, test, vi } from 'vitest'
 import ConvertPanel from './ConvertPanel'
 import { renderWithProviders } from '../test/renderWithProviders'
 
@@ -95,6 +95,18 @@ test('keeps released HEX to RGB text while normalizing the native color preview 
 
   expect(await screen.findByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('rgb(255, 0, 0)')
   expect(screen.getByLabelText('Farbvorschau')).toHaveValue('#ff0000')
+})
+
+test('copies the current result with the documented Ctrl/Command Shift C shortcut', async () => {
+  const user = userEvent.setup()
+  const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
+  renderWithProviders(<ConvertPanel {...panelProps()} />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Eingabetext' }), 'Folkkit')
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('Rm9sa2tpdA=='))
+  fireEvent.keyDown(document, { key: 'C', ctrlKey: true, shiftKey: true })
+
+  expect(writeText).toHaveBeenCalledWith('Rm9sa2tpdA==')
 })
 
 test('a new reuse request applies its value once', async () => {

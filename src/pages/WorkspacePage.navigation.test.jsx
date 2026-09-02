@@ -24,6 +24,32 @@ test('normalizes the initial workspace URL to content-free identifiers', () => {
   expect(window.location.href).not.toContain('PRIVATE')
 })
 
+test.each([
+  ['de', 'Text in Base64 · Folkkit', 'Text lokal in Base64 umwandeln. Dateiinhalte werden nicht hochgeladen.'],
+  ['en', 'Text to Base64 · Folkkit', 'Convert Text to Base64 locally in your browser. File contents are not uploaded.'],
+])('localizes format-pair document metadata in %s', (locale, title, description) => {
+  renderWithProviders(<WorkspacePage />, { locale })
+
+  expect(document.title).toBe(title)
+  expect(document.querySelector('meta[name="description"]')).toHaveAttribute('content', description)
+  expect(document.querySelector('meta[property="og:title"]')).toHaveAttribute('content', title)
+  expect(document.querySelector('meta[property="og:description"]')).toHaveAttribute('content', description)
+})
+
+test('Escape closes keyboard help without leaving the active tool route', async () => {
+  vi.mocked(loadConverter).mockResolvedValue({ id: 'text-to-qr', name: 'Text in QR-Code' })
+  history.replaceState(null, '', '/workspace?tool=text-to-qr')
+  renderWithProviders(<WorkspacePage />)
+
+  document.activeElement?.blur()
+  fireEvent.keyDown(window, { key: '?' })
+  expect(screen.getByRole('dialog', { name: 'Tastaturkürzel' })).toBeInTheDocument()
+  fireEvent.keyDown(window, { key: 'Escape' })
+
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  expect(window.location.search).toBe('?tool=text-to-qr')
+})
+
 test('a format selection writes one authoritative pair URL with a valid target', async () => {
   const user = userEvent.setup()
   renderWithProviders(<WorkspacePage />)

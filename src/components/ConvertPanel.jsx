@@ -478,7 +478,7 @@ function ConvertPanelSession({ from, to, onFromChange, onToChange, onPairChange,
   useEffect(() => {
     const handler = (e) => {
       const mod = e.metaKey || e.ctrlKey
-      if (mod && e.shiftKey && e.key === 'c') {
+      if (mod && e.shiftKey && (e.key === 'c' || e.key === 'C')) {
         if (output && output !== '(conversion error)') {
           e.preventDefault()
           navigator.clipboard.writeText(output).then(() => toast(t('workspaceTools.copiedOutput')))

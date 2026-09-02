@@ -109,11 +109,13 @@ export default function WorkspacePage() {
   useEffect(() => {
     const fromName = getLocalizedReleasedFormatById(convertFrom, locale)?.name || convertFrom
     const toName = getLocalizedReleasedFormatById(convertTo, locale)?.name || convertTo
-    const thing = activeToolMetadata ? activeToolMetadata.name : `${fromName} to ${toName}`
+    const thing = activeToolMetadata
+      ? activeToolMetadata.name
+      : t('workspace.pairTitle', { from: fromName, to: toName })
     const title = `${thing} · Folkkit`
-    const description = locale === 'de'
-      ? `${thing} lokal im Browser verwenden. Dateiinhalte werden nicht hochgeladen.`
-      : `Use ${thing} locally in your browser. File contents are not uploaded.`
+    const description = activeToolMetadata
+      ? t('workspace.toolDescription', { name: activeToolMetadata.name })
+      : t('workspace.pairDescription', { from: fromName, to: toName })
     document.title = title
     ensureMeta('meta[name="description"]', { name: 'description' }).setAttribute('content', description)
     ensureMeta('meta[property="og:title"]', { property: 'og:title' }).setAttribute('content', title)
@@ -125,7 +127,7 @@ export default function WorkspacePage() {
       canonical.searchParams.set('to', convertTo)
     }
     ensureCanonical().setAttribute('href', canonical.toString())
-  }, [activeToolMetadata, convertFrom, convertTo, locale])
+  }, [activeToolMetadata, convertFrom, convertTo, locale, t])
 
   useEffect(() => {
     const handlePop = () => {
@@ -221,6 +223,7 @@ export default function WorkspacePage() {
 
   useEffect(() => {
     const handleKey = (event) => {
+      if (showHelp) return
       const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
       if (event.key === 'Escape' && activeToolMetadata) {
         handleConverterChange(null)
@@ -231,7 +234,7 @@ export default function WorkspacePage() {
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeToolMetadata, handleConverterChange])
+  }, [activeToolMetadata, handleConverterChange, showHelp])
 
   return (
     <div className="workspace-page">

@@ -35,6 +35,12 @@
   margin-bottom: 14px;
 }
 
+.kb-close {
+  min-height: 44px;
+  width: 100%;
+  margin-top: 14px;
+}
+
 .kb-list {
   display: flex;
   flex-direction: column;
