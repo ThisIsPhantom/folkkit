@@ -64,10 +64,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
-      - name: Check out the exact prepared source without persisting credentials
+      - name: Check out synchronized main without persisting credentials
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
           fetch-depth: 0
           persist-credentials: false
 

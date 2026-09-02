@@ -40,6 +40,31 @@ test('Playwright quotes the runtime executable used to start the preview server'
   expect(playwrightConfig.webServer.command.startsWith(`"${process.execPath}" `)).toBe(true)
 })
 
+test('hosting publisher rejects a detached checkout in the write-authorized job', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'folkkit-workflow-policy-'))
+  temporaryDirectories.push(root)
+  const path = join(root, 'publish-plesk.yml')
+  await writeFile(path, `jobs:
+  prepare-hosting:
+    steps: []
+  publish-hosting:
+    needs: prepare-hosting
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@${'1'.repeat(40)} # v4
+        with:
+          ref: deadbeef
+          persist-credentials: false
+      - run: node scripts/prepared-plesk-artifact.mjs push artifact
+`)
+
+  const result = runValidator([path])
+
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toMatch(/publish-hosting.*check out main/i)
+})
+
 test.each([
   ['mutable action tag', 'uses: actions/checkout@v4\n'],
   ['checkout credential persistence', `uses: actions/checkout@${'1'.repeat(40)} # v4\nwith:\n  persist-credentials: true\n`],

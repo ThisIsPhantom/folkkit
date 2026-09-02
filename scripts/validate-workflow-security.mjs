@@ -48,6 +48,9 @@ export function validateWorkflowText(name, text) {
     if (publish && !/prepared-plesk-artifact\.mjs\s+push\b/.test(publish.text)) {
       errors.push(`${name}:publish-hosting must use the bounded prepared-artifact pusher`)
     }
+    if (publish && !/uses:\s*actions\/checkout@[^\n]+\n(?:[ \t]+[^\n]*\n){0,10}?[ \t]+ref:\s*main\s*$/m.test(publish.text)) {
+      errors.push(`${name}:publish-hosting must check out main before invoking the bounded pusher`)
+    }
   }
   return errors
 }
