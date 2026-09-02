@@ -5,7 +5,7 @@ const legalEn = Object.freeze({
     title: 'Privacy',
     intro: 'Folkkit processes selected content in the browser. Technical access data may still arise when the website loads. This notice separates those two processes.',
     operatorTitle: 'Controller',
-    operatorMissing: 'The public operator details have not yet been approved for this private pre-release. A release build remains blocked until the approved name, postal address, and contact email are provided.',
+    operatorMissing: 'The public operator details have not yet been approved for this private pre-release. A release build remains blocked until the approved name and contact email are provided.',
     sourcesLabel: 'Official guidance',
     sources: Object.freeze([
       Object.freeze({
@@ -65,7 +65,7 @@ const legalEn = Object.freeze({
         title: 'Preferences and requests',
         paragraphs: Object.freeze([
           'Language, theme, favourites, recent tool IDs, and the content history choice may be stored locally in the browser. By default, these preferences contain no selected files or converted results.',
-          'Privacy questions and requests for access, correction, or deletion can be submitted through the operator address published on the contact page once approved details are configured for public release.',
+          'Privacy questions and requests for access, correction, or deletion can be submitted through the contact email published on the contact page once approved details are configured for public release.',
         ]),
       }),
     ]),
@@ -216,7 +216,7 @@ const legalEn = Object.freeze({
     title: 'Contact',
     intro: 'The public contact page may display only approved operator details.',
     operatorTitle: 'Public operator details',
-    operatorMissing: 'The public operator details have not yet been approved for this private pre-release. A release build remains blocked until the name, postal address, and contact email are provided.',
+    operatorMissing: 'The public operator details have not yet been approved for this private pre-release. A release build remains blocked until the name and contact email are provided.',
     emailLabel: 'Send email',
     sourcesLabel: 'More information',
     sources: Object.freeze([
@@ -236,7 +236,7 @@ const legalEn = Object.freeze({
         id: 'requests',
         title: 'Requests',
         paragraphs: Object.freeze([
-          'Use the published contact address for questions about operation, privacy, or the exercise of data protection rights.',
+          'Use the published contact email for questions about operation, privacy, or the exercise of data protection rights.',
           'Do not send confidential file contents, health data, financial data, or credentials by unencrypted email.',
         ]),
       }),

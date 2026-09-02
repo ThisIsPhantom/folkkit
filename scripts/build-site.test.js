@@ -11,7 +11,6 @@ const temporaryDirectories = []
 const exactCommit = 'a'.repeat(40)
 const approvedOperator = Object.freeze({
   VITE_PUBLIC_OPERATOR_NAME: 'Approved Fixture Cooperative',
-  VITE_PUBLIC_OPERATOR_ADDRESS: 'Marktgasse 12|8001 Zurich|Switzerland',
   VITE_PUBLIC_CONTACT_EMAIL: 'contact@operator.fixture',
   FOLKKIT_RELEASE_COMMIT: exactCommit,
 })

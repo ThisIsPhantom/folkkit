@@ -24,11 +24,10 @@ Copy `.env.example` to a local environment file and replace every example value 
 
 ```text
 VITE_PUBLIC_OPERATOR_NAME=
-VITE_PUBLIC_OPERATOR_ADDRESS=
 VITE_PUBLIC_CONTACT_EMAIL=
 ```
 
-Use `|` between postal-address lines. `bun run build:release` rejects missing or unchanged example values and requires an exact clean Git `HEAD`. It archives that validated commit into a temporary source tree, installs the committed lockfile from scratch with lifecycle scripts disabled, verifies the committed notices, synchronizes the exact runtime assets, and builds with the validated commit. Only the resulting `dist` directory is copied back. Do not commit real operator details to the repository.
+`bun run build:release` rejects a missing name or contact email as well as unchanged example values and requires an exact clean Git `HEAD`. It archives that validated commit into a temporary source tree, installs the committed lockfile from scratch with lifecycle scripts disabled, verifies the committed notices, synchronizes the exact runtime assets, and builds with the validated commit. Only the resulting `dist` directory is copied back. Do not commit real operator details to the repository.
 
 ## Hosttech and `plesk` contract
 

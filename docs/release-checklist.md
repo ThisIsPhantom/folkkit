@@ -114,7 +114,7 @@ Der aktuelle Audit fand kein evidenzgeprüftes Paar für `incompatible-but-imple
 
 ## Absichtliche und externe Gates
 
-- `build:release` stoppt ohne erfundene Werte mit den drei fehlenden Variablen `VITE_PUBLIC_OPERATOR_NAME`, `VITE_PUBLIC_OPERATOR_ADDRESS` und `VITE_PUBLIC_CONTACT_EMAIL`.
+- `build:release` stoppt ohne erfundene Werte mit den beiden fehlenden Variablen `VITE_PUBLIC_OPERATOR_NAME` und `VITE_PUBLIC_CONTACT_EMAIL`.
 - Der komplette Befehl `bun run verify:release` kann auf diesem Host wegen Firefox Side-by-Side und danach wegen des Betreiber-Gates nicht vollständig grün enden. Die einzelnen unterstützten Gates wurden separat ausgeführt und oben ausgewiesen.
 - Der bekannte `pdf-lib`-Rest bleibt: Ein PDF-Worker kann bei Zeitüberschreitung hart beendet werden, aber `pdf-lib` bietet keine separate Obergrenze für bereits decodierte Streams innerhalb des Workers.
 - Ein manueller Screenreader-Smoke-Test ist nicht automatisiert erfolgt.

@@ -14,7 +14,6 @@ const scriptsDirectory = dirname(fileURLToPath(import.meta.url))
 const releaseBuildScript = join(scriptsDirectory, 'build-release.mjs')
 const validOperatorEnv = Object.freeze({
   VITE_PUBLIC_OPERATOR_NAME: 'Approved Fixture Cooperative',
-  VITE_PUBLIC_OPERATOR_ADDRESS: 'Marktgasse 12|8001 Zürich|Schweiz',
   VITE_PUBLIC_CONTACT_EMAIL: 'contact@operator.fixture',
 })
 
@@ -235,12 +234,11 @@ test('missing operator values fail through the real CLI before source validation
   const { repoRoot, markerPath } = await createReleaseRepository()
 
   const result = runReleaseCli(repoRoot, {
-    remove: ['VITE_PUBLIC_OPERATOR_NAME', 'VITE_PUBLIC_OPERATOR_ADDRESS', 'VITE_PUBLIC_CONTACT_EMAIL'],
+    remove: ['VITE_PUBLIC_OPERATOR_NAME', 'VITE_PUBLIC_CONTACT_EMAIL'],
   })
 
   expect(result.status).toBe(1)
   expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_OPERATOR_NAME is required/)
-  expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_OPERATOR_ADDRESS is required/)
   expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_CONTACT_EMAIL is required/)
   await expect(pathExists(markerPath)).resolves.toBe(false)
 })
@@ -253,7 +251,6 @@ test('the exact example operator values fail through the real CLI before source 
 
   expect(result.status).toBe(1)
   expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_OPERATOR_NAME still contains the example value/)
-  expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_OPERATOR_ADDRESS still contains the example value/)
   expect(`${result.stdout}\n${result.stderr}`).toMatch(/VITE_PUBLIC_CONTACT_EMAIL still contains the example value/)
   await expect(pathExists(markerPath)).resolves.toBe(false)
 })

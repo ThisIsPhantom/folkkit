@@ -16,7 +16,8 @@
 - 2026-09-01: The audited format graph has 19 released pairs, all classified `compatible`; none qualifies as `incompatible-but-implemented`. The future warning gate is session-only and cannot unlock unsupported conversions.
 - 2026-09-02: Local acceptance on code candidate `5812da09f06790cfe5fbd8773789ffef421641d4` passed 45 test files with 488 unit/contract tests, 52 Chromium Desktop E2E tests, WebKit 1 of 1, Chromium Mobile 390 x 844 1 of 1, production-CSP MP3 1 of 1, the high dependency audit, notices with SHA-256 `33aa224672d4e5101feac51cd085c19c2727547c0715bbd5cec74bb0cadecd1e`, a 219-file secret scan and Plesk `ValidateOnly` with 30 files, 0 forbidden files and tree hash `71bc4be9bc49e53dfdf9c7ad6ced03dae18fccbea093c32a2b9a603f9d79ef8f`. Local Firefox remains unverified because Playwright failed with `spawn UNKNOWN`; direct host diagnosis confirmed a Windows Side-by-Side configuration error.
 - 2026-09-02: The later documentation-only commit `D` records the evidence for code candidate `5812da09f06790cfe5fbd8773789ffef421641d4`. `D` itself is not validated as a release source and requires complete revalidation before publication.
-- 2026-09-01: Public `build:release` remains blocked until the user approves real operator name, address and contact email. No push, merge, public visibility change, Hosttech deployment, DNS change or domain purchase occurred.
+- 2026-09-01: Public `build:release` initially remained blocked pending approved operator details. No push, merge, public visibility change, Hosttech deployment, DNS change or domain purchase occurred at that time.
+- 2026-09-02: The user approved a public operator name and contact email but explicitly withheld the postal address. Folkkit V1 must not accept, store, or publish an operator postal address. Approved values remain out of the repository and enter release builds only through protected GitHub values.
 
 ## Current authority
 

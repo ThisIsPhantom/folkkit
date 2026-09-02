@@ -233,29 +233,26 @@ test('terms keep health and finance tools scoped as non-advice in both languages
   expect(allCopy(legalEn.terms)).toMatch(/no guarantee.*legal/i)
 })
 
-test('public operator normalization accepts an explicit fixture and reports every missing or example value', () => {
+test('public operator normalization exposes only the approved name and email', () => {
   const fixture = createPublicOperator({
     VITE_PUBLIC_OPERATOR_NAME: 'Approved Fixture Cooperative',
-    VITE_PUBLIC_OPERATOR_ADDRESS: 'Marktgasse 12|8001 Zürich|Schweiz',
+    VITE_PUBLIC_OPERATOR_ADDRESS: 'This address must not be published',
     VITE_PUBLIC_CONTACT_EMAIL: 'contact@operator.fixture',
   })
 
   expect(fixture).toEqual({
     name: 'Approved Fixture Cooperative',
-    addressLines: ['Marktgasse 12', '8001 Zürich', 'Schweiz'],
     email: 'contact@operator.fixture',
   })
   expect(getPublicOperatorErrors(fixture)).toEqual([])
   expect(getPublicOperatorErrors(createPublicOperator({}))).toEqual([
     'VITE_PUBLIC_OPERATOR_NAME is required.',
-    'VITE_PUBLIC_OPERATOR_ADDRESS is required.',
     'VITE_PUBLIC_CONTACT_EMAIL is required.',
   ])
   expect(getPublicOperatorErrors(createPublicOperator({
     VITE_PUBLIC_OPERATOR_NAME: 'Example Operator',
-    VITE_PUBLIC_OPERATOR_ADDRESS: 'Example Street 1|8000 Example City',
     VITE_PUBLIC_CONTACT_EMAIL: 'operator@example.com',
-  }))).toHaveLength(3)
+  }))).toHaveLength(2)
 })
 
 test('build information creates an immutable exact-revision source link', () => {

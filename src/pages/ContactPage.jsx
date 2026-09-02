@@ -16,7 +16,6 @@ export default function ContactPage() {
         {configured ? (
           <address>
             <strong>{publicOperator.name}</strong>
-            {publicOperator.addressLines.map(line => <span key={line}>{line}</span>)}
             <a href={`mailto:${publicOperator.email}`}>{content.emailLabel}: {publicOperator.email}</a>
           </address>
         ) : (

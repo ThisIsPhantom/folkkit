@@ -12,7 +12,6 @@ function OperatorDetails({ content }) {
   return (
     <address>
       <strong>{publicOperator.name}</strong>
-      {publicOperator.addressLines.map(line => <span key={line}>{line}</span>)}
       <a href={`mailto:${publicOperator.email}`}>{publicOperator.email}</a>
     </address>
   )

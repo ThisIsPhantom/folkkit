@@ -5,7 +5,7 @@ const legalDe = Object.freeze({
     title: 'Datenschutz',
     intro: 'Folkkit verarbeitet ausgewählte Inhalte im Browser. Beim Laden der Website können trotzdem technische Zugriffsdaten anfallen. Diese Erklärung trennt beide Vorgänge.',
     operatorTitle: 'Verantwortliche Stelle',
-    operatorMissing: 'Die öffentlichen Betreiberangaben wurden für diesen privaten Vorabstand noch nicht freigegeben. Ein Release-Build bleibt gesperrt, bis Name, Postadresse und Kontakt-E-Mail genehmigt und hinterlegt sind.',
+    operatorMissing: 'Die öffentlichen Betreiberangaben wurden für diesen privaten Vorabstand noch nicht freigegeben. Ein Release-Build bleibt gesperrt, bis Name und Kontakt-E-Mail genehmigt und hinterlegt sind.',
     sourcesLabel: 'Offizielle Orientierung',
     sources: Object.freeze([
       Object.freeze({
@@ -65,7 +65,7 @@ const legalDe = Object.freeze({
         title: 'Einstellungen und Anliegen',
         paragraphs: Object.freeze([
           'Sprache, Design, Favoriten, zuletzt verwendete Werkzeug-IDs und die Entscheidung zur Inhaltschronik können lokal im Browser gespeichert werden. Diese Einstellungen enthalten standardmässig keine ausgewählten Dateien oder konvertierten Ergebnisse.',
-          'Datenschutzanliegen und Begehren zu Auskunft, Berichtigung oder Löschung können über die auf der Kontaktseite veröffentlichte Betreiberadresse eingereicht werden, sobald die genehmigten Angaben für den öffentlichen Release hinterlegt sind.',
+          'Datenschutzanliegen und Begehren zu Auskunft, Berichtigung oder Löschung können über die auf der Kontaktseite veröffentlichte Kontakt-E-Mail eingereicht werden, sobald die genehmigten Angaben für den öffentlichen Release hinterlegt sind.',
         ]),
       }),
     ]),
@@ -216,7 +216,7 @@ const legalDe = Object.freeze({
     title: 'Kontakt',
     intro: 'Die öffentliche Kontaktseite darf nur genehmigte Betreiberangaben anzeigen.',
     operatorTitle: 'Öffentliche Betreiberangaben',
-    operatorMissing: 'Die öffentlichen Betreiberangaben wurden für diesen privaten Vorabstand noch nicht freigegeben. Ein Release-Build bleibt bis zur Hinterlegung von Name, Postadresse und Kontakt-E-Mail gesperrt.',
+    operatorMissing: 'Die öffentlichen Betreiberangaben wurden für diesen privaten Vorabstand noch nicht freigegeben. Ein Release-Build bleibt bis zur Hinterlegung von Name und Kontakt-E-Mail gesperrt.',
     emailLabel: 'E-Mail schreiben',
     sourcesLabel: 'Weitere Informationen',
     sources: Object.freeze([
@@ -236,7 +236,7 @@ const legalDe = Object.freeze({
         id: 'requests',
         title: 'Anliegen',
         paragraphs: Object.freeze([
-          'Nutze die veröffentlichte Kontaktadresse für Fragen zum Betrieb, zum Datenschutz oder zur Ausübung datenschutzrechtlicher Rechte.',
+          'Nutze die veröffentlichte Kontakt-E-Mail für Fragen zum Betrieb, zum Datenschutz oder zur Ausübung datenschutzrechtlicher Rechte.',
           'Übermittle keine vertraulichen Dateiinhalte, Gesundheitsdaten, Finanzdaten oder Zugangsdaten per unverschlüsselter E-Mail.',
         ]),
       }),

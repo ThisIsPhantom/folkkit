@@ -36,7 +36,6 @@ jobs:
       - name: Build the operator-gated public artifact without write credentials
         env:
           VITE_PUBLIC_OPERATOR_NAME: ${{ secrets.FOLKKIT_PUBLIC_OPERATOR_NAME }}
-          VITE_PUBLIC_OPERATOR_ADDRESS: ${{ secrets.FOLKKIT_PUBLIC_OPERATOR_ADDRESS }}
           VITE_PUBLIC_CONTACT_EMAIL: ${{ secrets.FOLKKIT_PUBLIC_CONTACT_EMAIL }}
           FOLKKIT_RELEASE_COMMIT: ${{ github.sha }}
         run: bun run build:release
