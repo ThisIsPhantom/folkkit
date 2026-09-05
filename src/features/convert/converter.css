@@ -1,9 +1,15 @@
 .file-converter { max-width: 1140px; margin: 0 auto; padding: 3rem 1.5rem 5rem; color: var(--text); }
+.converter-modes { display: flex; gap: .25rem; width: fit-content; max-width: 100%; overflow-x: auto; margin-bottom: 1.25rem; padding: .25rem; border: 1px solid var(--shell-border); border-radius: .7rem; background: var(--bg-hover); }
+.file-converter .converter-modes button { min-height: 36px; white-space: nowrap; border-color: transparent; background: transparent; padding: .45rem .8rem; }
+.file-converter .converter-modes button[aria-pressed=true] { background: var(--bg-raised); border-color: var(--shell-border-strong); }
 .converter-heading { margin-bottom: 2rem; }
 .converter-heading h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; letter-spacing: -.045em; margin: .6rem 0 1rem; }
 .converter-heading > p:last-child { color: var(--text-secondary); font-size: 1.08rem; }
 .converter-drop { border: 1.5px dashed var(--shell-border-strong); border-radius: 1.25rem; background: var(--bg-raised); padding: 2.5rem 1rem; display: flex; align-items: center; flex-direction: column; gap: .85rem; text-align: center; }
 .converter-drop.is-dragging { border-color: var(--focus-ring); background: var(--bg-hover); }
+.converter-add-more { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem 1rem; min-height: 58px; padding: .55rem .7rem; border: 1.5px dashed var(--shell-border-strong); border-radius: .8rem; background: var(--bg-raised); }
+.converter-add-more.is-dragging { border-color: var(--focus-ring); background: var(--bg-hover); }
+.converter-add-more small { color: var(--text-secondary); }
 .converter-drop-icon { font-size: 2.2rem; width: 3.4rem; height: 3.4rem; display: grid; place-items: center; background: var(--bg-hover); border-radius: 1rem; }
 .converter-drop strong { font-size: 1.3rem; }
 .converter-drop p, .converter-drop small { color: var(--text-secondary); max-width: 44rem; }
@@ -31,6 +37,7 @@
 .converter-file-name strong { font-size: .94rem; overflow-wrap: anywhere; }
 .converter-file-name small, .converter-status { color: var(--text-secondary); font-size: .8rem; }
 .converter-status { min-width: 5rem; }
+.converter-remove { width: 44px; padding-inline: 0; flex: 0 0 44px; }
 .converter-target { min-width: 6.5rem; }
 .converter-settings { margin-top: .75rem; font-size: .86rem; color: var(--text-secondary); }
 .converter-settings summary { cursor: pointer; padding: .5rem 0; width: fit-content; }
@@ -39,6 +46,15 @@
 .converter-settings input { max-width: 15rem; }
 .converter-row-actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .converter-row-actions:not(:empty) { margin-top: .75rem; }
+.converter-result { margin-top: .9rem; padding-top: .9rem; border-top: 1px solid var(--shell-border); }
+.converter-result-summary { display: flex; align-items: end; justify-content: space-between; gap: 1rem; color: var(--text-secondary); font-size: .82rem; }
+.converter-result-summary > span:first-child { display: grid; gap: .2rem; min-width: 0; }
+.converter-result-summary strong { color: var(--text); font-size: .9rem; overflow-wrap: anywhere; }
+.converter-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; margin-top: .8rem; }
+.converter-comparison > div { min-width: 0; }
+.converter-comparison figcaption { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .35rem; color: var(--text-secondary); font-size: .78rem; }
+.converter-comparison img { display: block; width: 100%; height: min(220px,30vw); min-height: 110px; object-fit: contain; border-radius: .55rem; outline: 1px solid color-mix(in srgb,var(--text) 10%,transparent); outline-offset: -1px; background: var(--bg-hover); }
+.converter-size-result { margin: .55rem 0 .75rem; color: var(--text-secondary); font-size: .82rem; }
 .converter-error { color: var(--error); margin: .8rem 0; font-size: .875rem; }
 .converter-file progress { width: 100%; height: .5rem; margin-top: .75rem; accent-color: var(--text); }
 .converter-start { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1.5rem; }
@@ -51,6 +67,9 @@
   .converter-file-main { flex-wrap: wrap; gap: .7rem; }
   .converter-file-name { width: calc(100% - 5rem); flex-grow: 1; }
   .converter-target { margin-right: auto; }
-  .converter-start p { width: 100%; }
+  .converter-result-summary { align-items: start; }
+  .converter-comparison img { height: 34vw; min-height: 96px; }
+  .converter-start { position: sticky; z-index: 3; bottom: .75rem; padding: .75rem; border: 1px solid var(--shell-border-strong); border-radius: .8rem; background: var(--bg-raised); }
+  .converter-start p { width: 100%; margin: 0; }
   .converter-start > button { flex: 1; }
 }

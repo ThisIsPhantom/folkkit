@@ -26,6 +26,15 @@ export function resolveImageSize(source, settings = {}) {
   const scale = width && height ? Math.min(width / source.width, height / source.height) : width ? width / source.width : height ? height / source.height : 1
   return validateDimensions({ width: Math.max(1, Math.round(source.width * scale)), height: Math.max(1, Math.round(source.height * scale)) })
 }
+export function resolveOptimizedImageSize(source, settings = {}) {
+  const dimensions = resolveImageSize(source, settings)
+  return dimensions.width > source.width || dimensions.height > source.height ? validateDimensions({ width:source.width,height:source.height }) : dimensions
+}
+export function resolveOptimizationQuality(preset = 'balanced') {
+  const quality = { small:70,balanced:82,high:92 }[preset]
+  if (!quality) throw conversionError('invalid_settings')
+  return quality
+}
 export function imagePdfSize(image, settings = {}) {
   if (!settings.pageSize || settings.pageSize === 'original') return [image.width * 0.75, image.height * 0.75]
   const sizes = { a4: [595.28, 841.89], letter: [612, 792] }

@@ -38,7 +38,7 @@ for (const orientation of [6,8]) {
       await expect(page.locator('.converter-file')).toHaveAttribute('data-status',/done|error/,{ timeout:100000 })
       await expect(page.getByText('Done',{ exact:true })).toBeVisible()
       const pending = page.waitForEvent('download')
-      await page.getByRole('button',{ name:'Download',exact:true }).click()
+      await page.getByRole('button',{ name:/^Download result:/ }).click()
       const output = testInfo.outputPath(name)
       await (await pending).saveAs(output)
       return output
@@ -63,5 +63,20 @@ for (const orientation of [6,8]) {
         }
       }
     }
+    await page.getByRole('button',{ name:'Clear files',exact:true }).click()
+    await page.getByRole('button',{ name:'Make images smaller',exact:true }).click()
+    await page.getByLabel('Choose files',{ exact:true }).setInputFiles(original)
+    await expect(page.getByText('Ready',{ exact:true })).toBeVisible()
+    await page.getByText('Settings',{ exact:true }).click()
+    await page.getByLabel('Maximum width (px)',{ exact:true }).fill('32')
+    await page.getByRole('button',{ name:'Start optimization',exact:true }).click()
+    await expect(page.getByText('Done',{ exact:true })).toBeVisible()
+    const pending = page.waitForEvent('download')
+    await page.getByRole('button',{ name:`Download result: exif-${orientation}-smaller.jpg`,exact:true }).click()
+    const optimized = testInfo.outputPath(`exif-${orientation}-optimized.jpg`)
+    await (await pending).saveAs(optimized)
+    const decoded = spawnSync(decoder,['-v','error','-noautorotate','-i',optimized,'-frames:v','1','-f','image2pipe','-c:v','png','-'],{ windowsHide:true,maxBuffer:4 * 1024 * 1024 })
+    expect(decoded.status,decoded.stderr?.toString() || decoded.error?.message).toBe(0)
+    checkPixels(decoded.stdout,32,48,orientation)
   })
 }

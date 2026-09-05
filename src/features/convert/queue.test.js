@@ -110,4 +110,26 @@ describe('sequential conversion queue', () => {
     expect(signal.aborted).toBe(true)
     expect(queue.snapshot().items.map(i => i.status)).toEqual(['cancelled', 'ready'])
   })
+  it('retargets the same queue without losing source files and invalidates stale results', async () => {
+    const queue = createConversionQueue({ detect: async file => file.name.endsWith('.png') ? 'png' : 'pdf', convert: async item => [{ name:`result.${item.target}`,blob:new Blob(['ok']) }] })
+    await queue.add([new File(['a'],'a.png'),new File(['b'],'b.pdf')])
+    await queue.start()
+    queue.reset(item => item.from === 'png'
+      ? { task:'optimize',target:'png',allowedTargets:['png'],settings:{ qualityPreset:'balanced' } }
+      : { task:'optimize',target:'',allowedTargets:[],settings:{} })
+    expect(queue.snapshot().items.map(item => item.file.name)).toEqual(['a.png','b.pdf'])
+    expect(queue.snapshot().items.map(item => item.status)).toEqual(['ready','unsupported'])
+    expect(queue.snapshot().items.flatMap(item => item.results)).toHaveLength(0)
+    expect(queue.snapshot().items[0]).toMatchObject({ task:'optimize',target:'png',settings:{ qualityPreset:'balanced' } })
+  })
+  it('prepares only newly added rows without invalidating completed results', async () => {
+    const queue = createConversionQueue({ detect: async file => file.name.endsWith('.png') ? 'png' : 'pdf', convert: async item => [{ name:`result.${item.target}`,blob:new Blob(['ok']) }] })
+    const prepare = from => from === 'png' ? { task:'optimize',target:'png',allowedTargets:['png'] } : { task:'optimize',allowedTargets:[] }
+    await queue.add([new File(['a'],'a.png')],prepare)
+    await queue.start()
+    await queue.add([new File(['b'],'b.pdf')],prepare)
+    expect(queue.snapshot().items[0]).toMatchObject({ status:'done',target:'png',task:'optimize' })
+    expect(queue.snapshot().items[0].results).toHaveLength(1)
+    expect(queue.snapshot().items[1]).toMatchObject({ status:'unsupported',target:'',task:'optimize' })
+  })
 })

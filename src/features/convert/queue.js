@@ -27,7 +27,7 @@ export function createConversionQueue({ detect = detectFile, convert } = {}) {
       ? { ...row, status:'ready', results:[], progress:null, error:null, combinedWith:null }
       : row)
   }
-  async function add(files) {
+  async function add(files, prepare) {
     if (running || disposed) return
     const selected = Array.from(files)
     if (items.length + selected.length > CONVERT_LIMITS.maxFiles) throw conversionError('resource_limit')
@@ -38,7 +38,10 @@ export function createConversionQueue({ detect = detectFile, convert } = {}) {
       for (const row of rows) {
         try {
           const from = await detect(row.file)
-          update(row.id, { from, target: targetsFor(from)[0] || '', status: 'ready' })
+          const patch = typeof prepare === 'function' ? (prepare(from,row.file) || {}) : {}
+          const allowedTargets = patch.allowedTargets || targetsFor(from)
+          const target = allowedTargets.includes(patch.target) ? patch.target : (allowedTargets[0] || '')
+          update(row.id, { ...patch,from,allowedTargets,target,status:target ? 'ready' : 'unsupported' })
         } catch (error) { update(row.id, { status: 'error', error: errorCode(error) }) }
       }
     } finally { adding--; emit() }
@@ -47,7 +50,7 @@ export function createConversionQueue({ detect = detectFile, convert } = {}) {
     if (running) return
     const item = items.find(item => item.id === id)
     if (!item?.from) return
-    if (patch.target && !targetsFor(item.from).includes(patch.target)) return
+    if (patch.target && !(item.allowedTargets || targetsFor(item.from)).includes(patch.target)) return
     invalidateCombined(id)
     update(id, { ...patch, status: 'ready', results: [], progress: null, error: null })
   }
@@ -81,6 +84,16 @@ export function createConversionQueue({ detect = detectFile, convert } = {}) {
     retry(id) { const item = items.find(item => item.id === id); if (item?.from && ['error','cancelled'].includes(item.status)) configure(id, {}) },
     remove(id) { if (!running) { invalidateCombined(id); items = items.filter(item => item.id !== id); emit() } },
     move(id, direction) { if (running) return; const index = items.findIndex(item => item.id === id), target = index + direction; if (index < 0 || target < 0 || target >= items.length) return; invalidateCombined(id); items = [...items]; [items[index], items[target]] = [items[target], items[index]]; emit() },
+    reset(resolve) {
+      if (running || adding || typeof resolve !== 'function') return
+      items = items.map(item => {
+        const patch = resolve(item) || {}
+        const allowedTargets = patch.allowedTargets || targetsFor(item.from)
+        const target = allowedTargets.includes(patch.target) ? patch.target : (allowedTargets[0] || '')
+        return { ...item,...patch,allowedTargets,target,status:target ? 'ready' : 'unsupported',results:[],progress:null,error:null,combinedWith:null }
+      })
+      emit()
+    },
     clear() { if (!running) { items = []; emit() } },
     dispose() { disposed = true; controller?.abort(); items = []; listeners.clear() },
   })
