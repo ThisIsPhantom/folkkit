@@ -4,7 +4,7 @@ import { createConversionQueue } from './queue.js'
 import { convertFileItem,createZip } from './engine.js'
 import { optimizeImageItem } from './imageOptimization.js'
 import { formatFileSize } from './formatFileSize.js'
-import { IMAGE_FORMATS,targetsFor } from './profiles.js'
+import { FORMAT_MIME,IMAGE_FORMATS,targetsFor } from './profiles.js'
 import FileSettings from './FileSettings.jsx'
 import './converter.css'
 
@@ -24,6 +24,12 @@ function prepareItem(mode,preferredTarget) {
     return { task:'convert',target,allowedTargets,settings:target === 'gif' ? { start:0,duration:5 } : {} }
   }
 }
+const allowedTargetsFor = item => item.allowedTargets || targetsFor(item.from)
+function sharedTargetFor(items) {
+  if (!items.length || !items[0].target) return ''
+  const target = items[0].target
+  return items.every(item => item.target === target && allowedTargetsFor(item).includes(target)) ? target : ''
+}
 
 function comparisonText(original,result,tr) {
   if (result.keptOriginal) return tr('keptOriginal')
@@ -34,14 +40,15 @@ function comparisonText(original,result,tr) {
   }
   return tr('sameSize')
 }
+const previewBlob = (blob,format) => blob.type.startsWith('image/') ? blob : new Blob([blob],{ type:FORMAT_MIME[format] })
 
 function ImageComparison({ item,result,tr,locale }) {
   const beforeImage = useRef(null)
   const afterImage = useRef(null)
   useEffect(() => {
     if (typeof URL.createObjectURL !== 'function') return undefined
-    const before = URL.createObjectURL(item.file)
-    const after = URL.createObjectURL(result.blob)
+    const before = URL.createObjectURL(previewBlob(item.file,item.from))
+    const after = URL.createObjectURL(previewBlob(result.blob,item.target))
     const beforeNode = beforeImage.current
     const afterNode = afterImage.current
     beforeNode.src = before
@@ -51,11 +58,11 @@ function ImageComparison({ item,result,tr,locale }) {
       afterNode.removeAttribute('src')
       URL.revokeObjectURL(before); URL.revokeObjectURL(after)
     }
-  },[item.file,result.blob])
-  return <figure className="converter-comparison">
-    <div><figcaption><strong>{tr('before')}</strong><span>{formatFileSize(item.file.size,locale)}</span></figcaption><img ref={beforeImage} alt="" /></div>
-    <div><figcaption><strong>{tr('after')}</strong><span>{formatFileSize(result.blob.size,locale)}</span></figcaption><img ref={afterImage} alt="" /></div>
-  </figure>
+  },[item.file,item.from,item.target,result.blob])
+  return <div className="converter-comparison">
+    <figure><figcaption><strong>{tr('before')}</strong><span>{formatFileSize(item.file.size,locale)}</span></figcaption><img ref={beforeImage} alt="" /></figure>
+    <figure><figcaption><strong>{tr('after')}</strong><span>{formatFileSize(result.blob.size,locale)}</span></figcaption><img ref={afterImage} alt="" /></figure>
+  </div>
 }
 
 export default function FileConverterPage({ initialMode='convert',onModeChange,initialTarget='',initialCombine=false,active=true }) {
@@ -69,7 +76,6 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   const [state,setState] = useState(() => queue.snapshot())
   const [dragging,setDragging] = useState(false)
   const [error,setError] = useState(null)
-  const [common,setCommon] = useState('')
   const [combine,setCombine] = useState(Boolean(initialCombine))
   const [zipping,setZipping] = useState(false)
   const zipController = useRef(null)
@@ -104,9 +110,8 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   const add = async files => {
     setError(null)
     try {
-      await queue.add(files,prepareItem(modeRef.current,targetRef.current))
-      const snapshot = queue.snapshot()
-      if (modeRef.current === 'convert' && targetRef.current && snapshot.items.every(item => item.allowedTargets?.includes(targetRef.current) && item.target === targetRef.current)) setCommon(targetRef.current)
+      const currentTarget = modeRef.current === 'convert' ? sharedTargetFor(queue.snapshot().items) : ''
+      await queue.add(files,prepareItem(modeRef.current,currentTarget || targetRef.current))
     } catch (failure) { setError(failure.code || 'conversion_failed') }
   }
   const download = (blob,name) => {
@@ -126,7 +131,8 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
     if (onModeChange) onModeChange(next)
     else setLocalMode(next)
   }
-  const commonTargets = state.items.length ? (state.items[0].allowedTargets || targetsFor(state.items[0].from)).filter(target => state.items.every(item => (item.allowedTargets || targetsFor(item.from)).includes(target))) : []
+  const commonTargets = state.items.length ? allowedTargetsFor(state.items[0]).filter(target => state.items.every(item => allowedTargetsFor(item).includes(target))) : []
+  const commonTarget = sharedTargetFor(state.items)
   const results = state.items.flatMap(item => item.results)
   const canCombine = mode === 'convert' && state.items.length > 1 && state.items.every(item => IMAGE_FORMATS.includes(item.from) && item.target === 'pdf')
   const setTarget = (item,target) => queue.configure(item.id,{ target,settings:target === 'gif' ? { start:0,duration:5 } : {} })
@@ -152,14 +158,14 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
     {error && <p role="alert" className="converter-error">{tr(`errors.${error}`)}</p>}
     {state.items.length > 0 && <div className="converter-workspace">
       <div className="converter-toolbar"><h2>{tr('files')} <span>{state.items.length}</span></h2>
-        {mode === 'convert' && <label>{tr('commonTarget')}<select name="converter-common-target" value={commonTargets.includes(common) ? common : ''} disabled={state.running} onChange={event => { setCommon(event.target.value); if (event.target.value) for (const item of state.items) setTarget(item,event.target.value) }}><option value="">{tr('individual')}</option>{commonTargets.map(target => <option key={target} value={target}>{target.toUpperCase()}</option>)}</select></label>}
-        <button className="converter-subtle" type="button" disabled={state.running} onClick={() => { queue.clear(); setCommon(''); setCombine(Boolean(initialCombine)) }}>{tr('clear')}</button>
+        {mode === 'convert' && <label>{tr('commonTarget')}<select name="converter-common-target" value={commonTargets.includes(commonTarget) ? commonTarget : ''} disabled={state.running} onChange={event => { if (event.target.value) for (const item of state.items) setTarget(item,event.target.value) }}><option value="">{tr('individual')}</option>{commonTargets.map(target => <option key={target} value={target}>{target.toUpperCase()}</option>)}</select></label>}
+        <button className="converter-subtle" type="button" disabled={state.running} onClick={() => { queue.clear(); setCombine(Boolean(initialCombine)) }}>{tr('clear')}</button>
       </div>
       {canCombine && <label className="converter-combine"><input name="converter-combine" type="checkbox" checked={combine} disabled={state.running} onChange={event => { setCombine(event.target.checked); for (const item of state.items) queue.configure(item.id,{}) }} />{tr('combine')}</label>}
       <ol className="converter-files">{state.items.map((item,index) => <li key={item.id} className="converter-file" data-status={item.status}>
         <div className="converter-file-main"><span className="converter-format" aria-hidden="true">{item.from?.toUpperCase() || '?'}</span>
           <div className="converter-file-name"><strong>{item.file.name}</strong><small>{formatFileSize(item.file.size,locale)}</small></div>
-          {mode === 'convert' && <label className="converter-target"><span>{tr('target')}</span><select name={`file-${item.id}-target`} aria-label={`${tr('target')}: ${item.file.name}`} value={item.target} disabled={state.running || !item.from} onChange={event => { setCommon(''); setTarget(item,event.target.value) }}>{!item.from && <option value="">{tr('unknown')}</option>}{(item.allowedTargets || targetsFor(item.from)).map(target => <option key={target} value={target}>{target.toUpperCase()}</option>)}</select></label>}
+          {mode === 'convert' && <label className="converter-target"><span>{tr('target')}</span><select name={`file-${item.id}-target`} aria-label={`${tr('target')}: ${item.file.name}`} value={item.target} disabled={state.running || !item.from} onChange={event => setTarget(item,event.target.value)}>{!item.from && <option value="">{tr('unknown')}</option>}{allowedTargetsFor(item).map(target => <option key={target} value={target}>{target.toUpperCase()}</option>)}</select></label>}
           <span className="converter-status" aria-live="polite">{tr(`status.${item.status}`)}</span>
           <button className="converter-subtle converter-remove" type="button" disabled={state.running} aria-label={`${tr('remove')}: ${item.file.name}`} onClick={() => queue.remove(item.id)}>×</button>
         </div>
@@ -173,10 +179,10 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
         </div>
         {item.results.map(result => <div className="converter-result" key={result.name}>
           <div className="converter-result-summary"><span><small>{tr('result')}</small><strong>{result.name}</strong></span><span>{formatFileSize(result.blob.size,locale)}</span></div>
-          {IMAGE_FORMATS.includes(item.from) && result.blob.type.startsWith('image/') && <><ImageComparison item={item} result={result} tr={tr} locale={locale} /><p className="converter-size-result">{comparisonText(item.file,result,tr)}</p></>}
+          {IMAGE_FORMATS.includes(item.from) && IMAGE_FORMATS.includes(item.target) && <><ImageComparison item={item} result={result} tr={tr} locale={locale} /><p className="converter-size-result">{comparisonText(item.file,result,tr)}</p></>}
           <button type="button" aria-label={`${tr('downloadResult')}: ${result.name}`} onClick={() => download(result.blob,result.name)}>{tr('download')}</button>
         </div>)}
-        {item.results.length > 1 && <button type="button" disabled={zipping} onClick={() => zip(item.results)}>{tr('downloadZip')}</button>}
+        {item.results.length > 1 && <button type="button" aria-label={`${tr('downloadFileZip')}: ${item.file.name} (${tr('fileNumber')} ${index + 1})`} disabled={zipping} onClick={() => zip(item.results)}>{tr('downloadFileZip')}</button>}
       </li>)}</ol>
       <div className="converter-start"><p>{tr('local')}</p>{state.running ? <button type="button" onClick={() => queue.cancel()}>{tr(mode === 'optimize' ? 'cancelOptimize' : 'cancel')}</button> : <button type="button" className="converter-primary" disabled={state.adding || !state.items.some(item => item.status === 'ready')} onClick={() => queue.start({ combineImages:canCombine && combine })}>{tr(mode === 'optimize' ? 'optimize' : 'convert')}</button>}{results.length > 0 && <button type="button" disabled={zipping || state.running} onClick={() => zip(results)}>{tr(zipping ? 'creatingZip' : 'downloadZip')}</button>}</div>
     </div>}

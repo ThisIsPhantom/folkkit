@@ -80,3 +80,23 @@ test('renders the image optimization workflow in German', async () => {
   expect(screen.getByRole('combobox',{ name:'Qualitätsstufe' })).toHaveValue('balanced')
   expect(screen.getByRole('button',{ name:'Optimierung starten' })).toBeEnabled()
 })
+
+test('derives the common target from every row and applies it to compatible additions', async () => {
+  const t = key => key.split('.').slice(1).reduce((node,part) => node?.[part],messages) || key
+  const { rerender } = render(<I18nContext.Provider value={{ t,locale:'en' }}><FileConverterPage /></I18nContext.Provider>)
+  const png = Uint8Array.of(137,80,78,71,13,10,26,10)
+  fireEvent.change(screen.getByLabelText('Choose files'),{ target:{ files:[new File([png],'one.png')] } })
+  await waitFor(() => expect(screen.getByText('Ready')).toBeVisible())
+  fireEvent.change(screen.getByLabelText('Output for all files'),{ target:{ value:'pdf' } })
+  fireEvent.change(screen.getByLabelText('Add files'),{ target:{ files:[new File([png],'two.png')] } })
+  await waitFor(() => expect(screen.getAllByText('Ready')).toHaveLength(2))
+  expect(screen.getAllByRole('combobox',{ name:/Output format:/ }).map(control => control.value)).toEqual(['pdf','pdf'])
+  expect(screen.getByLabelText('Output for all files')).toHaveValue('pdf')
+
+  rerender(<I18nContext.Provider value={{ t,locale:'en' }}><FileConverterPage initialTarget="webp" /></I18nContext.Provider>)
+  await waitFor(() => expect(screen.getAllByRole('combobox',{ name:/Output format:/ }).every(control => control.value === 'webp')).toBe(true))
+  expect(screen.getByLabelText('Output for all files')).toHaveValue('webp')
+  rerender(<I18nContext.Provider value={{ t,locale:'en' }}><FileConverterPage initialTarget="" /></I18nContext.Provider>)
+  await waitFor(() => expect(screen.getAllByRole('combobox',{ name:/Output format:/ }).every(control => control.value === 'jpeg')).toBe(true))
+  expect(screen.getByLabelText('Output for all files')).toHaveValue('jpeg')
+})

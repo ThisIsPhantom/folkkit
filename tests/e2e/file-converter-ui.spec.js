@@ -70,9 +70,10 @@ test('@matrix image optimizer keeps useful originals and produces independently 
   await page.goto('/convert')
   await page.getByRole('button',{ name:'Make images smaller',exact:true }).click()
   const jpeg = fileURLToPath(new URL('./file-converter-fixtures/sample.jpg',import.meta.url))
+  const jpegBytes = readFileSync(jpeg)
   const png = fileURLToPath(new URL('./file-converter-fixtures/sample.png',import.meta.url))
 
-  await page.getByLabel('Choose files',{ exact:true }).setInputFiles(jpeg)
+  await page.getByLabel('Choose files',{ exact:true }).setInputFiles({ name:'untyped.jpg',mimeType:'application/octet-stream',buffer:jpegBytes })
   await expect(page.getByText('Add files',{ exact:true })).toBeVisible()
   await expect(page.getByText('Drop your files here',{ exact:true })).toHaveCount(0)
   await page.getByText('Settings',{ exact:true }).click()
@@ -81,13 +82,13 @@ test('@matrix image optimizer keeps useful originals and produces independently 
   await page.getByRole('button',{ name:'Start optimization',exact:true }).click()
   await expect(page.getByText('Done',{ exact:true })).toBeVisible()
   await expect(page.getByText('The re-encoded file would be larger. The original is provided instead.',{ exact:true })).toBeVisible()
-  await expect(page.locator('.converter-result-summary strong')).toHaveText('sample.jpg')
+  await expect(page.locator('.converter-result-summary strong')).toHaveText('untyped.jpg')
   await expect(page.locator('.converter-comparison img')).toHaveCount(2)
   const originalDownload = page.waitForEvent('download')
-  await page.getByRole('button',{ name:'Download result: sample.jpg',exact:true }).click()
+  await page.getByRole('button',{ name:'Download result: untyped.jpg',exact:true }).click()
   const originalPath = testInfo.outputPath('optimizer-original.jpg')
   await (await originalDownload).saveAs(originalPath)
-  expect(Buffer.compare(readFileSync(originalPath),readFileSync(jpeg))).toBe(0)
+  expect(Buffer.compare(readFileSync(originalPath),jpegBytes)).toBe(0)
 
   async function resizedJpeg(preset,name) {
     await page.getByRole('button',{ name:'Clear files',exact:true }).click()

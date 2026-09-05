@@ -51,7 +51,7 @@
 .converter-result-summary > span:first-child { display: grid; gap: .2rem; min-width: 0; }
 .converter-result-summary strong { color: var(--text); font-size: .9rem; overflow-wrap: anywhere; }
 .converter-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; margin-top: .8rem; }
-.converter-comparison > div { min-width: 0; }
+.converter-comparison > figure { min-width: 0; }
 .converter-comparison figcaption { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .35rem; color: var(--text-secondary); font-size: .78rem; }
 .converter-comparison img { display: block; width: 100%; height: min(220px,30vw); min-height: 110px; object-fit: contain; border-radius: .55rem; outline: 1px solid color-mix(in srgb,var(--text) 10%,transparent); outline-offset: -1px; background: var(--bg-hover); }
 .converter-size-result { margin: .55rem 0 .75rem; color: var(--text-secondary); font-size: .82rem; }

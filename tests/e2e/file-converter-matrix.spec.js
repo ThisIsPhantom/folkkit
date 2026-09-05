@@ -93,8 +93,10 @@ test('file converter multi-file targets, combined PDF, duplicate ZIP names and s
   await expect(page.getByText('Ready', { exact:true })).toBeVisible()
   await page.getByRole('button', { name:'Convert files', exact:true }).click()
   await expect(page.getByText('Done', { exact:true })).toBeVisible()
+  await expect(page.getByRole('button', { name:'Download results as ZIP: sample.pdf (file 1)', exact:true })).toHaveCount(1)
+  await expect(page.getByRole('button', { name:'Download all as ZIP', exact:true })).toHaveCount(1)
   const zipPromise = page.waitForEvent('download')
-  await page.getByRole('button', { name:'Download all as ZIP', exact:true }).last().click()
+  await page.getByRole('button', { name:'Download all as ZIP', exact:true }).click()
   const zip = await zipPromise
   const entries = unzipSync(readFileSync(await zip.path()))
   expect(Object.keys(entries)).toEqual(['sample-page-1.png','sample-page-2.png'])
