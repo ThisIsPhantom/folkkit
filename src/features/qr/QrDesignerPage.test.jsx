@@ -16,6 +16,21 @@ function renderDesigner(locale = 'de', messages = messagesDe) {
   )
 }
 
+function renderReader({ readQr, active = true, initialMode = 'read', onModeChange } = {}) {
+  const t = (key, vars) => translate(messagesDe, key, vars)
+  return renderWithProviders(
+    <I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t }}>
+      <QrDesignerPage
+        initialMode={initialMode}
+        active={active}
+        onModeChange={onModeChange}
+        readQr={readQr}
+        generateQr={async request => new Blob([request.data], { type: 'image/svg+xml' })}
+      />
+    </I18nContext.Provider>,
+  )
+}
+
 function deferred() {
   let resolve
   const promise = new Promise(next => { resolve = next })
@@ -40,6 +55,51 @@ describe('QR designer page', () => {
     let index = 0
     URL.createObjectURL = vi.fn(() => `blob:preview-${++index}`)
     URL.revokeObjectURL = vi.fn()
+  })
+
+  it('switches between create and read modes through the optional controlled interface', () => {
+    const changes = []
+    const result = renderReader({ initialMode: 'read', onModeChange: mode => changes.push(mode) })
+    expect(screen.getByRole('heading', { name: 'QR-Code lesen' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Erstellen' }))
+    expect(changes).toEqual(['create'])
+
+    result.rerender(
+      <I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t: (key, vars) => translate(messagesDe, key, vars) }}>
+        <QrDesignerPage initialMode="create" onModeChange={mode => changes.push(mode)} />
+      </I18nContext.Provider>,
+    )
+    expect(screen.getByRole('heading', { name: 'QR-Code gestalten' })).toBeInTheDocument()
+  })
+
+  it('shows decoded text and only exposes a validated HTTP link after local reading', async () => {
+    const readQr = vi.fn().mockResolvedValue('https://example.test/private?q=1')
+    renderReader({ readQr })
+    const input = screen.getByLabelText('QR-Bild auswählen')
+    fireEvent.change(input, { target: { files: [validPngFile()] } })
+
+    expect(await screen.findByText('https://example.test/private?q=1')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Link öffnen' })).toHaveAttribute('href', 'https://example.test/private?q=1')
+    expect(window.location.href).not.toContain('private')
+  })
+
+  it('cancels a read when the workspace becomes inactive and ignores a late result', async () => {
+    const pending = deferred()
+    const readQr = vi.fn((_file, { signal }) => new Promise((resolve, reject) => {
+      signal.addEventListener('abort', () => reject(Object.assign(new Error('cancelled'), { code: 'cancelled' })), { once: true })
+      pending.promise.then(resolve)
+    }))
+    const result = renderReader({ readQr })
+    fireEvent.change(screen.getByLabelText('QR-Bild auswählen'), { target: { files: [validPngFile()] } })
+    expect(await screen.findByRole('status')).toHaveTextContent('QR-Code wird gelesen')
+
+    result.rerender(
+      <I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t: (key, vars) => translate(messagesDe, key, vars) }}>
+        <QrDesignerPage initialMode="read" active={false} readQr={readQr} />
+      </I18nContext.Provider>,
+    )
+    pending.resolve('late private result')
+    await waitFor(() => expect(screen.queryByText('late private result')).not.toBeInTheDocument())
   })
 
   it('keeps the preview visible while switching between content, design and logo controls', async () => {
@@ -90,6 +150,31 @@ describe('QR designer page', () => {
     expect(screen.getByRole('button', { name: 'Terracotta as foreground' })).toBeInTheDocument()
     expect(screen.getByRole('group', { name: 'Background colours' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Light blue as background' })).toBeInTheDocument()
+  })
+
+  it('provides the QR reader workflow in English', async () => {
+    const { default: messagesEn } = await import('./messages.en.js')
+    const t = (key, vars) => translate(messagesEn, key, vars)
+    renderWithProviders(
+      <I18nContext.Provider value={{ locale: 'en', setLocale: vi.fn(), t }}>
+        <QrDesignerPage initialMode="read" readQr={vi.fn()} />
+      </I18nContext.Provider>,
+      { locale: 'en' },
+    )
+
+    expect(screen.getByRole('heading', { name: 'Read a QR code' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Choose QR image')).toHaveAttribute('accept', 'image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp')
+  })
+
+  it('associates structured-content validation messages with the affected field', async () => {
+    renderDesigner()
+    fireEvent.click(screen.getByRole('radio', { name: 'URL' }))
+    const url = screen.getByRole('textbox', { name: 'Inhalt' })
+    fireEvent.change(url, { target: { value: 'javascript:alert(1)' } })
+
+    expect(await screen.findByText('Gib eine vollständige HTTP- oder HTTPS-Adresse ein.')).toHaveAttribute('id', 'qr-content-error')
+    expect(url).toHaveAttribute('aria-describedby', 'qr-content-error')
+    expect(url).toHaveAttribute('aria-invalid', 'true')
   })
 
   it('reports malformed logo files without replacing the current QR preview', async () => {

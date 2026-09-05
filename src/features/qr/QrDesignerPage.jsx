@@ -4,11 +4,12 @@ import { createLatestPreview } from './latestPreview.js'
 import { computeSquareCrop, loadLogoAsset, moveCropByPixels } from './logoAsset.js'
 import { downloadQrBlob, generateQrBlob } from './qrGenerator.js'
 import { analyseQrPayload, contrastRatio } from './qrModel.js'
+import { buildQrPayload } from './qrPayloads.js'
+import { readQrImage, safeHttpUrl } from './qrReader.js'
 import './qr-designer.css'
 
 const DEFAULTS = Object.freeze({
   contentType: 'text',
-  data: '',
   foreground: '#111111',
   background: '#ffffff',
   dotStyle: 'square',
@@ -20,6 +21,36 @@ const DEFAULTS = Object.freeze({
   logoSpacing: 4,
   crop: Object.freeze({ zoom: 1, x: 0, y: 0 }),
 })
+
+const CONTENT_DEFAULTS = Object.freeze({
+  text: '',
+  wifiName: '',
+  wifiPassword: '',
+  wifiEncryption: 'WPA',
+  wifiHidden: false,
+  contactName: '',
+  contactOrganization: '',
+  contactPhone: '',
+  contactEmail: '',
+  contactWebsite: '',
+  emailTo: '',
+  emailSubject: '',
+  emailBody: '',
+  smsPhone: '',
+  smsMessage: '',
+})
+
+const CONTENT_TYPES = Object.freeze([
+  ['text', 'typeText'],
+  ['url', 'typeUrl'],
+  ['wifi', 'typeWifi'],
+  ['vcard', 'typeContact'],
+  ['email', 'typeEmail'],
+  ['sms', 'typeSms'],
+])
+
+const MODES = new Set(['create', 'read'])
+const normalizeMode = value => MODES.has(value) ? value : 'create'
 
 const styleOptions = Object.freeze({
   dots: [
@@ -105,6 +136,27 @@ function RangeControl({ id, label, value, minimum, maximum, step = 1, output, on
     <label className="qr-field qr-range" htmlFor={id}>
       <span className="qr-field-heading"><span>{label}</span><output htmlFor={id}>{output}</output></span>
       <input id={id} name={id} type="range" min={minimum} max={maximum} step={step} value={value} onChange={onChange} />
+    </label>
+  )
+}
+
+function ContentField({ id, label, value, onChange, error, t, type = 'text', multiline = false, inputMode, placeholder }) {
+  const describedBy = error ? `${id}-error` : undefined
+  const controlProps = {
+    id,
+    name: id,
+    value,
+    inputMode,
+    placeholder,
+    'aria-invalid': error ? 'true' : undefined,
+    'aria-describedby': describedBy,
+    onChange: event => onChange(event.target.value),
+  }
+  return (
+    <label className="qr-field" htmlFor={id}>
+      <span>{label}</span>
+      {multiline ? <textarea {...controlProps} /> : <input {...controlProps} type={type} />}
+      {error && <span id={describedBy} className="qr-field-error" role="alert">{t(`studioQr.fieldErrors.${error}`)}</span>}
     </label>
   )
 }
@@ -227,10 +279,21 @@ function LogoCropControl({ asset, crop, onChange, t }) {
   )
 }
 
-export default function QrDesignerPage({ generateQr = generateQrBlob }) {
+export default function QrDesignerPage({
+  generateQr = generateQrBlob,
+  readQr = readQrImage,
+  initialMode = 'create',
+  onModeChange,
+  active = true,
+}) {
   const { t } = useI18n()
+  const requestedMode = normalizeMode(initialMode)
+  const [localMode, setLocalMode] = useState(requestedMode)
+  const mode = onModeChange ? requestedMode : localMode
   const [activeTab, setActiveTab] = useState('content')
   const [settings, setSettings] = useState(DEFAULTS)
+  const [contentFields, setContentFields] = useState(CONTENT_DEFAULTS)
+  const [touchedFields, setTouchedFields] = useState({})
   const [logoAsset, setLogoAsset] = useState(null)
   const logoRef = useRef(null)
   const logoRequestRef = useRef(0)
@@ -242,15 +305,25 @@ export default function QrDesignerPage({ generateQr = generateQrBlob }) {
   const previewRef = useRef(null)
   const exportGenerationRef = useRef(0)
   const mountedRef = useRef(false)
+  const [readerState, setReaderState] = useState({ status: 'idle', value: '', error: null, generation: 0 })
+  const readerAbortRef = useRef(null)
+  const readerGenerationRef = useRef(0)
 
   const level = logoAsset ? 'H' : 'Q'
-  const analysis = useMemo(() => analyseQrPayload(settings.data, level), [settings.data, level])
+  const payload = useMemo(
+    () => buildQrPayload(settings.contentType, contentFields),
+    [settings.contentType, contentFields],
+  )
+  const analysis = useMemo(() => analyseQrPayload(payload.data, level), [payload.data, level])
   const nearCapacity = analysis.ok && analysis.bytes >= analysis.capacity * 0.8
   const lowContrast = useMemo(
     () => contrastRatio(settings.foreground, settings.background) < 4.5,
     [settings.foreground, settings.background],
   )
-  const request = useMemo(() => ({ ...settings, logoAsset, analysis }), [settings, logoAsset, analysis])
+  const request = useMemo(
+    () => ({ ...settings, data: payload.data, logoAsset, analysis }),
+    [settings, payload.data, logoAsset, analysis],
+  )
 
   useEffect(() => {
     const preview = createLatestPreview({
@@ -288,6 +361,18 @@ export default function QrDesignerPage({ generateQr = generateQrBlob }) {
     logoRef.current?.bitmap.close?.()
   }, [])
 
+  useEffect(() => () => {
+    readerGenerationRef.current += 1
+    readerAbortRef.current?.abort()
+  }, [])
+
+  useEffect(() => {
+    if (active) return
+    readerGenerationRef.current += 1
+    readerAbortRef.current?.abort()
+    readerAbortRef.current = null
+  }, [active])
+
   useEffect(() => {
     mountedRef.current = true
     return () => {
@@ -297,6 +382,11 @@ export default function QrDesignerPage({ generateQr = generateQrBlob }) {
   }, [])
 
   const updateSetting = (key, value) => setSettings(current => ({ ...current, [key]: value }))
+  const updateContent = (key, value) => {
+    setContentFields(current => ({ ...current, [key]: value }))
+    setTouchedFields(current => ({ ...current, [key]: true }))
+  }
+  const fieldError = key => touchedFields[key] ? payload.fieldErrors[key] : null
   const updateCrop = (key, value) => setSettings(current => ({
     ...current,
     crop: { ...current.crop, [key]: value },
@@ -343,9 +433,65 @@ export default function QrDesignerPage({ generateQr = generateQrBlob }) {
     exportGenerationRef.current += 1
     removeLogo()
     setSettings(DEFAULTS)
+    setContentFields(CONTENT_DEFAULTS)
+    setTouchedFields({})
     setActiveTab('content')
     setExporting(null)
     setExportError(null)
+  }
+
+  const cancelRead = (clear = false) => {
+    const generation = ++readerGenerationRef.current
+    readerAbortRef.current?.abort()
+    readerAbortRef.current = null
+    setReaderState(current => clear || current.status === 'reading'
+      ? { status: 'idle', value: '', error: null, generation }
+      : current)
+  }
+
+  const selectMode = (nextMode) => {
+    const next = normalizeMode(nextMode)
+    if (next === mode) return
+    if (mode === 'read') cancelRead()
+    if (onModeChange) onModeChange(next)
+    else setLocalMode(next)
+  }
+
+  const handleReaderFile = async (event) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    cancelRead(true)
+    const generation = ++readerGenerationRef.current
+    const controller = new AbortController()
+    readerAbortRef.current = controller
+    setReaderState({ status: 'reading', value: '', error: null, generation })
+    try {
+      const value = await readQr(file, { signal: controller.signal })
+      if (generation !== readerGenerationRef.current || controller.signal.aborted) return
+      setReaderState({ status: 'success', value, error: null, generation })
+    } catch (error) {
+      if (error?.code === 'cancelled') {
+        const cancelledGeneration = readerGenerationRef.current
+        setReaderState(current => current.status === 'reading' && current.generation === generation
+          ? { status: 'idle', value: '', error: null, generation: cancelledGeneration }
+          : current)
+        return
+      }
+      if (generation !== readerGenerationRef.current) return
+      setReaderState({ status: 'error', value: '', error: error?.code || 'decode_failed', generation })
+    } finally {
+      if (generation === readerGenerationRef.current) readerAbortRef.current = null
+    }
+  }
+
+  const copyReaderResult = async () => {
+    try {
+      await navigator.clipboard.writeText(readerState.value)
+      setReaderState(current => ({ ...current, status: 'copied' }))
+    } catch {
+      setReaderState(current => ({ ...current, error: 'copy_failed' }))
+    }
   }
 
   const exportQr = async (extension) => {
@@ -384,33 +530,77 @@ export default function QrDesignerPage({ generateQr = generateQrBlob }) {
         <div className="qr-control-stack">
           <fieldset className="qr-fieldset">
             <legend>{t('studioQr.contentType')}</legend>
-            <div className="qr-segmented">
-              {['text', 'url'].map(type => (
+            <div className="qr-segmented qr-segmented--types">
+              {CONTENT_TYPES.map(([type, labelKey]) => (
                 <label key={type}>
                   <input
                     type="radio"
                     name="qr-content-type"
                     value={type}
                     checked={settings.contentType === type}
-                    onChange={() => updateSetting('contentType', type)}
+                    onChange={() => {
+                      updateSetting('contentType', type)
+                      setTouchedFields({})
+                    }}
                   />
-                  <span>{t(`studioQr.${type === 'text' ? 'typeText' : 'typeUrl'}`)}</span>
+                  <span>{t(`studioQr.${labelKey}`)}</span>
                 </label>
               ))}
             </div>
           </fieldset>
-          <label className="qr-field" htmlFor="qr-content">
-            <span>{t('studioQr.contentLabel')}</span>
-            <textarea
+          {['text', 'url'].includes(settings.contentType) && (
+            <ContentField
               id="qr-content"
-              name="qr-content"
-              value={settings.data}
+              label={t('studioQr.contentLabel')}
+              value={contentFields.text}
               inputMode={settings.contentType === 'url' ? 'url' : 'text'}
               placeholder={t(`studioQr.${settings.contentType === 'url' ? 'urlPlaceholder' : 'textPlaceholder'}`)}
-              aria-describedby={nearCapacity ? 'qr-content-status' : undefined}
-              onChange={event => updateSetting('data', event.target.value)}
+              multiline
+              error={fieldError('text')}
+              onChange={value => updateContent('text', value)}
+              t={t}
             />
-          </label>
+          )}
+          {settings.contentType === 'wifi' && (
+            <>
+              <ContentField id="qr-wifi-name" label={t('studioQr.wifiName')} value={contentFields.wifiName} error={fieldError('wifiName')} onChange={value => updateContent('wifiName', value)} t={t} />
+              <label className="qr-field" htmlFor="qr-wifi-encryption">
+                <span>{t('studioQr.wifiEncryption')}</span>
+                <span className="qr-select-wrap">
+                  <select id="qr-wifi-encryption" name="qr-wifi-encryption" value={contentFields.wifiEncryption} onChange={event => updateContent('wifiEncryption', event.target.value)}>
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">{t('studioQr.wifiOpen')}</option>
+                  </select>
+                  <svg viewBox="0 0 8 5" width="8" height="5" aria-hidden="true"><path d="M.5.5 4 4 7.5.5" /></svg>
+                </span>
+              </label>
+              {contentFields.wifiEncryption !== 'nopass' && <ContentField id="qr-wifi-password" label={t('studioQr.wifiPassword')} value={contentFields.wifiPassword} error={fieldError('wifiPassword')} onChange={value => updateContent('wifiPassword', value)} t={t} type="password" />}
+              <label className="qr-check"><input type="checkbox" checked={contentFields.wifiHidden} onChange={event => updateContent('wifiHidden', event.target.checked)} /> <span>{t('studioQr.wifiHidden')}</span></label>
+            </>
+          )}
+          {settings.contentType === 'vcard' && (
+            <>
+              <ContentField id="qr-contact-name" label={t('studioQr.contactName')} value={contentFields.contactName} error={fieldError('contactName')} onChange={value => updateContent('contactName', value)} t={t} />
+              <ContentField id="qr-contact-organization" label={t('studioQr.contactOrganization')} value={contentFields.contactOrganization} multiline onChange={value => updateContent('contactOrganization', value)} t={t} />
+              <ContentField id="qr-contact-phone" label={t('studioQr.phone')} value={contentFields.contactPhone} inputMode="tel" onChange={value => updateContent('contactPhone', value)} t={t} />
+              <ContentField id="qr-contact-email" label={t('studioQr.emailAddress')} value={contentFields.contactEmail} inputMode="email" error={fieldError('contactEmail')} onChange={value => updateContent('contactEmail', value)} t={t} />
+              <ContentField id="qr-contact-website" label={t('studioQr.website')} value={contentFields.contactWebsite} inputMode="url" error={fieldError('contactWebsite')} onChange={value => updateContent('contactWebsite', value)} t={t} />
+            </>
+          )}
+          {settings.contentType === 'email' && (
+            <>
+              <ContentField id="qr-email-to" label={t('studioQr.emailTo')} value={contentFields.emailTo} inputMode="email" error={fieldError('emailTo')} onChange={value => updateContent('emailTo', value)} t={t} />
+              <ContentField id="qr-email-subject" label={t('studioQr.emailSubject')} value={contentFields.emailSubject} onChange={value => updateContent('emailSubject', value)} t={t} />
+              <ContentField id="qr-email-body" label={t('studioQr.message')} value={contentFields.emailBody} multiline onChange={value => updateContent('emailBody', value)} t={t} />
+            </>
+          )}
+          {settings.contentType === 'sms' && (
+            <>
+              <ContentField id="qr-sms-phone" label={t('studioQr.phone')} value={contentFields.smsPhone} inputMode="tel" error={fieldError('smsPhone')} onChange={value => updateContent('smsPhone', value)} t={t} />
+              <ContentField id="qr-sms-message" label={t('studioQr.message')} value={contentFields.smsMessage} multiline onChange={value => updateContent('smsMessage', value)} t={t} />
+            </>
+          )}
           {nearCapacity && <p id="qr-content-status" className="qr-warning" role="status">{t('studioQr.capacityRemaining', { remaining: analysis.capacity - analysis.bytes })}</p>}
         </div>
       )
@@ -487,15 +677,56 @@ export default function QrDesignerPage({ generateQr = generateQrBlob }) {
   }
 
   const invalidMessage = analysis.reason === 'capacity' ? t('studioQr.capacityError') : null
+  const readerLink = readerState.value ? safeHttpUrl(readerState.value) : null
+  const readerIsRunning = readerState.status === 'reading'
 
   return (
-    <section className="studio-page qr-designer" aria-labelledby="qr-designer-title">
+    <section className="studio-page qr-designer" aria-labelledby="qr-designer-title" hidden={!active}>
+      <nav className="qr-modes" aria-label={t('studioQr.modeLabel')}>
+        <button type="button" aria-pressed={mode === 'create'} onClick={() => selectMode('create')}>{t('studioQr.modeCreate')}</button>
+        <button type="button" aria-pressed={mode === 'read'} onClick={() => selectMode('read')}>{t('studioQr.modeRead')}</button>
+      </nav>
       <header className="qr-page-heading">
-        <h1 id="qr-designer-title">{t('studioQr.title')}</h1>
-        <p>{t('studioQr.intro')}</p>
+        <h1 id="qr-designer-title">{t(`studioQr.${mode === 'read' ? 'readerTitle' : 'title'}`)}</h1>
+        <p>{t(`studioQr.${mode === 'read' ? 'readerIntro' : 'intro'}`)}</p>
       </header>
 
-      <div className="qr-workspace">
+      {mode === 'read' ? (
+        <section className="qr-reader" aria-label={t('studioQr.readerTitle')}>
+          <label className="qr-file-field" htmlFor="qr-reader-file">
+            <span>{t('studioQr.readerInput')}</span>
+            <input
+              id="qr-reader-file"
+              name="qr-reader-file"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+              disabled={readerIsRunning}
+              onChange={handleReaderFile}
+            />
+          </label>
+          <p className="qr-helper">{t('studioQr.readerHint')}</p>
+          {readerIsRunning && (
+            <div className="qr-reader-progress">
+              <progress aria-label={t('studioQr.readerProgress')} />
+              <p role="status">{t('studioQr.readerProgress')}</p>
+              <button type="button" className="qr-button qr-button-secondary" onClick={() => cancelRead()}>{t('studioQr.readerCancel')}</button>
+            </div>
+          )}
+          {readerState.error && <p className="qr-error" role="alert">{t(`studioQr.readerErrors.${readerState.error}`)}</p>}
+          {readerState.value && (
+            <div className="qr-reader-result">
+              <h2>{t('studioQr.readerResult')}</h2>
+              <pre tabIndex="0">{readerState.value}</pre>
+              <div className="qr-reader-actions">
+                <button type="button" className="qr-button qr-button-primary" onClick={copyReaderResult}>{t('studioQr.readerCopy')}</button>
+                {readerLink && <a className="qr-button qr-button-secondary" href={readerLink} target="_blank" rel="noreferrer">{t('studioQr.readerOpenLink')}</a>}
+                <button type="button" className="qr-button qr-button-ghost" onClick={() => cancelRead(true)}>{t('studioQr.readerReset')}</button>
+              </div>
+              {readerState.status === 'copied' && <p className="qr-preview-status" role="status">{t('studioQr.readerCopied')}</p>}
+            </div>
+          )}
+        </section>
+      ) : <div className="qr-workspace">
         <section className="qr-editor" aria-label={t('studioQr.tabsLabel')}>
           <div className="qr-tabs" role="tablist" aria-label={t('studioQr.tabsLabel')}>
             {tabs.map(([tab, key]) => (
@@ -539,7 +770,7 @@ export default function QrDesignerPage({ generateQr = generateQrBlob }) {
             <button type="button" className="qr-button qr-button-ghost" onClick={reset}>{t('studioQr.reset')}</button>
           </div>
         </section>
-      </div>
+      </div>}
     </section>
   )
 }

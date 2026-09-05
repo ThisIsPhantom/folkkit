@@ -39,6 +39,31 @@ function makeLogoPng() {
   return PNG.sync.write(png)
 }
 
+function makeBlankPng() {
+  const png = new PNG({ width: 160, height: 160 })
+  png.data.fill(255)
+  return PNG.sync.write(png)
+}
+
+async function convertPng(page, buffer, mimeType) {
+  const base64 = buffer.toString('base64')
+  const converted = await page.evaluate(async ({ base64: source, mimeType: target }) => {
+    const response = await fetch(`data:image/png;base64,${source}`)
+    const bitmap = await createImageBitmap(await response.blob())
+    const canvas = document.createElement('canvas')
+    canvas.width = bitmap.width
+    canvas.height = bitmap.height
+    canvas.getContext('2d').drawImage(bitmap, 0, 0)
+    bitmap.close()
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, target, 0.95))
+    const bytes = new Uint8Array(await blob.arrayBuffer())
+    let binary = ''
+    for (const byte of bytes) binary += String.fromCharCode(byte)
+    return btoa(binary)
+  }, { base64, mimeType })
+  return Buffer.from(converted, 'base64')
+}
+
 async function downloadFrom(page, name) {
   const pending = page.waitForEvent('download')
   await page.getByRole('button', { name }).click()
@@ -185,6 +210,87 @@ test('preserves UTF-8 content exactly in independently decoded PNG and SVG expor
   }
 })
 
+test('serializes Wi-Fi and vCard fields into independently decoded payloads', async ({ page }) => {
+  await page.goto('./qr')
+  await page.getByRole('radio', { name: 'WLAN' }).click()
+  await page.getByLabel('Netzwerkname').fill('Gäste;Netz,"A"\\5')
+  await page.getByLabel('Passwort').fill('p:a,s;s"\\😀')
+  await page.getByLabel('Netzwerk ist verborgen').check()
+  await waitForPreview(page)
+  expect(decodePng((await downloadFrom(page, 'PNG herunterladen')).buffer).value).toBe(
+    'WIFI:T:WPA;S:Gäste\\;Netz\\,\\"A\\"\\\\5;P:p\\:a\\,s\\;s\\"\\\\😀;H:true;;',
+  )
+
+  await page.getByRole('radio', { name: 'Kontakt' }).click()
+  await page.getByLabel('Name').fill('Zoë Example')
+  await page.getByLabel('Organisation').fill('Studio, Nord; Süd\\West\nAtelier')
+  await page.getByLabel('Telefonnummer').fill('+41 79 123 45 67')
+  await page.getByLabel('E-Mail-Adresse').fill('zoe@example.test')
+  await waitForPreview(page)
+  expect(decodePng((await downloadFrom(page, 'PNG herunterladen')).buffer).value).toBe([
+    'BEGIN:VCARD',
+    'VERSION:4.0',
+    'FN:Zoë Example',
+    'ORG:Studio\\, Nord\\; Süd\\\\West\\nAtelier',
+    'TEL;VALUE=uri:tel:+41791234567',
+    'EMAIL:zoe@example.test',
+    'END:VCARD',
+  ].join('\r\n'))
+})
+
+test('@matrix reads a generated local QR image without exposing its payload or contacting another origin', async ({ page }, testInfo) => {
+  const payload = 'Local only: Zürich 😀 / secret=not-in-url'
+  const externalRequests = []
+  const pageErrors = []
+  const consoleErrors = []
+  page.on('pageerror', error => pageErrors.push(error.message))
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text())
+  })
+  const appOrigin = new URL(testInfo.project.use.baseURL).origin
+  page.on('request', (request) => {
+    if (new URL(request.url()).origin !== appOrigin) externalRequests.push(request.url())
+  })
+  await page.goto('./qr')
+  await page.getByRole('textbox', { name: 'Inhalt' }).fill(payload)
+  await waitForPreview(page)
+  const qr = (await downloadFrom(page, 'PNG herunterladen')).buffer
+
+  await page.goto('./qr?mode=read')
+  await page.getByLabel('QR-Bild auswählen').setInputFiles({ name: 'code.png', mimeType: 'image/png', buffer: qr })
+  await expect(page.getByRole('heading', { name: 'Gelesener Inhalt' })).toBeVisible()
+  await expect(page.locator('.qr-reader-result pre')).toHaveText(payload)
+  expect(page.url()).not.toContain('secret')
+  expect(externalRequests).toEqual([])
+  expect(pageErrors).toEqual([])
+  expect(consoleErrors).toEqual([])
+  await expect(page.getByRole('link', { name: 'Link öffnen' })).toHaveCount(0)
+})
+
+test('reads PNG, JPEG and WebP files and reports an image without a QR code', async ({ page }) => {
+  const payload = 'Folkkit reader formats 2026'
+  await page.goto('./qr')
+  await page.getByRole('textbox', { name: 'Inhalt' }).fill(payload)
+  await waitForPreview(page)
+  const png = (await downloadFrom(page, 'PNG herunterladen')).buffer
+  const jpeg = await convertPng(page, png, 'image/jpeg')
+  const webp = await convertPng(page, png, 'image/webp')
+  await page.goto('./qr?mode=read')
+
+  for (const fixture of [
+    { name: 'code.png', mimeType: 'image/png', buffer: png },
+    { name: 'code.jpg', mimeType: 'image/jpeg', buffer: jpeg },
+    { name: 'code.webp', mimeType: 'image/webp', buffer: webp },
+  ]) {
+    await page.getByLabel('QR-Bild auswählen').setInputFiles(fixture)
+    await expect(page.locator('.qr-reader-result pre')).toHaveText(payload)
+    await page.getByRole('button', { name: 'Anderes Bild wählen' }).click()
+  }
+
+  await page.getByLabel('QR-Bild auswählen').setInputFiles({ name: 'blank.png', mimeType: 'image/png', buffer: makeBlankPng() })
+  await expect(page.getByRole('alert')).toContainText('Kein QR-Code gefunden')
+})
+
 test('accepts and embeds actual VP8 and VP8L WebP logos', async ({ page }) => {
   const payload = 'Folkkit WebP logo fixture'
   await page.goto('./qr')
@@ -259,4 +365,14 @@ test('@matrix keeps the QR controls keyboard-operable without horizontal page ov
 
   const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
   expect(horizontalOverflow).toBeLessThanOrEqual(1)
+
+  const viewport = page.viewportSize()
+  if (viewport && viewport.width <= 560) {
+    await page.getByRole('tab', { name: 'Inhalt' }).click()
+    const inputBounds = await page.getByRole('textbox', { name: 'Inhalt' }).boundingBox()
+    const previewBounds = await page.locator('.qr-preview-panel').boundingBox()
+    if (!inputBounds || !previewBounds) throw new Error('QR mobile layout bounds are unavailable')
+    expect(inputBounds.y + inputBounds.height).toBeLessThan(viewport.height)
+    expect(inputBounds.y).toBeLessThan(previewBounds.y)
+  }
 })
