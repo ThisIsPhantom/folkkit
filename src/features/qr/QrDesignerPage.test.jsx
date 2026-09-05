@@ -175,6 +175,46 @@ describe('QR designer page', () => {
     expect(await screen.findByText('Gib eine vollständige HTTP- oder HTTPS-Adresse ein.')).toHaveAttribute('id', 'qr-content-error')
     expect(url).toHaveAttribute('aria-describedby', 'qr-content-error')
     expect(url).toHaveAttribute('aria-invalid', 'true')
+
+    fireEvent.click(screen.getByRole('radio', { name: 'Kontakt' }))
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Ada Example' } })
+    const phone = screen.getByLabelText('Telefonnummer')
+    fireEvent.change(phone, { target: { value: 'call-me' } })
+
+    expect(await screen.findByText('Gib eine gültige Telefonnummer ein.')).toHaveAttribute('id', 'qr-contact-phone-error')
+    expect(phone).toHaveAttribute('aria-describedby', 'qr-contact-phone-error')
+    expect(phone).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('aborts a controlled read when parent navigation changes read mode to create and ignores its late result', async () => {
+    const pending = deferred()
+    let readSignal
+    const readQr = vi.fn((_file, { signal }) => {
+      readSignal = signal
+      return pending.promise
+    })
+    const onModeChange = vi.fn()
+    const t = (key, vars) => translate(messagesDe, key, vars)
+    const result = renderWithProviders(
+      <I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t }}>
+        <QrDesignerPage initialMode="read" onModeChange={onModeChange} readQr={readQr} />
+      </I18nContext.Provider>,
+    )
+    fireEvent.change(screen.getByLabelText('QR-Bild auswählen'), { target: { files: [validPngFile()] } })
+    expect(await screen.findByRole('status')).toHaveTextContent('QR-Code wird gelesen')
+
+    result.rerender(
+      <I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t }}>
+        <QrDesignerPage initialMode="create" onModeChange={onModeChange} readQr={readQr} />
+      </I18nContext.Provider>,
+    )
+    await waitFor(() => expect(readSignal.aborted).toBe(true))
+    pending.resolve('late controlled result')
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(screen.queryByText('late controlled result')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'QR-Code gestalten' })).toBeInTheDocument()
   })
 
   it('reports malformed logo files without replacing the current QR preview', async () => {

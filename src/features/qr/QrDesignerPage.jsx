@@ -305,7 +305,7 @@ export default function QrDesignerPage({
   const previewRef = useRef(null)
   const exportGenerationRef = useRef(0)
   const mountedRef = useRef(false)
-  const [readerState, setReaderState] = useState({ status: 'idle', value: '', error: null, generation: 0 })
+  const [readerState, setReaderState] = useState({ status: 'idle', value: '', error: null, generation: 0, signal: null })
   const readerAbortRef = useRef(null)
   const readerGenerationRef = useRef(0)
 
@@ -367,11 +367,11 @@ export default function QrDesignerPage({
   }, [])
 
   useEffect(() => {
-    if (active) return
+    if (active && mode === 'read') return
     readerGenerationRef.current += 1
     readerAbortRef.current?.abort()
     readerAbortRef.current = null
-  }, [active])
+  }, [active, mode])
 
   useEffect(() => {
     mountedRef.current = true
@@ -445,7 +445,7 @@ export default function QrDesignerPage({
     readerAbortRef.current?.abort()
     readerAbortRef.current = null
     setReaderState(current => clear || current.status === 'reading'
-      ? { status: 'idle', value: '', error: null, generation }
+      ? { status: 'idle', value: '', error: null, generation, signal: null }
       : current)
   }
 
@@ -465,21 +465,21 @@ export default function QrDesignerPage({
     const generation = ++readerGenerationRef.current
     const controller = new AbortController()
     readerAbortRef.current = controller
-    setReaderState({ status: 'reading', value: '', error: null, generation })
+    setReaderState({ status: 'reading', value: '', error: null, generation, signal: controller.signal })
     try {
       const value = await readQr(file, { signal: controller.signal })
       if (generation !== readerGenerationRef.current || controller.signal.aborted) return
-      setReaderState({ status: 'success', value, error: null, generation })
+      setReaderState({ status: 'success', value, error: null, generation, signal: null })
     } catch (error) {
       if (error?.code === 'cancelled') {
         const cancelledGeneration = readerGenerationRef.current
         setReaderState(current => current.status === 'reading' && current.generation === generation
-          ? { status: 'idle', value: '', error: null, generation: cancelledGeneration }
+          ? { status: 'idle', value: '', error: null, generation: cancelledGeneration, signal: null }
           : current)
         return
       }
       if (generation !== readerGenerationRef.current) return
-      setReaderState({ status: 'error', value: '', error: error?.code || 'decode_failed', generation })
+      setReaderState({ status: 'error', value: '', error: error?.code || 'decode_failed', generation, signal: null })
     } finally {
       if (generation === readerGenerationRef.current) readerAbortRef.current = null
     }
@@ -583,7 +583,7 @@ export default function QrDesignerPage({
             <>
               <ContentField id="qr-contact-name" label={t('studioQr.contactName')} value={contentFields.contactName} error={fieldError('contactName')} onChange={value => updateContent('contactName', value)} t={t} />
               <ContentField id="qr-contact-organization" label={t('studioQr.contactOrganization')} value={contentFields.contactOrganization} multiline onChange={value => updateContent('contactOrganization', value)} t={t} />
-              <ContentField id="qr-contact-phone" label={t('studioQr.phone')} value={contentFields.contactPhone} inputMode="tel" onChange={value => updateContent('contactPhone', value)} t={t} />
+              <ContentField id="qr-contact-phone" label={t('studioQr.phone')} value={contentFields.contactPhone} inputMode="tel" error={fieldError('contactPhone')} onChange={value => updateContent('contactPhone', value)} t={t} />
               <ContentField id="qr-contact-email" label={t('studioQr.emailAddress')} value={contentFields.contactEmail} inputMode="email" error={fieldError('contactEmail')} onChange={value => updateContent('contactEmail', value)} t={t} />
               <ContentField id="qr-contact-website" label={t('studioQr.website')} value={contentFields.contactWebsite} inputMode="url" error={fieldError('contactWebsite')} onChange={value => updateContent('contactWebsite', value)} t={t} />
             </>
@@ -678,7 +678,7 @@ export default function QrDesignerPage({
 
   const invalidMessage = analysis.reason === 'capacity' ? t('studioQr.capacityError') : null
   const readerLink = readerState.value ? safeHttpUrl(readerState.value) : null
-  const readerIsRunning = readerState.status === 'reading'
+  const readerIsRunning = readerState.status === 'reading' && !readerState.signal?.aborted
 
   return (
     <section className="studio-page qr-designer" aria-labelledby="qr-designer-title" hidden={!active}>
