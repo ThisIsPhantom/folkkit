@@ -108,4 +108,13 @@ export const historyStore = Object.freeze({
   },
 })
 
-if (typeof localStorage !== 'undefined') ensureCurrentConsent()
+// Storage can be unavailable in a restricted browser. File studios must still
+// open; this return value distinguishes unavailable storage from completed cleanup.
+export function initializeHistoryPrivacy() {
+  try {
+    ensureCurrentConsent()
+    return true
+  } catch {
+    return false
+  }
+}

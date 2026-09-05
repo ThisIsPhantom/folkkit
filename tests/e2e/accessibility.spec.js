@@ -28,8 +28,8 @@ test('home, catalog, core tools, consent and legal routes have no automated axe 
 
 test('error state remains accessible and content-free', async ({ page }) => {
   await page.goto('./workspace?tool=pdf-page-count')
-  await page.getByLabel('Datei auswählen').setInputFiles({ name: 'PRIVATE-error.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-corrupt') })
-  await expect(page.getByRole('alert')).toHaveText('Die Datei ist beschädigt oder ungültig.')
+  await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles({ name: 'PRIVATE-error.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-corrupt') })
+  await expect(page.getByRole('alert')).toHaveText('Das PDF konnte nicht verarbeitet werden. Wähle eine gültige, unverschlüsselte Datei.')
   await expectNoAxeViolations(page, 'error state')
 })
 
@@ -106,7 +106,7 @@ test('history uses separate 44 pixel actions and reveals remove on keyboard focu
 
 test('the primary file selector is a visible 44 pixel keyboard button with a focus ring', async ({ page }) => {
   await page.goto('./workspace?tool=merge-pdf')
-  const chooseButton = page.getByRole('button', { name: 'PDF-Dateien auswählen' })
+  const chooseButton = page.locator('.pdf-empty').getByRole('button', { name: 'PDF auswählen', exact: true })
   const box = await chooseButton.boundingBox()
   expect(box.width).toBeGreaterThanOrEqual(44)
   expect(box.height).toBeGreaterThanOrEqual(44)
@@ -123,12 +123,8 @@ test('the primary file selector is a visible 44 pixel keyboard button with a foc
   const chooserPromise = page.waitForEvent('filechooser')
   await page.keyboard.press('Enter')
   const chooser = await chooserPromise
-  await chooser.setFiles([
-    fixtureFile('one.pdf', 'application/pdf', onePagePdfBase64),
-    fixtureFile('two.pdf', 'application/pdf', onePagePdfBase64),
-  ])
-  await expect(page.getByText('one.pdf')).toBeVisible()
-  await expect(page.getByText('two.pdf')).toBeVisible()
+  await chooser.setFiles(fixtureFile('one.pdf', 'application/pdf', onePagePdfBase64))
+  await expect(page.locator('.pdf-page-card')).toHaveCount(1)
   await expectNoAxeViolations(page, 'keyboard file selector')
 })
 
@@ -147,7 +143,8 @@ test('mobile text inputs keep a 16 pixel font size to avoid automatic zoom', asy
   expect(workspaceFontSizes.every(size => size >= 16)).toBe(true)
 
   await page.goto('./workspace?tool=pdf-split')
-  const parameterInput = page.getByRole('textbox', { name: 'Werkzeugparameter' })
+  await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles(fixtureFile('mobile.pdf', 'application/pdf', onePagePdfBase64))
+  const parameterInput = page.getByRole('searchbox', { name: 'Text suchen', exact: true })
   await expect(parameterInput).toBeVisible()
   expect(await parameterInput.evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16)
 })

@@ -1,4 +1,4 @@
-import { useEffect,useRef,useState } from 'react'
+import { useCallback,useEffect,useRef,useState } from 'react'
 import { useI18n } from '../../i18n/index.js'
 import { createConversionQueue } from './queue.js'
 import { convertFileItem,createZip } from './engine.js'
@@ -65,7 +65,7 @@ function ImageComparison({ item,result,tr,locale }) {
   </div>
 }
 
-export default function FileConverterPage({ initialMode='convert',onModeChange,initialTarget='',initialCombine=false,active=true }) {
+export default function FileConverterPage({ initialMode='convert',onModeChange,initialTarget='',initialCombine=false,active=true,fileRequest,onFileRequestConsumed }) {
   const { t,locale } = useI18n()
   const tr = key => t(`studioConvert.${key}`)
   const requestedMode = normalizeMode(initialMode)
@@ -76,10 +76,16 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   const [state,setState] = useState(() => queue.snapshot())
   const [dragging,setDragging] = useState(false)
   const [error,setError] = useState(null)
-  const [combine,setCombine] = useState(Boolean(initialCombine))
+  const [combineChoice,setCombineChoice] = useState(() => ({ source:Boolean(initialCombine),value:Boolean(initialCombine) }))
+  const combine = combineChoice.source === Boolean(initialCombine) ? combineChoice.value : Boolean(initialCombine)
+  // Keep local checkbox overrides only until the explicit route preference changes.
+  if (combineChoice.source !== Boolean(initialCombine)) setCombineChoice({ source:Boolean(initialCombine),value:Boolean(initialCombine) })
+  const setCombine = value => setCombineChoice({ source:Boolean(initialCombine),value })
+  const appliedCombine = useRef(Boolean(initialCombine))
   const [zipping,setZipping] = useState(false)
   const zipController = useRef(null)
   const downloads = useRef(new Map())
+  const consumedFileRequest = useRef(null)
   const modeRef = useRef(mode)
   const targetRef = useRef(requestedTarget)
   const appliedConfiguration = useRef(`${mode}:${requestedTarget}`)
@@ -107,13 +113,37 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
     if (!active) { queue.cancel(); zipController.current?.abort() }
   },[active,queue])
 
-  const add = async files => {
+  const changeCombined = useCallback(value => {
+    setCombineChoice({ source:Boolean(initialCombine),value })
+    for (const item of queue.snapshot().items) if (item.target) queue.configure(item.id,{})
+  },[queue,initialCombine])
+  useEffect(() => {
+    const next = Boolean(initialCombine)
+    if (appliedCombine.current === next) return
+    if (state.running) { queue.cancel(); return }
+    if (state.adding) return
+    appliedCombine.current = next
+    for (const item of queue.snapshot().items) if (item.target) queue.configure(item.id,{})
+  },[initialCombine,state.running,state.adding,queue])
+
+  const add = useCallback(async files => {
     setError(null)
     try {
       const currentTarget = modeRef.current === 'convert' ? sharedTargetFor(queue.snapshot().items) : ''
       await queue.add(files,prepareItem(modeRef.current,currentTarget || targetRef.current))
     } catch (failure) { setError(failure.code || 'conversion_failed') }
-  }
+  },[queue])
+  useEffect(() => {
+    if (!fileRequest || !active || state.running || state.adding || consumedFileRequest.current === fileRequest.id) return
+    let cancelled = false
+    // Defer intake past StrictMode's setup/cleanup probe, which disposes its queue.
+    queueMicrotask(() => {
+      if (cancelled) return
+      consumedFileRequest.current = fileRequest.id
+      add([fileRequest.file]).finally(() => onFileRequestConsumed?.(fileRequest.id))
+    })
+    return () => { cancelled = true }
+  },[fileRequest,active,state.running,state.adding,add,onFileRequestConsumed])
   const download = (blob,name) => {
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
@@ -161,7 +191,7 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
         {mode === 'convert' && <label>{tr('commonTarget')}<select name="converter-common-target" value={commonTargets.includes(commonTarget) ? commonTarget : ''} disabled={state.running} onChange={event => { if (event.target.value) for (const item of state.items) setTarget(item,event.target.value) }}><option value="">{tr('individual')}</option>{commonTargets.map(target => <option key={target} value={target}>{target.toUpperCase()}</option>)}</select></label>}
         <button className="converter-subtle" type="button" disabled={state.running} onClick={() => { queue.clear(); setCombine(Boolean(initialCombine)) }}>{tr('clear')}</button>
       </div>
-      {canCombine && <label className="converter-combine"><input name="converter-combine" type="checkbox" checked={combine} disabled={state.running} onChange={event => { setCombine(event.target.checked); for (const item of state.items) queue.configure(item.id,{}) }} />{tr('combine')}</label>}
+      {canCombine && <label className="converter-combine"><input name="converter-combine" type="checkbox" checked={combine} disabled={state.running} onChange={event => changeCombined(event.target.checked)} />{tr('combine')}</label>}
       <ol className="converter-files">{state.items.map((item,index) => <li key={item.id} className="converter-file" data-status={item.status}>
         <div className="converter-file-main"><span className="converter-format" aria-hidden="true">{item.from?.toUpperCase() || '?'}</span>
           <div className="converter-file-name"><strong>{item.file.name}</strong><small>{formatFileSize(item.file.size,locale)}</small></div>

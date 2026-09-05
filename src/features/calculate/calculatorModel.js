@@ -1,5 +1,6 @@
 // Folkkit calculations are deterministic and keep all inputs in the current page.
-export const CALCULATOR_IDS = Object.freeze(['percent', 'rule-of-three', 'pythagoras', 'circle', 'area', 'volume', 'units', 'aspect-ratio', 'loan', 'bmi'])
+import { calculateDate, calculateDuration } from './calendarModel.js'
+export const CALCULATOR_IDS = Object.freeze(['percent', 'rule-of-three', 'pythagoras', 'circle', 'area', 'volume', 'units', 'aspect-ratio', 'loan', 'bmi', 'date', 'duration'])
 
 const unit = (id, symbol, factor) => Object.freeze({ id, symbol, factor })
 export const UNIT_CATEGORIES = Object.freeze({
@@ -24,6 +25,8 @@ export const DEFAULT_OPTIONS = Object.freeze({
   'aspect-ratio': Object.freeze({ mode: 'ratio' }),
   loan: Object.freeze({}),
   bmi: Object.freeze({}),
+  date: Object.freeze({ mode: 'difference' }),
+  duration: Object.freeze({}),
 })
 
 export function parseNumber(input) {
@@ -49,6 +52,7 @@ export function calculatorFields(id, options = {}) {
     case 'aspect-ratio': return settings.mode === 'resize' ? ['width', 'height', 'targetWidth'] : ['width', 'height']
     case 'loan': return ['principal', 'annualRate', 'months']
     case 'bmi': return ['weight', 'height']
+    case 'date': return settings.mode === 'add' ? ['startDate', 'days'] : ['startDate', 'endDate']
     default: return []
   }
 }
@@ -111,6 +115,8 @@ function greatestCommonDivisor(first, second) {
 export function calculate(id, inputs = {}, options = {}) {
   if (!CALCULATOR_IDS.includes(id)) return invalid('selection')
   const settings = { ...DEFAULT_OPTIONS[id], ...options }
+  if (id === 'date') return calculateDate(inputs, settings)
+  if (id === 'duration') return calculateDuration(inputs)
   const fields = calculatorFields(id, settings)
   const values = {}
   let empty = false

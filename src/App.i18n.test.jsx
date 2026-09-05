@@ -4,6 +4,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import { renderWithProviders } from './test/renderWithProviders'
+import { findReleasedTool } from './catalog/releaseCatalog'
 
 function EnglishSwitcher() {
   const { setLocale } = useI18n()
@@ -13,7 +14,7 @@ function EnglishSwitcher() {
 beforeEach(() => {
   localStorage.clear()
   localStorage.setItem('folkkit:locale', 'de')
-  history.replaceState(null, '', '/?tool=text-to-qr')
+  history.replaceState(null, '', '/?tool=char-count')
   window.scrollTo = vi.fn()
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -21,22 +22,22 @@ beforeEach(() => {
   })
 })
 
-test('keeps a selected core tool session and route stable while locale metadata changes', async () => {
+test('keeps a selected text tool session and route stable while locale metadata changes', async () => {
   const user = userEvent.setup()
   renderWithProviders(<><App /><EnglishSwitcher /></>)
 
   const input = await screen.findByLabelText('Werkzeugeingabe')
   await user.type(input, 'https://folkkit.example')
 
-  expect(screen.getByRole('heading', { name: 'Text in QR-Code' })).toBeInTheDocument()
-  expect(screen.getByText('QR-Code aus Text oder einem Link erstellen')).toBeInTheDocument()
-  expect(window.location.search).toBe('?tool=text-to-qr')
+  expect(screen.getByRole('heading', { name: findReleasedTool('char-count', 'de').name })).toBeInTheDocument()
+  expect(screen.getByText(findReleasedTool('char-count', 'de').description)).toBeInTheDocument()
+  expect(window.location.search).toBe('?tool=char-count')
 
   await user.click(screen.getByRole('button', { name: 'Switch to English' }))
 
-  expect(screen.getByRole('heading', { name: 'Text to QR code' })).toBeInTheDocument()
-  expect(screen.getByText('Create a QR code from text or a link')).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: findReleasedTool('char-count', 'en').name })).toBeInTheDocument()
+  expect(screen.getByText(findReleasedTool('char-count', 'en').description)).toBeInTheDocument()
   expect(screen.getByRole('textbox', { name: 'Tool input' })).toBe(input)
   expect(input).toHaveValue('https://folkkit.example')
-  expect(window.location.search).toBe('?tool=text-to-qr')
+  expect(window.location.search).toBe('?tool=char-count')
 })

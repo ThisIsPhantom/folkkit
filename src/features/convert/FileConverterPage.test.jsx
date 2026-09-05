@@ -1,3 +1,4 @@
+import { StrictMode } from 'react'
 import { expect, test } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { I18nContext } from '../../i18n/context.js'
@@ -99,4 +100,36 @@ test('derives the common target from every row and applies it to compatible addi
   rerender(<I18nContext.Provider value={{ t,locale:'en' }}><FileConverterPage initialTarget="" /></I18nContext.Provider>)
   await waitFor(() => expect(screen.getAllByRole('combobox',{ name:/Output format:/ }).every(control => control.value === 'jpeg')).toBe(true))
   expect(screen.getByLabelText('Output for all files')).toHaveValue('jpeg')
+})
+
+test('accepts a shell file request exactly once under StrictMode without starting conversion', async () => {
+  const t = key => key.split('.').slice(1).reduce((node,part) => node?.[part],messages) || key
+  const file = new File([Uint8Array.of(137,80,78,71,13,10,26,10)], 'handoff.png', { type:'image/png' })
+  const request = { id:1, file }
+  const consumed = []
+  const onFileRequestConsumed = id => consumed.push(id)
+  const ui = value => <StrictMode><I18nContext.Provider value={{ t,locale:'en' }}><FileConverterPage initialTarget="webp" fileRequest={value} onFileRequestConsumed={onFileRequestConsumed} /></I18nContext.Provider></StrictMode>
+  const { rerender } = render(ui(request))
+  await waitFor(() => expect(screen.getByText('Ready')).toBeVisible())
+  expect(screen.getByLabelText('Output format: handoff.png')).toHaveValue('webp')
+  await waitFor(() => expect(consumed).toEqual([1]))
+  rerender(ui(request))
+  expect(screen.getAllByText('handoff.png')).toHaveLength(1)
+  expect(screen.getByRole('button',{ name:'Convert files' })).toBeEnabled()
+  expect(screen.queryByText('Processing…')).not.toBeInTheDocument()
+})
+
+test('honours a changed combine-PDF route preference while retaining files', async () => {
+  const t = key => key.split('.').slice(1).reduce((node,part) => node?.[part],messages) || key
+  const ui = combine => <I18nContext.Provider value={{ t,locale:'en' }}><FileConverterPage initialTarget="pdf" initialCombine={combine} /></I18nContext.Provider>
+  const { rerender } = render(ui(false))
+  const png = Uint8Array.of(137,80,78,71,13,10,26,10)
+  fireEvent.change(screen.getByLabelText('Choose files'), { target:{ files:[new File([png],'one.png'),new File([png],'two.png')] } })
+  await waitFor(() => expect(screen.getAllByText('Ready')).toHaveLength(2))
+  expect(screen.getByLabelText('Combine images into one PDF in this order')).not.toBeChecked()
+  rerender(ui(true))
+  await waitFor(() => expect(screen.getByLabelText('Combine images into one PDF in this order')).toBeChecked())
+  expect(screen.getAllByText('Ready')).toHaveLength(2)
+  rerender(ui(false))
+  await waitFor(() => expect(screen.getByLabelText('Combine images into one PDF in this order')).not.toBeChecked())
 })

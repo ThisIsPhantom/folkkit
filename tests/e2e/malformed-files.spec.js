@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { PDFDocument } from 'pdf-lib'
 import { Buffer } from 'node:buffer'
-import { QR_TEXT_LIMIT_BYTES } from '../../src/runtime/workBudgets'
 
 const tinyPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQmcAAAAASUVORK5CYII=', 'base64')
 
@@ -11,16 +10,16 @@ async function expectGermanResourceLimit(page) {
 
 test('rejects corrupt, double-extension and oversized PDF inputs with content-free errors', async ({ page }) => {
   await page.goto('./workspace?tool=pdf-page-count')
-  await page.getByLabel('Datei auswählen').setInputFiles({ name: 'PRIVATE-corrupt.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-corrupt') })
-  await expect(page.getByRole('alert')).toHaveText('Die Datei ist beschädigt oder ungültig.')
+  await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles({ name: 'PRIVATE-corrupt.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-corrupt') })
+  await expect(page.getByRole('alert')).toHaveText('Das PDF konnte nicht verarbeitet werden. Wähle eine gültige, unverschlüsselte Datei.')
   await expect(page.getByRole('alert')).not.toContainText('PRIVATE')
 
-  await page.getByLabel('Datei auswählen').setInputFiles({ name: 'PRIVATE.pdf.exe', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-corrupt') })
-  await expect(page.getByRole('alert')).toHaveText('Dieser Dateityp wird von diesem Werkzeug nicht unterstützt.')
+  await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles({ name: 'PRIVATE.pdf.exe', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-corrupt') })
+  await expect(page.getByRole('alert')).toHaveText('Das PDF konnte nicht verarbeitet werden. Wähle eine gültige, unverschlüsselte Datei.')
 
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.getByLabel('Datei auswählen').setInputFiles({ name: 'PRIVATE-large.pdf', mimeType: 'application/pdf', buffer: Buffer.alloc(26 * 1024 * 1024) })
-  await expect(page.getByRole('alert')).toHaveText('Die ausgewählte Datei ist für dieses Gerät zu gross.')
+  await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles({ name: 'PRIVATE-large.pdf', mimeType: 'application/pdf', buffer: Buffer.alloc(33 * 1024 * 1024) })
+  await expect(page.getByRole('alert')).toHaveText('Die Datei oder dieser Arbeitsschritt überschreitet das lokale Limit. Verwende eine kleinere Datei oder einen tieferen Zoom.')
 })
 
 test('rejects excessive image dimensions and file count before canvas or PDF work', async ({ page }) => {
@@ -31,13 +30,15 @@ test('rejects excessive image dimensions and file count before canvas or PDF wor
   dimensions.writeUInt32BE(50000, 16)
   dimensions.writeUInt32BE(50000, 20)
   await page.getByLabel(/Dateien auswählen/).setInputFiles({ name: 'PRIVATE-dimensions.png', mimeType: 'image/png', buffer: dimensions })
-  await expectGermanResourceLimit(page)
+  await page.getByRole('button', { name: 'Dateien konvertieren', exact: true }).click()
+  await expect(page.locator('.converter-error')).toContainText('Die Datei überschreitet die lokale Verarbeitungsgrenze.')
+  await page.getByRole('button', { name: 'Dateien entfernen', exact: true }).click()
 
-  await page.getByLabel(/Dateien auswählen/).setInputFiles(Array.from({ length: 13 }, (_, index) => ({
+  await page.getByLabel(/Dateien auswählen/).setInputFiles(Array.from({ length: 21 }, (_, index) => ({
     name: `PRIVATE-${index}.png`, mimeType: 'image/png', buffer: tinyPng,
   })))
-  await expectGermanResourceLimit(page)
-  await expect(page.getByText('PRIVATE-12.png')).toHaveCount(0)
+  await expect(page.getByRole('alert')).toContainText('Die Datei überschreitet die lokale Verarbeitungsgrenze.')
+  await expect(page.getByText('PRIVATE-20.png')).toHaveCount(0)
 })
 
 test('rejects excessive batch, CSV, QR and PDF page complexity before dangerous work', async ({ page }) => {
@@ -52,12 +53,13 @@ test('rejects excessive batch, CSV, QR and PDF page complexity before dangerous 
   await expectGermanResourceLimit(page)
 
   await page.goto('./workspace?tool=text-to-qr')
-  await page.getByRole('textbox', { name: 'Werkzeugeingabe' }).fill('x'.repeat(QR_TEXT_LIMIT_BYTES + 1))
-  await expectGermanResourceLimit(page)
+  await page.getByRole('textbox', { name: 'Inhalt', exact: true }).fill('x'.repeat(6000))
+  await expect(page.getByRole('alert')).toContainText('Der Inhalt ist für einen QR-Code mit den aktuellen Einstellungen zu lang.')
+  await expect(page.getByRole('button', { name: 'PNG herunterladen', exact: true })).toBeDisabled()
 
   const document = await PDFDocument.create()
-  for (let index = 0; index < 1001; index += 1) document.addPage([1, 1])
+  for (let index = 0; index < 201; index += 1) document.addPage([1, 1])
   await page.goto('./workspace?tool=pdf-page-count')
-  await page.getByLabel('Datei auswählen').setInputFiles({ name: 'PRIVATE-pages.pdf', mimeType: 'application/pdf', buffer: Buffer.from(await document.save()) })
-  await expectGermanResourceLimit(page)
+  await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles({ name: 'PRIVATE-pages.pdf', mimeType: 'application/pdf', buffer: Buffer.from(await document.save()) })
+  await expect(page.getByRole('alert')).toContainText('Die Datei oder dieser Arbeitsschritt überschreitet das lokale Limit.')
 })

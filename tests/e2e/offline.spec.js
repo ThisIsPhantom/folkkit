@@ -1,9 +1,12 @@
+import { builtArtifactPath } from './helpers/builtArtifact.js'
 import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
+import { downloadFromButton, openOnePagePdfFixtures } from './helpers/studioJourneys.js'
 import { fixtureFile, onePagePdfBase64, secondOnePagePdfBase64, tinyWavFixture } from '../fixtures/coreFixtures'
 
-const viteManifest = JSON.parse(await readFile(new URL('../../dist/.vite/manifest.json', import.meta.url), 'utf8'))
+const viteManifest = JSON.parse(await readFile(builtArtifactPath('.vite/manifest.json'), 'utf8'))
 const ffmpegWrapperPaths = [
+  'src/features/convert/mediaEngine.js',
   'src/converters/media.js',
   'node_modules/@ffmpeg/ffmpeg/dist/esm/index.js',
   'node_modules/@ffmpeg/util/dist/esm/index.js',
@@ -36,15 +39,17 @@ test('runs core text, QR, and PDF workflows offline after the first load', async
   await expect(page.getByRole('textbox', { name: 'Konvertierungsergebnis' })).toHaveValue('Rm9sa2tpdCBvZmZsaW5l')
 
   await page.goto('./workspace?tool=text-to-qr')
-  await page.getByRole('textbox', { name: 'Werkzeugeingabe' }).fill('Folkkit offline QR')
-  await expect(page.getByRole('link', { name: 'Herunterladen' })).toHaveAttribute('href', /^blob:/)
+  await page.getByRole('textbox', { name: 'Inhalt', exact: true }).fill('Folkkit offline QR')
+  const qr = await downloadFromButton(page, 'SVG herunterladen')
+  expect(qr.bytes.toString('utf8')).toContain('<svg')
 
   await page.goto('./workspace?tool=merge-pdf')
-  await page.getByLabel('PDF-Dateien auswählen').setInputFiles([
+  await openOnePagePdfFixtures(page, [
     fixtureFile('offline-one.pdf', 'application/pdf', onePagePdfBase64),
     fixtureFile('offline-two.pdf', 'application/pdf', secondOnePagePdfBase64),
   ])
-  await expect(page.getByRole('link', { name: 'Herunterladen' })).toHaveAttribute('href', /^blob:/)
+  const pdf = await downloadFromButton(page, 'PDF herunterladen')
+  expect(pdf.bytes.subarray(0, 5).toString('ascii')).toBe('%PDF-')
 })
 
 test('identifies missing FFmpeg core offline, retries, and completes a real MP3 conversion', async ({ page, context }) => {
@@ -59,14 +64,15 @@ test('identifies missing FFmpeg core offline, retries, and completes a real MP3 
   await context.setOffline(true)
 
   await page.goto('./workspace?tool=audio-to-mp3')
-  const input = page.getByLabel('Datei auswählen')
-  await input.setInputFiles(tinyWavFixture('offline-core.wav'))
-  await expect(page.getByRole('alert')).toContainText('FFmpeg-Core und WASM sind offline nicht verfügbar.')
+  await page.getByLabel('Dateien auswählen', { exact: true }).setInputFiles(tinyWavFixture('offline-core.wav'))
+  await page.getByRole('button', { name: 'Dateien konvertieren', exact: true }).click()
+  await expect(page.locator('.converter-error')).toContainText('Das Verarbeitungsmodul ist offline noch nicht verfügbar.')
   await expect(page.getByRole('button', { name: 'Erneut versuchen' })).toBeVisible()
 
   await context.setOffline(false)
   await page.getByRole('button', { name: 'Erneut versuchen' }).click()
-  const downloadLink = page.getByRole('link', { name: 'Herunterladen' })
+  await page.getByRole('button', { name: 'Dateien konvertieren', exact: true }).click()
+  const downloadLink = page.getByRole('button', { name: /^Ergebnis herunterladen:/ })
   await expect(downloadLink).toBeVisible({ timeout: 110_000 })
   const downloadPromise = page.waitForEvent('download')
   await downloadLink.click()

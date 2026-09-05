@@ -21,4 +21,12 @@
 
 ## Current authority
 
-The canonical approved design is `docs/superpowers/specs/2026-08-31-folkkit-design.md`. Implementation requires an approved implementation plan and the normal verification workflow.
+The foundation is `docs/superpowers/specs/2026-08-31-folkkit-design.md`. The user-approved studio and usability plans under `docs/superpowers/plans/2026-09-05-folkkit-studio.md` and `docs/superpowers/plans/2026-09-05-folkkit-usability.md` supersede the initial visual direction and expand the local tools. The NoSignups selection in `docs/research/2026-09-05-nosignups-auswahl.md` is a proposal for a later round, not an implementation authorization.
+
+
+## Verified continuation facts
+
+- 2026-09-05: The user explicitly approved making `ThisIsPhantom/folkkit` public. Anonymous repository and exact baseline revision access were verified; `gh repo view` reconfirmed PUBLIC on 2026-09-06. Earlier private-development entries above are historical.
+- 2026-09-06: Continue the explicit GitHub publication instruction through complete source `main` and generated hosting-only `plesk`. Never edit or force-push `plesk`, and do not infer manual Hosttech access or a live deployment.
+- 2026-09-06: Vite's unanchored `**/.worktrees/**` watcher exclusion prevented source invalidation inside the linked worktree. It now excludes only nested worktrees under the current project. A same-URL source update was verified. Worker-only PDFium/jsQR dependencies are pre-optimized in development to avoid a first-file-selection reload; production output remains lazy.
+- 2026-09-06: Unconsented history cleanup runs from the common application entry, including direct studio visits. Explicitly enabled history is preserved. Session retention does not serialize QR content, selected files or calculator values.

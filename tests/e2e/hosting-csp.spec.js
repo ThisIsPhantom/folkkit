@@ -1,8 +1,9 @@
+import { builtArtifactPath } from './helpers/builtArtifact.js'
 import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import { tinyWavFixture } from '../fixtures/coreFixtures'
 
-const htaccess = await readFile(new URL('../../dist/.htaccess', import.meta.url), 'utf8')
+const htaccess = await readFile(builtArtifactPath('.htaccess'), 'utf8')
 const cspMatch = htaccess.match(/^\s*Header always set Content-Security-Policy "([^"]*)"\s*$/m)
 if (!cspMatch) throw new Error('Built .htaccess has no CSP header.')
 const expectedCsp = cspMatch[1]
@@ -40,8 +41,9 @@ test('real MP3 conversion runs under the exact production CSP without inline sty
   expect(expectedCsp).not.toContain('script-src blob:')
   await expect(page.locator('[style]')).toHaveCount(0)
 
-  await page.getByLabel('Datei auswählen').setInputFiles(tinyWavFixture('hosting-csp.wav'))
-  const downloadLink = page.getByRole('link', { name: 'Herunterladen' })
+  await page.getByLabel('Dateien auswählen', { exact: true }).setInputFiles(tinyWavFixture('hosting-csp.wav'))
+  await page.getByRole('button', { name: 'Dateien konvertieren', exact: true }).click()
+  const downloadLink = page.getByRole('button', { name: /^Ergebnis herunterladen:/ })
   await expect(downloadLink).toBeVisible({ timeout: 110_000 })
   const downloadPromise = page.waitForEvent('download')
   await downloadLink.click()

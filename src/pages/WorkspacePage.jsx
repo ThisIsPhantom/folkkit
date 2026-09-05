@@ -41,7 +41,7 @@ function ensureCanonical() {
   return element
 }
 
-export default function WorkspacePage() {
+export default function WorkspacePage({ onOpenTool }) {
   const { locale, t } = useI18n()
   const releasedTools = useMemo(() => getReleasedTools(locale), [locale])
   const releasedCategories = useMemo(() => getReleasedCategories(locale), [locale])
@@ -143,12 +143,13 @@ export default function WorkspacePage() {
     return () => window.removeEventListener('popstate', handlePop)
   }, [releasedTools])
 
-  const handleConverterChange = useCallback((converter) => {
+  const handleConverterChange = useCallback((converter, file) => {
+    if (converter?.id && onOpenTool?.(converter.id, file)) return
     syncUrl({ from: convertFrom, to: convertTo, toolId: converter?.id || null })
     setActiveToolId(converter?.id || null)
     setDropError(false)
     window.scrollTo({ top: 0, behavior: getNavigationScrollBehavior() })
-  }, [convertFrom, convertTo, syncUrl])
+  }, [convertFrom, convertTo, syncUrl, onOpenTool])
 
   const handleHistorySelect = useCallback((item) => {
     if (!isReleasedFormatPair(item?.from, item?.to)) return
@@ -189,7 +190,7 @@ export default function WorkspacePage() {
       const converterId = file ? getConverterForFile(file) : null
       const converter = releasedTools.find((tool) => tool.id === converterId)
       if (converter) {
-        handleConverterChange(converter)
+        handleConverterChange(converter, file)
       } else if (file) {
         setDropError(true)
       }

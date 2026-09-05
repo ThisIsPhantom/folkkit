@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test'
+import { onePixelPngBase64 } from '../fixtures/coreFixtures.js'
+import { convertAndDownload } from './helpers/studioJourneys.js'
 
 test('navigates the German shell, switches language, and restores routes', async ({ page }) => {
   await page.goto('./')
@@ -111,12 +113,17 @@ test('global image drops use released converters or show an honest unsupported s
   await page.goto('./workspace?from=text&to=base64')
   await expect(page.getByRole('textbox', { name: 'Eingabetext' })).toBeVisible()
 
-  await page.evaluate(() => {
+  await page.evaluate(base64 => {
     const dataTransfer = new DataTransfer()
-    dataTransfer.items.add(new File(['png'], 'photo.png', { type: 'image/png' }))
+    dataTransfer.items.add(new File([Uint8Array.from(atob(base64), character => character.charCodeAt(0))], 'photo.png', { type: 'image/png' }))
     document.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer }))
-  })
-  await expect(page).toHaveURL(/\/workspace\?tool=png-to-jpg$/)
+  }, onePixelPngBase64)
+  await expect(page).toHaveURL(/\/convert\?target=jpeg$/)
+  await expect(page.locator('.converter-file-name')).toContainText('photo.png')
+  await expect(page.getByRole('combobox', { name: 'Zielformat: photo.png', exact: true })).toHaveValue('jpeg')
+  const converted = await convertAndDownload(page)
+  expect(converted.download.suggestedFilename()).toBe('photo.jpg')
+  expect([...converted.bytes.subarray(0, 3)]).toEqual([255, 216, 255])
 
   await page.goto('./workspace?from=text&to=base64')
   await expect(page.getByRole('textbox', { name: 'Eingabetext' })).toBeVisible()
@@ -125,6 +132,6 @@ test('global image drops use released converters or show an honest unsupported s
     dataTransfer.items.add(new File(['svg'], 'graphic.svg', { type: 'image/svg+xml' }))
     document.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer }))
   })
-  await expect(page.getByRole('alert')).toHaveText('Dieser Dateityp kann hier nicht automatisch geöffnet werden. Wähle ein freigegebenes Werkzeug.')
+  await expect(page.getByRole('alert')).toHaveText('Dieser Dateityp lässt sich hier nicht öffnen. Wähle ein passendes Werkzeug.')
   await expect(page).toHaveURL(/\/workspace\?from=text&to=base64$/)
 })

@@ -7,6 +7,6 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
     css: true,
-    exclude: [...configDefaults.exclude, 'tests/e2e/**', '.worktrees/**'],
+    exclude: [...configDefaults.exclude, 'tests/e2e/**', '.worktrees/**', '.superpowers/**'],
   },
 })

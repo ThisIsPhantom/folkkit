@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { I18nContext } from '../../i18n/context.js'
 import { translate } from '../../i18n/index.js'
 import CalculatorPage from './CalculatorPage.jsx'
@@ -12,9 +12,9 @@ function renderPage(props = {}, locale = 'de') {
 }
 
 describe('calculator workspace', () => {
-  it('offers ten named calculators and actual percent fields with live output', () => {
+  it('offers twelve named calculators and actual percent fields with live output', () => {
     renderPage()
-    expect(within(screen.getByRole('group', { name: 'Rechner wählen' })).getAllByRole('button')).toHaveLength(10)
+    expect(within(screen.getByRole('group', { name: 'Rechner wählen' })).getAllByRole('button')).toHaveLength(12)
     expect(screen.queryByRole('heading', { name: 'Weitere Rechner' })).not.toBeInTheDocument()
     expect(screen.getByText('Werte eingeben')).toBeVisible()
     fireEvent.change(screen.getByRole('textbox', { name: 'Prozentsatz' }), { target: { value: '12,5' } })
@@ -81,5 +81,39 @@ describe('calculator workspace', () => {
   it('keeps the translation tree complete in both languages', () => {
     const keys = (object, prefix = '') => Object.entries(object).flatMap(([key, value]) => typeof value === 'object' ? keys(value, `${prefix}${key}.`) : `${prefix}${key}`)
     expect(keys(messagesDe).sort()).toEqual(keys(messagesEn).sort())
+  })
+  it('fills an example and copies the displayed value with feedback', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+    expect(screen.getByTestId('result-result')).toHaveTextContent('36')
+    fireEvent.click(screen.getByRole('button', { name: 'Ergebnis kopieren' }))
+    expect(await screen.findByText('Kopiert')).toBeVisible()
+    expect(writeText).toHaveBeenCalledWith('36')
+    writeText.mockRejectedValueOnce(new Error('denied'))
+    fireEvent.click(screen.getByRole('button', { name: 'Ergebnis kopieren' }))
+    expect(await screen.findByText('Kopieren fehlgeschlagen')).toBeVisible()
+  })
+  it('uses real date fields and preserves signed days when changing the operation', () => {
+    renderPage({ initialCalculator: 'date' })
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+    expect(screen.getByLabelText('Startdatum')).toHaveAttribute('type', 'date')
+    expect(screen.getByTestId('result-days')).toHaveTextContent('2')
+    fireEvent.change(screen.getByLabelText('Berechnung'), { target: { value: 'add' } })
+    fireEvent.change(screen.getByLabelText('Anzahl Tage'), { target: { value: '-1' } })
+    expect(screen.getByTestId('result-date')).toHaveTextContent('2024-02-27')
+  })
+  it('sums separately labelled duration rows and clears them', () => {
+    renderPage({ initialCalculator: 'duration' }, 'en')
+    const first = within(screen.getByRole('group', { name: 'Duration 1' }))
+    const second = within(screen.getByRole('group', { name: 'Duration 2' }))
+    fireEvent.change(first.getByLabelText('Hours'), { target: { value: '1' } })
+    fireEvent.change(second.getByLabelText('Minutes'), { target: { value: '30' } })
+    expect(screen.getByTestId('result-duration')).toHaveTextContent('1:30:00')
+    fireEvent.change(screen.getByLabelText('Operation for duration 2'), { target: { value: 'subtract' } })
+    expect(screen.getByTestId('result-duration')).toHaveTextContent('0:30:00')
+    fireEvent.click(screen.getByRole('button', { name: 'Clear', exact: true }))
+    expect(screen.queryByTestId('result-duration')).not.toBeInTheDocument()
   })
 })

@@ -81,7 +81,7 @@ test('@matrix image optimizer keeps useful originals and produces independently 
   await page.getByLabel('Maximum width (px)',{ exact:true }).fill('192')
   await page.getByRole('button',{ name:'Start optimization',exact:true }).click()
   await expect(page.getByText('Done',{ exact:true })).toBeVisible()
-  await expect(page.getByText('The re-encoded file would be larger. The original is provided instead.',{ exact:true })).toBeVisible()
+  await expect(page.getByText('These settings would not reduce the file size. The original is provided instead.',{ exact:true })).toBeVisible()
   await expect(page.locator('.converter-result-summary strong')).toHaveText('untyped.jpg')
   await expect(page.locator('.converter-comparison img')).toHaveCount(2)
   const originalDownload = page.waitForEvent('download')

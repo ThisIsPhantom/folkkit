@@ -2,6 +2,7 @@ export const preferenceKeys = Object.freeze({
   locale: 'folkkit:locale',
   theme: 'folkkit:theme',
   favorites: 'folkkit:favorites',
+  favoriteTools: 'folkkit:favorite-tools',
   recentTools: 'folkkit:recent-tools',
   historyEnabled: 'folkkit:history-enabled',
   contentHistory: 'folkkit:content-history',

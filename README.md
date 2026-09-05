@@ -4,18 +4,20 @@ Folkkit is a bilingual, local-first browser utility suite for everyday PDF, QR, 
 
 ## Current status
 
-Folkkit V1 is under private pre-release development and has not been deployed. Runtime assets are same-origin, content history is opt-in, and the legal and source pages identify the exact build revision. A public release remains blocked until approved operator details and all remaining release gates are complete.
+Das Repository ist öffentlich. Dateien werden im Browser verarbeitet; eine dauerhafte Inhaltschronik gibt es nur nach ausdrücklicher Aktivierung. Sprache und Design können lokal gespeichert werden. Öffentliche Builds benötigen weiterhin die freigegebenen Betreiberangaben und bestandene Releaseprüfungen. Der GitHub-Workflow aktualisiert den Hosting-Branch; ein manueller Live-Eingriff bleibt ein separater Schritt.
 
 The canonical design is [docs/superpowers/specs/2026-08-31-folkkit-design.md](docs/superpowers/specs/2026-08-31-folkkit-design.md).
 
 Die freigegebene [Studio-Erweiterung](docs/superpowers/plans/2026-09-05-folkkit-studio.md) ergänzt eigene Arbeitsbereiche und ersetzt die bisherige visuelle Richtung:
 
-- `/qr`: QR-Designer mit Farben, Formen, zugeschnittenem Logo und PNG-/SVG-Ausgabe.
-- `/pdf`: native Textobjekt-Bearbeitung, Ergänzungen, Seitenverwaltung und lokale Vorschau. Unterstützte lateinische Textobjekte sind bearbeitbar; OCR, Absatzrekonstruktion und Formularerstellung sind ausgenommen. Unsichere Operationen an vorhandenen Formularstrukturen werden vorab verweigert.
-- `/convert`: Dateiwarteschlange mit 33 Formatpaaren, Einstellungen, Abbruch, Einzel- und ZIP-Downloads.
-- `/calculate`: Prozentfelder, Dreisatz, Pythagoras, Kreis, Flächen, Volumen, Einheiten, Seitenverhältnis, Kreditrate und BMI. Alle Rechner besitzen eigene Formulare; alte Links bleiben erreichbar.
+- `/qr`: QR-Designer für Text, Links, WLAN, Kontakte, E-Mail und SMS. Farben, Formen und Logo lassen sich anpassen. Ausgabe als PNG/SVG; QR-Codes aus lokalen PNG-, JPEG- und WebP-Bildern lesen.
+- `/pdf`: native Textobjekt-Bearbeitung, direktes Verschieben/Skalieren, Ergänzungen und Seitenverwaltung mit Mehrfachauswahl. Unterstützte lateinische Textobjekte sind bearbeitbar; OCR, Absatzrekonstruktion und Formularerstellung sind ausgenommen. Unsichere Operationen an vorhandenen Formularstrukturen werden vorab verweigert.
+- `/convert`: Dateiwarteschlange mit 33 Formatpaaren, Bildoptimierung, Vorher-/Nachher-Vorschau, Einstellungen, Abbruch, Einzel- und ZIP-Downloads.
+- `/calculate`: Prozentfelder, Dreisatz, Pythagoras, Kreis, Flächen, Volumen, Einheiten, Seitenverhältnis, Kreditrate, BMI, Datum und Zeitspannen. Eigene Formulare, Beispiele und kopierbare Ergebnisse; alte Links bleiben erreichbar.
 
-Alte `/workspace`-Links bleiben erreichbar. Dateiinhalte bleiben im Browser und werden in diesen Arbeitsbereichen nicht dauerhaft gespeichert. Die QR-Abhängigkeit erhält einen dokumentierten [UTF-8-Patch](patches/README.md).
+Der [freigegebene Bedienausbau](docs/superpowers/plans/2026-09-05-folkkit-usability.md) ergänzt ausserdem Katalogsuche, Kategorien und Werkzeugfavoriten. QR-, Rechner- und Konvertersitzungen bleiben beim internen Bereichswechsel im Arbeitsspeicher erhalten.
+
+Alte `/workspace`-Links führen für passende Werkzeuge in die Studios. Der Textarbeitsbereich bleibt für die weiteren Text- und Datenwerkzeuge verfügbar. Dateiinhalte bleiben im Browser und werden in diesen Arbeitsbereichen nicht dauerhaft gespeichert. Die QR-Abhängigkeit erhält einen dokumentierten [UTF-8-Patch](patches/README.md).
 
 Die [lokale Verifikation](docs/folkkit-studio-verifikation.md) dokumentiert geprüfte Ausgaben, Browserabdeckung und Einschränkungen.
 
@@ -60,7 +62,7 @@ The validator builds an isolated `git archive`, installs `bun.lock` with lifecyc
 
 ## Stack
 
-React 19 · Vite 7 · Vanilla CSS · PDFium WASM · pdf-lib · qr-code-styling · qrcode · FFmpeg WASM · fflate
+React 19 · Vite 7 · Vanilla CSS · PDFium WASM · pdf-lib · qr-code-styling · jsQR · qrcode · FFmpeg WASM · fflate
 
 ## Documentation
 

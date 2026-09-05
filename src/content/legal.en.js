@@ -72,12 +72,12 @@ const legalEn = Object.freeze({
   }),
   source: Object.freeze({
     testId: 'open-source',
-    eyebrow: 'Verifiable build',
+    eyebrow: 'Open code',
     title: 'Open source',
-    intro: 'Folkkit identifies every build with the full Git commit from which it was created.',
-    revisionLabel: 'Build revision',
+    intro: 'The code behind Folkkit is public. You can read and reuse it under the license terms.',
+    revisionLabel: 'This version',
     revisionLink: 'Open exact revision on GitHub',
-    availabilityNote: 'The revision link does not by itself mean that the repository is publicly accessible. Before public deployment, this exact revision must be available without signing in. The repository remains private during this pre-release development.',
+    availabilityNote: 'The full source code is available on GitHub without signing in. The link opens the source for this version.',
     sourcesLabel: 'Project sources',
     sources: Object.freeze([
       Object.freeze({
@@ -97,7 +97,6 @@ const legalEn = Object.freeze({
         title: 'Folkkit license',
         paragraphs: Object.freeze([
           'Folkkit as a whole is released exclusively under AGPL-3.0-only. The full license text is stored in the repository as LICENSE.',
-          'The visible source link prepares access to the Corresponding Source for the exact public build. A public website may be released only when the linked commit is actually publicly accessible.',
         ]),
       }),
       Object.freeze({

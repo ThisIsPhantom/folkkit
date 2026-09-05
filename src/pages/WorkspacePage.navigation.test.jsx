@@ -94,8 +94,8 @@ test.each([
 })
 
 test.each([
-  ['de', 'image/svg+xml', 'graphic.svg', 'Dieser Dateityp kann hier nicht automatisch geöffnet werden. Wähle ein freigegebenes Werkzeug.'],
-  ['en', 'video/mp4', 'clip.mp4', 'This file type cannot be opened automatically here. Choose a released tool.'],
+  ['de', 'image/svg+xml', 'graphic.svg', 'Dieser Dateityp lässt sich hier nicht öffnen. Wähle ein passendes Werkzeug.'],
+  ['en', 'video/mp4', 'clip.mp4', 'This file type cannot be opened here. Choose a suitable tool.'],
 ])('shows an honest localized unsupported state for a global %s drop', async (locale, type, name, message) => {
   renderWithProviders(<WorkspacePage />, { locale })
 
@@ -103,5 +103,14 @@ test.each([
 
   expect(await screen.findByRole('alert')).toHaveTextContent(message)
   expect(window.location.search).toBe('?from=text&to=base64')
+  expect(loadConverter).not.toHaveBeenCalled()
+})
+
+test('hands a dropped file to the shell when its tool has a dedicated studio', async () => {
+  const onOpenTool = vi.fn(() => true)
+  renderWithProviders(<WorkspacePage onOpenTool={onOpenTool} />)
+  const file = new File(['fixture'], 'handoff.png', { type: 'image/png' })
+  fireEvent.drop(document, { dataTransfer: { files: [file] } })
+  expect(onOpenTool).toHaveBeenCalledWith('png-to-jpg', file)
   expect(loadConverter).not.toHaveBeenCalled()
 })

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { historyStore } from './historyStore'
+import { historyStore, initializeHistoryPrivacy } from './historyStore'
 import { preferenceKeys } from './preferences'
 
 beforeEach(() => {
@@ -217,4 +217,19 @@ describe('historyStore', () => {
     expect(localStorage.getItem(preferenceKeys.contentHistory)).toBeNull()
     expect(localStorage.getItem('convert-everything-history')).toBeNull()
   })
+})
+
+
+test('startup privacy cleanup preserves an explicitly enabled history', () => {
+  localStorage.clear()
+  localStorage.setItem(preferenceKeys.historyEnabled, 'true')
+  localStorage.setItem(preferenceKeys.contentHistory, '[{"input":"approved fixture"}]')
+  expect(initializeHistoryPrivacy()).toBe(true)
+  expect(localStorage.getItem(preferenceKeys.contentHistory)).toBe('[{"input":"approved fixture"}]')
+})
+
+test('startup reports unavailable browser storage without crashing the file studios', () => {
+  const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('Blocked', 'SecurityError') })
+  try { expect(initializeHistoryPrivacy()).toBe(false) }
+  finally { getItem.mockRestore() }
 })

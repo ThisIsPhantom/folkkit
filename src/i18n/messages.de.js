@@ -62,13 +62,18 @@ const messagesDe = Object.freeze({
     title: 'Weitere Werkzeuge',
     intro: 'Für Text, Daten und kleine Aufgaben zwischendurch.',
     openTool: '{name} öffnen',
+    search: 'Werkzeuge suchen', searchPlaceholder: 'Name oder Aufgabe', category: 'Kategorie', allCategories: 'Alle Kategorien',
+    favoritesOnly: 'Nur Favoriten', addFavorite: '{name} zu Favoriten hinzufügen', removeFavorite: '{name} aus Favoriten entfernen',
+    filteredCount: '{count} von {total} Werkzeugen', empty: 'Keine passenden Werkzeuge', emptyHint: 'Versuche einen anderen Suchbegriff oder entferne einen Filter.', clearFilters: 'Filter zurücksetzen',
+    storageError: 'Dein Browser speichert die Favoriten gerade nicht. Sie bleiben bis zum Verlassen dieser Seite verfügbar.',
+    studioCategory: 'Studio', qrReader: 'QR-Code lesen', qrReaderDescription: 'Inhalt aus einem QR-Bild auslesen', imageOptimize: 'Bilder verkleinern', imageOptimizeDescription: 'Dateigrösse und Abmessungen anpassen',
   }),
   workspace: Object.freeze({
     eyebrow: 'Werkzeug',
     title: 'Datei lokal bearbeiten',
     intro: 'Eingabe wählen und Ergebnis mitnehmen.',
     dropOverlay: 'Datei zum Konvertieren ablegen',
-    unsupportedDrop: 'Dieser Dateityp kann hier nicht automatisch geöffnet werden. Wähle ein freigegebenes Werkzeug.',
+    unsupportedDrop: 'Dieser Dateityp lässt sich hier nicht öffnen. Wähle ein passendes Werkzeug.',
     pairTitle: '{from} in {to}',
     pairDescription: '{from} lokal in {to} umwandeln. Dateiinhalte werden nicht hochgeladen.',
     toolDescription: '{name} lokal im Browser verwenden. Dateiinhalte werden nicht hochgeladen.',
@@ -298,7 +303,7 @@ const messagesDe = Object.freeze({
     }),
     sha256: Object.freeze({
       name: 'SHA-256-Prüfwert',
-      description: 'Einen SHA-256-Prüfwert berechnen, ohne eine Passwort- oder Sicherheitsprüfung zu versprechen',
+      description: 'SHA-256-Prüfwert eines Textes berechnen',
     }),
     jsonPrettify: Object.freeze({
       name: 'JSON formatieren',
@@ -314,7 +319,7 @@ const messagesDe = Object.freeze({
     }),
     csvToJson: Object.freeze({
       name: 'CSV in JSON',
-      description: 'Eine begrenzte CSV-Tabelle lokal in ein JSON-Array umwandeln',
+      description: 'Eine CSV-Tabelle in ein JSON-Array umwandeln',
     }),
     decToHex: Object.freeze({ name: 'Dezimal in Hex', description: 'Eine Dezimalzahl in Hexadezimal umwandeln' }),
     hexToDec: Object.freeze({ name: 'Hex in Dezimal', description: 'Eine Hexadezimalzahl in Dezimal umwandeln' }),

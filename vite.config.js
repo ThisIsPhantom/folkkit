@@ -93,7 +93,7 @@ self.addEventListener('activate', event => {
 export default defineConfig({
   base: '/',
   server: {
-    watch: { ignored: ['**/.superpowers/**', '**/test-results/**', '**/.worktrees/**'] },
+    watch: { ignored: ['**/.superpowers/**', '**/test-results/**', resolve('.worktrees').replaceAll('\\', '/') + '/**'] },
   },
   define: {
     'globalThis.__FOLKKIT_COMMIT__': JSON.stringify(resolveBuildCommit()),
@@ -122,6 +122,8 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    // Worker-only imports must not trigger an app reload after file selection.
+    include: ['@embedpdf/pdfium', 'jsqr'],
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
   },
 })

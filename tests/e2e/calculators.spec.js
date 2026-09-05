@@ -3,6 +3,12 @@ import AxeBuilder from '@axe-core/playwright'
 
 test.setTimeout(60000)
 
+async function chooseCalculator(page, id, label) {
+  const mobile = page.getByRole('combobox', { name: 'Rechner wählen', exact: true })
+  if (await mobile.isVisible()) await mobile.selectOption(id)
+  else await page.getByRole('group', { name: 'Rechner wählen', exact: true }).getByRole('button', { name: label, exact: true }).click()
+}
+
 test('integrated aspect ratio, loan and BMI use real fields and preserve legacy links @matrix', async ({ page }) => {
   const requests = []
   page.on('request', request => requests.push({ url: request.url(), method: request.method(), body: request.postData() }))
@@ -16,7 +22,7 @@ test('integrated aspect ratio, loan and BMI use real fields and preserve legacy 
   await page.getByRole('textbox', { name: 'Zielbreite (px)', exact: true }).fill('1280')
   await expect(page.getByTestId('result-targetHeight')).toHaveText('720 px')
 
-  await page.getByRole('button', { name: 'Kreditrate', exact: true }).click()
+  await chooseCalculator(page, 'loan', 'Kreditrate')
   await page.getByRole('textbox', { name: 'Kreditbetrag', exact: true }).fill('10000')
   await page.getByRole('textbox', { name: 'Jahreszins (%)', exact: true }).fill('6')
   await page.getByRole('textbox', { name: 'Laufzeit (Monate)', exact: true }).fill('36')
@@ -24,7 +30,7 @@ test('integrated aspect ratio, loan and BMI use real fields and preserve legacy 
   await expect(page.getByTestId('result-totalPayment')).toHaveText('10951,90')
   await expect(page.getByTestId('result-totalInterest')).toHaveText('951,90')
 
-  await page.getByRole('button', { name: 'BMI', exact: true }).click()
+  await chooseCalculator(page, 'bmi', 'BMI')
   await page.getByRole('textbox', { name: 'Gewicht (kg)', exact: true }).fill('70')
   await page.getByRole('textbox', { name: 'Grösse (cm)', exact: true }).fill('175')
   await expect(page.getByTestId('result-bmi')).toHaveText('22,86')
@@ -48,39 +54,38 @@ test('calculator fields solve everyday formulas and keep query history @matrix',
   await page.getByLabel('Neuer Wert', { exact: true }).fill('60')
   await expect(page.getByTestId('result-result')).toHaveText('-25 %')
 
-  const choices = page.getByRole('group', { name: 'Rechner wählen' })
-  await choices.getByRole('button', { name: 'Dreisatz', exact: true }).click()
+  await chooseCalculator(page, 'rule-of-three', 'Dreisatz')
   await page.getByLabel('Wert A', { exact: true }).fill('3')
   await page.getByLabel('Entspricht B', { exact: true }).fill('12')
   await page.getByLabel('Gesuchter Wert C', { exact: true }).fill('5')
   await expect(page.getByTestId('result-result')).toHaveText('20')
 
-  await choices.getByRole('button', { name: 'Pythagoras', exact: true }).click()
+  await chooseCalculator(page, 'pythagoras', 'Pythagoras')
   await page.getByLabel('Kathete a', { exact: true }).fill('3')
   await page.getByLabel('Kathete b', { exact: true }).fill('4')
   await expect(page.getByTestId('result-c')).toHaveText('5')
-  await choices.getByRole('button', { name: 'Kreis', exact: true }).click()
+  await chooseCalculator(page, 'circle', 'Kreis')
   await page.getByLabel('Radius', { exact: true }).fill('3')
   await expect(page.getByTestId('result-circumference')).toHaveText('18,8495559215')
   await page.goBack()
-  await expect(choices.getByRole('button', { name: 'Pythagoras', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page).toHaveURL(/calculator=pythagoras$/)
   await expect(page.getByLabel('Kathete a', { exact: true })).toHaveValue('3')
   await expect(page.getByTestId('result-c')).toHaveText('5')
   await page.goForward()
   await expect(page.getByLabel('Radius', { exact: true })).toHaveValue('3')
 
-  await choices.getByRole('button', { name: 'Flächen', exact: true }).click()
+  await chooseCalculator(page, 'area', 'Flächen')
   await page.getByRole('combobox', { name: 'Form', exact: true }).selectOption('triangle')
   await page.getByLabel('Grundseite', { exact: true }).fill('4')
   await page.getByLabel('Höhe', { exact: true }).fill('3')
   await expect(page.getByTestId('result-area')).toHaveText('6 Quadrateinheiten')
-  await choices.getByRole('button', { name: 'Volumen', exact: true }).click()
+  await chooseCalculator(page, 'volume', 'Volumen')
   await page.getByLabel('Breite', { exact: true }).fill('4')
   await page.getByLabel('Tiefe', { exact: true }).fill('5')
   await page.getByLabel('Höhe', { exact: true }).fill('3')
   await expect(page.getByTestId('result-volume')).toHaveText('60 Kubikeinheiten')
 
-  await choices.getByRole('button', { name: 'Einheiten', exact: true }).click()
+  await chooseCalculator(page, 'units', 'Einheiten')
   await page.getByRole('combobox', { name: 'Grösse', exact: true }).selectOption('temperature')
   await page.getByLabel('Wert', { exact: true }).fill('100')
   await expect(page.getByTestId('result-result')).toHaveText('212 °F')

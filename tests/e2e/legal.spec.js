@@ -36,7 +36,7 @@ test('keeps health and finance limitations localized and avoids a compliance gua
   await expect(page.getByText(/no guarantee.*legally/i)).toBeVisible()
 })
 
-test('links the exact build revision, preserves upstream attribution, and does not claim current public access', async ({ page }) => {
+test('links the exact public build revision and preserves upstream attribution', async ({ page }) => {
   await page.goto('./open-source')
 
   await expect(page.getByText(commit)).toBeVisible()
@@ -45,10 +45,10 @@ test('links the exact build revision, preserves upstream attribution, and does n
     'href',
     'https://github.com/MercuriusDream/convert-everything',
   )
-  await expect(page.getByText(/belegt für sich allein keinen öffentlichen Zugriff/i)).toBeVisible()
+  await expect(page.getByText(/Quellcode ist auf GitHub ohne Anmeldung einsehbar/i)).toBeVisible()
 
   await page.getByRole('button', { name: 'English' }).click()
-  await expect(page.getByText(/does not by itself mean that the repository is publicly accessible/i)).toBeVisible()
+  await expect(page.getByText(/source code is available on GitHub without signing in/i)).toBeVisible()
 })
 
 test('exposes AGPL and deterministic FFmpeg GPL and LGPL notices', async ({ page }) => {

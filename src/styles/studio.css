@@ -207,3 +207,7 @@ button:disabled { cursor: not-allowed; opacity: .52; }
   .studio-home .core-entry:hover { transform: none; }
   .studio-spinner { animation: none; }
 }
+.studio-session[hidden] { display: none !important; }
+
+/* Keep the primary PDF file picker an easy touch target on every viewport. */
+.studio-page .pdf-empty > button { min-height: 3rem; }

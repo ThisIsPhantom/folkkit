@@ -25,10 +25,11 @@ test('file marker never reaches network, logs, storage, caches or navigation wit
   }, MARKER)
 
   await page.goto('./workspace?tool=pdf-page-count')
-  await page.getByLabel('Datei auswählen').setInputFiles({
+  await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles({
     name: `${MARKER}.pdf`, mimeType: 'application/pdf', buffer: await markerPdf(),
   })
-  await expect(page.locator('.workspace-text-result')).toContainText('1 page')
+  await expect(page.locator('.pdf-page-card')).toHaveCount(1)
+  await expect(page.getByRole('button', { name: new RegExp(MARKER) })).toBeVisible()
 
   const browserState = await page.evaluate(async marker => {
     const storage = { local: { ...localStorage }, session: { ...sessionStorage } }

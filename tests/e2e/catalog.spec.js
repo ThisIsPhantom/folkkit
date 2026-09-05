@@ -1,18 +1,20 @@
+import { builtArtifactPath } from './helpers/builtArtifact.js'
 import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import { fixtureFile, onePixelJpegBase64, onePixelPngBase64 } from '../fixtures/coreFixtures'
 import { runBrowserEvidence } from '../../src/catalog/browserEvidence'
+import { convertAndDownload } from './helpers/studioJourneys.js'
 
-const viteManifest = JSON.parse(await readFile(new URL('../../dist/.vite/manifest.json', import.meta.url), 'utf8'))
+const viteManifest = JSON.parse(await readFile(builtArtifactPath('.vite/manifest.json'), 'utf8'))
 
 test('shows the derived released count and excludes hidden entries', async ({ page }) => {
   await page.goto('./tools')
 
-  await expect(page.getByText('45 Werkzeuge')).toBeVisible()
-  await expect(page.locator('.catalog-list > li')).toHaveCount(45)
+  await expect(page.getByText('47 von 47 Werkzeugen')).toBeVisible()
+  await expect(page.locator('.catalog-list > li')).toHaveCount(47)
   await expect(page.getByRole('button', { name: 'Prozentrechner öffnen', exact: true })).toHaveCount(0)
   await expect(page.getByText('Random Password', { exact: true })).toHaveCount(0)
-  await expect(page.getByText('QR-Code lesen', { exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'QR-Code lesen öffnen', exact: true })).toBeVisible()
 })
 
 test('loads only the owning converter module after released metadata selection', async ({ page }) => {
@@ -32,11 +34,8 @@ test('converts a real PNG fixture to a runtime-owned JPEG download', async ({ pa
   const png = fixtureFile('catalog-private.png', 'image/png', onePixelPngBase64)
   await page.goto('./?tool=png-to-jpg')
 
-  await page.getByLabel('Datei auswählen').setInputFiles(png)
-  const downloadPromise = page.waitForEvent('download')
-  await page.getByRole('link', { name: 'Herunterladen' }).click()
-  const download = await downloadPromise
-  const bytes = await readFile(await download.path())
+  await page.getByLabel('Dateien auswählen', { exact: true }).setInputFiles(png)
+  const { download, bytes } = await convertAndDownload(page)
 
   const evidence = runBrowserEvidence('tool:png-to-jpg', {
     filename: download.suggestedFilename(),
@@ -49,11 +48,8 @@ test('converts a real JPEG fixture to a runtime-owned PNG download', async ({ pa
   const jpeg = fixtureFile('catalog-private.jpg', 'image/jpeg', onePixelJpegBase64)
   await page.goto('./?tool=jpg-to-png')
 
-  await page.getByLabel('Datei auswählen').setInputFiles(jpeg)
-  const downloadPromise = page.waitForEvent('download')
-  await page.getByRole('link', { name: 'Herunterladen' }).click()
-  const download = await downloadPromise
-  const bytes = await readFile(await download.path())
+  await page.getByLabel('Dateien auswählen', { exact: true }).setInputFiles(jpeg)
+  const { download, bytes } = await convertAndDownload(page)
 
   const evidence = runBrowserEvidence('tool:jpg-to-png', {
     filename: download.suggestedFilename(),
@@ -63,15 +59,12 @@ test('converts a real JPEG fixture to a runtime-owned PNG download', async ({ pa
 })
 
 test('combines real PNG and JPEG fixtures through the shared PDF browser evidence runner', async ({ page }) => {
-  const png = fixtureFile('one.png', 'image/png', onePixelPngBase64)
+  const png = fixtureFile('combined.png', 'image/png', onePixelPngBase64)
   const jpeg = fixtureFile('two.jpg', 'image/jpeg', onePixelJpegBase64)
   await page.goto('./?tool=images-to-pdf')
 
-  await page.getByLabel('PDF-Dateien auswählen').setInputFiles([png, jpeg])
-  const downloadPromise = page.waitForEvent('download')
-  await page.getByRole('link', { name: 'Herunterladen' }).click()
-  const download = await downloadPromise
-  const bytes = await readFile(await download.path())
+  await page.getByLabel('Dateien auswählen', { exact: true }).setInputFiles([png, jpeg])
+  const { download, bytes } = await convertAndDownload(page)
   const evidence = runBrowserEvidence('tool:images-to-pdf', {
     filename: download.suggestedFilename(),
     bytes,

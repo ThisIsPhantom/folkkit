@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { generateServiceWorker } from '../../scripts/generate-service-worker.mjs'
 
-test('prepares the three studios, native PDF engine and worker imports for offline use', async () => {
+test('prepares all studios, native PDF and QR reader worker imports for offline use', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'folkkit-studio-pwa-'))
   const assets = {
     'index.html': 'app', 'favicon.svg': 'icon', 'manifest.json': '{}', 'theme-init.js': 'theme',
@@ -17,6 +17,8 @@ test('prepares the three studios, native PDF engine and worker imports for offli
     'assets/pdfWorker-123456.js': 'self.onmessage=()=>{}',
     'assets/pdfStudioWorker-123456.js': 'const wasmUrl="/assets/pdfium-123456.wasm";',
     'assets/pdfium-123456.wasm': 'wasm-bytes',
+    'assets/qr-reader.worker-123456.js': 'import "./qr-decoder-123456.js";',
+    'assets/qr-decoder-123456.js': 'export {}',
     'assets/imageWorker-123456.js': 'import "./image-codec-123456.js"; async function pdf(){ return import("./pdf-encoder-123456.js") }',
     'assets/image-codec-123456.js': 'export {}',
     'assets/pdf-encoder-123456.js': 'export {}',
@@ -45,6 +47,7 @@ test('prepares the three studios, native PDF engine and worker imports for offli
       'assets/qr-preview-123456.svg', 'assets/QrDesignerPage-123456.js', 'assets/qr-style-123456.js',
       'assets/PdfEditorPage-123456.js', 'assets/FileConverterPage-123456.js',
       'assets/pdfStudioWorker-123456.js', 'assets/pdfium-123456.wasm',
+      'assets/qr-reader.worker-123456.js', 'assets/qr-decoder-123456.js',
       'assets/imageWorker-123456.js', 'assets/image-codec-123456.js',
       'assets/pdf-encoder-123456.js',
       'assets/WorkspacePage-123456.js',

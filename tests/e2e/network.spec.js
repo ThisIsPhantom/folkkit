@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import { fixtureFile, onePagePdfBase64, secondOnePagePdfBase64, tinyWavFixture } from '../fixtures/coreFixtures'
 import { runBrowserEvidence } from '../../src/catalog/browserEvidence'
+import { openOnePagePdfFixtures } from './helpers/studioJourneys.js'
 
 test('merges PDFs without cross-origin requests or request leakage', async ({ page }) => {
   const observedRequests = []
@@ -24,13 +25,11 @@ test('merges PDFs without cross-origin requests or request leakage', async ({ pa
   })
 
   await page.goto('./?tool=merge-pdf', { waitUntil: 'domcontentloaded' })
-  await expect(page.getByRole('button', { name: 'PDFs zusammenführen' })).toBeVisible()
-  await page.getByLabel('PDF-Dateien auswählen').setInputFiles([firstFile, secondFile])
-  await expect(page.getByRole('link', { name: 'Herunterladen' })).toBeVisible()
+  await openOnePagePdfFixtures(page, [firstFile, secondFile])
   await page.waitForLoadState('networkidle')
 
   expect(observedRequests.length).toBeGreaterThan(1)
-  expect(observedRequests.some(request => request.url.includes('pdfWorker-'))).toBe(true)
+  expect(observedRequests.some(request => request.url.includes('pdfStudioWorker-'))).toBe(true)
   expect(observedRequests.filter(request => new URL(request.url).origin !== testServerOrigin)).toEqual([])
   for (const request of observedRequests) {
     const metadata = `${decodeURIComponent(request.url)}\n${JSON.stringify(request.headers)}`
@@ -61,12 +60,12 @@ test('converts real media with same-origin FFmpeg assets and no input leakage', 
   })
 
   await page.goto('./?tool=audio-to-mp3', { waitUntil: 'domcontentloaded' })
-  await expect(page.getByText('Experimentell')).toBeVisible()
-  await page.getByLabel('Datei auswählen').setInputFiles(audio)
-  await expect(page.getByRole('link', { name: 'Herunterladen' })).toBeVisible({ timeout: 110_000 })
+  await page.getByLabel('Dateien auswählen', { exact: true }).setInputFiles(audio)
+  await page.getByRole('button', { name: 'Dateien konvertieren', exact: true }).click()
+  await expect(page.getByRole('button', { name: /^Ergebnis herunterladen:/ })).toBeVisible({ timeout: 110_000 })
 
   const downloadPromise = page.waitForEvent('download')
-  await page.getByRole('link', { name: 'Herunterladen' }).click()
+  await page.getByRole('button', { name: /^Ergebnis herunterladen:/ }).click()
   const download = await downloadPromise
   const outputBytes = await readFile(await download.path())
 
@@ -94,7 +93,7 @@ test('converts real media with same-origin FFmpeg assets and no input leakage', 
   expect(evidence.behaviorAssertions).toBeGreaterThanOrEqual(5)
 })
 
-test('cancels an experimental media load and leaves the input reusable', async ({ page }) => {
+test('cancels a media load and leaves the input reusable', async ({ page }) => {
   test.setTimeout(60_000)
   const audio = tinyWavFixture('cancel-private.wav')
   await page.route('**/vendor/ffmpeg/ffmpeg-core.wasm', async (route) => {
@@ -103,11 +102,11 @@ test('cancels an experimental media load and leaves the input reusable', async (
   })
 
   await page.goto('./?tool=audio-to-mp3')
-  const input = page.getByLabel('Datei auswählen')
-  await input.setInputFiles(audio)
-  await page.getByRole('button', { name: 'Abbrechen' }).click()
+  await page.getByLabel('Dateien auswählen', { exact: true }).setInputFiles(audio)
+  await page.getByRole('button', { name: 'Dateien konvertieren', exact: true }).click()
+  await page.getByRole('button', { name: 'Konvertierung abbrechen', exact: true }).click()
 
-  await expect(page.getByRole('alert')).toContainText('Der Vorgang wurde abgebrochen.')
-  await expect(input).toBeEnabled()
-  await expect(input).toHaveValue('')
+  await expect(page.getByText('Abgebrochen', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Dateien hinzufügen', { exact: true })).toBeEnabled()
+  await expect(page.getByLabel('Dateien hinzufügen', { exact: true })).toHaveValue('')
 })

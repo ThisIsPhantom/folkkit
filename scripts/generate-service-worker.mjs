@@ -101,8 +101,8 @@ export async function generateServiceWorker({
   selected.add(toSameOriginPath(`assets/${pdfWorkerFiles[0]}`))
   if (roots.some(key => isStudioChunk(key, manifest[key]))) {
     const emitted = await readdir(resolve(distDir, 'assets'))
-    for (const prefix of ['pdfStudioWorker', 'imageWorker']) {
-      const files = emitted.filter(file => new RegExp(`^${prefix}-[A-Za-z0-9_-]+\\.js$`).test(file))
+    for (const prefix of ['pdfStudioWorker', 'imageWorker', 'qr-reader.worker']) {
+      const files = emitted.filter(file => new RegExp(`^${prefix.replaceAll('.', '\\.')}-[A-Za-z0-9_-]+\\.js$`).test(file))
       if (files.length !== 1) throw new Error(`Expected one emitted ${prefix}, found ${files.length}.`)
       await collectWorkerGraph(distDir, `assets/${files[0]}`, selected)
     }

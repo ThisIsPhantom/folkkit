@@ -1,14 +1,16 @@
 import { useState } from 'react'
-import { IconArrowsExchange, IconArrowsRightLeft, IconCircle, IconCube, IconPercentage, IconRulerMeasure, IconSquare, IconTriangle, IconAspectRatio, IconCreditCard, IconScale } from '@tabler/icons-react'
+import { IconArrowsExchange, IconArrowsRightLeft, IconCircle, IconCube, IconPercentage, IconRulerMeasure, IconSquare, IconTriangle, IconAspectRatio, IconCreditCard, IconScale, IconCalendar, IconClock, IconCopy, IconCheck } from '@tabler/icons-react'
 import { useI18n } from '../../i18n/index.js'
 import { CALCULATOR_IDS, DEFAULT_OPTIONS, UNIT_CATEGORIES, calculate, calculatorFields, formatResult } from './calculatorModel.js'
 import './calculator.css'
+import DurationFields from './DurationFields.jsx'
+import { calculatorExample } from './calculatorExamples.js'
 
-const icons = { percent: IconPercentage, 'rule-of-three': IconArrowsExchange, pythagoras: IconTriangle, circle: IconCircle, area: IconSquare, volume: IconCube, units: IconRulerMeasure, 'aspect-ratio': IconAspectRatio, loan: IconCreditCard, bmi: IconScale }
+const icons = { percent: IconPercentage, 'rule-of-three': IconArrowsExchange, pythagoras: IconTriangle, circle: IconCircle, area: IconSquare, volume: IconCube, units: IconRulerMeasure, 'aspect-ratio': IconAspectRatio, loan: IconCreditCard, bmi: IconScale, date: IconCalendar, duration: IconClock }
 const normalizeCalculator = value => CALCULATOR_IDS.includes(value) ? value : 'percent'
 
 function SelectField({ label, id, value, onChange, entries }) {
-  return <label className="calc-field" htmlFor={id}><span>{label}</span><select id={id} value={value} onChange={event => onChange(event.target.value)}>{entries.map(([key, text]) => <option value={key} key={key}>{text}</option>)}</select></label>
+  return <label className="calc-field" htmlFor={id}><span>{label}</span><select id={id} name={id} value={value} onChange={event => onChange(event.target.value)}>{entries.map(([key, text]) => <option value={key} key={key}>{text}</option>)}</select></label>
 }
 
 function formulaFor(id, options, t) {
@@ -25,6 +27,8 @@ function formulaFor(id, options, t) {
   if (id === 'aspect-ratio') return options.mode === 'resize' ? t('aspectResizeFormula') : t('aspectRatioFormula')
   if (id === 'loan') return t('loanFormula')
   if (id === 'bmi') return 'BMI = kg ÷ (cm ÷ 100)²'
+  if (id === 'date') return t(options.mode === 'add' ? 'dateAddFormula' : 'dateDifferenceFormula')
+  if (id === 'duration') return t('durationFormula')
   const units = UNIT_CATEGORIES[options.category]
   return `${units.find(unit => unit.id === options.from).symbol} → ${units.find(unit => unit.id === options.to).symbol}`
 }
@@ -39,6 +43,8 @@ function hintFor(id, options) {
   if (id === 'aspect-ratio') return options.mode === 'resize' ? 'aspectResizeHint' : 'aspectHint'
   if (id === 'loan') return 'loanHint'
   if (id === 'bmi') return 'bmiHint'
+  if (id === 'date') return options.mode === 'add' ? 'dateAddHint' : 'dateDifferenceHint'
+  if (id === 'duration') return 'durationHint'
   return null
 }
 
@@ -52,6 +58,7 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
   const t = (key, vars) => translate(`studioCalculate.${key}`, vars)
   const [selection, setSelection] = useState(() => normalizeCalculator(initialCalculator))
   const [forms, setForms] = useState({})
+  const [copied, setCopied] = useState(null)
   // With routing supplied by the shell, query and history changes select the form
   // directly. Values remain in component state while visiting another calculator.
   const active = onSelectCalculator ? normalizeCalculator(initialCalculator) : selection
@@ -78,12 +85,24 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
     return t(`fields.${field}`)
   }
   const unitEntries = active === 'units' ? UNIT_CATEGORIES[options.category].map(item => [item.id, `${item.symbol} · ${t(`unitNames.${options.category}.${item.id}`)}`]) : []
-  const resultValue = item => item.key === 'ratio' ? `${calculation.ratio.width}:${calculation.ratio.height}` : ['loan', 'bmi'].includes(active) ? formatAmount(item.value, locale) : formatResult(item.value, locale)
+  const resultValue = item => typeof item.value === 'string' ? item.value : item.key === 'ratio' ? `${calculation.ratio.width}:${calculation.ratio.height}` : ['loan', 'bmi'].includes(active) ? formatAmount(item.value, locale) : formatResult(item.value, locale)
+  const copyKey = item => `${active}:${item.key}:${resultValue(item)}`
+  const copyResult = async item => {
+    const key = copyKey(item)
+    try {
+      await navigator.clipboard.writeText(resultValue(item))
+      setCopied({ key, status: 'copied' })
+    } catch {
+      setCopied({ key, status: 'copyError' })
+    }
+  }
+  const hasValues = active === 'duration' ? values.rows?.some(row => ['hours', 'minutes', 'seconds'].some(field => row[field])) : Object.values(values).some(Boolean)
 
   return (
     <section className="studio-page calc-page" aria-labelledby="calc-page-title">
       <header className="calc-heading"><h1 id="calc-page-title">{t('title')}</h1><p>{t('intro')}</p></header>
       <div className="calc-layout">
+        <div className="calc-mobile-choice"><SelectField label={t('choose')} id="calc-selection" value={active} onChange={selectCalculator} entries={entries(CALCULATOR_IDS, 'calculators')} /></div>
         <div className="calc-choices" role="group" aria-label={t('choose')}>
           {CALCULATOR_IDS.map(id => {
             const Icon = icons[id]
@@ -91,10 +110,12 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
           })}
         </div>
         <div className="calc-workbench">
-          <header className="calc-workbench-heading"><div><h2>{t(`calculators.${active}`)}</h2><p>{t(`descriptions.${active}`)}</p></div><button type="button" onClick={() => update({ values: {} })} disabled={!Object.values(values).some(Boolean)}>{t('clear')}</button></header>
+          <header className="calc-workbench-heading"><div><h2>{t(`calculators.${active}`)}</h2><p>{t(`descriptions.${active}`)}</p></div><div className="calc-heading-actions"><button type="button" onClick={() => update({ values: calculatorExample(active, options) })}>{t('example')}</button><button type="button" onClick={() => update({ values: {} })} disabled={!hasValues}>{t('clear')}</button></div></header>
           <div className="calc-workbench-body">
             <form className="calc-form" onSubmit={event => event.preventDefault()} aria-label={t(`calculators.${active}`)}>
               {active === 'percent' && <SelectField label={t('operation')} id="calc-operation" value={options.mode} onChange={value => setOption('mode', value)} entries={entries(['of', 'share', 'change'], 'percentModes')} />}
+              {active === 'date' && <SelectField label={t('operation')} id="calc-operation" value={options.mode} onChange={value => setOption('mode', value)} entries={entries(['difference', 'add'], 'dateModes')} />}
+              {active === 'duration' && <DurationFields values={values} calculation={calculation} onChange={rows => update({ values: { rows } })} t={t} />}
               {active === 'aspect-ratio' && <SelectField label={t('operation')} id="calc-operation" value={options.mode} onChange={value => setOption('mode', value)} entries={entries(['ratio', 'resize'], 'aspectModes')} />}
               {active === 'pythagoras' && <SelectField label={t('missing')} id="calc-missing" value={options.missing} onChange={value => setOption('missing', value)} entries={entries(['c', 'a', 'b'], 'fields')} />}
               {active === 'circle' && <SelectField label={t('knownMeasure')} id="calc-measure" value={options.measure} onChange={value => setOption('measure', value)} entries={entries(['radius', 'diameter'], 'fields')} />}
@@ -116,21 +137,21 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
                   const error = calculation.status === 'invalid' && calculation.error.field === field ? calculation.error.code : null
                   return <div className="calc-field" key={field}>
                     <label htmlFor={id}>{fieldLabel(field)}{field === 'rate' && <span className="calc-input-symbol" aria-hidden="true">%</span>}</label>
-                    <input id={id} name={field} type="text" inputMode="decimal" autoComplete="off" spellCheck={false} maxLength={128} value={values[field] || ''} onChange={event => setValue(field, event.target.value)} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${id}-error` : undefined} />
+                    <input id={id} name={field} type={field.endsWith('Date') ? 'date' : 'text'} min={field.endsWith('Date') ? '0001-01-01' : undefined} max={field.endsWith('Date') ? '9999-12-31' : undefined} inputMode={active === 'date' ? undefined : 'decimal'} autoComplete="off" spellCheck={false} maxLength={128} value={values[field] || ''} onChange={event => setValue(field, event.target.value)} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${id}-error` : undefined} />
                     {error && <p id={`${id}-error`} className="calc-field-error">{t(`errors.${error}`)}</p>}
                   </div>
                 })}
               </div>
               {hint && <p className="calc-hint">{t(hint)}</p>}
               {geometry && <p className="calc-hint">{t('sameUnits')}</p>}
-              <p className="calc-decimal-hint">{t('decimalHint')}</p>
+              {!['date', 'duration'].includes(active) && <p className="calc-decimal-hint">{t('decimalHint')}</p>}
             </form>
             <section className="calc-result" aria-label={t('resultHeading')}>
               <div className="calc-result-live" role="status" aria-live="polite" aria-atomic="true">
-                {calculation.status === 'ready' ? <dl>{calculation.ratio && options.mode === 'resize' && <div className="calc-result-item"><dt>{t('results.ratio')}</dt><dd>{calculation.ratio.width}:{calculation.ratio.height}</dd></div>}{calculation.results.map(item => <div className="calc-result-item" key={item.key}><dt>{t(`results.${item.key}`)}</dt><dd data-testid={`result-${item.key}`}>{resultValue(item)}{item.symbol && <span className="calc-result-unit"> {item.symbol === '²' ? t('unitSquared') : item.symbol === '³' ? t('unitCubed') : item.symbol}</span>}</dd></div>)}</dl> : calculation.status === 'invalid' ? <p className="calc-result-error">{t(`errors.${calculation.error.code}`)}</p> : <div className="calc-empty"><span aria-hidden="true">=</span><strong>{t('empty')}</strong><p>{t('emptyHint')}</p></div>}
+                {calculation.status === 'ready' ? <dl>{calculation.ratio && options.mode === 'resize' && <div className="calc-result-item"><dt>{t('results.ratio')}</dt><dd>{calculation.ratio.width}:{calculation.ratio.height}</dd></div>}{calculation.results.map(item => <div className="calc-result-item" key={item.key}><dt>{t(`results.${item.key}`)}</dt><dd data-testid={`result-${item.key}`}>{resultValue(item)}{item.symbol && <span className="calc-result-unit"> {item.symbol === '²' ? t('unitSquared') : item.symbol === '³' ? t('unitCubed') : item.symbol}</span>}</dd><dd className="calc-result-action"><button type="button" className="calc-copy" aria-label={t('copyResult', { name: t(`results.${item.key}`) })} onClick={() => copyResult(item)}>{copied?.key === copyKey(item) && copied.status === 'copied' ? <IconCheck size={16} aria-hidden="true" /> : <IconCopy size={16} aria-hidden="true" />}{t(copied?.key === copyKey(item) ? copied.status : 'copy')}</button></dd></div>)}</dl> : calculation.status === 'invalid' ? <p className="calc-result-error">{t(`errors.${calculation.error.code}`)}</p> : <div className="calc-empty"><span aria-hidden="true">=</span><strong>{t('empty')}</strong><p>{t('emptyHint')}</p></div>}
               </div>
-              <div className="calc-formula"><span>{t('formula')}</span><p>{formulaFor(active, options, t)}</p></div>
-              {calculation.status === 'ready' && !calculation.ratio && <p className="calc-precision">{t(['loan', 'bmi'].includes(active) ? 'roundedPrecision' : 'precision')}</p>}
+              <details className="calc-formula" key={active}><summary>{t('formula')}</summary><p>{formulaFor(active, options, t)}</p></details>
+              {calculation.status === 'ready' && !calculation.ratio && !['date', 'duration'].includes(active) && <p className="calc-precision">{t(['loan', 'bmi'].includes(active) ? 'roundedPrecision' : 'precision')}</p>}
             </section>
           </div>
         </div>

@@ -1,9 +1,10 @@
+import { builtArtifactPath } from './helpers/builtArtifact.js'
 import { once } from 'node:events'
 import { readFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { expect, test } from '@playwright/test'
 
-const viteManifest = JSON.parse(await readFile(new URL('../../dist/.vite/manifest.json', import.meta.url), 'utf8'))
+const viteManifest = JSON.parse(await readFile(builtArtifactPath('.vite/manifest.json'), 'utf8'))
 const appEntryPath = `/${viteManifest['index.html'].file}`
 let alternateServer
 let alternateOrigin

@@ -7,6 +7,9 @@ import './styles/studio.css'
 import App from './App.jsx'
 import { ToastProvider } from './components/Toast'
 import { I18nProvider } from './i18n/I18nProvider'
+import { initializeHistoryPrivacy } from './privacy/historyStore'
+
+initializeHistoryPrivacy()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

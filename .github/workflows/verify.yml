@@ -73,4 +73,4 @@ jobs:
         env:
           FOLKKIT_E2E_HOSTING_HEADERS: '1'
           FOLKKIT_E2E_PORT: '4182'
-        run: node ./node_modules/playwright/cli.js test hosting-csp.spec.js qr-designer.spec.js pdf-editor.spec.js file-converter-matrix.spec.js studio-integration.spec.js calculators.spec.js
+        run: node ./node_modules/playwright/cli.js test hosting-csp.spec.js qr-designer.spec.js pdf-editor.spec.js file-converter-matrix.spec.js studio-integration.spec.js calculators.spec.js usability-shell.spec.js

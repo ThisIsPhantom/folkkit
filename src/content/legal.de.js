@@ -72,12 +72,12 @@ const legalDe = Object.freeze({
   }),
   source: Object.freeze({
     testId: 'open-source',
-    eyebrow: 'Nachvollziehbarer Build',
+    eyebrow: 'Offener Quellcode',
     title: 'Open Source',
-    intro: 'Folkkit kennzeichnet jeden Build mit dem vollständigen Git-Commit, aus dem er erzeugt wurde.',
-    revisionLabel: 'Build-Revision',
+    intro: 'Der Code hinter Folkkit ist öffentlich. Du kannst ihn lesen und unter den Lizenzbedingungen weiterverwenden.',
+    revisionLabel: 'Diese Version',
     revisionLink: 'Exakte Revision auf GitHub öffnen',
-    availabilityNote: 'Der Revisionslink belegt für sich allein keinen öffentlichen Zugriff. Vor einer öffentlichen Bereitstellung muss genau diese Revision öffentlich und ohne Anmeldung zugänglich sein. Das Repository bleibt während dieser Vorabentwicklung privat.',
+    availabilityNote: 'Der vollständige Quellcode ist auf GitHub ohne Anmeldung einsehbar. Der Link führt zum Stand dieser Version.',
     sourcesLabel: 'Projektquellen',
     sources: Object.freeze([
       Object.freeze({
@@ -97,7 +97,6 @@ const legalDe = Object.freeze({
         title: 'Folkkit-Lizenz',
         paragraphs: Object.freeze([
           'Folkkit ist als Gesamtwerk ausschliesslich unter AGPL-3.0-only veröffentlicht. Der vollständige Lizenztext liegt im Repository in der Datei LICENSE.',
-          'Der sichtbare Quellcode-Link bereitet die Bereitstellung des korrespondierenden Quellcodes für den exakten öffentlichen Build vor. Eine öffentliche Website darf erst freigegeben werden, wenn der verlinkte Commit tatsächlich öffentlich abrufbar ist.',
         ]),
       }),
       Object.freeze({
