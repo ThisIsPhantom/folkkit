@@ -8,6 +8,17 @@ Folkkit V1 is under private pre-release development and has not been deployed. R
 
 The canonical design is [docs/superpowers/specs/2026-08-31-folkkit-design.md](docs/superpowers/specs/2026-08-31-folkkit-design.md).
 
+Die freigegebene [Studio-Erweiterung](docs/superpowers/plans/2026-09-05-folkkit-studio.md) ergänzt eigene Arbeitsbereiche und ersetzt die bisherige visuelle Richtung:
+
+- `/qr`: QR-Designer mit Farben, Formen, zugeschnittenem Logo und PNG-/SVG-Ausgabe.
+- `/pdf`: native Textobjekt-Bearbeitung, Ergänzungen, Seitenverwaltung und lokale Vorschau. Unterstützte lateinische Textobjekte sind bearbeitbar; OCR, Absatzrekonstruktion und Formularerstellung sind ausgenommen. Unsichere Operationen an vorhandenen Formularstrukturen werden vorab verweigert.
+- `/convert`: Dateiwarteschlange mit 33 Formatpaaren, Einstellungen, Abbruch, Einzel- und ZIP-Downloads.
+- `/calculate`: Prozentfelder, Dreisatz, Pythagoras, Kreis, Flächen, Volumen, Einheiten, Seitenverhältnis, Kreditrate und BMI. Alle Rechner besitzen eigene Formulare; alte Links bleiben erreichbar.
+
+Alte `/workspace`-Links bleiben erreichbar. Dateiinhalte bleiben im Browser und werden in diesen Arbeitsbereichen nicht dauerhaft gespeichert. Die QR-Abhängigkeit erhält einen dokumentierten [UTF-8-Patch](patches/README.md).
+
+Die [lokale Verifikation](docs/folkkit-studio-verifikation.md) dokumentiert geprüfte Ausgaben, Browserabdeckung und Einschränkungen.
+
 ## Development
 
 ```bash
@@ -16,7 +27,9 @@ cd folkkit
 bun install && bun run dev
 ```
 
-Requires [Bun](https://bun.sh/) ≥ 1.3 or [Node.js](https://nodejs.org/) ≥ 18.
+Entwicklung und Verifikation verwenden Bun 1.3.3 sowie Node.js 22.13+ innerhalb der 22er-Reihe oder Node.js 24+. PDF.js ist ausschliesslich eine Testabhängigkeit zur unabhängigen Kontrolle der PDF-Ausgaben.
+
+Die Browserprüfungen der Dateikonvertierung benötigen zusätzlich `ffmpeg` und `ffprobe` im `PATH`. Alternativ können `FOLKKIT_TEST_FFMPEG` und `FOLKKIT_TEST_FFPROBE` auf die vorhandenen Programme zeigen. Diese nativen Programme dienen ausschliesslich der unabhängigen Testauswertung und gehören nicht zum ausgelieferten Browserprogramm.
 
 ### Public release configuration
 
@@ -47,7 +60,7 @@ The validator builds an isolated `git archive`, installs `bun.lock` with lifecyc
 
 ## Stack
 
-React 19 · Vite 7 · Vanilla CSS · pdf-lib · qrcode · FFmpeg WASM
+React 19 · Vite 7 · Vanilla CSS · PDFium WASM · pdf-lib · qr-code-styling · qrcode · FFmpeg WASM · fflate
 
 ## Documentation
 

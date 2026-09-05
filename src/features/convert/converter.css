@@ -1,0 +1,56 @@
+.file-converter { max-width: 1140px; margin: 0 auto; padding: 3rem 1.5rem 5rem; color: var(--text); }
+.converter-heading { margin-bottom: 2rem; }
+.converter-heading h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; letter-spacing: -.045em; margin: .6rem 0 1rem; }
+.converter-heading > p:last-child { color: var(--text-secondary); font-size: 1.08rem; }
+.converter-drop { border: 1.5px dashed var(--shell-border-strong); border-radius: 1.25rem; background: var(--bg-raised); padding: 2.5rem 1rem; display: flex; align-items: center; flex-direction: column; gap: .85rem; text-align: center; }
+.converter-drop.is-dragging { border-color: var(--focus-ring); background: var(--bg-hover); }
+.converter-drop-icon { font-size: 2.2rem; width: 3.4rem; height: 3.4rem; display: grid; place-items: center; background: var(--bg-hover); border-radius: 1rem; }
+.converter-drop strong { font-size: 1.3rem; }
+.converter-drop p, .converter-drop small { color: var(--text-secondary); max-width: 44rem; }
+.converter-file-label { position: relative; overflow: hidden; font-weight: 650; background: var(--text); color: var(--bg); border-radius: .6rem; min-height: 44px; padding: .8rem 1.2rem; cursor: pointer; }
+.converter-file-label input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+.converter-file-label:focus-within { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.converter-workspace { margin-top: 2rem; }
+.converter-toolbar { display: flex; align-items: end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; }
+.converter-toolbar h2 { margin-right: auto; font-size: 1.25rem; align-self: center; }
+.converter-toolbar h2 span { font-size: .9rem; color: var(--text-secondary); }
+.file-converter label:not(.converter-file-label):not(.converter-combine) { display: flex; flex-direction: column; gap: .35rem; font-size: .82rem; color: var(--text-secondary); }
+.file-converter select, .file-converter input:not([type=file]):not([type=checkbox]) { border: 1px solid var(--shell-border-strong); border-radius: .5rem; background: var(--bg-raised); color: var(--text); min-height: 44px; padding: .5rem .75rem; font: inherit; }
+.file-converter button { min-height: 44px; border: 1px solid var(--shell-border-strong); border-radius: .55rem; background: var(--bg-raised); color: var(--text); padding: .65rem 1rem; font: inherit; font-size: .875rem; cursor: pointer; }
+.file-converter button:hover:not(:disabled) { background: var(--bg-hover); }
+.file-converter button:disabled { opacity: .5; cursor: default; }
+.file-converter .converter-subtle { background: transparent; }
+.converter-combine { display: flex; align-items: center; gap: .7rem; padding: .8rem 0 1.2rem; font-size: .9rem; }
+.converter-combine input { width: 1.2rem; height: 1.2rem; accent-color: var(--text); }
+.file-converter label.converter-inline { flex-direction: row; align-items: center; align-self: center; gap: .5rem; }
+.converter-files { list-style: none; display: grid; gap: .75rem; }
+.converter-file { background: var(--bg-raised); border: 1px solid var(--shell-border); border-radius: .8rem; padding: 1rem; min-width: 0; }
+.converter-file-main { display: flex; align-items: center; gap: 1rem; }
+.converter-format { font-size: .7rem; font-weight: 750; letter-spacing: .04em; width: 3.2rem; min-width: 3.2rem; height: 3.4rem; display: grid; place-items: center; background: var(--bg-hover); border-radius: .5rem; }
+.converter-file-name { display: grid; gap: .3rem; margin-right: auto; min-width: 0; }
+.converter-file-name strong { font-size: .94rem; overflow-wrap: anywhere; }
+.converter-file-name small, .converter-status { color: var(--text-secondary); font-size: .8rem; }
+.converter-status { min-width: 5rem; }
+.converter-target { min-width: 6.5rem; }
+.converter-settings { margin-top: .75rem; font-size: .86rem; color: var(--text-secondary); }
+.converter-settings summary { cursor: pointer; padding: .5rem 0; width: fit-content; }
+.converter-settings > div { padding-top: .5rem; display: flex; flex-wrap: wrap; align-items: end; gap: .75rem 1.25rem; }
+.converter-settings p { width: 100%; }
+.converter-settings input { max-width: 15rem; }
+.converter-row-actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.converter-row-actions:not(:empty) { margin-top: .75rem; }
+.converter-error { color: var(--error); margin: .8rem 0; font-size: .875rem; }
+.converter-file progress { width: 100%; height: .5rem; margin-top: .75rem; accent-color: var(--text); }
+.converter-start { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1.5rem; }
+.converter-start p { margin-right: auto; color: var(--text-secondary); font-size: .8rem; }
+.file-converter .converter-primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 650; }
+.file-converter .converter-primary:hover:not(:disabled) { background: var(--text-secondary); }
+@media (max-width: 640px) {
+  .file-converter { padding: 2rem 1rem 3rem; }
+  .converter-drop { padding: 1.7rem .9rem; }
+  .converter-file-main { flex-wrap: wrap; gap: .7rem; }
+  .converter-file-name { width: calc(100% - 5rem); flex-grow: 1; }
+  .converter-target { margin-right: auto; }
+  .converter-start p { width: 100%; }
+  .converter-start > button { flex: 1; }
+}

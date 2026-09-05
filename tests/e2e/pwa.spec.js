@@ -136,5 +136,5 @@ test('isolates Folkkit cache reads and excludes private or foreign requests', as
 
   await context.setOffline(true)
   await page.goto('./')
-  await expect(page.getByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Was möchtest du machen?' })).toBeVisible()
 })

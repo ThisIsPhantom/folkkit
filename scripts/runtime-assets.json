@@ -6,6 +6,16 @@
   },
   "assets": [
     {
+      "id": "pdfium-studio-wasm",
+      "component": "EmbedPDF PDFium browser engine",
+      "version": "2.15.0",
+      "paths": ["assets/pdfium-*.wasm"],
+      "license": "BSD-3-Clause AND Apache-2.0",
+      "sourceUrl": "https://github.com/embedpdf/embed-pdf-viewer/tree/v2/packages/pdfium",
+      "licenseTextFiles": ["scripts/license-texts/PDFium-2.15.0.txt"],
+      "notices": []
+    },
+    {
       "id": "ffmpeg-core-wasm",
       "component": "FFmpeg / ffmpeg.wasm runtime assets",
       "version": "0.12.10",

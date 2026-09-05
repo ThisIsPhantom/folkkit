@@ -20,7 +20,8 @@ class ErrorBoundaryCore extends Component {
             <br />
             <button
               className="pill-btn-sm error-retry"
-              onClick={() => this.setState({ hasError: false, error: null })}
+              type="button"
+              onClick={() => this.props.onRetry ? this.props.onRetry() : this.setState({ hasError: false, error: null })}
             >
               {this.props.retryLabel}
             </button>

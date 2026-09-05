@@ -56,14 +56,21 @@ jobs:
       - name: Install Chromium, Firefox, and WebKit for the browser matrix
         run: bun run test:e2e:install
 
+      - name: Install independent media validation tools
+        shell: pwsh
+        run: |
+          choco install ffmpeg --yes --no-progress --limit-output
+          if ($LASTEXITCODE -ne 0) { throw 'FFmpeg installation failed.' }
+          Get-Command ffmpeg, ffprobe -ErrorAction Stop
+
       - name: Run browser tests
         run: bun run test:e2e
 
       - name: Rebuild the exact hosting artifact for CSP verification
         run: bun run build:site
 
-      - name: Run real media conversion under production hosting headers
+      - name: Verify studio workflows under production hosting headers
         env:
           FOLKKIT_E2E_HOSTING_HEADERS: '1'
           FOLKKIT_E2E_PORT: '4182'
-        run: node ./node_modules/playwright/cli.js test hosting-csp.spec.js
+        run: node ./node_modules/playwright/cli.js test hosting-csp.spec.js qr-designer.spec.js pdf-editor.spec.js file-converter-matrix.spec.js studio-integration.spec.js calculators.spec.js

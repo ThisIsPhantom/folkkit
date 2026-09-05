@@ -20,6 +20,8 @@ test('home, catalog, core tools, consent and legal routes have no automated axe 
   ]
   for (const [route, label] of routes) {
     await page.goto(route)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    await expect(page.locator('.studio-loading')).toHaveCount(0)
     await expectNoAxeViolations(page, label)
   }
 })

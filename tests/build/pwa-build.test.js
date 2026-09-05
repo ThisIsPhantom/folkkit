@@ -119,6 +119,13 @@ describe('generated service worker', () => {
     expect(identicalSource).toBe(firstSource)
     expect(changed.cacheName).not.toBe(first.cacheName)
     expect(changedSource).not.toBe(firstSource)
+    await writeFixture('dist/vendor/ffmpeg/ffmpeg-core.wasm', 'optional-runtime-v1')
+    const optionalOne = await generateServiceWorker({ distDir, templatePath })
+    expect(optionalOne.cacheName).not.toBe(changed.cacheName)
+    await writeFixture('dist/vendor/ffmpeg/ffmpeg-core.wasm', 'optional-runtime-v2')
+    const optionalTwo = await generateServiceWorker({ distDir, templatePath })
+    expect(optionalTwo.cacheName).not.toBe(optionalOne.cacheName)
+    expect(optionalTwo.precacheUrls).not.toContain('/vendor/ffmpeg/ffmpeg-core.wasm')
   })
 
   test('keeps skipWaiting and clients.claim inside their lifecycle promises', async () => {

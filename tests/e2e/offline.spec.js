@@ -24,7 +24,7 @@ test('opens the home shell offline after its first load', async ({ page, context
   await context.setOffline(true)
 
   await page.goto('./')
-  await expect(page.getByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Was möchtest du machen?' })).toBeVisible()
 })
 
 test('runs core text, QR, and PDF workflows offline after the first load', async ({ page, context }) => {

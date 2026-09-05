@@ -224,7 +224,7 @@ export function assertMediaOutputBudget(blob) {
   return blob
 }
 
-async function getFFmpeg() {
+export async function getFFmpeg() {
   return ffmpegRuntime.get()
 }
 

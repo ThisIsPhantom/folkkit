@@ -14,16 +14,18 @@ test('presents the three German core paths and sends stable selections', async (
   const onOpenCore = vi.fn()
   renderWithProviders(<HomePage onOpenCore={onOpenCore} onOpenCatalog={vi.fn()} />)
 
-  expect(screen.getByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).toBeInTheDocument()
-  expect(screen.getByText('Deine Dateien bleiben in diesem Browser.')).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Was möchtest du machen?' })).toBeInTheDocument()
+  expect(screen.queryByText('Lokal verarbeitet')).not.toBeInTheDocument()
 
   await user.click(screen.getByRole('button', { name: 'PDF bearbeiten' }))
   await user.click(screen.getByRole('button', { name: 'QR-Code erstellen' }))
   await user.click(screen.getByRole('button', { name: 'Datei konvertieren' }))
+  await user.click(screen.getByRole('button', { name: /Rechner & Einheiten/ }))
 
   expect(onOpenCore).toHaveBeenNthCalledWith(1, 'pdf')
   expect(onOpenCore).toHaveBeenNthCalledWith(2, 'qr')
   expect(onOpenCore).toHaveBeenNthCalledWith(3, 'convert')
+  expect(onOpenCore).toHaveBeenNthCalledWith(4, 'calculate')
 })
 
 test('renders English from the requested provider locale without storage setup', () => {
@@ -40,7 +42,7 @@ test('renders English from the requested provider locale without storage setup',
     { locale: 'en' },
   )
 
-  expect(screen.getByRole('heading', { name: 'Work with files without uploading them.' })).toBeInTheDocument()
-  expect(screen.getByText('Your files stay in this browser.')).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'What would you like to do?' })).toBeInTheDocument()
+  expect(screen.queryByText('Processed locally')).not.toBeInTheDocument()
   expect(screen.getByText('en')).toBeInTheDocument()
 })

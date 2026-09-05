@@ -1,0 +1,20 @@
+export function withJpegOrientation(jpeg, orientation, littleEndian = true) {
+  if (jpeg[0] !== 255 || jpeg[1] !== 216 || !Number.isInteger(orientation) || orientation < 1 || orientation > 8) throw new Error('Invalid EXIF fixture input')
+  const payload = new Uint8Array(32)
+  payload.set([69,120,105,102,0,0])
+  payload.set(littleEndian ? [73,73] : [77,77],6)
+  const view = new DataView(payload.buffer)
+  view.setUint16(8,42,littleEndian)
+  view.setUint32(10,8,littleEndian)
+  view.setUint16(14,1,littleEndian)
+  view.setUint16(16,0x0112,littleEndian)
+  view.setUint16(18,3,littleEndian)
+  view.setUint32(20,1,littleEndian)
+  view.setUint16(24,orientation,littleEndian)
+  const output = new Uint8Array(jpeg.length + 36)
+  output.set(jpeg.subarray(0,2))
+  output.set([255,225,0,34],2)
+  output.set(payload,6)
+  output.set(jpeg.subarray(2),38)
+  return output
+}

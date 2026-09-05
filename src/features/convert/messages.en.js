@@ -1,0 +1,17 @@
+export default {
+  title: 'Convert files', subtitle: 'Images, PDFs, audio and video.', limitsLabel: 'File limits',
+  choose: 'Choose files', drop: 'Drop your files here', dropHint: 'PNG, JPEG, WebP, PDF, MP3, WAV, FLAC, OGG, MP4, WebM, MOV',
+  limits: 'Up to 20 files · 100 MiB per file (PDF: 32 MiB) · 250 MiB total · 64 MiB per result',
+  width: 'Width (px)', height: 'Height (px)', pageSize: 'PDF page size', original: 'Original image size', orientation: 'Orientation', portrait: 'Portrait', landscape: 'Landscape', dpi: 'PDF resolution', bitrate: 'MP3 bitrate', flacLevel: 'FLAC compression level', vorbisQuality: 'Vorbis quality', resolution: 'Video resolution', trim: 'Choose a video clip', wavHint: 'WAV: uncompressed PCM16.',
+  commonTarget: 'Output for all files', individual: 'Choose per file', target: 'Output format',
+  files: 'Files', convert: 'Convert files', cancel: 'Cancel conversion', clear: 'Clear files', remove: 'Remove', retry: 'Retry',
+  download: 'Download', downloadZip: 'Download all as ZIP', creatingZip: 'Preparing ZIP…',
+  quality: 'Quality (%)', pages: 'PDF pages', pagesHint: 'All pages, or for example 1-3,5. Maximum 100 pages.',
+  clipStart: 'Clip start (seconds)', clipDuration: 'Clip length (seconds)', clipHint: 'Select a clip up to 30 seconds. GIF: 720 px, 12 fps.',
+  imageHint: 'Leave dimensions empty for original size. Aspect ratio stays the same. JPEG uses a white background.', audioHint: 'MP3: 192 kbit/s · WAV: PCM16 · FLAC: level 5 · OGG: Vorbis quality 5',
+  videoHint: 'Maximum 1080p, no upscaling. MP4: H.264/AAC · WebM: VP8/Opus.',
+  combine: 'Combine images into one PDF in this order', moveUp: 'Move up', moveDown: 'Move down', combined: 'Included in the combined PDF',
+  local: 'Files stay on this device.', settings: 'Settings', unknown: 'Unknown format',
+  status: { detecting: 'Checking format…', ready: 'Ready', running: 'Converting…', done: 'Done', error: 'Failed', cancelled: 'Cancelled' },
+  errors: { invalid_settings: 'Choose a supported value for these settings.', unsupported_type: 'This file format is not supported.', type_mismatch: 'The file content does not match its extension or file type.', unsupported_pair: 'This conversion is not available.', too_large: 'The selected files exceed the size limit.', resource_limit: 'The file exceeds the local processing limit. Try a smaller file or fewer pages.', invalid_file: 'The file could not be read.', unsupported_codec: 'The actual audio or video codec is not supported.', invalid_pages: 'Enter valid page numbers, for example 1-3,5.', invalid_clip: 'Choose a clip within the video, with a length of 1 to 30 seconds.', no_audio: 'This file contains no supported audio track.', media_runtime_unavailable: 'The processing module is not available offline yet. Connect once to load it, then retry.', conversion_failed: 'Conversion failed. You can retry this file.', cancelled: 'Conversion cancelled.' },
+}

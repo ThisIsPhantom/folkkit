@@ -8,8 +8,9 @@ const viteManifest = JSON.parse(await readFile(new URL('../../dist/.vite/manifes
 test('shows the derived released count and excludes hidden entries', async ({ page }) => {
   await page.goto('./tools')
 
-  await expect(page.getByText('49 Werkzeuge')).toBeVisible()
-  await expect(page.locator('.catalog-list > li')).toHaveCount(49)
+  await expect(page.getByText('45 Werkzeuge')).toBeVisible()
+  await expect(page.locator('.catalog-list > li')).toHaveCount(45)
+  await expect(page.getByRole('button', { name: 'Prozentrechner öffnen', exact: true })).toHaveCount(0)
   await expect(page.getByText('Random Password', { exact: true })).toHaveCount(0)
   await expect(page.getByText('QR-Code lesen', { exact: true })).toHaveCount(0)
 })

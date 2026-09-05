@@ -4,7 +4,7 @@ import { preferenceKeys } from '../privacy/preferences'
 function getInitialTheme() {
   const stored = localStorage.getItem(preferenceKeys.theme)
   if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return 'light'
 }
 
 export function useTheme() {
@@ -15,7 +15,7 @@ export function useTheme() {
     localStorage.setItem(preferenceKeys.theme, theme)
     // Update PWA theme color
     const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1f2826' : '#f4eee5')
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#171c20' : '#f6f7f8')
   }, [theme])
 
   const toggle = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'))

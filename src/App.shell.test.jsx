@@ -33,7 +33,7 @@ test.each(legalRoutes)('%s renders its complete legal surface instead of Home', 
   expect(window.location.pathname).toBe(path)
   expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
   expect(screen.getByTestId(`legal-page-${path.slice(1)}`)).toBeInTheDocument()
-  expect(screen.queryByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Was möchtest du machen?' })).not.toBeInTheDocument()
 })
 
 test.each([
@@ -44,7 +44,7 @@ test.each([
   const user = userEvent.setup()
   renderWithProviders(<App />)
 
-  await user.click(screen.getByRole('link', { name: 'Werkzeuge' }))
+  await user.click(screen.getByRole('link', { name: 'Weitere Werkzeuge' }))
 
   expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior })
 })
@@ -73,7 +73,7 @@ test('moves focus to main content after SPA navigation and popstate but not on i
   const main = screen.getByRole('main')
 
   expect(main).not.toHaveFocus()
-  await user.click(screen.getByRole('link', { name: 'Werkzeuge' }))
+  await user.click(screen.getByRole('link', { name: 'Weitere Werkzeuge' }))
   await waitFor(() => expect(main).toHaveFocus())
 
   const themeButton = screen.getByRole('button', { name: 'Dunkles Design' })

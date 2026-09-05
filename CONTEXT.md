@@ -7,6 +7,7 @@ Read in order:
 1. `AGENTS.md`
 2. `PROJECT_MEMORY.md`
 3. `docs/superpowers/specs/2026-08-31-folkkit-design.md`
+4. `docs/superpowers/plans/2026-09-05-folkkit-studio.md` for the approved Studio extension and replacement visual contract.
 
 For implementation details, load only the relevant inherited documents in `docs/`. The approved Folkkit design overrides conflicting product, visual, privacy, deployment, and naming assumptions inherited from Convert Everything.
 

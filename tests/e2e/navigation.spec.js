@@ -8,17 +8,17 @@ test('navigates the German shell, switches language, and restores routes', async
   await expect(page.getByRole('main')).toBeVisible()
   await expect(page.getByRole('contentinfo')).toBeVisible()
   await expect(page.getByRole('link', { name: 'Zum Inhalt springen' })).toBeAttached()
-  await expect(page.getByText('Deine Dateien bleiben in diesem Browser.')).toBeVisible()
+  await expect(page.getByText('Lokal verarbeitet')).toHaveCount(0)
   await expect(page.getByRole('main')).not.toBeFocused()
 
-  await page.getByRole('link', { name: 'Werkzeuge' }).click()
+  await page.getByRole('link', { name: 'Weitere Werkzeuge' }).click()
   await expect(page).toHaveURL(/\/tools$/)
-  await expect(page.getByRole('heading', { name: 'Alle freigegebenen Werkzeuge' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Weitere Werkzeuge' })).toBeVisible()
   await expect(page.getByRole('main')).toBeFocused()
 
   await page.goBack()
   await expect(page).toHaveURL(/\/$/)
-  await expect(page.getByRole('heading', { name: 'Dateien bearbeiten, ohne sie hochzuladen.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Was möchtest du machen?' })).toBeVisible()
   await expect(page.getByRole('main')).toBeFocused()
 
   await page.goForward()
@@ -27,7 +27,7 @@ test('navigates the German shell, switches language, and restores routes', async
 
   await page.getByRole('button', { name: 'English' }).click()
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-  await expect(page.getByRole('heading', { name: 'All released tools' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'More tools' })).toBeVisible()
 
   await page.getByRole('link', { name: 'Privacy' }).click()
   await expect(page).toHaveURL(/\/privacy$/)
@@ -48,7 +48,7 @@ test('keeps keyboard focus visible and exposes mobile navigation', async ({ page
   await expect(menuButton).toBeVisible()
   await menuButton.click()
   await expect(page.getByRole('navigation', { name: 'Mobile Navigation' })).toBeVisible()
-  await page.getByRole('link', { name: 'Werkzeuge' }).click()
+  await page.getByRole('link', { name: 'Weitere Werkzeuge' }).click()
   await expect(page).toHaveURL(/\/tools$/)
 })
 
@@ -109,6 +109,7 @@ test('history reuse changes only URL identifiers and does not survive reload as 
 
 test('global image drops use released converters or show an honest unsupported state', async ({ page }) => {
   await page.goto('./workspace?from=text&to=base64')
+  await expect(page.getByRole('textbox', { name: 'Eingabetext' })).toBeVisible()
 
   await page.evaluate(() => {
     const dataTransfer = new DataTransfer()
@@ -118,6 +119,7 @@ test('global image drops use released converters or show an honest unsupported s
   await expect(page).toHaveURL(/\/workspace\?tool=png-to-jpg$/)
 
   await page.goto('./workspace?from=text&to=base64')
+  await expect(page.getByRole('textbox', { name: 'Eingabetext' })).toBeVisible()
   await page.evaluate(() => {
     const dataTransfer = new DataTransfer()
     dataTransfer.items.add(new File(['svg'], 'graphic.svg', { type: 'image/svg+xml' }))

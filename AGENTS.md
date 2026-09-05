@@ -3,7 +3,7 @@
 ## Purpose and current phase
 
 - Folkkit is an AGPL-3.0-only, local-first browser utility suite derived from `MercuriusDream/convert-everything`.
-- The approved product and architecture design is canonical in `docs/superpowers/specs/2026-08-31-folkkit-design.md`.
+- The original architecture is documented in `docs/superpowers/specs/2026-08-31-folkkit-design.md`. The user-approved Studio extension and current visual direction are canonical in `docs/superpowers/plans/2026-09-05-folkkit-studio.md`.
 - The repository is in planning/foundation status. Do not present Folkkit as deployed or production-ready until the approved release gates pass.
 
 ## Required context order
@@ -25,7 +25,7 @@
 
 ## Design contract
 
-- Use `Warm Shell / Dark Workbench`: warm, calm outer surfaces and a focused dark work area.
+- Use the approved modern Tool Studio: light surfaces, graphite, restrained distinct accents, compact sans-serif typography, direct tool access, and an optional dark theme.
 - Do not use violet or blue AI glows, neon gradients, generic AI/SaaS decoration, floating orbs, or ornamental glass effects.
 - Typography and visual assets must be self-hosted and legally documented.
 - Responsive, keyboard, reduced-motion, contrast, and screen-reader behavior are release requirements.

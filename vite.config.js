@@ -92,6 +92,9 @@ self.addEventListener('activate', event => {
 
 export default defineConfig({
   base: '/',
+  server: {
+    watch: { ignored: ['**/.superpowers/**', '**/test-results/**', '**/.worktrees/**'] },
+  },
   define: {
     'globalThis.__FOLKKIT_COMMIT__': JSON.stringify(resolveBuildCommit()),
   },
@@ -103,6 +106,7 @@ export default defineConfig({
     ...(env.FOLKKIT_E2E_OLD_SW === '1' ? [testOldServiceWorker()] : []),
   ],
   worker: {
+    format: 'es',
     plugins: () => [selfHostFFmpegWorkerFallback()],
   },
   build: {

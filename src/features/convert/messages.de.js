@@ -1,0 +1,17 @@
+export default {
+  title: 'Dateien konvertieren', subtitle: 'Bilder, PDFs, Audio und Video.', limitsLabel: 'Dateigrenzen',
+  choose: 'Dateien auswählen', drop: 'Dateien hier ablegen', dropHint: 'PNG, JPEG, WebP, PDF, MP3, WAV, FLAC, OGG, MP4, WebM, MOV',
+  limits: 'Bis zu 20 Dateien · 100 MiB pro Datei (PDF: 32 MiB) · 250 MiB insgesamt · 64 MiB pro Ergebnis',
+  width: 'Breite (px)', height: 'Höhe (px)', pageSize: 'PDF-Seitengrösse', original: 'Originale Bildgrösse', orientation: 'Ausrichtung', portrait: 'Hochformat', landscape: 'Querformat', dpi: 'PDF-Auflösung', bitrate: 'MP3-Bitrate', flacLevel: 'FLAC-Kompressionsstufe', vorbisQuality: 'Vorbis-Qualität', resolution: 'Videoauflösung', trim: 'Videoausschnitt wählen', wavHint: 'WAV: unkomprimiertes PCM16.',
+  commonTarget: 'Zielformat für alle Dateien', individual: 'Pro Datei wählen', target: 'Zielformat',
+  files: 'Dateien', convert: 'Dateien konvertieren', cancel: 'Konvertierung abbrechen', clear: 'Dateien entfernen', remove: 'Entfernen', retry: 'Erneut versuchen',
+  download: 'Herunterladen', downloadZip: 'Alle als ZIP herunterladen', creatingZip: 'ZIP wird erstellt…',
+  quality: 'Qualität (%)', pages: 'PDF-Seiten', pagesHint: 'Alle Seiten oder zum Beispiel 1-3,5. Höchstens 100 Seiten.',
+  clipStart: 'Ausschnitt ab (Sekunden)', clipDuration: 'Dauer (Sekunden)', clipHint: 'Wähle einen Ausschnitt bis 30 Sekunden. GIF: 720 px, 12 Bilder/s.',
+  imageHint: 'Für die Originalgrösse beide Masse leer lassen. Das Seitenverhältnis bleibt erhalten. JPEG erhält einen weissen Hintergrund.', audioHint: 'MP3: 192 kbit/s · WAV: PCM16 · FLAC: Stufe 5 · OGG: Vorbis-Qualität 5',
+  videoHint: 'Höchstens 1080p, ohne Vergrösserung. MP4: H.264/AAC · WebM: VP8/Opus.',
+  combine: 'Bilder in dieser Reihenfolge zu einem PDF verbinden', moveUp: 'Nach oben', moveDown: 'Nach unten', combined: 'Im gemeinsamen PDF enthalten',
+  local: 'Deine Dateien bleiben auf diesem Gerät.', settings: 'Einstellungen', unknown: 'Unbekanntes Format',
+  status: { detecting: 'Format wird geprüft…', ready: 'Bereit', running: 'Wird konvertiert…', done: 'Fertig', error: 'Fehlgeschlagen', cancelled: 'Abgebrochen' },
+  errors: { invalid_settings: 'Wähle einen unterstützten Wert für diese Einstellungen.', unsupported_type: 'Dieses Dateiformat wird nicht unterstützt.', type_mismatch: 'Der Dateiinhalt passt nicht zur Endung oder zum Dateityp.', unsupported_pair: 'Diese Konvertierung ist nicht verfügbar.', too_large: 'Die ausgewählten Dateien überschreiten die Grössenbegrenzung.', resource_limit: 'Die Datei überschreitet die lokale Verarbeitungsgrenze. Versuche eine kleinere Datei oder weniger Seiten.', invalid_file: 'Die Datei konnte nicht gelesen werden.', unsupported_codec: 'Der enthaltene Audio- oder Video-Codec wird nicht unterstützt.', invalid_pages: 'Gib gültige Seitenzahlen ein, zum Beispiel 1-3,5.', invalid_clip: 'Wähle einen Ausschnitt innerhalb des Videos mit einer Dauer von 1 bis 30 Sekunden.', no_audio: 'Diese Datei enthält keine unterstützte Tonspur.', media_runtime_unavailable: 'Das Verarbeitungsmodul ist offline noch nicht verfügbar. Lade es einmal mit Internetverbindung und versuche es erneut.', conversion_failed: 'Die Konvertierung ist fehlgeschlagen. Du kannst diese Datei erneut versuchen.', cancelled: 'Konvertierung abgebrochen.' },
+}

@@ -2,6 +2,7 @@ import { TEXT_LIMIT, TOOL_LIMITS, validateFiles } from './limits'
 import { createObjectUrlRegistry } from './objectUrlRegistry'
 import {
   IMAGE_PREFIX_LIMIT_BYTES,
+  MEDIA_LIMITS,
   assertImageDimensionBudget,
   assertOutputBudget,
   getImageDimensionLimits,
@@ -94,7 +95,7 @@ async function validateSignatures(tool, files, environment) {
   }
 }
 
-function normalizeResult(value) {
+function normalizeResult(value, outputLimit) {
   if (!value || typeof value !== 'object') throw runtimeError('conversion_failed')
   const hasOwnInfo = Object.hasOwn(value, 'info')
   const ownInfo = hasOwnInfo ? value.info : undefined
@@ -114,7 +115,7 @@ function normalizeResult(value) {
     && typeof value.filename === 'string'
     && value.filename.trim()
   ) {
-    return assertOutputBudget({ kind: value.kind, blob: value.blob, filename: value.filename, ...info })
+    return assertOutputBudget({ kind: value.kind, blob: value.blob, filename: value.filename, ...info }, outputLimit)
   }
   throw runtimeError('conversion_failed')
 }
@@ -192,7 +193,7 @@ export async function executeTool({ tool, files = [], text = '', signal, onProgr
     }
     const value = await (abortPromise ? Promise.race([conversion, abortPromise]) : conversion)
     throwIfAborted(signal)
-    return normalizeResult(value)
+    return normalizeResult(value, tool?.limits === TOOL_LIMITS.media ? MEDIA_LIMITS.maxOutputBytes : undefined)
   } catch (error) {
     throw mapFailure(error, tool)
   } finally {

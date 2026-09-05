@@ -1,4 +1,7 @@
 {
+  "qrcode-generator@1.5.2": {
+    "MIT": ["scripts/license-texts/MIT-qrcode-generator.txt"]
+  },
   "@ffmpeg/ffmpeg@0.12.15": {
     "MIT": [
       "scripts/license-texts/MIT-ffmpegwasm.txt"

@@ -4,6 +4,7 @@ const PRECACHE_URLS = __PRECACHE_URLS__
 const PRECACHE_PATHS = new Set(PRECACHE_URLS)
 const CACHE_PREFIX = 'folkkit-app-'
 const LEGACY_CACHE_NAMES = new Set(['convert-everything-v2'])
+const OPTIONAL_RUNTIME_PATHS = new Set(['/vendor/ffmpeg/ffmpeg-core.js', '/vendor/ffmpeg/ffmpeg-core.wasm'])
 const HASHED_ASSET_PATH = /^\/assets\/.+-[A-Za-z0-9_-]{6,}\.(?:css|js|json|svg|png|jpe?g|webp|gif|woff2?)$/
 
 self.addEventListener('install', (event) => {
@@ -26,11 +27,20 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event
-  if (request.method !== 'GET') return
+  if (request.method !== 'GET' && request.method !== 'HEAD') return
 
   const url = new URL(request.url)
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return
   if (url.origin !== self.location.origin) return
+
+  if (request.method === 'HEAD') {
+    if (url.search || !OPTIONAL_RUNTIME_PATHS.has(url.pathname)) return
+    event.respondWith(caches.open(CACHE_NAME).then(async cache => {
+      const cached = await cache.match(url.pathname, { ignoreVary: true })
+      return cached ? new Response(null, { status: cached.status, statusText: cached.statusText, headers: cached.headers }) : fetch(request)
+    }))
+    return
+  }
 
   if (request.mode === 'navigate') {
     event.respondWith(fetch(request).catch(async () => {
@@ -42,6 +52,19 @@ self.addEventListener('fetch', (event) => {
 
   if (!url.search && PRECACHE_PATHS.has(url.pathname)) {
     event.respondWith(caches.open(CACHE_NAME).then(cache => cache.match(url.pathname, { ignoreVary: true })))
+    return
+  }
+
+  if (!url.search && OPTIONAL_RUNTIME_PATHS.has(url.pathname)) {
+    event.respondWith(caches.open(CACHE_NAME).then(async cache => {
+      const cached = await cache.match(url.pathname, { ignoreVary: true })
+      if (cached) return cached
+      const response = await fetch(request)
+      const mime = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase()
+      const expectedMime = url.pathname.endsWith('.wasm') ? mime === 'application/wasm' : /(?:java|ecma)script/.test(mime)
+      if (response.ok && response.type === 'basic' && expectedMime) await cache.put(url.pathname, response.clone())
+      return response
+    }))
     return
   }
 
