@@ -1,4 +1,55 @@
 export default {
+
+  "resize": "Skalieren: {corner}",
+  "corner": {
+    "nw": "oben links",
+    "ne": "oben rechts",
+    "sw": "unten links",
+    "se": "unten rechts"
+  },
+  "properties": "Eigenschaften",
+  "allPages": "Alle auswählen",
+  "clearPages": "Auswahl aufheben",
+  "selectedPages": "{count} ausgewählt",
+  "selectPage": "Seite {number} auswählen",
+  "viewing": "Angezeigt",
+  "pageSelectionHint": "Seiten für gemeinsame Aktionen ankreuzen. Ausgewählte Seiten zum Sortieren ziehen.",
+  "rotateSelected": "Ausgewählte Seiten drehen",
+  "deleteSelected": "Ausgewählte Seiten löschen",
+  "extractSelected": "Ausgewählte Seiten herunterladen",
+  "actions": {
+    "edit": {
+      "title": "PDF bearbeiten",
+      "before": "Wähle ein PDF, um Text, Bilder und Seiten zu bearbeiten.",
+      "after": "Unterstützte Objekte ziehen oder an den Eckgriffen skalieren. Text zum Bearbeiten doppelt anklicken."
+    },
+    "merge": {
+      "title": "PDFs zusammenführen",
+      "before": "Wähle das erste PDF. Hänge danach weitere PDFs in der gewünschten Reihenfolge an.",
+      "after": "Wähle «Weiteres PDF anfügen» für jede weitere Datei. Lade danach das zusammengeführte PDF herunter."
+    },
+    "extract": {
+      "title": "PDF-Seiten extrahieren",
+      "before": "Wähle ein PDF und kreuze die Seiten an, die du herunterladen möchtest.",
+      "after": "Kreuze eine oder mehrere, auch getrennte Seiten an. Der Download folgt der Dokumentreihenfolge."
+    },
+    "rotate": {
+      "title": "PDF-Seiten drehen",
+      "before": "Wähle ein PDF und danach die Seiten zum Drehen.",
+      "after": "Kreuze die gewünschten Seiten an. Jede Aktion dreht alle ausgewählten Seiten um 90 Grad im Uhrzeigersinn."
+    },
+    "count": {
+      "title": "PDF-Seiten zählen",
+      "before": "Wähle ein PDF, um die Seitenzahl zu sehen.",
+      "after": "Dieses PDF enthält {count} Seiten."
+    },
+    "organize": {
+      "title": "PDF-Seiten ordnen",
+      "before": "Wähle ein PDF, um Seiten auszuwählen, zu sortieren oder zu entfernen.",
+      "after": "Kreuze Seiten für gemeinsame Aktionen an. Ziehe sie in die gewünschte Reihenfolge oder nutze die Verschiebeknöpfe."
+    }
+  }
+,
   recover: 'Letzten Bearbeitungsstand wiederherstellen',
   title: 'PDF bearbeiten', intro: 'Texte anpassen, Seiten ordnen und Ergänzungen einfügen.',
   choose: 'PDF auswählen', drop: 'PDF hier ablegen', limits: 'Bis 32 MiB und 200 Seiten. Deine Datei bleibt in diesem Browser.',

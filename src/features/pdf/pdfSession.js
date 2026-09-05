@@ -1,6 +1,6 @@
 import { PDF_LIMITS, ensure, pdfError } from './pdfEngine.js'
 
-const changes = new Set(['replaceText', 'addText', 'addImage', 'addDrawing', 'addNote', 'transformObject', 'removeObject', 'pageAction', 'merge'])
+const changes = new Set(['replaceText', 'addText', 'addImage', 'addDrawing', 'addNote', 'transformObject', 'removeObject', 'pageAction', 'batchPageAction', 'reorderPages', 'merge'])
 export class PdfSession {
   constructor(engine) { this.engine = engine; this.history = []; this.future = []; this.original = null; this.revision = 0; this.savedRevision = 0; this.nextRevision = 1 }
   open(bytes) {

@@ -249,11 +249,41 @@ export class PdfEngine {
     const count = this.api.FPDF_GetPageCount(this.document)
     ensure(Array.isArray(indices) && indices.length > 0 && indices.length <= PDF_LIMITS.pages)
     indices.forEach(index => ensure(Number.isInteger(index) && index >= 0 && index < count))
+    indices = [...new Set(indices)].sort((a, b) => a - b)
     const document = ensure(this.api.FPDF_CreateNewDocument())
     try {
       ensure(this.api.FPDF_ImportPages(document, this.document, indices.map(index => index + 1).join(','), 0))
       return this.saveDocument(document)
     } finally { this.api.FPDF_CloseDocument(document) }
+  }
+  batchPageAction(action, indices) {
+    const count = this.api.FPDF_GetPageCount(this.document)
+    ensure(['rotate', 'delete'].includes(action) && Array.isArray(indices) && indices.length > 0 && indices.length <= count)
+    ensure(indices.every(index => Number.isInteger(index) && index >= 0 && index < count))
+    const pages = [...new Set(indices)].sort((a, b) => b - a)
+    ensure(this.formType() === 0 || this.formType() === 1, 'unsupported_structure')
+    if (action === 'delete') {
+      ensure(pages.length < count, 'last_page')
+      // Validate the whole batch before changing any page. PdfSession also rolls back native failures.
+      ensure(pages.every(index => !this.pageHasWidget(index)), 'unsupported_structure')
+    }
+    for (const index of pages) this.pageAction(action, index)
+    return this.metadata()
+  }
+  reorderPages(order) {
+    const count = this.api.FPDF_GetPageCount(this.document)
+    ensure(Array.isArray(order) && order.length === count && new Set(order).size === count)
+    ensure(order.every(index => Number.isInteger(index) && index >= 0 && index < count))
+    const current = Array.from({ length: count }, (_, index) => index)
+    // Move native pages within the same document, retaining catalog and form structures.
+    for (let target = 0; target < count; target++) {
+      const index = current.indexOf(order[target])
+      if (index !== target) {
+        this.pageAction('move', index, target)
+        current.splice(target, 0, current.splice(index, 1)[0])
+      }
+    }
+    return this.metadata()
   }
   pageAction(action, index, target) {
     const count = this.api.FPDF_GetPageCount(this.document)

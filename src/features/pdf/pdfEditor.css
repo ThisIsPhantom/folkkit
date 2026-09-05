@@ -16,3 +16,50 @@
 @media (max-width: 1100px) { .pdf-layout { grid-template-columns: 135px minmax(0,1fr); }.pdf-inspector { grid-column: 1/-1; grid-template-columns: repeat(2,minmax(0,1fr)); }.pdf-inspector h2 { grid-column: 1/-1; }.pdf-page-list { max-height: 320px; } }
 @media (max-width: 650px) { .pdf-layout { display: flex; flex-direction: column; }.pdf-pages,.pdf-work-area,.pdf-inspector { width: 100%; }.pdf-page-list { display: flex; overflow-x: auto; }.pdf-page-list button { min-width: 90px; width: 90px; }.pdf-page-mini { width: 32px; height: 40px; }.pdf-page-actions { display: flex; flex-wrap: wrap; }.pdf-page-actions button { flex: 1 1 100px; }.pdf-inspector { display: grid; grid-template-columns: 1fr; }.pdf-tool-strip { flex-wrap: nowrap; overflow-x: auto; }.pdf-tool-strip button { flex-shrink: 0; }.pdf-stage { padding: .45rem; max-height: 65vh; }.pdf-document-bar .pdf-button-row { width: 100%; }.pdf-document-bar button { font-size: .75rem; }.pdf-coordinate-fields { grid-template-columns: 1fr 1fr; }.pdf-view-controls form { flex-basis: 100%; } }
 .pdf-page-mini { width: 66px; height: 86px; background: transparent; border: 0; }.pdf-page-mini canvas { display: block; max-width: 64px; max-height: 84px; width: auto; height: auto; background: #fff; border: 1px solid #bbc1c8; }
+/* Direct manipulation and compact panels follow the existing studio tokens. */
+.pdf-editor [hidden] { display: none !important; }
+.pdf-object.is-editable { touch-action: none; }
+.pdf-object.is-editable rect { cursor: move; }
+.pdf-resize-handle { touch-action: none; }
+.pdf-resize-handle rect { fill: #fff; stroke: #135eaf; stroke-width: 1.5; }
+.pdf-resize-nw,.pdf-resize-se { cursor: nwse-resize; }
+.pdf-resize-ne,.pdf-resize-sw { cursor: nesw-resize; }
+.pdf-resize-handle:focus rect { stroke: #202124; stroke-width: 3; }
+.pdf-resize-handle:focus { outline: none; }
+.pdf-panel-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; font: inherit; }
+.pdf-panel-toggle::after { content: '−'; margin-left: .5rem; }
+.pdf-panel-toggle[aria-expanded="false"]::after { content: '+'; }
+.pdf-inspector-body { display: grid; gap: .75rem; min-width: 0; }
+.pdf-pages .pdf-small { font-size: .72rem; line-height: 1.45; color: var(--ink-muted); }
+.pdf-selection-bar button { width: 100%; font-size: .75rem; }
+.pdf-selection-bar p { font-size: .75rem; color: var(--ink-muted); margin: .45rem 0; }
+.pdf-page-card { border: 2px solid transparent; border-radius: .65rem; padding: .2rem; min-width: 0; }
+.pdf-page-card.is-selected { border-color: var(--ink); background: var(--shell-soft); }
+.pdf-page-check { display: flex; align-items: center; gap: .4rem; font-size: .68rem; min-height: 44px; cursor: pointer; }
+.pdf-page-check input { accent-color: var(--ink); width: 18px; height: 18px; flex: none; }
+.pdf-page-list .pdf-page-card button { border-color: transparent; padding: .45rem .25rem; }
+.pdf-page-list { max-height: min(38vh, 360px); }
+.pdf-pages,.pdf-inspector { max-height: 74vh; overflow: auto; }
+.pdf-tool-strip { position: sticky; top: calc(4.5rem + 1px); z-index: 3; }
+.pdf-stage { min-height: min(48vh, 420px); max-height: 68vh; }
+@media (max-width: 1100px) {
+ .pdf-inspector { display: block; }
+ .pdf-inspector-body { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 650px) {
+ .pdf-pages,.pdf-inspector { max-height: none; }
+ .pdf-page-list { max-height: 215px; }
+ .pdf-page-card { width: 110px; flex: 0 0 110px; }
+ .pdf-page-list .pdf-page-card button { width: 100%; min-width: 0; }
+ .pdf-inspector-body { grid-template-columns: minmax(0,1fr); }
+ .pdf-stage { min-height: 260px; }
+
+ .pdf-selection-bar { display: flex; gap: .75rem; align-items: center; }
+ .pdf-selection-bar button { width: auto; }
+ .pdf-page-actions button { min-height: 44px; }
+}
+
+.pdf-object.is-editable rect,.pdf-resize-handle rect { touch-action: none; }
+.pdf-sheet[data-tool="select"] .pdf-overlay { touch-action: none; }
+
+@media (max-width: 44rem) { .pdf-tool-strip { top: calc(4rem + 1px); } }

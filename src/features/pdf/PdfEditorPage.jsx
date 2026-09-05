@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useI18n } from '../../i18n/index.js'
 import { PdfWorkerClient } from './pdfClient.js'
 import { downloadPdf, readPdfFile, readPdfImage } from './pdfFiles.js'
 import PdfCanvas from './PdfCanvas.jsx'
 import PdfThumbnail from './PdfThumbnail.jsx'
 import { prepareStroke, toPdfVector, toViewPoint } from './pdfGeometry.js'
+import { normalisePages, pageOrder } from './pdfInteraction.js'
 import './pdfEditor.css'
 
 const noop = () => {}
 const tools = ['select', 'text', 'image', 'highlight', 'underline', 'draw', 'note', 'rectangle', 'ellipse', 'line', 'signature']
-export default function PdfEditorPage({ onDirtyChange = noop }) {
+export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'edit', fileRequest, onFileRequestConsumed = noop }) {
   const { t: translate } = useI18n()
   const t = useCallback((key, vars) => translate(`studioPdf.${key}`, vars), [translate])
+  const action = ['edit', 'merge', 'extract', 'rotate', 'count', 'organize'].includes(initialAction) ? initialAction : 'edit'
   const client = useRef(null)
   const opening = useRef(null)
   const original = useRef(null)
@@ -23,6 +25,10 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
   const fileInput = useRef(null)
   const mergeInput = useRef(null)
   const imageInput = useRef(null)
+  const textInput = useRef(null), draggedPages = useRef(null)
+  const [selectedPages, setSelectedPages] = useState([0])
+  const [pagesOpen, setPagesOpen] = useState(true)
+  const [inspectorOpen, setInspectorOpen] = useState(() => !window.matchMedia?.('(max-width: 650px)').matches)
   const [documentState, setDocumentState] = useState(null)
   const [pageIndex, setPageIndex] = useState(0)
   const [version, setVersion] = useState(0)
@@ -45,6 +51,23 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
   const page = documentState?.pages[pageIndex]
   const dirty = documentState?.dirty || false
 
+  const consumedRequest = useRef(null)
+  const acceptRequest = useEffectEvent(request => {
+    openFile(request.file)
+    onFileRequestConsumed(request.id)
+  })
+  useEffect(() => {
+    if (!fileRequest?.file || busy || consumedRequest.current === fileRequest.id) return
+    let active = true
+    // Defer intake until StrictMode's trial cleanup has completed.
+    queueMicrotask(() => {
+      if (!active || consumedRequest.current === fileRequest.id) return
+      consumedRequest.current = fileRequest.id
+      acceptRequest(fileRequest)
+    })
+    return () => { active = false }
+  }, [fileRequest, busy])
+
   useEffect(() => { onDirtyChange(dirty) }, [dirty, onDirtyChange])
   useEffect(() => {
     mounted.current = true
@@ -66,9 +89,9 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
     return () => { active = false }
   }, [pageIndex, pageCount, version, zoom])
 
-  function clearSelection() { setSelected(null); setObjects([]); setFrame(null); setResults(null) }
+  function clearSelection(clearResults = true) { setSelected(null); setObjects([]); setFrame(null); if (clearResults) setResults(null) }
   function isCurrent(id) { return mounted.current && generation.current === id }
-  function selectPage(index) { if (index === pageIndex) return; clearSelection(); setPageIndex(index) }
+  function selectPage(index) { if (index === pageIndex) return; clearSelection(false); setPageIndex(index) }
   function errorCode(reason) { return ['resource_limit', 'unsupported_text', 'unsupported_structure', 'last_page', 'cancelled', 'unsupported_browser'].includes(reason?.code) ? reason.code : 'invalid_file' }
   async function openFile(file) {
     if (!file || busy || (dirty && !window.confirm(t('discard')))) return
@@ -85,7 +108,7 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
       client.current?.dispose(); client.current = next; opening.current = null
       checkpoint.current = saved
       original.current = bytes
-      clearSelection(); setPageIndex(0); setDocumentState(state); setVersion(value => value + 1)
+      clearSelection(); setSelectedPages([0]); setPageIndex(0); setDocumentState(state); setVersion(value => value + 1)
     } catch (reason) { next?.dispose(); if (isCurrent(id)) setError(errorCode(reason)) }
     finally { if (isCurrent(id)) { opening.current = null; setBusy(false); activeOperation.current = '' } }
   }
@@ -99,7 +122,16 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
       const saved = await worker.checkpoint()
       if (!isCurrent(id)) return
       checkpoint.current = saved
-      clearSelection(); setDocumentState(next); setPageIndex(index => Math.min(index, next.pages.length - 1)); setVersion(value => value + 1)
+      clearSelection(); setDocumentState(next)
+      const mapIndex = index => {
+        if (method === 'reorderPages') return args[0].indexOf(index)
+        if (method === 'batchPageAction' && args[0] === 'delete') return args[1].includes(index) ? -1 : index - args[1].filter(deleted => deleted < index).length
+        if (method === 'pageAction' && ['blank', 'duplicate'].includes(args[0])) return index >= args[1] + (args[0] === 'duplicate' ? 1 : 0) ? index + 1 : index
+        return index
+      }
+      setPageIndex(index => Math.max(0, Math.min(mapIndex(index), next.pages.length - 1)))
+      setSelectedPages(indices => normalisePages(indices.map(mapIndex), next.pages.length))
+      setVersion(value => value + 1)
     } catch (reason) { if (isCurrent(id)) setError(errorCode(reason)) }
     finally { if (isCurrent(id)) { setBusy(false); activeOperation.current = '' } }
   }
@@ -128,9 +160,9 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
     const id = ++generation.current; activeOperation.current = 'export'
     setBusy(true); setError('')
     try {
-      const bytes = extract ? await client.current.extract([pageIndex]) : await client.current.save()
+      const bytes = extract ? await client.current.extract(normalisePages(selectedPages, pageCount)) : await client.current.save()
       if (!isCurrent(id)) return
-      downloadPdf(bytes, extract ? `folkkit-page-${pageIndex + 1}.pdf` : 'folkkit-edited.pdf')
+      downloadPdf(bytes, extract ? 'folkkit-pages.pdf' : 'folkkit-edited.pdf')
       if (!extract) {
         const state = await client.current.markSaved()
         const saved = await client.current.checkpoint()
@@ -139,8 +171,14 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
     } catch (reason) { if (isCurrent(id)) setError(errorCode(reason)) }
     finally { if (isCurrent(id)) { setBusy(false); activeOperation.current = '' } }
   }
-  function chooseObject(object) { setSelected(object); setText(object.text || '') }
-  function chooseTool(next) { setTool(next); setSelected(null); if (next === 'highlight') setColor('#f0c929') }
+  function chooseObject(object) { setSelected(object); setText(object.text || ''); setInspectorOpen(true) }
+  function editObject(object) { chooseObject(object); requestAnimationFrame(() => textInput.current?.focus()) }
+  function togglePage(index) { setSelectedPages(indices => normalisePages(indices.includes(index) ? indices.filter(value => value !== index) : [...indices, index], pageCount)) }
+  function reorder(indices, target) {
+    const order = pageOrder(pageCount, indices, target)
+    if (order.some((value, index) => value !== index)) change('reorderPages', order)
+  }
+  function chooseTool(next) { setInspectorOpen(true); setTool(next); setSelected(null); if (next === 'highlight') setColor('#f0c929') }
   function place(points) {
     const [[x, y]] = points
     if (tool === 'text') { if (text.trim()) change('addText', pageIndex, { text, x, y, size, color }) }
@@ -205,7 +243,7 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
   }
   const button = (key, action, disabled = false) => <button type="button" onClick={action} disabled={busy || disabled}>{t(key)}</button>
   return <section className="studio-page pdf-editor" aria-labelledby="pdf-title">
-    <header className="pdf-heading"><div><h1 id="pdf-title">{t('title')}</h1><p>{t('intro')}</p></div>{button('choose', () => fileInput.current.click())}</header>
+    <header className="pdf-heading"><div><h1 id="pdf-title">{t(`actions.${action}.title`)}</h1><p>{t(`actions.${action}.${documentState ? 'after' : 'before'}`, { count: pageCount })}</p></div>{button('choose', () => fileInput.current.click())}</header>
     <input className="pdf-file-input" ref={fileInput} type="file" accept="application/pdf,.pdf" aria-label={t('choose')} onChange={event => { openFile(event.target.files[0]); event.target.value = '' }} />
     <input className="pdf-file-input" ref={mergeInput} type="file" accept="application/pdf,.pdf" aria-label={t('merge')} onChange={event => { mergeFile(event.target.files[0]); event.target.value = '' }} />
     <input className="pdf-file-input" ref={imageInput} type="file" accept="image/png,image/jpeg,image/webp" aria-label={t('image')} onChange={event => { insertImage(event.target.files[0]); event.target.value = '' }} />
@@ -224,20 +262,28 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
       <div className="pdf-tool-strip" role="toolbar" aria-label={t('tools')}>{tools.map(item => <button key={item} type="button" aria-pressed={tool === item} disabled={busy} onClick={() => chooseTool(item)}>{t(item)}</button>)}</div>
       <div className="pdf-layout">
         <section className="pdf-pages" aria-label={t('pages')}>
-          <h2>{t('pages')} <span>{pageCount}</span></h2>
-          <div className="pdf-page-list">{documentState.pages.map((item, index) => <button key={index} type="button" aria-current={pageIndex === index ? 'page' : undefined} disabled={busy} onClick={() => selectPage(index)}><span className="pdf-page-mini" aria-hidden="true"><PdfThumbnail client={client.current} index={index} page={item} revision={version} /></span><span>{t('page', { number: index + 1 })}</span><small>{Math.round(item.width)} × {Math.round(item.height)}</small></button>)}</div>
-          <div className="pdf-page-actions">{button('previous', () => change('pageAction', 'move', pageIndex, pageIndex - 1), pageIndex === 0)}{button('next', () => change('pageAction', 'move', pageIndex, pageIndex + 1), pageIndex === pageCount - 1)}{button('rotate', () => change('pageAction', 'rotate', pageIndex))}{button('duplicate', () => change('pageAction', 'duplicate', pageIndex))}{button('deletePage', () => change('pageAction', 'delete', pageIndex), pageCount === 1)}{button('extract', () => exportPdf(true))}{button('blank', () => change('pageAction', 'blank', pageIndex + 1))}{button('merge', () => mergeInput.current.click())}</div>
+          <h2><button type="button" className="pdf-panel-toggle" aria-expanded={pagesOpen} aria-controls="pdf-page-panel" onClick={() => setPagesOpen(value => !value)}>{t('pages')} <span>{pageCount}</span></button></h2>
+          <div id="pdf-page-panel" hidden={!pagesOpen}>
+            <div className="pdf-selection-bar">{button(selectedPages.length === pageCount ? 'clearPages' : 'allPages', () => setSelectedPages(selectedPages.length === pageCount ? [] : documentState.pages.map((_, index) => index)))}<p role="status">{t('selectedPages', { count: selectedPages.length })}</p></div>
+            <p className="pdf-small">{t('pageSelectionHint')}</p>
+            <div className="pdf-page-list">{documentState.pages.map((item, index) => <div key={index} className={`pdf-page-card ${selectedPages.includes(index) ? 'is-selected' : ''}`} draggable={!busy} onDragStart={event => { draggedPages.current = selectedPages.includes(index) ? selectedPages : [index]; event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', 'folkkit-page') }} onDragEnd={() => { draggedPages.current = null }} onDragOver={event => { if (draggedPages.current && !busy) { event.preventDefault(); event.dataTransfer.dropEffect = 'move' } }} onDrop={event => { event.preventDefault(); if (!busy && draggedPages.current) reorder(draggedPages.current, index); draggedPages.current = null }}>
+              <label className="pdf-page-check"><input type="checkbox" checked={selectedPages.includes(index)} disabled={busy} onChange={() => togglePage(index)} /><span>{t('selectPage', { number: index + 1 })}</span></label>
+              <button type="button" aria-current={pageIndex === index ? 'page' : undefined} disabled={busy} onClick={() => { selectPage(index); if (!selectedPages.includes(index)) setSelectedPages([index]) }}><span className="pdf-page-mini" aria-hidden="true"><PdfThumbnail client={client.current} index={index} page={item} revision={version} /></span><span>{t('page', { number: index + 1 })}</span><small>{Math.round(item.width)} × {Math.round(item.height)}</small>{pageIndex === index && <small>{t('viewing')}</small>}</button>
+            </div>)}</div>
+            <div className="pdf-page-actions">{button('previous', () => reorder(selectedPages, selectedPages[0] - 1), !selectedPages.length || selectedPages[0] === 0)}{button('next', () => reorder(selectedPages, selectedPages.at(-1) + 1), !selectedPages.length || selectedPages.at(-1) === pageCount - 1)}{button(selectedPages.length > 1 ? 'rotateSelected' : 'rotate', () => change('batchPageAction', 'rotate', selectedPages), !selectedPages.length)}{button('duplicate', () => change('pageAction', 'duplicate', pageIndex))}{button(selectedPages.length > 1 ? 'deleteSelected' : 'deletePage', () => change('batchPageAction', 'delete', selectedPages), !selectedPages.length || selectedPages.length === pageCount)}{button(selectedPages.length > 1 ? 'extractSelected' : 'extract', () => exportPdf(true), !selectedPages.length)}{button('blank', () => change('pageAction', 'blank', pageIndex + 1))}{button('merge', () => mergeInput.current.click())}</div>
+          </div>
         </section>
         <div className="pdf-work-area">
           <div className="pdf-view-controls"><form onSubmit={search}><label className="pdf-search"><span>{t('search')}</span><input type="search" value={query} maxLength={200} onChange={event => setQuery(event.target.value)} /></label><button type="submit" disabled={busy || !query.trim()}>{t('searchAction')}</button></form><label>{t('zoom')}<select value={zoom} onChange={event => setZoom(Number(event.target.value))} disabled={busy}>{[50, 75, 100, 125, 150, 200].map(value => <option key={value} value={value}>{value}%</option>)}</select></label></div>
           {results && <div className="pdf-search-results" role="status"><p>{results.length ? t('matches', { count: results.length }) : t('noResults')}</p>{results.map((result, index) => <button type="button" key={index} onClick={() => selectPage(result.page)}>{t('page', { number: result.page + 1 })}: {result.text}</button>)}</div>}
-          {page && <PdfCanvas frame={frame} page={page} objects={objects} selected={selected} onSelect={chooseObject} tool={tool} onPlace={place} disabled={busy || !frame} t={t} zoom={zoom} />}
+          {page && <PdfCanvas frame={frame} page={page} objects={objects} selected={selected} onSelect={chooseObject} onEdit={editObject} onTransform={(index, transform) => change('transformObject', pageIndex, index, transform)} tool={tool} onPlace={place} disabled={busy || !frame} t={t} zoom={zoom} />}
           <p className="pdf-canvas-hint">{t('addHint')}</p>
         </div>
         <section className="pdf-inspector" aria-label={t('tools')}>
-          <h2>{t(tool)}</h2>
+          <h2><button type="button" className="pdf-panel-toggle" aria-expanded={inspectorOpen} aria-controls="pdf-inspector-panel" onClick={() => setInspectorOpen(value => !value)}>{t('properties')}: {t(tool)}</button></h2>
+          <div className="pdf-inspector-body" id="pdf-inspector-panel" hidden={!inspectorOpen}>
           {tool === 'select' && <><p>{selected ? (selected.type === 'text' ? t(selected.editable ? 'textHint' : 'unsupportedText') : t('objectImage')) : t('selectHint')}</p>{!objects.some(item => item.type === 'text') && <p>{t('scan')}</p>}</>}
-          {(tool === 'text' || tool === 'note' || selected?.type === 'text') && <><label htmlFor="pdf-text-content">{t('content')}</label><textarea id="pdf-text-content" rows={4} value={text} maxLength={4000} disabled={busy || (selected && !selected.editable)} onChange={event => setText(event.target.value)} />{selected?.type === 'text' && button('apply', () => change('replaceText', pageIndex, selected.index, text), !selected.editable)}{tool !== 'note' && <p className="pdf-small">{t('fontHint')}</p>}</>}
+          {(tool === 'text' || tool === 'note' || selected?.type === 'text') && <><label htmlFor="pdf-text-content">{t('content')}</label><textarea ref={textInput} id="pdf-text-content" rows={4} value={text} maxLength={4000} disabled={busy || (selected && !selected.editable)} onChange={event => setText(event.target.value)} />{selected?.type === 'text' && button('apply', () => change('replaceText', pageIndex, selected.index, text), !selected.editable)}{tool !== 'note' && <p className="pdf-small">{t('fontHint')}</p>}</>}
           {selected && <><div className="pdf-transform-controls">{[['moveLeft', -10, 0], ['moveRight', 10, 0], ['moveUp', 0, -10], ['moveDown', 0, 10]].map(([label, dx, dy]) => <button type="button" key={label} disabled={busy || !selected.editable} onClick={() => moveSelection(dx, dy)}>{t(label)}</button>)}{button('grow', () => change('transformObject', pageIndex, selected.index, { scale: 1.1 }), !selected.editable)}{button('shrink', () => change('transformObject', pageIndex, selected.index, { scale: 0.9 }), !selected.editable)}</div>{button('removeObject', () => change('removeObject', pageIndex, selected.index))}</>}
           {tool !== 'select' && <>
             {!['note', 'image'].includes(tool) && <label>{t('color')}<input type="color" value={color} onChange={event => setColor(event.target.value)} /></label>}
@@ -248,6 +294,7 @@ export default function PdfEditorPage({ onDirtyChange = noop }) {
             {tool === 'image' ? <>{button('image', () => imageInput.current.click())}{button('signatureImage', () => imageInput.current.click())}<p className="pdf-small">{t('signatureHint')}</p></> : button('insert', insertAtCoordinates, ['text', 'note'].includes(tool) && !text.trim())}
             {tool === 'signature' && <p className="pdf-small">{t('signatureHint')}</p>}
           </>}
+          </div>
         </section>
       </div>
     </>}

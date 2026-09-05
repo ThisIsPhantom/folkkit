@@ -1,4 +1,55 @@
 export default {
+
+  "resize": "Resize {corner}",
+  "corner": {
+    "nw": "top left",
+    "ne": "top right",
+    "sw": "bottom left",
+    "se": "bottom right"
+  },
+  "properties": "Properties",
+  "allPages": "Select all",
+  "clearPages": "Clear selection",
+  "selectedPages": "{count} selected",
+  "selectPage": "Select page {number}",
+  "viewing": "Viewing",
+  "pageSelectionHint": "Tick pages for a joint action. Drag selected pages to reorder them.",
+  "rotateSelected": "Rotate selected pages",
+  "deleteSelected": "Delete selected pages",
+  "extractSelected": "Download selected pages",
+  "actions": {
+    "edit": {
+      "title": "Edit PDF",
+      "before": "Choose a PDF to edit text, images and pages.",
+      "after": "Drag supported objects or resize them with the corner handles. Double-click text to edit it."
+    },
+    "merge": {
+      "title": "Merge PDFs",
+      "before": "Choose the first PDF. Then append further PDFs in the desired order.",
+      "after": "Use “Append another PDF” for each additional file. Download the merged PDF when ready."
+    },
+    "extract": {
+      "title": "Extract PDF pages",
+      "before": "Choose a PDF, then tick the pages you want to download.",
+      "after": "Tick one or more pages, including separate pages. The download follows the document order."
+    },
+    "rotate": {
+      "title": "Rotate PDF pages",
+      "before": "Choose a PDF, then select the pages to rotate.",
+      "after": "Tick the pages to rotate. Each action turns all selected pages 90 degrees clockwise."
+    },
+    "count": {
+      "title": "Count PDF pages",
+      "before": "Choose a PDF to see its page count.",
+      "after": "This PDF contains {count} pages."
+    },
+    "organize": {
+      "title": "Organize PDF pages",
+      "before": "Choose a PDF to select, reorder or remove pages.",
+      "after": "Tick pages for joint actions. Drag them into order or use the move buttons."
+    }
+  }
+,
   recover: 'Restore the last editing state',
   title: 'Edit PDF', intro: 'Change text, arrange pages and add content.',
   choose: 'Choose PDF', drop: 'Drop a PDF here', limits: 'Up to 32 MiB and 200 pages. Your file stays in this browser.',
