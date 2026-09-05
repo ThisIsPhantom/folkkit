@@ -1,4 +1,4 @@
-import { readFile, rm, writeFile } from 'node:fs/promises'
+import { readFile, realpath, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -41,6 +41,9 @@ export async function runSiteBuild({
   if (!supportedModes.has(mode)) throw new Error(`Unsupported site build mode: ${mode}`)
   if (mode === 'release') runPublicConfigValidation(env)
 
+  // Vite resolves module IDs physically; use the same root for Windows short
+  // paths and junctions so index.html never appears outside the build root.
+  repoRoot = await realpath(repoRoot)
   const commit = resolveBuildCommit({ repoRoot, env })
   const publicVendorDirectory = join(repoRoot, 'public', 'vendor')
   const distDirectory = join(repoRoot, 'dist')
