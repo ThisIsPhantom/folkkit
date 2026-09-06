@@ -5,6 +5,7 @@ import {
   applyCrop,
   assertImageDescriptor,
   commitHistory,
+  commitResourceElement,
   createHistory,
   createImageState,
   mapSourcePixel,
@@ -15,6 +16,7 @@ import {
   transformedBounds,
   undoHistory,
   updateElement,
+  updateCropField,
 } from './imageModel.js'
 
 describe('image geometry', () => {
@@ -54,6 +56,14 @@ describe('image geometry', () => {
     expect(transformedBounds(state.elements[0])).toEqual({ x: 40, y: 230, width: 30, height: 60 })
     state = updateElement(state, 'mark', { width: 60, height: 30 })
     expect(transformedBounds(state.elements[0])).toEqual({ x: 40, y: 230, width: 60, height: 30 })
+  })
+
+  it('keeps an active crop ratio when width or height changes', () => {
+    const bounds = { width: 600, height: 1200 }
+    const square = { x: 0, y: 300, width: 600, height: 600 }
+    expect(updateCropField(square, bounds, 1, 'width', 300)).toEqual({ x: 0, y: 300, width: 300, height: 300 })
+    expect(updateCropField(square, bounds, 1, 'height', 240)).toEqual({ x: 0, y: 300, width: 240, height: 240 })
+    expect(updateCropField({ x: 10, y: 10, width: 400, height: 300 }, { width: 500, height: 330 }, 4 / 3, 'width', 500)).toEqual({ x: 10, y: 10, width: 427, height: 320 })
   })
 })
 
@@ -104,5 +114,20 @@ describe('image limits and history', () => {
     }
     expect(() => addElement(state, { id: '20', type: 'text', text: 'x', x: 0, y: 0, width: 10, height: 10, fontSize: 10, color: '#111111', opacity: 1 })).toThrow('element_limit')
     expect(() => addElement(createImageState({ width: 10, height: 10 }), { id: 'long', type: 'text', text: 'x'.repeat(501), x: 0, y: 0, width: 10, height: 10, fontSize: 10, color: '#111111', opacity: 1 })).toThrow('text_limit')
+  })
+
+  it('registers a watermark only with its successful history commit and reuses one resource for duplicates', () => {
+    let state = createImageState({ width: 100, height: 80 })
+    for (let index = 0; index < 20; index += 1) state = addElement(state, { id: String(index), type: 'text', text: 'x', x: 0, y: 0, width: 10, height: 10, fontSize: 10, color: '#111111', opacity: 1 })
+    const full = createHistory(state), emptyRegistry = new Map()
+    const resource = { id: 'wm', file: { size: 8 * 1024 * 1024 }, name: 'mark.png', width: 20, height: 10 }
+    expect(() => commitResourceElement(full, emptyRegistry, resource, { id: 'failed', x: 0, y: 0, width: 20, height: 10, opacity: 1 })).toThrow('element_limit')
+    expect(emptyRegistry.size).toBe(0)
+
+    const available = createHistory(createImageState({ width: 100, height: 80 }))
+    const first = commitResourceElement(available, emptyRegistry, resource, { id: 'first', x: 0, y: 0, width: 20, height: 10, opacity: 1 })
+    const second = commitResourceElement(first.history, first.resources, resource, { id: 'second', x: 20, y: 20, width: 20, height: 10, opacity: 1 })
+    expect(second.resources.size).toBe(1)
+    expect(second.history.present.elements.map(element => element.resourceId)).toEqual(['wm', 'wm'])
   })
 })

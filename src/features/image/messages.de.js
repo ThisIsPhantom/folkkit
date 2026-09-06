@@ -36,6 +36,7 @@ export default {
   textPlaceholder: 'Text eingeben',
   addText: 'Text hinzufügen',
   addWatermark: 'Wasserzeichen hinzufügen',
+  duplicateWatermark: 'Wasserzeichen erneut einfügen',
   watermarkLimits: 'PNG, JPEG oder WebP bis 8 MiB und 4 Megapixel. Alle verwendeten Wasserzeichen zusammen höchstens 32 MiB.',
   noElements: 'Noch keine Texte oder Wasserzeichen.',
   element: '{name} auswählen',

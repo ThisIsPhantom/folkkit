@@ -205,6 +205,56 @@ export function mapSourcePixel(state, point) {
   return { x: Math.floor(mapped.x), y: Math.floor(mapped.y) }
 }
 
+export function updateCropField(crop, bounds, ratio, key, value) {
+  if (!crop || !bounds || !['x', 'y', 'width', 'height'].includes(key)) throw imageError('invalid_crop')
+  const number = Math.round(Number(value))
+  if (!Number.isFinite(number)) return { ...crop }
+  const next = { ...crop }
+  if (key === 'x' || key === 'y') {
+    if (key === 'x') next.x = Math.max(0, Math.min(number, bounds.width - 1))
+    else next.y = Math.max(0, Math.min(number, bounds.height - 1))
+    const maxWidth = bounds.width - next.x, maxHeight = bounds.height - next.y
+    if (ratio == null) {
+      next.width = Math.min(next.width, maxWidth); next.height = Math.min(next.height, maxHeight)
+    } else {
+      const scale = Math.min(1, maxWidth / next.width, maxHeight / next.height)
+      next.width = Math.max(1, Math.round(next.width * scale))
+      next.height = Math.max(1, Math.round(next.height * scale))
+    }
+  }
+  else if (ratio == null) next[key] = Math.max(1, Math.min(number, (key === 'width' ? bounds.width - next.x : bounds.height - next.y)))
+  else {
+    const maxWidth = bounds.width - next.x, maxHeight = bounds.height - next.y
+    let width = key === 'width' ? Math.max(1, number) : Math.max(1, Math.round(number * ratio))
+    let height = key === 'height' ? Math.max(1, number) : Math.max(1, Math.round(number / ratio))
+    const scale = Math.min(1, maxWidth / width, maxHeight / height)
+    width = Math.max(1, Math.round(width * scale)); height = Math.max(1, Math.round(height * scale))
+    if (key === 'width') height = Math.max(1, Math.round(width / ratio))
+    else width = Math.max(1, Math.round(height * ratio))
+    if (width > maxWidth || height > maxHeight) {
+      const finalScale = Math.min(maxWidth / width, maxHeight / height)
+      width = Math.max(1, Math.round(width * finalScale)); height = Math.max(1, Math.round(height * finalScale))
+    }
+    next.width = width; next.height = height
+  }
+  next.width = Math.max(1, Math.min(next.width, bounds.width - next.x))
+  next.height = Math.max(1, Math.min(next.height, bounds.height - next.y))
+  return next
+}
+
+export function resizeCropDraft(crop, bounds, ratio, width, height) {
+  if (ratio == null) {
+    return {
+      ...crop,
+      width: Math.max(1, Math.min(Math.round(width), bounds.width - crop.x)),
+      height: Math.max(1, Math.min(Math.round(height), bounds.height - crop.y)),
+    }
+  }
+  const widthDelta = Math.abs(Number(width) - crop.width)
+  const heightDelta = Math.abs(Number(height) - crop.height) * ratio
+  return updateCropField(crop, bounds, ratio, widthDelta >= heightDelta ? 'width' : 'height', widthDelta >= heightDelta ? width : height)
+}
+
 export function createHistory(initial) {
   return { past: [], present: cloneState(initial), future: [] }
 }
@@ -260,4 +310,16 @@ export function referencedResourceBytes(history, registry, candidate) {
 export function releaseUnreferencedResources(history, registry) {
   const ids = referencedResourceIds(history)
   for (const id of registry.keys()) if (!ids.has(id)) registry.delete(id)
+}
+
+export function commitResourceElement(history, registry, resource, element) {
+  if (!resource?.id || !resource.file) throw imageError('invalid_file')
+  const nextDocument = addElement(history.present, { ...element, type: 'image', resourceId: resource.id })
+  const existing = registry.get(resource.id)
+  referencedResourceBytes(history, registry, existing ? undefined : resource)
+  const nextHistory = commitHistory(history, nextDocument)
+  const nextResources = new Map(registry)
+  if (!existing) nextResources.set(resource.id, resource)
+  releaseUnreferencedResources(nextHistory, nextResources)
+  return { history: nextHistory, resources: nextResources }
 }

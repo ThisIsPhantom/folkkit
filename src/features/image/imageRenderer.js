@@ -13,6 +13,12 @@ export function computePreviewSize(width, height, maxAxis = IMAGE_LIMITS.preview
   return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)), scale }
 }
 
+export function fitPreviewDisplay(width, height, availableWidth, availableHeight) {
+  if (![width, height, availableWidth, availableHeight].every(Number.isFinite) || Math.min(width, height, availableWidth, availableHeight) <= 0) throw imageError('invalid_settings')
+  const scale = Math.min(availableWidth / width, availableHeight / height)
+  return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)), scale }
+}
+
 function defaultCanvasFactory(width, height) {
   if (typeof OffscreenCanvas === 'function') return new OffscreenCanvas(width, height)
   if (globalThis.document?.createElement) {

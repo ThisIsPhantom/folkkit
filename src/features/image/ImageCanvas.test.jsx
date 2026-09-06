@@ -47,4 +47,17 @@ describe('image canvas gestures', () => {
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(onSelect).toHaveBeenCalledTimes(selections)
   })
+
+  it('keeps the selected crop ratio during a direct pointer resize', () => {
+    const onCropDraft = vi.fn(), documentState = createImageState({ width: 600, height: 1200 })
+    const result = render(<ImageCanvas active document={documentState} source={{}} resources={new Map()} selectedId={null} onSelect={() => {}} onElementCommit={() => {}} cropDraft={{ x: 0, y: 300, width: 600, height: 600 }} cropAspect={1} onCropDraft={onCropDraft} showCrop renderPreview={async () => {}} t={key => key} />)
+    const stage = result.getByRole('application')
+    stage.getBoundingClientRect = () => ({ left: 0, top: 0, width: 600, height: 1200, right: 600, bottom: 1200 })
+    stage.setPointerCapture = vi.fn(); stage.hasPointerCapture = vi.fn(() => true); stage.releasePointerCapture = vi.fn()
+    const resize = result.getByRole('button', { name: 'studioImage.cropResize' })
+    fireEvent.pointerDown(resize, { pointerId: 1, button: 0, isPrimary: true, clientX: 600, clientY: 900 })
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 300, clientY: 900 })
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 300, clientY: 900 })
+    expect(onCropDraft).toHaveBeenCalledWith({ x: 0, y: 300, width: 300, height: 300 })
+  })
 })

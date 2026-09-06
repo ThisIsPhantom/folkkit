@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { addElement, applyCrop, createImageState, rotateState } from './imageModel.js'
-import { computePreviewSize, renderImageDocument } from './imageRenderer.js'
+import { computePreviewSize, fitPreviewDisplay, renderImageDocument } from './imageRenderer.js'
 
 function fakeCanvas() {
   const calls = []
@@ -19,6 +19,11 @@ describe('image renderer', () => {
   it('bounds previews without upscaling and retains non-square aspect', () => {
     expect(computePreviewSize(3200, 1200)).toEqual({ width: 1600, height: 600, scale: 0.5 })
     expect(computePreviewSize(640, 480)).toEqual({ width: 640, height: 480, scale: 1 })
+  })
+
+  it('fits a portrait preview in both available axes without changing its aspect ratio', () => {
+    expect(fitPreviewDisplay(600, 1200, 1000, 648)).toEqual({ width: 324, height: 648, scale: 0.54 })
+    expect(fitPreviewDisplay(64, 96, 800, 648)).toEqual({ width: 432, height: 648, scale: 6.75 })
   })
 
   it('uses one transform plan for the original background and sequential watermark decoding', async () => {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { transformedBounds } from './imageModel.js'
-import { paintImageDocument } from './imageRenderer.js'
+import { resizeCropDraft, transformedBounds } from './imageModel.js'
+import { fitPreviewDisplay, paintImageDocument } from './imageRenderer.js'
 
 function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value))
@@ -29,21 +29,32 @@ export default function ImageCanvas({
   onElementCommit,
   cropDraft,
   onCropDraft,
+  cropAspect = null,
   showCrop = false,
   renderPreview = paintImageDocument,
   t,
 }) {
-  const canvasRef = useRef(null), stageRef = useRef(null), gestureRef = useRef(null)
+  const canvasRef = useRef(null), frameRef = useRef(null), stageRef = useRef(null), gestureRef = useRef(null)
   const onSelectRef = useRef(onSelect)
   const [visual, setVisual] = useState(null)
 
   useEffect(() => { onSelectRef.current = onSelect }, [onSelect])
 
   useEffect(() => {
-    if (stageRef.current) {
-      stageRef.current.style.aspectRatio = `${imageDocument.width} / ${imageDocument.height}`
-      stageRef.current.style.setProperty('--image-preview-width', `${Math.min(1600, imageDocument.width)}px`)
+    const frame = frameRef.current, stage = stageRef.current
+    if (!frame || !stage) return undefined
+    const fit = () => {
+      const availableWidth = frame.clientWidth || imageDocument.width
+      const availableHeight = Math.max(240, Math.round((globalThis.innerHeight || imageDocument.height) * 0.72))
+      const display = fitPreviewDisplay(imageDocument.width, imageDocument.height, availableWidth, availableHeight)
+      stage.style.setProperty('--image-display-width', `${display.width}px`)
+      stage.style.setProperty('--image-display-height', `${display.height}px`)
     }
+    fit()
+    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(fit) : null
+    observer?.observe(frame)
+    globalThis.addEventListener?.('resize', fit)
+    return () => { observer?.disconnect(); globalThis.removeEventListener?.('resize', fit) }
   }, [imageDocument.width, imageDocument.height])
 
   useEffect(() => {
@@ -94,7 +105,7 @@ export default function ImageCanvas({
     if (!gesture || event.pointerId !== gesture.pointerId) return
     const point = stagePoint(event), dx = point.x - gesture.start.x, dy = point.y - gesture.start.y
     if (gesture.kind === 'crop') {
-      if (gesture.mode === 'resize') setVisual({ kind: 'crop', x: gesture.bounds.x, y: gesture.bounds.y, width: clamp(gesture.bounds.width + dx, 1, imageDocument.width - gesture.bounds.x), height: clamp(gesture.bounds.height + dy, 1, imageDocument.height - gesture.bounds.y) })
+      if (gesture.mode === 'resize') setVisual({ kind: 'crop', ...resizeCropDraft(gesture.bounds, imageDocument, cropAspect, gesture.bounds.width + dx, gesture.bounds.height + dy) })
       else setVisual({ kind: 'crop', x: clamp(gesture.bounds.x + dx, 0, imageDocument.width - gesture.bounds.width), y: clamp(gesture.bounds.y + dy, 0, imageDocument.height - gesture.bounds.height), width: gesture.bounds.width, height: gesture.bounds.height })
       return
     }
@@ -149,7 +160,7 @@ export default function ImageCanvas({
 
   const displayCrop = visual?.kind === 'crop' ? visual : cropDraft
   return (
-    <div className="image-canvas-frame">
+    <div ref={frameRef} className="image-canvas-frame">
       <div
         ref={stageRef}
         className="image-canvas-stage"

@@ -38,4 +38,11 @@ describe('image file loading', () => {
     await expect(loadImageFile(pngFile(2000, 2000, 'mark.png'), { role: 'watermark' })).resolves.toMatchObject({ width: 2000, height: 2000 })
     await expect(loadImageFile(pngFile(2001, 2000, 'mark.png'), { role: 'watermark' })).rejects.toMatchObject({ code: 'resource_limit' })
   })
+
+  it('closes a decoded watermark bitmap when its decoded dimensions fail validation', async () => {
+    const close = vi.fn()
+    vi.stubGlobal('createImageBitmap', vi.fn(async () => ({ width: 121, height: 80, close })))
+    await expect(loadImageFile(pngFile(), { role: 'watermark' })).rejects.toMatchObject({ code: 'invalid_file' })
+    expect(close).toHaveBeenCalledOnce()
+  })
 })

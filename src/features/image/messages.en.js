@@ -36,6 +36,7 @@ export default {
   textPlaceholder: 'Enter text',
   addText: 'Add text',
   addWatermark: 'Add watermark',
+  duplicateWatermark: 'Add watermark again',
   watermarkLimits: 'PNG, JPEG or WebP up to 8 MiB and 4 megapixels. All referenced watermarks together may use up to 32 MiB.',
   noElements: 'No text or watermarks yet.',
   element: 'Select {name}',

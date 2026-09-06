@@ -8,9 +8,9 @@ import ImageCanvas from './ImageCanvas.jsx'
 import { downloadImage, exportImage } from './imageClient.js'
 import { loadImageFile } from './imageFiles.js'
 import {
-  addElement, applyCrop, centreElement, commitHistory, createHistory, createImageState,
-  mirrorState, redoHistory, referencedResourceBytes, releaseUnreferencedResources,
-  removeElement, rotateState, transformedBounds, undoHistory, updateElement,
+  addElement, applyCrop, centreElement, commitHistory, commitResourceElement, createHistory, createImageState,
+  mirrorState, redoHistory, releaseUnreferencedResources, removeElement, rotateState,
+  transformedBounds, undoHistory, updateCropField, updateElement,
 } from './imageModel.js'
 import { paintImageDocument } from './imageRenderer.js'
 import './imageEditor.css'
@@ -46,35 +46,76 @@ export default function ImageEditorPage({
   const [busy, setBusy] = useState(null), [error, setError] = useState(null), [notice, setNotice] = useState(null)
   const [textDraft, setTextDraft] = useState(''), [format, setFormat] = useState('png'), [quality, setQuality] = useState(90)
   const [cropAspect, setCropAspect] = useState(null)
-  const resourcesRef = useRef(new Map()), sourceRef = useRef(null), operationRef = useRef(null), seenRequestRef = useRef(null)
+  const resourcesRef = useRef(new Map()), sourceRef = useRef(null), historyRef = useRef(null)
+  const operationRef = useRef(null), watermarkRef = useRef(null), controlGestureRef = useRef(null)
+  const seenRequestRef = useRef(null), documentGenerationRef = useRef(0)
   const imageDocument = history?.present
   const selected = imageDocument?.elements.find(element => element.id === imageDocument.selectedId) || null
 
   function clearResources() {
-    resourcesRef.current.clear(); setResources(new Map())
+    const next = new Map(); resourcesRef.current = next; setResources(next)
   }
 
   function abortOperation() {
-    operationRef.current?.abort(); operationRef.current = null
+    const operation = operationRef.current
+    if (!operation) return
+    operationRef.current = null
+    operation.controller.abort()
+    setBusy(current => current?.id === operation.id ? null : current)
+  }
+
+  function beginOperation(kind) {
+    abortOperation()
+    const operation = { id: nextId('operation'), kind, controller: new AbortController() }
+    operationRef.current = operation; setBusy({ id: operation.id, kind })
+    return operation
+  }
+
+  function finishOperation(operation) {
+    if (operationRef.current !== operation) return false
+    operationRef.current = null
+    setBusy(current => current?.id === operation.id ? null : current)
+    return true
+  }
+
+  function abortWatermark() {
+    const operation = watermarkRef.current
+    watermarkRef.current = null
+    operation?.controller.abort()
+  }
+
+  function setCurrentHistory(next) {
+    historyRef.current = next; setHistory(next)
+  }
+
+  function setCurrentResources(next) {
+    resourcesRef.current = next; setResources(next)
+  }
+
+  function invalidateDocument() {
+    documentGenerationRef.current += 1
+    abortWatermark()
   }
 
   async function acceptFile(file) {
     if (!file) return false
-    if (imageDocument?.dirty && !confirmDiscard(t('studioImage.discardConfirm'))) return false
-    abortOperation()
-    const controller = new AbortController(); operationRef.current = controller
-    setBusy('load'); setError(null); setNotice(null)
+    completeControlGesture()
+    if (historyRef.current?.present.dirty && !confirmDiscard(t('studioImage.discardConfirm'))) return false
+    invalidateDocument()
+    const operation = beginOperation('load')
+    setError(null); setNotice(null)
     try {
-      const loaded = await loadFile(file, { role: 'original', signal: controller.signal })
-      if (controller.signal.aborted || operationRef.current !== controller) { loaded.bitmap?.close?.(); return false }
+      const loaded = await loadFile(file, { role: 'original', signal: operation.controller.signal })
+      if (operation.controller.signal.aborted || operationRef.current !== operation) { loaded.bitmap?.close?.(); return false }
       sourceRef.current?.bitmap?.close?.(); sourceRef.current = loaded
-      clearResources(); setSource(loaded); setHistory(createHistory(createImageState(loaded)))
+      const nextHistory = createHistory(createImageState(loaded))
+      clearResources(); setSource(loaded); setCurrentHistory(nextHistory)
       setCropAspect(null); setTextDraft(''); return true
     } catch (caught) {
-      if (!controller.signal.aborted) setError(errorCode(caught))
+      if (!operation.controller.signal.aborted) setError(errorCode(caught))
       return false
     } finally {
-      if (operationRef.current === controller) { operationRef.current = null; setBusy(null) }
+      finishOperation(operation)
     }
   }
 
@@ -87,31 +128,81 @@ export default function ImageEditorPage({
   }, [fileRequest?.id])
 
   useEffect(() => {
-    if (!active) abortOperation()
+    if (!active) { abortOperation(); abortWatermark(); cancelControlGesture() }
+    // Cancellation reads current operation refs and must run only when activity changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active])
 
   useEffect(() => () => {
-    abortOperation(); sourceRef.current?.bitmap?.close?.(); resourcesRef.current.clear()
+    documentGenerationRef.current += 1
+    operationRef.current?.controller.abort(); watermarkRef.current?.controller.abort()
+    operationRef.current = null; watermarkRef.current = null; controlGestureRef.current = null
+    sourceRef.current?.bitmap?.close?.(); resourcesRef.current.clear()
   }, [])
 
   function replacePresent(next) {
-    setHistory(current => current ? { ...current, present: typeof next === 'function' ? next(current.present) : next } : current)
+    const current = historyRef.current
+    if (!current) return
+    setCurrentHistory({ ...current, present: typeof next === 'function' ? next(current.present) : next })
   }
 
   function commit(updater) {
+    completeControlGesture()
     setError(null); setNotice(null)
-    if (!history) return
+    const current = historyRef.current
+    if (!current) return
     try {
-      const next = commitHistory(history, updater(history.present))
-      setHistory(next)
-      setResources((current) => {
-        const retained = new Map(current)
-        releaseUnreferencedResources(next, retained)
-        resourcesRef.current = retained
-        return retained
-      })
+      const next = commitHistory(current, updater(current.present))
+      const retained = new Map(resourcesRef.current)
+      releaseUnreferencedResources(next, retained)
+      setCurrentHistory(next); setCurrentResources(retained)
     } catch (caught) { setError(errorCode(caught)) }
   }
+
+  function beginControlGesture(id, key) {
+    if (controlGestureRef.current) return
+    const current = historyRef.current
+    if (current) controlGestureRef.current = { id, key, generation: documentGenerationRef.current, base: current, changed: false }
+  }
+
+  function previewControlGesture(id, key, changes) {
+    beginControlGesture(id, key)
+    const gesture = controlGestureRef.current, current = historyRef.current
+    if (!gesture || !current || gesture.id !== id || gesture.key !== key || gesture.generation !== documentGenerationRef.current) return
+    try {
+      gesture.changed = true
+      setCurrentHistory({ ...current, present: updateElement(current.present, id, changes) })
+    } catch (caught) { setError(errorCode(caught)) }
+  }
+
+  function completeControlGesture() {
+    const gesture = controlGestureRef.current
+    if (!gesture) return
+    controlGestureRef.current = null
+    if (!gesture.changed || gesture.generation !== documentGenerationRef.current || !historyRef.current) return
+    const next = commitHistory(gesture.base, historyRef.current.present)
+    const retained = new Map(resourcesRef.current)
+    releaseUnreferencedResources(next, retained)
+    setCurrentHistory(next); setCurrentResources(retained)
+  }
+
+  function cancelControlGesture() {
+    const gesture = controlGestureRef.current
+    if (!gesture) return
+    controlGestureRef.current = null
+    if (gesture.generation === documentGenerationRef.current) setCurrentHistory(gesture.base)
+  }
+
+  useEffect(() => {
+    if (!active) return undefined
+    const escape = (event) => {
+      if (event.key === 'Escape' && controlGestureRef.current) { event.preventDefault(); cancelControlGesture() }
+    }
+    document.addEventListener('keydown', escape, true)
+    return () => document.removeEventListener('keydown', escape, true)
+    // Escape reads the current gesture ref; changing render callbacks must not replace the listener mid-gesture.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active])
 
   function setAspect(value) {
     setCropAspect(value)
@@ -122,16 +213,7 @@ export default function ImageEditorPage({
   }
 
   function cropField(key, value) {
-    const number = Math.round(Number(value))
-    replacePresent(current => {
-      if (!Number.isFinite(number)) return current
-      const draft = { ...current.cropDraft, [key]: number }
-      draft.width = Math.max(1, Math.min(draft.width, current.width - Math.max(0, draft.x)))
-      draft.height = Math.max(1, Math.min(draft.height, current.height - Math.max(0, draft.y)))
-      draft.x = Math.max(0, Math.min(draft.x, current.width - draft.width))
-      draft.y = Math.max(0, Math.min(draft.y, current.height - draft.height))
-      return { ...current, cropDraft: draft }
-    })
+    replacePresent(current => ({ ...current, cropDraft: updateCropField(current.cropDraft, current, cropAspect, key, value) }))
   }
 
   function addText() {
@@ -145,38 +227,62 @@ export default function ImageEditorPage({
   }
 
   async function addWatermark(file) {
-    if (!file || !history) return
+    if (!file || !historyRef.current) return
+    abortWatermark()
+    const operation = { controller: new AbortController(), generation: documentGenerationRef.current }
+    watermarkRef.current = operation
     setError(null); setNotice(null)
+    let loaded
     try {
-      const loaded = await loadFile(file, { role: 'watermark' })
-      loaded.bitmap?.close?.()
+      loaded = await loadFile(file, { role: 'watermark', signal: operation.controller.signal })
+      if (operation.controller.signal.aborted || watermarkRef.current !== operation || operation.generation !== documentGenerationRef.current) return
       const id = nextId('watermark'), candidate = { id, file, name: file.name, width: loaded.width, height: loaded.height }
-      referencedResourceBytes(history, resourcesRef.current, candidate)
-      const scale = Math.min(1, imageDocument.width * 0.28 / loaded.width, imageDocument.height * 0.28 / loaded.height)
+      const current = historyRef.current
+      if (!current) return
+      const currentDocument = current.present
+      const scale = Math.min(1, currentDocument.width * 0.28 / loaded.width, currentDocument.height * 0.28 / loaded.height)
       const width = Math.max(1, Math.round(loaded.width * scale)), height = Math.max(1, Math.round(loaded.height * scale))
-      const nextResources = new Map(resourcesRef.current); nextResources.set(id, candidate)
-      resourcesRef.current = nextResources; setResources(nextResources)
-      commit(current => addElement(current, { id: nextId('image'), type: 'image', resourceId: id, x: (current.width - width) / 2, y: (current.height - height) / 2, width, height, opacity: 0.75 }))
+      const result = commitResourceElement(current, resourcesRef.current, candidate, { id: nextId('image'), x: (currentDocument.width - width) / 2, y: (currentDocument.height - height) / 2, width, height, opacity: 0.75 })
+      if (watermarkRef.current !== operation || operation.generation !== documentGenerationRef.current) return
+      setCurrentHistory(result.history); setCurrentResources(result.resources)
+    } catch (caught) {
+      if (!operation.controller.signal.aborted && watermarkRef.current === operation && operation.generation === documentGenerationRef.current) setError(errorCode(caught))
+    } finally {
+      loaded?.bitmap?.close?.()
+      if (watermarkRef.current === operation) watermarkRef.current = null
+    }
+  }
+
+  function duplicateWatermark(resource) {
+    if (!resource || !historyRef.current) return
+    try {
+      const current = historyRef.current, currentDocument = current.present
+      const scale = Math.min(1, currentDocument.width * 0.28 / resource.width, currentDocument.height * 0.28 / resource.height)
+      const width = Math.max(1, Math.round(resource.width * scale)), height = Math.max(1, Math.round(resource.height * scale))
+      const result = commitResourceElement(current, resourcesRef.current, resource, { id: nextId('image'), x: (currentDocument.width - width) / 2, y: (currentDocument.height - height) / 2, width, height, opacity: 0.75 })
+      setCurrentHistory(result.history); setCurrentResources(result.resources); setError(null); setNotice(null)
     } catch (caught) { setError(errorCode(caught)) }
   }
 
   function reset() {
     if (!source) return
-    abortOperation(); clearResources(); setHistory(createHistory(createImageState(source))); setCropAspect(null); setError(null); setNotice(null)
+    invalidateDocument(); abortOperation(); clearResources(); setCurrentHistory(createHistory(createImageState(source))); setCropAspect(null); setError(null); setNotice(null)
   }
 
   async function exportCurrent() {
-    if (!source || !imageDocument || busy) return
-    abortOperation()
-    const controller = new AbortController(); operationRef.current = controller
-    setBusy('export'); setError(null); setNotice(null)
+    if (!source || !historyRef.current || busy) return
+    completeControlGesture()
+    const snapshot = historyRef.current.present
+    const operation = beginOperation('export')
+    setError(null); setNotice(null)
     try {
-      const blob = await exporter({ source: source.file, document: imageDocument, resources: resourcesRef.current, format, quality: Number(quality) / 100, signal: controller.signal })
-      if (controller.signal.aborted || operationRef.current !== controller) return
+      const blob = await exporter({ source: source.file, document: snapshot, resources: resourcesRef.current, format, quality: Number(quality) / 100, signal: operation.controller.signal })
+      if (operation.controller.signal.aborted || operationRef.current !== operation) return
       downloadImage(blob, exportName(source.file.name, format)); setNotice('exported')
-      replacePresent(current => ({ ...current, dirty: false }))
-    } catch (caught) { if (!controller.signal.aborted) setError(errorCode(caught)) }
-    finally { if (operationRef.current === controller) { operationRef.current = null; setBusy(null) } }
+      const current = historyRef.current
+      if (current?.present === snapshot) setCurrentHistory({ ...current, present: { ...snapshot, dirty: false } })
+    } catch (caught) { if (!operation.controller.signal.aborted) setError(errorCode(caught)) }
+    finally { finishOperation(operation) }
   }
 
   const fileInput = (
@@ -198,6 +304,9 @@ export default function ImageEditorPage({
   }
 
   const bounds = selected ? transformedBounds(selected) : null
+  const reusableWatermark = selected?.type === 'image'
+    ? resources.get(selected.resourceId)
+    : [...resources.values()].at(-1)
   return (
     <section className="studio-page image-editor" aria-labelledby="image-editor-title">
       <header className="image-editor-heading">
@@ -206,13 +315,13 @@ export default function ImageEditorPage({
       </header>
       <div className="image-toolbar" aria-label={t('studioImage.transform')}>
         {fileInput}<label className="image-file-label" htmlFor="image-editor-file">{t('studioImage.replace')}</label>
-        <button type="button" onClick={() => setHistory(current => undoHistory(current))} disabled={!history.past.length || Boolean(busy)}><IconArrowBackUp aria-hidden="true" />{t('studioImage.undo')}</button>
-        <button type="button" onClick={() => setHistory(current => redoHistory(current))} disabled={!history.future.length || Boolean(busy)}><IconArrowForwardUp aria-hidden="true" />{t('studioImage.redo')}</button>
+        <button type="button" onClick={() => setCurrentHistory(undoHistory(historyRef.current))} disabled={!history.past.length || Boolean(busy)}><IconArrowBackUp aria-hidden="true" />{t('studioImage.undo')}</button>
+        <button type="button" onClick={() => setCurrentHistory(redoHistory(historyRef.current))} disabled={!history.future.length || Boolean(busy)}><IconArrowForwardUp aria-hidden="true" />{t('studioImage.redo')}</button>
         <button type="button" onClick={reset} disabled={Boolean(busy)}>{t('studioImage.reset')}</button>
       </div>
       <div className="image-editor-layout">
         <section className="image-preview-panel">
-          <ImageCanvas active={active} document={imageDocument} source={source.bitmap} resources={resources} selectedId={imageDocument.selectedId} onSelect={id => replacePresent(current => ({ ...current, selectedId: id }))} onElementCommit={(id, changes) => commit(current => updateElement(current, id, changes))} cropDraft={imageDocument.cropDraft} onCropDraft={crop => replacePresent(current => ({ ...current, cropDraft: crop }))} showCrop renderPreview={renderPreview} t={t} />
+          <ImageCanvas active={active} document={imageDocument} source={source.bitmap} resources={resources} selectedId={imageDocument.selectedId} onSelect={id => replacePresent(current => ({ ...current, selectedId: id }))} onElementCommit={(id, changes) => commit(current => updateElement(current, id, changes))} cropDraft={imageDocument.cropDraft} cropAspect={cropAspect} onCropDraft={crop => replacePresent(current => ({ ...current, cropDraft: crop }))} showCrop renderPreview={renderPreview} t={t} />
         </section>
         <div className="image-inspector">
           <details open><summary><IconCrop aria-hidden="true" />{t('studioImage.crop')}</summary><div className="image-panel-body">
@@ -233,6 +342,7 @@ export default function ImageEditorPage({
             <button type="button" onClick={addText} disabled={!textDraft.trim()}><IconTypography aria-hidden="true" />{t('studioImage.addText')}</button>
             <input id="image-watermark-file" className="image-file-input" name="watermark" type="file" accept={IMAGE_ACCEPT} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; addWatermark(file) }} />
             <label className="image-file-label" htmlFor="image-watermark-file"><IconPhotoPlus aria-hidden="true" />{t('studioImage.addWatermark')}</label>
+            {reusableWatermark && <button type="button" onClick={() => duplicateWatermark(reusableWatermark)}>{t('studioImage.duplicateWatermark')}</button>}
             <p>{t('studioImage.watermarkLimits')}</p>
             <div className="image-element-list">{imageDocument.elements.length ? imageDocument.elements.map(element => {
               const name = element.type === 'text' ? t('studioImage.textElement', { text: element.text.slice(0, 36) }) : t('studioImage.imageElement', { name: resources.get(element.resourceId)?.name || '' })
@@ -240,8 +350,8 @@ export default function ImageEditorPage({
             }) : <p>{t('studioImage.noElements')}</p>}</div>
           </div></details>
           {selected && bounds && <details open><summary>{t('studioImage.properties')}</summary><div className="image-panel-body image-field-grid">
-            {selected.type === 'text' && <><label className="image-field-wide">{t('studioImage.textContent')}<textarea name="selected-text" maxLength="500" value={selected.text} onChange={event => commit(current => updateElement(current, selected.id, { text: event.target.value }))} /></label><label>{t('studioImage.fontSize')}<input name="font-size" type="number" min="6" max="512" value={selected.fontSize} onChange={event => commit(current => updateElement(current, selected.id, { fontSize: Number(event.target.value) }))} /></label><label>{t('studioImage.color')}<input name="text-color" type="color" value={selected.color} onChange={event => commit(current => updateElement(current, selected.id, { color: event.target.value }))} /></label></>}
-            <label>{t('studioImage.opacity')}<input name="opacity" type="range" min="0" max="100" value={Math.round(selected.opacity * 100)} onChange={event => commit(current => updateElement(current, selected.id, { opacity: Number(event.target.value) / 100 }))} /></label>
+            {selected.type === 'text' && <><label className="image-field-wide">{t('studioImage.textContent')}<textarea name="selected-text" maxLength="500" value={selected.text} onChange={event => commit(current => updateElement(current, selected.id, { text: event.target.value }))} /></label><label>{t('studioImage.fontSize')}<input name="font-size" type="number" min="6" max="512" value={selected.fontSize} onChange={event => commit(current => updateElement(current, selected.id, { fontSize: Number(event.target.value) }))} /></label><label>{t('studioImage.color')}<input name="text-color" type="color" value={selected.color} onFocus={() => beginControlGesture(selected.id, 'color')} onChange={event => previewControlGesture(selected.id, 'color', { color: event.target.value })} onBlur={completeControlGesture} onKeyDown={event => { if (event.key === 'Escape') cancelControlGesture(); else beginControlGesture(selected.id, 'color') }} /></label></>}
+            <label>{t('studioImage.opacity')}<input name="opacity" type="range" min="0" max="100" value={Math.round(selected.opacity * 100)} onPointerDown={() => beginControlGesture(selected.id, 'opacity')} onChange={event => previewControlGesture(selected.id, 'opacity', { opacity: Number(event.target.value) / 100 })} onPointerUp={completeControlGesture} onPointerCancel={cancelControlGesture} onKeyDown={event => { if (event.key === 'Escape') cancelControlGesture(); else beginControlGesture(selected.id, 'opacity') }} onKeyUp={completeControlGesture} onBlur={completeControlGesture} /></label>
             {[['x', 'x'], ['y', 'y'], ['width', 'width'], ['height', 'height']].map(([key, label]) => <label key={key}>{t(`studioImage.${label}`)}<input name={`element-${key}`} type="number" min={key === 'width' || key === 'height' ? 1 : undefined} value={Math.round(bounds[key])} onChange={event => commit(current => updateElement(current, selected.id, { [key]: Number(event.target.value) }))} /></label>)}
             <button type="button" onClick={() => commit(current => centreElement(current, selected.id))}>{t('studioImage.centre')}</button>
             <button type="button" className="image-danger" onClick={() => commit(current => removeElement(current, selected.id))}><IconTrash aria-hidden="true" />{t('studioImage.remove')}</button>
@@ -253,7 +363,7 @@ export default function ImageEditorPage({
           </section>
         </div>
       </div>
-      {busy && <div className="image-busy" role="status"><span>{t(busy === 'load' ? 'studioImage.working' : 'studioImage.exporting')}</span><button type="button" onClick={abortOperation}>{t('studioImage.cancel')}</button></div>}
+      {busy && <div className="image-busy" role="status"><span>{t(busy.kind === 'load' ? 'studioImage.working' : 'studioImage.exporting')}</span><button type="button" onClick={abortOperation}>{t('studioImage.cancel')}</button></div>}
       {error && <p role="alert" className="image-message">{t(`studioImage.errors.${error}`)}</p>}
       {notice && <p role="status" className="image-message">{t(`studioImage.${notice}`)}</p>}
     </section>

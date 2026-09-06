@@ -41,7 +41,7 @@ export async function loadImageFile(file, { role = 'original', signal, bitmapFac
     }
     return { ...descriptor, bitmap }
   } catch (error) {
-    if (bitmap && role !== 'watermark') bitmap.close?.()
+    if (bitmap) bitmap.close?.()
     if (error?.code) throw error
     throw imageError('invalid_file')
   }
