@@ -33,6 +33,7 @@ export default Object.freeze({
     emailSubject: 'Subject',
     message: 'Message',
     fieldErrors: Object.freeze({
+      single_line: 'Line breaks, tabs and control characters are not supported here.',
       required: 'This field is required.',
       http_url: 'Enter a complete HTTP or HTTPS address.',
       email: 'Enter a valid email address.',

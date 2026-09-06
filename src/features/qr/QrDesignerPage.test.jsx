@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { I18nContext } from '../../i18n/context.js'
 import { translate } from '../../i18n/index.js'
@@ -328,4 +328,49 @@ describe('QR designer page', () => {
     expect(crop).toHaveAttribute('data-dragging', 'false')
     expect(screen.getByRole('button', { name: 'Zentrieren' })).toBeDisabled()
   })
+})
+
+it.each(['resolve','reject'])('late copy %s cannot change a new scan phase', async outcome => {
+  let settleCopy
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:vi.fn(() => new Promise((resolve,reject) => { settleCopy = outcome === 'resolve' ? resolve : reject }))}})
+  const next = deferred()
+  renderReader({ readQr:vi.fn().mockResolvedValueOnce('first payload').mockReturnValueOnce(next.promise) })
+  const input = document.querySelector('#qr-reader-file')
+  fireEvent.change(input,{target:{files:[validPngFile()]}})
+  await screen.findByText('first payload')
+  fireEvent.click(document.querySelector('.qr-reader-actions button'))
+  fireEvent.change(input,{target:{files:[validPngFile()]}})
+  await waitFor(() => expect(input).toBeDisabled())
+  await act(async () => settleCopy(outcome === 'reject' ? new Error('denied') : undefined))
+  expect(input).toBeDisabled()
+  expect(document.querySelector('.qr-reader-progress')).not.toBeNull()
+  expect(document.querySelector('.qr-error')).toBeNull()
+  next.resolve('second payload')
+  await screen.findByText('second payload')
+})
+
+it.each(['resolve','reject'].flatMap(outcome => ['reset','mode'].map(action => [outcome,action])))('late copy %s after %s is ignored', async (outcome,action) => {
+  let settleCopy
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:vi.fn(() => new Promise((resolve,reject) => { settleCopy = outcome === 'resolve' ? resolve : reject }))}})
+  renderReader({readQr:async () => 'first payload'})
+  fireEvent.change(document.querySelector('#qr-reader-file'),{target:{files:[validPngFile()]}})
+  await screen.findByText('first payload')
+  fireEvent.click(screen.getByRole('button',{name:'Inhalt kopieren'}))
+  fireEvent.click(screen.getByRole('button',{name:action === 'reset' ? 'Anderes Bild wählen' : 'Erstellen'}))
+  await act(async () => settleCopy(outcome === 'reject' ? new Error('denied') : undefined))
+  if (action === 'mode') fireEvent.click(screen.getByRole('button',{name:'Lesen'}))
+  expect(screen.queryByText('Inhalt kopiert.')).not.toBeInTheDocument()
+  expect(document.querySelector('.qr-error')).toBeNull()
+  expect(document.querySelector('#qr-reader-file')).toBeEnabled()
+  expect(navigator.clipboard.writeText).toHaveBeenCalledExactlyOnceWith('first payload')
+})
+it('can copy a preserved result after leaving and returning to reader mode', async () => {
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:vi.fn(async () => {})}})
+  renderReader({readQr:async () => 'preserved result'})
+  fireEvent.change(document.querySelector('#qr-reader-file'),{target:{files:[validPngFile()]}})
+  await screen.findByText('preserved result')
+  fireEvent.click(screen.getByRole('button',{name:'Erstellen'}))
+  fireEvent.click(screen.getByRole('button',{name:'Lesen'}))
+  fireEvent.click(screen.getByRole('button',{name:'Inhalt kopieren'}))
+  await screen.findByText('Inhalt kopiert.')
 })

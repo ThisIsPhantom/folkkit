@@ -1,4 +1,5 @@
 import { inspectLogoHeader } from './qrModel.js'
+import { readJpegOrientation } from '../convert/jpegOrientation.js'
 
 export const MAX_QR_IMAGE_BYTES = 12 * 1024 * 1024
 export const MAX_QR_IMAGE_DIMENSION = 4096
@@ -40,7 +41,8 @@ export async function validateQrImageFile(file) {
     || header.height > MAX_QR_IMAGE_DIMENSION
     || header.width * header.height > MAX_QR_IMAGE_PIXELS
   ) throw readerError('too_large')
-  return Object.freeze({ ...header, file })
+  const transposed = header.kind === 'jpeg' && readJpegOrientation(new Uint8Array(headerBuffer)) >= 5
+  return Object.freeze({ ...header, width: transposed ? header.height : header.width, height: transposed ? header.width : header.height, file })
 }
 
 function canvasPixels(source, width, height, createCanvas) {
@@ -53,27 +55,33 @@ function canvasPixels(source, width, height, createCanvas) {
   return context.getImageData(0, 0, width, height)
 }
 
-function decodeWithImage(file, header, { createCanvas, createUrl, revokeUrl, ImageClass }) {
+function decodeWithImage(file, header, { createCanvas, createUrl, revokeUrl, ImageClass, signal }) {
   return new Promise((resolve, reject) => {
-    const url = createUrl(file)
+    if (signal?.aborted) { reject(readerError('cancelled')); return }
     const image = new ImageClass()
-    const finish = () => revokeUrl(url)
+    const url = createUrl(file)
+    let settled = false
+    const finish = (callback, value) => {
+      if (settled) return
+      settled = true
+      image.onload = null; image.onerror = null
+      signal?.removeEventListener('abort', cancel)
+      image.removeAttribute?.('src')
+      revokeUrl(url)
+      callback(value)
+    }
+    const cancel = () => finish(reject, readerError('cancelled'))
     image.onload = () => {
+      if (settled || signal?.aborted) return
       try {
         if (image.naturalWidth !== header.width || image.naturalHeight !== header.height) throw readerError('invalid_file')
-        resolve(canvasPixels(image, header.width, header.height, createCanvas))
-      } catch (error) {
-        reject(error)
-      } finally {
-        image.removeAttribute?.('src')
-        finish()
-      }
+        finish(resolve, canvasPixels(image, header.width, header.height, createCanvas))
+      } catch (error) { finish(reject, error) }
     }
-    image.onerror = () => {
-      finish()
-      reject(readerError('invalid_file'))
-    }
-    image.src = url
+    image.onerror = () => finish(reject, readerError('invalid_file'))
+    signal?.addEventListener('abort', cancel, { once: true })
+    if (signal?.aborted) cancel()
+    else image.src = url
   })
 }
 
@@ -83,21 +91,25 @@ export async function decodeQrImageOnMainThread(file, header, {
   createUrl = value => URL.createObjectURL(value),
   revokeUrl = value => URL.revokeObjectURL(value),
   ImageClass = globalThis.Image,
+  signal,
 } = {}) {
+  if (signal?.aborted) throw readerError('cancelled')
   if (typeof createBitmap === 'function') {
     let bitmap
     try {
       bitmap = await createBitmap(file)
+      if (signal?.aborted) throw readerError('cancelled')
       if (bitmap.width !== header.width || bitmap.height !== header.height) throw readerError('invalid_file')
       return canvasPixels(bitmap, header.width, header.height, createCanvas)
     } catch (error) {
+      if (signal?.aborted) throw readerError('cancelled')
       if (!ImageClass) throw error?.code ? error : readerError('invalid_file')
     } finally {
       bitmap?.close?.()
     }
   }
   if (!ImageClass || typeof createUrl !== 'function' || typeof revokeUrl !== 'function') throw readerError('unsupported_browser')
-  return decodeWithImage(file, header, { createCanvas, createUrl, revokeUrl, ImageClass })
+  return decodeWithImage(file, header, { createCanvas, createUrl, revokeUrl, ImageClass, signal })
 }
 
 export function safeHttpUrl(value) {
@@ -122,9 +134,12 @@ export function createQrReader({
       if (signal?.aborted) throw readerError('cancelled')
       const worker = createWorker()
       return new Promise((resolve, reject) => {
+        const fallbackController = new AbortController()
+        let fallbackStarted = false
         let settled = false
         const cleanup = () => {
           clearTimeout(timer)
+          fallbackController.abort()
           signal?.removeEventListener('abort', cancel)
           worker.removeEventListener('message', receive)
           worker.removeEventListener('error', failWorker)
@@ -148,10 +163,11 @@ export function createQrReader({
             settle(reject, readerError(data.code || 'decode_failed'))
             return
           }
-          if (data?.type !== 'fallback') return
+          if (data?.type !== 'fallback' || fallbackStarted) return
+          fallbackStarted = true
           onProgress?.('decoding')
           try {
-            const pixels = await decodeFallback(file, header)
+            const pixels = await decodeFallback(file, header, { signal: fallbackController.signal })
             if (settled || signal?.aborted) return
             worker.postMessage({
               type: 'decode-pixels',

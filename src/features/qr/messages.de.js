@@ -33,6 +33,7 @@ export default Object.freeze({
     emailSubject: 'Betreff',
     message: 'Nachricht',
     fieldErrors: Object.freeze({
+      single_line: 'Zeilenumbrüche, Tabulatoren und Steuerzeichen sind hier nicht unterstützt.',
       required: 'Dieses Feld ist erforderlich.',
       http_url: 'Gib eine vollständige HTTP- oder HTTPS-Adresse ein.',
       email: 'Gib eine gültige E-Mail-Adresse ein.',

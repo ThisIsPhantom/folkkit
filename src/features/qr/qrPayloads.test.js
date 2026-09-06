@@ -89,6 +89,13 @@ describe('structured QR payloads', () => {
       wifiName: 'Home\u0000Net',
       wifiEncryption: 'nopass',
       wifiPassword: 'ignored',
-    }).data).toBe('WIFI:T:nopass;S:HomeNet;;')
+    })).toEqual({ data: '', fieldErrors: { wifiName: 'single_line' } })
   })
+})
+
+it('preserves exact Wi-Fi credentials including edge spaces', () => {
+  expect(buildQrPayload('wifi', { wifiName: ' Guest ', wifiPassword: ' password ', wifiEncryption: 'WPA' })).toEqual({ data: 'WIFI:T:WPA;S: Guest ;P: password ;;', fieldErrors: {} })
+})
+it('rejects unsupported Wi-Fi control characters instead of changing credentials', () => {
+  expect(buildQrPayload('wifi', { wifiName: 'Home\u0000Net', wifiPassword: 'a\tb', wifiEncryption: 'WPA' })).toEqual({ data: '', fieldErrors: { wifiName: 'single_line', wifiPassword: 'single_line' } })
 })

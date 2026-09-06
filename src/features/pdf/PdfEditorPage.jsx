@@ -18,6 +18,7 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
   const opening = useRef(null)
   const original = useRef(null)
   const checkpoint = useRef(null)
+  const revisionViews = useRef(new Map())
   const generation = useRef(0)
   const mounted = useRef(true)
   const activeOperation = useRef('')
@@ -107,10 +108,18 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
       if (!isCurrent(id)) { next.dispose(); return }
       client.current?.dispose(); client.current = next; opening.current = null
       checkpoint.current = saved
+      revisionViews.current.clear()
       original.current = bytes
       clearSelection(); setSelectedPages([0]); setPageIndex(0); setDocumentState(state); setVersion(value => value + 1)
     } catch (reason) { next?.dispose(); if (isCurrent(id)) setError(errorCode(reason)) }
     finally { if (isCurrent(id)) { opening.current = null; setBusy(false); activeOperation.current = '' } }
+  }
+  function rememberView() {
+    if (checkpoint.current) revisionViews.current.set(checkpoint.current.revision, { pageIndex, selectedPages: [...selectedPages] })
+  }
+  function pruneViews(saved) {
+    const revisions = new Set([saved.revision, ...saved.history.map(item => item.revision), ...saved.future.map(item => item.revision)])
+    for (const revision of revisionViews.current.keys()) if (!revisions.has(revision)) revisionViews.current.delete(revision)
   }
   async function change(method, ...args) {
     if (!client.current || busy) return
@@ -121,6 +130,7 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
       const next = method === 'undo' || method === 'redo' ? await worker[method]() : await worker.change(method, ...args)
       const saved = await worker.checkpoint()
       if (!isCurrent(id)) return
+      rememberView()
       checkpoint.current = saved
       clearSelection(); setDocumentState(next)
       const mapIndex = index => {
@@ -129,8 +139,12 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
         if (method === 'pageAction' && ['blank', 'duplicate'].includes(args[0])) return index >= args[1] + (args[0] === 'duplicate' ? 1 : 0) ? index + 1 : index
         return index
       }
-      setPageIndex(index => Math.max(0, Math.min(mapIndex(index), next.pages.length - 1)))
-      setSelectedPages(indices => normalisePages(indices.map(mapIndex), next.pages.length))
+      const historicalView = method === 'undo' || method === 'redo' ? revisionViews.current.get(saved.revision) : null
+      const nextPage = historicalView ? historicalView.pageIndex : mapIndex(pageIndex)
+      const nextSelection = historicalView ? historicalView.selectedPages : selectedPages.map(mapIndex)
+      setPageIndex(Math.max(0, Math.min(nextPage, next.pages.length - 1)))
+      setSelectedPages(normalisePages(nextSelection, next.pages.length))
+      pruneViews(saved)
       setVersion(value => value + 1)
     } catch (reason) { if (isCurrent(id)) setError(errorCode(reason)) }
     finally { if (isCurrent(id)) { setBusy(false); activeOperation.current = '' } }
@@ -154,6 +168,7 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
   function closeDocument() {
     if (dirty && !window.confirm(t('discard'))) return
     generation.current++; client.current?.dispose(); client.current = null; original.current = null; checkpoint.current = null
+    revisionViews.current.clear()
     clearSelection(); setDocumentState(null); setError('')
   }
   async function exportPdf(extract = false) {
@@ -206,7 +221,9 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
       const next = await client.current.change('addImage', pageIndex, { ...image, x: position.x, y: position.y, displayWidth: position.width, displayHeight: position.width * image.height / image.width })
       const saved = await client.current.checkpoint()
       if (!isCurrent(id)) return
+      rememberView()
       checkpoint.current = saved
+      pruneViews(saved)
       clearSelection(); setDocumentState(next); setVersion(value => value + 1)
     } catch (reason) { if (isCurrent(id)) setError(errorCode(reason)) }
     finally { if (isCurrent(id)) { setBusy(false); activeOperation.current = '' } }
@@ -221,7 +238,9 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
       const next = await client.current.change('merge', bytes)
       const saved = await client.current.checkpoint()
       if (!isCurrent(id)) return
+      rememberView()
       checkpoint.current = saved
+      pruneViews(saved)
       clearSelection(); setDocumentState(next); setVersion(value => value + 1)
     } catch (reason) { if (isCurrent(id)) setError(errorCode(reason)) }
     finally { if (isCurrent(id)) { setBusy(false); activeOperation.current = '' } }

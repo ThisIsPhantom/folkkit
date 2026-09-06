@@ -43,3 +43,8 @@ it('reads VP8X dimensions before expensive bitmap decoding and rejects huge imag
   expect(imageDimensions(bytes)).toEqual({ width: 100, height: 50 })
   expect(() => validateDimensions({ width: 100000, height: 1 })).toThrow('resource_limit')
 })
+
+it('caps optimization before validating the actual pixels', () => {
+  for (const settings of [{width:8192}, {height:8192}, {width:8192,height:8192}]) expect(imageOperations.resolveOptimizedImageSize({width:100,height:100},settings)).toEqual({width:100,height:100})
+  for (const value of [0,-1,1.5,8193,Infinity,'bad']) expect(() => imageOperations.resolveOptimizedImageSize({width:100,height:100},{width:value})).toThrow('resource_limit')
+})

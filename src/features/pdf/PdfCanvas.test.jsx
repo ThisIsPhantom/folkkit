@@ -44,3 +44,14 @@ test('object accessible name includes a short text start and double click reques
   expect(onEdit).toHaveBeenCalledTimes(1)
   expect(screen.getAllByRole('button', { name: /resize/ })).toHaveLength(4)
 })
+
+test('Escape from an outside focused input cancels a gesture and releases capture', () => {
+  const { svg, target, pointer, onTransform } = setup()
+  const input = document.createElement('input'); document.body.append(input); input.focus()
+  pointer(target, 'pointerdown', 60, 120); pointer(svg, 'pointermove', 90, 140)
+  fireEvent.keyDown(input, {key:'Escape'})
+  expect(svg.releasePointerCapture).toHaveBeenCalledWith(1)
+  pointer(svg, 'pointerup', 90, 140)
+  expect(onTransform).not.toHaveBeenCalled()
+  input.remove()
+})

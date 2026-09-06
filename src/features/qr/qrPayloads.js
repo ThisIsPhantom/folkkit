@@ -32,7 +32,7 @@ function mailRecipient(value) {
 }
 
 function wifiEscape(value) {
-  return singleLine(value).replace(/[\\;,:"]/g, character => `\\${character}`)
+  return value.replace(/[\\;,:"]/g, character => `\\${character}`)
 }
 
 function vcardEscape(value) {
@@ -66,11 +66,14 @@ export function buildQrPayload(contentType, fields = {}) {
   }
 
   if (type === 'wifi') {
-    const name = singleLine(fields.wifiName)
+    const name = String(fields.wifiName ?? '')
     const encryption = WIFI_ENCRYPTION.has(fields.wifiEncryption) ? fields.wifiEncryption : 'WPA'
-    const password = singleLine(fields.wifiPassword)
+    const password = String(fields.wifiPassword ?? '')
     const fieldErrors = {}
     if (!name) fieldErrors.wifiName = 'required'
+    const hasControl = value => Array.from(value).some(character => character.codePointAt(0) < 32 || character.codePointAt(0) === 127)
+    if (hasControl(name)) fieldErrors.wifiName = 'single_line'
+    if (encryption !== 'nopass' && hasControl(password)) fieldErrors.wifiPassword = 'single_line'
     if (encryption !== 'nopass' && !password) fieldErrors.wifiPassword = 'required'
     if (Object.keys(fieldErrors).length) return result('', fieldErrors)
     const parts = [`T:${encryption}`, `S:${wifiEscape(name)}`]

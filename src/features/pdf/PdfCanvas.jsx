@@ -9,7 +9,7 @@ export default function PdfCanvas({ frame, page, objects, selected, onSelect, on
     if (!frame || !canvas.current) return
     canvas.current.getContext('2d').putImageData(new ImageData(frame.pixels, frame.width, frame.height), 0, 0)
   }, [frame])
-  useEffect(() => () => { gesture.current = null }, [])
+  useEffect(() => () => { gesture.current?.cleanup(); gesture.current = null }, [])
   function point(event, clamp = false) {
     const bounds = overlay.current.getBoundingClientRect()
     const point = [(event.clientX - bounds.left) / bounds.width * page.width, (event.clientY - bounds.top) / bounds.height * page.height]
@@ -17,8 +17,7 @@ export default function PdfCanvas({ frame, page, objects, selected, onSelect, on
   }
   function clear() {
     const active = gesture.current
-    gesture.current = null; setTrail([]); setPreview(null)
-    if (active && overlay.current?.hasPointerCapture(active.pointerId)) overlay.current.releasePointerCapture(active.pointerId)
+    gesture.current = null; active?.cleanup(); setTrail([]); setPreview(null)
     return active
   }
   function start(event, item, corner) {
@@ -34,7 +33,14 @@ export default function PdfCanvas({ frame, page, objects, selected, onSelect, on
       const bounds = viewBounds(item.bounds, page)
       if (corner) anchor = [bounds.x + (corner.includes('w') ? bounds.width : 0), bounds.y + (corner.includes('n') ? bounds.height : 0)]
     }
-    gesture.current = { pointerId: event.pointerId, mode, item, start, anchor, points: [start], page, tool }
+    const element = overlay.current
+    const escape = event => { if (event.key === 'Escape' && gesture.current) { event.preventDefault(); clear() } }
+    const cleanup = () => {
+      document.removeEventListener('keydown', escape, true)
+      if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId)
+    }
+    gesture.current = { pointerId: event.pointerId, mode, item, start, anchor, points: [start], page, tool, cleanup }
+    document.addEventListener('keydown', escape, true)
     overlay.current.setPointerCapture(event.pointerId)
     if (mode === 'draw') setTrail([start])
   }

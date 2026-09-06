@@ -305,6 +305,7 @@ export default function QrDesignerPage({
   const previewRef = useRef(null)
   const exportGenerationRef = useRef(0)
   const mountedRef = useRef(false)
+  const [readerCopy, setReaderCopy] = useState(null)
   const [readerState, setReaderState] = useState({ status: 'idle', value: '', error: null, generation: 0, signal: null })
   const readerAbortRef = useRef(null)
   const readerGenerationRef = useRef(0)
@@ -441,6 +442,7 @@ export default function QrDesignerPage({
   }
 
   const cancelRead = (clear = false) => {
+    setReaderCopy(null)
     const generation = ++readerGenerationRef.current
     readerAbortRef.current?.abort()
     readerAbortRef.current = null
@@ -486,11 +488,17 @@ export default function QrDesignerPage({
   }
 
   const copyReaderResult = async () => {
+    const generation = readerGenerationRef.current
+    const value = readerState.value
+    if (!value || readerState.status !== 'success') return
+    const feedback = status => {
+      if (mountedRef.current && generation === readerGenerationRef.current) setReaderCopy({ generation: readerState.generation, value, status })
+    }
     try {
-      await navigator.clipboard.writeText(readerState.value)
-      setReaderState(current => ({ ...current, status: 'copied' }))
+      await navigator.clipboard.writeText(value)
+      feedback('copied')
     } catch {
-      setReaderState(current => ({ ...current, error: 'copy_failed' }))
+      feedback('copy_failed')
     }
   }
 
@@ -677,6 +685,7 @@ export default function QrDesignerPage({
   }
 
   const invalidMessage = analysis.reason === 'capacity' ? t('studioQr.capacityError') : null
+  const currentReaderCopy = readerCopy?.generation === readerState.generation && readerCopy?.value === readerState.value ? readerCopy.status : null
   const readerLink = readerState.value ? safeHttpUrl(readerState.value) : null
   const readerIsRunning = readerState.status === 'reading' && !readerState.signal?.aborted
 
@@ -722,7 +731,8 @@ export default function QrDesignerPage({
                 {readerLink && <a className="qr-button qr-button-secondary" href={readerLink} target="_blank" rel="noreferrer">{t('studioQr.readerOpenLink')}</a>}
                 <button type="button" className="qr-button qr-button-ghost" onClick={() => cancelRead(true)}>{t('studioQr.readerReset')}</button>
               </div>
-              {readerState.status === 'copied' && <p className="qr-preview-status" role="status">{t('studioQr.readerCopied')}</p>}
+              {currentReaderCopy === 'copy_failed' && <p className="qr-error" role="alert">{t('studioQr.readerErrors.copy_failed')}</p>}
+              {currentReaderCopy === 'copied' && <p className="qr-preview-status" role="status">{t('studioQr.readerCopied')}</p>}
             </div>
           )}
         </section>
