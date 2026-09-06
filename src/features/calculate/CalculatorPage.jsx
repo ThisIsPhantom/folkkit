@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IconArrowsExchange, IconArrowsRightLeft, IconCircle, IconCube, IconPercentage, IconRulerMeasure, IconSquare, IconTriangle, IconAspectRatio, IconCreditCard, IconScale, IconCalendar, IconClock, IconCopy, IconCheck } from '@tabler/icons-react'
 import { useI18n } from '../../i18n/index.js'
 import { CALCULATOR_IDS, DEFAULT_OPTIONS, UNIT_CATEGORIES, calculate, calculatorFields, formatResult } from './calculatorModel.js'
@@ -58,10 +58,16 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
   const t = (key, vars) => translate(`studioCalculate.${key}`, vars)
   const [selection, setSelection] = useState(() => normalizeCalculator(initialCalculator))
   const [forms, setForms] = useState({})
-  const [copied, setCopied] = useState(null)
   // With routing supplied by the shell, query and history changes select the form
   // directly. Values remain in component state while visiting another calculator.
   const active = onSelectCalculator ? normalizeCalculator(initialCalculator) : selection
+  const [copyState, setCopyState] = useState(() => ({ calculatorId: active, feedback: null }))
+  const copyRevisionRef = useRef(0)
+  useEffect(() => () => {
+    copyRevisionRef.current += 1
+  }, [active])
+  const copied = copyState.calculatorId === active ? copyState.feedback : null
+  if (copyState.calculatorId !== active) setCopyState({ calculatorId: active, feedback: null })
   const current = forms[active] || {}
   const values = current.values || {}
   const options = { ...DEFAULT_OPTIONS[active], ...current.options }
@@ -69,10 +75,18 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
   const fields = calculatorFields(active, options)
   const geometry = ['pythagoras', 'circle', 'area', 'volume'].includes(active)
   const hint = hintFor(active, options)
-  const update = patch => setForms(previous => ({ ...previous, [active]: { ...previous[active], ...patch } }))
+  const invalidateCopyFeedback = () => {
+    copyRevisionRef.current += 1
+    setCopyState({ calculatorId: active, feedback: null })
+  }
+  const update = patch => {
+    invalidateCopyFeedback()
+    setForms(previous => ({ ...previous, [active]: { ...previous[active], ...patch } }))
+  }
   const setOption = (key, value) => update({ options: { ...options, [key]: value } })
   const setValue = (field, value) => update({ values: { ...values, [field]: value } })
   const selectCalculator = id => {
+    invalidateCopyFeedback()
     setSelection(id)
     onSelectCalculator?.(id)
   }
@@ -86,16 +100,18 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
   }
   const unitEntries = active === 'units' ? UNIT_CATEGORIES[options.category].map(item => [item.id, `${item.symbol} · ${t(`unitNames.${options.category}.${item.id}`)}`]) : []
   const resultValue = item => typeof item.value === 'string' ? item.value : item.key === 'ratio' ? `${calculation.ratio.width}:${calculation.ratio.height}` : ['loan', 'bmi'].includes(active) ? formatAmount(item.value, locale) : formatResult(item.value, locale)
-  const copyKey = item => `${active}:${item.key}:${resultValue(item)}`
   const copyResult = async item => {
-    const key = copyKey(item)
+    const revision = copyRevisionRef.current + 1
+    copyRevisionRef.current = revision
+    setCopyState({ calculatorId: active, feedback: null })
     try {
       await navigator.clipboard.writeText(resultValue(item))
-      setCopied({ key, status: 'copied' })
+      if (copyRevisionRef.current === revision) setCopyState({ calculatorId: active, feedback: { resultKey: item.key, revision, status: 'copied' } })
     } catch {
-      setCopied({ key, status: 'copyError' })
+      if (copyRevisionRef.current === revision) setCopyState({ calculatorId: active, feedback: { resultKey: item.key, revision, status: 'copyError' } })
     }
   }
+  const copyStatus = item => copied?.resultKey === item.key ? copied.status : 'copy'
   const hasValues = active === 'duration' ? values.rows?.some(row => ['hours', 'minutes', 'seconds'].some(field => row[field])) : Object.values(values).some(Boolean)
 
   return (
@@ -148,7 +164,7 @@ export default function CalculatorPage({ initialCalculator = 'percent', onSelect
             </form>
             <section className="calc-result" aria-label={t('resultHeading')}>
               <div className="calc-result-live" role="status" aria-live="polite" aria-atomic="true">
-                {calculation.status === 'ready' ? <dl>{calculation.ratio && options.mode === 'resize' && <div className="calc-result-item"><dt>{t('results.ratio')}</dt><dd>{calculation.ratio.width}:{calculation.ratio.height}</dd></div>}{calculation.results.map(item => <div className="calc-result-item" key={item.key}><dt>{t(`results.${item.key}`)}</dt><dd data-testid={`result-${item.key}`}>{resultValue(item)}{item.symbol && <span className="calc-result-unit"> {item.symbol === '²' ? t('unitSquared') : item.symbol === '³' ? t('unitCubed') : item.symbol}</span>}</dd><dd className="calc-result-action"><button type="button" className="calc-copy" aria-label={t('copyResult', { name: t(`results.${item.key}`) })} onClick={() => copyResult(item)}>{copied?.key === copyKey(item) && copied.status === 'copied' ? <IconCheck size={16} aria-hidden="true" /> : <IconCopy size={16} aria-hidden="true" />}{t(copied?.key === copyKey(item) ? copied.status : 'copy')}</button></dd></div>)}</dl> : calculation.status === 'invalid' ? <p className="calc-result-error">{t(`errors.${calculation.error.code}`)}</p> : <div className="calc-empty"><span aria-hidden="true">=</span><strong>{t('empty')}</strong><p>{t('emptyHint')}</p></div>}
+                {calculation.status === 'ready' ? <dl>{calculation.ratio && options.mode === 'resize' && <div className="calc-result-item"><dt>{t('results.ratio')}</dt><dd>{calculation.ratio.width}:{calculation.ratio.height}</dd></div>}{calculation.results.map(item => <div className="calc-result-item" key={item.key}><dt>{t(`results.${item.key}`)}</dt><dd data-testid={`result-${item.key}`}>{resultValue(item)}{item.symbol && <span className="calc-result-unit"> {item.symbol === '²' ? t('unitSquared') : item.symbol === '³' ? t('unitCubed') : item.symbol}</span>}</dd><dd className="calc-result-action"><button type="button" className="calc-copy" aria-label={t('copyResult', { name: t(`results.${item.key}`) })} onClick={() => copyResult(item)}>{copyStatus(item) === 'copied' ? <IconCheck size={16} aria-hidden="true" /> : <IconCopy size={16} aria-hidden="true" />}{t(copyStatus(item))}</button></dd></div>)}</dl> : calculation.status === 'invalid' ? <p className="calc-result-error">{t(`errors.${calculation.error.code}`)}</p> : <div className="calc-empty"><span aria-hidden="true">=</span><strong>{t('empty')}</strong><p>{t('emptyHint')}</p></div>}
               </div>
               <details className="calc-formula" key={active}><summary>{t('formula')}</summary><p>{formulaFor(active, options, t)}</p></details>
               {calculation.status === 'ready' && !calculation.ratio && !['date', 'duration'].includes(active) && <p className="calc-precision">{t(['loan', 'bmi'].includes(active) ? 'roundedPrecision' : 'precision')}</p>}

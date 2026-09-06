@@ -7,7 +7,7 @@ Freigabe: «umsetzen, kein figma». Grundlage ist die unmittelbar zuvor gezeigte
 - React, Vite und plain CSS; bestehende helle Studio-Gestaltung, Dunkelmodus, Deutsch/Englisch und AGPL beibehalten.
 - Dateien und persönliche Inhalte bleiben im Browser. Keine externen Laufzeitdienste, CDNs, Telemetrie oder automatische dauerhafte Inhaltsablage.
 - Inhalte der laufenden QR-, Rechner- und Konverter-Sitzung bleiben bei interner Navigation im Arbeitsspeicher erhalten. Zurücksetzen/Dateien entfernen und Tab-Schliessen geben sie frei. PDF behält seinen bestehenden Schutz ungespeicherter Änderungen.
-- Alle bisherigen Formatpaare, Grenzen und sicheren Exportregeln bleiben erhalten. PDF verwendet ausschliesslich die vorhandene PDFium-Engine.
+- Alle bisherigen Formatpaare sowie die vorhandenen Grenzen und sicheren Exportregeln der Ziel-Arbeitsbereiche bleiben erhalten. Migrierte Altrouten verwenden die bereits bestehenden Grenzen ihres Zielstudios; abweichende Grenzen der bisherigen generischen Oberfläche werden nicht zusätzlich weitergeführt. PDF verwendet ausschliesslich die vorhandene PDFium-Engine.
 - Produktive Abhängigkeiten und zentrale Übersetzungsimporte, Navigation und PWA werden nur durch Root geändert. Keine unnötigen neuen Abhängigkeiten.
 - Implementer bearbeiten nur ihre zugewiesenen Dateien. Root koordiniert Git-Operationen, Gesamtprüfung und Veröffentlichung. Jede Teilaufgabe erhält eine unabhängige Prüfung.
 - OCR und PDF-Komprimierung sind spätere Ausbaustufen. Diese Umsetzung umfasst die vier im Schlussvorschlag genannten Erweiterungen: QR-Inhaltstypen/Lesen, Bildoptimierung, PDF-Seitenübersicht und Datum/Zeit.

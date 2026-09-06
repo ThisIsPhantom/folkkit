@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { I18nContext } from '../../i18n/context.js'
 import { translate } from '../../i18n/index.js'
@@ -9,6 +9,16 @@ import messagesEn from './messages.en.js'
 function renderPage(props = {}, locale = 'de') {
   const messages = { studioCalculate: locale === 'de' ? messagesDe : messagesEn }
   return render(<I18nContext.Provider value={{ locale, t: (key, vars) => translate(messages, key, vars) }}><CalculatorPage {...props} /></I18nContext.Provider>)
+}
+
+function deferredClipboardWrite() {
+  let resolve
+  let reject
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise
+    reject = rejectPromise
+  })
+  return { promise, resolve, reject }
 }
 
 describe('calculator workspace', () => {
@@ -94,6 +104,56 @@ describe('calculator workspace', () => {
     writeText.mockRejectedValueOnce(new Error('denied'))
     fireEvent.click(screen.getByRole('button', { name: 'Ergebnis kopieren' }))
     expect(await screen.findByText('Kopieren fehlgeschlagen')).toBeVisible()
+  })
+  it('ignores a late clipboard success after clear and the same result is entered again', async () => {
+    const pending = deferredClipboardWrite()
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: vi.fn().mockReturnValue(pending.promise) } })
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ergebnis kopieren' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Leeren' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+
+    await act(async () => pending.resolve())
+
+    expect(screen.getByRole('button', { name: 'Ergebnis kopieren' })).toHaveTextContent(/^Kopieren$/)
+  })
+  it('ignores a late clipboard error after clear and the same result is entered again', async () => {
+    const pending = deferredClipboardWrite()
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: vi.fn().mockReturnValue(pending.promise) } })
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ergebnis kopieren' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Leeren' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+
+    await act(async () => pending.reject(new Error('denied')))
+
+    expect(screen.getByRole('button', { name: 'Ergebnis kopieren' })).toHaveTextContent(/^Kopieren$/)
+  })
+  it('does not restore copied feedback after changing an option and returning to the same result', async () => {
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: vi.fn().mockResolvedValue(undefined) } })
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ergebnis kopieren' }))
+    expect(await screen.findByText('Kopiert')).toBeVisible()
+
+    fireEvent.change(screen.getByLabelText('Berechnung'), { target: { value: 'share' } })
+    fireEvent.change(screen.getByLabelText('Berechnung'), { target: { value: 'of' } })
+
+    expect(screen.getByRole('button', { name: 'Ergebnis kopieren' })).toHaveTextContent(/^Kopieren$/)
+  })
+  it('does not restore copied feedback after switching calculators and returning', async () => {
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: vi.fn().mockResolvedValue(undefined) } })
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: 'Beispiel', exact: true }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ergebnis kopieren' }))
+    expect(await screen.findByText('Kopiert')).toBeVisible()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Kreis', exact: true }))
+    fireEvent.click(screen.getByRole('button', { name: 'Prozent', exact: true }))
+
+    expect(screen.getByRole('button', { name: 'Ergebnis kopieren' })).toHaveTextContent(/^Kopieren$/)
   })
   it('uses real date fields and preserves signed days when changing the operation', () => {
     renderPage({ initialCalculator: 'date' })

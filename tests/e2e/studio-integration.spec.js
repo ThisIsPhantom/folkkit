@@ -87,7 +87,7 @@ test('a home-only installation opens every studio offline, including the image-t
   await page.getByRole('button', { name: 'Dateien konvertieren', exact: true }).click()
   await expect(page.getByText('Fertig', { exact: true })).toBeVisible()
   pending = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Herunterladen', exact: true }).click()
+  await page.getByRole('button', { name: /^Ergebnis herunterladen:/ }).click()
   expect((await PDFDocument.load(await readFile(await (await pending).path()))).getPageCount()).toBe(1)
 
   const cacheUrls = await page.evaluate(async () => {
@@ -106,7 +106,7 @@ test('cancelling navigation and browser back preserves unsaved PDF contents', as
   await page.goto('/')
   await page.getByRole('button', { name: 'PDF bearbeiten', exact: true }).click()
   await page.getByLabel('PDF auswählen', { exact: true }).setInputFiles({ name: 'guard.pdf', mimeType: 'application/pdf', buffer: Buffer.from(await pdf.save()) })
-  await page.getByRole('button', { name: 'Textobjekt 1', exact: true }).click()
+  await page.getByRole('button', { name: /^Textobjekt 1:/ }).click()
   await page.getByLabel('Textinhalt', { exact: true }).fill('Keep this edit')
   await page.getByRole('button', { name: 'Übernehmen', exact: true }).click()
   await expect(page.getByText('Ungespeicherte Änderungen', { exact: true })).toBeVisible()
@@ -116,7 +116,7 @@ test('cancelling navigation and browser back preserves unsaved PDF contents', as
   page.once('dialog', dialog => dialog.dismiss())
   await page.goBack()
   await expect(page).toHaveURL(/\/pdf$/)
-  await page.getByRole('button', { name: 'Textobjekt 1', exact: true }).click()
+  await page.getByRole('button', { name: /^Textobjekt 1:/ }).click()
   await expect(page.getByLabel('Textinhalt', { exact: true })).toHaveValue('Keep this edit')
   page.once('dialog', dialog => dialog.accept())
   await page.getByRole('link', { name: 'Konvertieren', exact: true }).click()
@@ -164,7 +164,7 @@ test('used image modules remain available after an offline reload @matrix', asyn
     await page.getByRole('button', { name: 'Convert files', exact: true }).click()
     await expect(page.getByText('Done', { exact: true })).toBeVisible({ timeout: 45000 })
     const pending = page.waitForEvent('download')
-    await page.getByRole('button', { name: 'Download', exact: true }).click()
+    await page.getByRole('button', { name: /^Download result:/ }).click()
     expect((await readFile(await (await pending).path())).subarray(0, 3)).toEqual(Buffer.from([255, 216, 255]))
     expect(preview.deniedRequests).toBeGreaterThan(0)
   } finally { await preview.close() }
