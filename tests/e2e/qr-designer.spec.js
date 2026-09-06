@@ -48,8 +48,8 @@ function makeBlankPng() {
 async function convertPng(page, buffer, mimeType) {
   const base64 = buffer.toString('base64')
   const converted = await page.evaluate(async ({ base64: source, mimeType: target }) => {
-    const response = await fetch(`data:image/png;base64,${source}`)
-    const bitmap = await createImageBitmap(await response.blob())
+    const input = Uint8Array.from(atob(source), character => character.charCodeAt(0))
+    const bitmap = await createImageBitmap(new Blob([input], { type: 'image/png' }))
     const canvas = document.createElement('canvas')
     canvas.width = bitmap.width
     canvas.height = bitmap.height
