@@ -136,6 +136,8 @@ function createFakeReleaseRunner({ expectedCommit, unexpectedVendor = false, obs
       await mkdir(join(vendorDirectory, 'ffmpeg'), { recursive: true })
       await writeFile(join(vendorDirectory, 'ffmpeg', 'ffmpeg-core.js'), 'fresh core JavaScript')
       await writeFile(join(vendorDirectory, 'ffmpeg', 'ffmpeg-core.wasm'), 'fresh core WASM')
+      await mkdir(join(vendorDirectory, 'pandoc'), {recursive:true})
+      await writeFile(join(vendorDirectory, 'pandoc', 'pandoc.wasm'), 'fresh document WASM')
       if (unexpectedVendor) await writeFile(join(vendorDirectory, 'unexpected.js'), 'unexpected')
       return
     }

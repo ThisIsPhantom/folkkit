@@ -123,7 +123,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     // Worker-only imports must not trigger an app reload after file selection.
-    include: ['@embedpdf/pdfium', 'jsqr'],
+    include: ['@embedpdf/pdfium', 'jsqr', 'pandoc-wasm/core', 'parse5', 'fflate'],
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
   },
 })

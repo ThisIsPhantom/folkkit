@@ -1,0 +1,61 @@
+diff --git a/package.json b/package.json
+index e1e1d6259189b98ca6fa02e541b394b329cd850a..cc3c6e78f2a4e0b8cd827d9f4e537dc3bb49dc4c 100644
+--- a/package.json
++++ b/package.json
+@@ -10,7 +10,8 @@
+       "node": "./src/index.node.js",
+       "browser": "./src/index.browser.js",
+       "default": "./index.js"
+-    }
++    },
++    "./core": "./src/core.js"
+   },
+   "files": [
+     "index.js",
+diff --git a/src/core.js b/src/core.js
+index 23e0eaee4522fe7f6650e4b8399e69f85383a266..07ddd27adf65ea2a36ebc080e3c6b07d93424b67 100644
+--- a/src/core.js
++++ b/src/core.js
+@@ -14,19 +14,20 @@ import {
+ } from "@bjorn3/browser_wasi_shim"
+ 
+ // Initialize and export the pandoc instance creator
+-export function createPandocInstance(wasmBinary) {
++export function createPandocInstance(wasmBinary, configureWasi = () => {}) {
+     // Initialize WASM module
+-    const args = ["pandoc.wasm", "+RTS", "-H64m", "-RTS"]
++    const args = ["pandoc.wasm", "+RTS", "-H64m", "-M256m", "-RTS"]
+     const env = []
+     const fileSystem = new Map()
+     const fds = [
+         new OpenFile(new File(new Uint8Array(), {readonly: true})),
+-        ConsoleStdout.lineBuffered(msg => console.log(`[WASI stdout] ${msg}`)),
+-        ConsoleStdout.lineBuffered(msg => console.warn(`[WASI stderr] ${msg}`)),
++        new ConsoleStdout(() => {}),
++        new ConsoleStdout(() => {}),
+         new PreopenDirectory("/", fileSystem)
+     ]
+     const options = {debug: false}
+     const wasi = new WASI(args, env, fds, options)
++    configureWasi(wasi)
+ 
+     // Instantiate WASM
+     return WebAssembly.instantiate(wasmBinary, {
+@@ -105,7 +106,7 @@ export function createPandocInstance(wasmBinary) {
+                 err_file.data
+             )
+             if (err_text) {
+-                console.log(err_text)
++                // Folkkit keeps document diagnostics private.
+             }
+             const out_text = new TextDecoder("utf-8", {fatal: true}).decode(
+                 out_file.data
+@@ -244,7 +245,7 @@ export function createPandocInstance(wasmBinary) {
+                 try {
+                     warnings = JSON.parse(rawWarnings)
+                 } catch (e) {
+-                    console.warn("Failed to parse warnings:", e)
++                    // Folkkit keeps diagnostic parsing errors private.
+                 }
+             }
+ 

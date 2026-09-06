@@ -1,6 +1,8 @@
 {
   "qrcode-generator@1.5.2": {
-    "MIT": ["scripts/license-texts/MIT-qrcode-generator.txt"]
+    "MIT": [
+      "scripts/license-texts/MIT-qrcode-generator.txt"
+    ]
   },
   "@ffmpeg/ffmpeg@0.12.15": {
     "MIT": [
@@ -23,6 +25,14 @@
     ],
     "Zlib": [
       "node_modules/pako/lib/zlib/README"
+    ]
+  },
+  "@bjorn3/browser_wasi_shim@0.4.2": {
+    "MIT": [
+      "scripts/license-texts/browser-wasi-shim-0.4.2-LICENSE-MIT.txt"
+    ],
+    "Apache-2.0": [
+      "scripts/license-texts/browser-wasi-shim-0.4.2-LICENSE-APACHE.txt"
     ]
   }
 }

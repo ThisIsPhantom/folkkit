@@ -6,7 +6,7 @@ import { checkBundleBudget } from './check-bundle-budget.mjs'
 import { generateServiceWorker } from './generate-service-worker.mjs'
 import { checkThirdPartyNotices } from './generate-third-party-notices.mjs'
 import { resolveBuildCommit } from './resolve-build-commit.mjs'
-import { assertExactRuntimeAssets, syncRuntimeAssets } from './sync-runtime-assets.mjs'
+import { assertExactRuntimeAssets, syncAllRuntimeAssets } from './sync-runtime-assets.mjs'
 import { runPublicConfigValidation } from './validate-public-config.mjs'
 import { assertBuiltRuntimeArtifacts } from './assert-runtime-artifacts.mjs'
 import { assertCatalogAudit } from './audit-catalog.mjs'
@@ -26,7 +26,7 @@ export async function runSiteBuild({
   repoRoot = process.cwd(),
   env = process.env,
   mode = 'validation',
-  syncAssets = options => syncRuntimeAssets(options),
+  syncAssets = options => syncAllRuntimeAssets(options),
   assertRuntimeAssets = options => assertExactRuntimeAssets(options),
   checkNotices = options => checkThirdPartyNotices(options),
   viteBuild = async options => {
@@ -54,6 +54,8 @@ export async function runSiteBuild({
   await syncAssets({
     sourceDirectory: join(repoRoot, 'node_modules', '@ffmpeg', 'core', 'dist', 'esm'),
     destinationDirectory: join(publicVendorDirectory, 'ffmpeg'),
+    pandocSourceFile: join(repoRoot, 'node_modules', 'pandoc-wasm', 'src', 'pandoc.wasm'),
+    pandocDestinationDirectory: join(publicVendorDirectory, 'pandoc'),
   })
   await assertRuntimeAssets({ vendorDirectory: publicVendorDirectory })
   await checkNotices({ projectRoot: repoRoot })

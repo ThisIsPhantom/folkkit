@@ -3,7 +3,7 @@ import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promi
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runtimeAssetUrl } from './runtimeAssets'
-import { assertExactRuntimeAssets, syncRuntimeAssets } from '../../scripts/sync-runtime-assets.mjs'
+import { assertExactRuntimeAssets, syncRuntimeAssets, syncPandocRuntime } from '../../scripts/sync-runtime-assets.mjs'
 import { assertPassiveAdsenseOwnershipMeta } from '../../scripts/assert-ownership-meta.mjs'
 import { assertBuiltRuntimeArtifacts, assertNoExternalRuntimeOrigins } from '../../scripts/assert-runtime-artifacts.mjs'
 
@@ -334,4 +334,16 @@ test('rejects a built CSS artifact that loads a Google font URL', async () => {
   await writeFile(join(distDirectory, 'app.css'), "@font-face { src: url('https://fonts.gstatic.com/s/folkkit.woff2'); }")
 
   await expect(assertBuiltRuntimeArtifacts({ distDirectory })).rejects.toThrow('external runtime origin')
+})
+
+
+test('copies the pinned Pandoc binary and refuses tampering without replacing a valid runtime', async () => {
+  const destinationDirectory = await createTemporaryDirectory()
+  await syncPandocRuntime({ destinationDirectory })
+  const expected = await readFile('node_modules/pandoc-wasm/src/pandoc.wasm')
+  expect((await readFile(join(destinationDirectory,'pandoc.wasm'))).equals(expected)).toBe(true)
+  const invalidSource = join(await createTemporaryDirectory(),'wrong.wasm')
+  await writeFile(invalidSource,'not the pinned runtime')
+  await expect(syncPandocRuntime({ sourceFile:invalidSource,destinationDirectory })).rejects.toThrow(/Pandoc.*integrity/i)
+  expect((await readFile(join(destinationDirectory,'pandoc.wasm'))).equals(expected)).toBe(true)
 })

@@ -60,6 +60,7 @@ function Test-AllowedHostingPath {
     if ($exactFiles -contains $RelativePath) { return $true }
     if ($RelativePath -match '^assets/[A-Za-z0-9._-]+\.(?:avif|css|gif|ico|jpe?g|js|png|svg|wasm|webp|woff2?)$') { return $true }
     if ($RelativePath -match '^vendor/ffmpeg/ffmpeg-core\.(?:js|wasm)$') { return $true }
+    if ($RelativePath -eq 'vendor/pandoc/pandoc.wasm') { return $true }
     return $false
 }
 

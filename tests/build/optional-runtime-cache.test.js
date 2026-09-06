@@ -65,3 +65,17 @@ test('never adds user files, posts, queried URLs or external copies to the optio
   expect(runtime.fetch).not.toHaveBeenCalled()
   expect(runtime.entries.size).toBe(0)
 })
+
+
+test('caches only the exact Pandoc runtime on explicit first use, with offline HEAD support', async () => {
+  const runtime = await runtimeCache()
+  const url = 'https://folkkit.test/vendor/pandoc/pandoc.wasm'
+  expect(runtime.fetch).not.toHaveBeenCalled()
+  expect(await (await runtime.request(url)).text()).toBe('module bytes')
+  runtime.fetch.mockRejectedValue(new Error('offline'))
+  expect((await runtime.request(url,'HEAD')).status).toBe(200)
+  expect(await (await runtime.request(url)).text()).toBe('module bytes')
+  expect(runtime.fetch).toHaveBeenCalledTimes(1)
+  expect(runtime.request(url+'?private=yes')).toBeUndefined()
+  expect(runtime.request(url,'POST')).toBeUndefined()
+})

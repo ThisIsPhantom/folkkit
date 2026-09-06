@@ -4,7 +4,7 @@ const PRECACHE_URLS = __PRECACHE_URLS__
 const PRECACHE_PATHS = new Set(PRECACHE_URLS)
 const CACHE_PREFIX = 'folkkit-app-'
 const LEGACY_CACHE_NAMES = new Set(['convert-everything-v2'])
-const OPTIONAL_RUNTIME_PATHS = new Set(['/vendor/ffmpeg/ffmpeg-core.js', '/vendor/ffmpeg/ffmpeg-core.wasm'])
+const OPTIONAL_RUNTIME_PATHS = new Set(['/vendor/ffmpeg/ffmpeg-core.js', '/vendor/ffmpeg/ffmpeg-core.wasm', '/vendor/pandoc/pandoc.wasm'])
 const HASHED_ASSET_PATH = /^\/assets\/.+-[A-Za-z0-9_-]{6,}\.(?:css|js|json|svg|png|jpe?g|webp|gif|woff2?)$/
 
 self.addEventListener('install', (event) => {

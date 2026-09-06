@@ -1,4 +1,5 @@
-import { access, copyFile as copyRuntimeFile, mkdir, mkdtemp, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
+import { createHash, randomUUID } from 'node:crypto'
+import { access, copyFile as copyRuntimeFile, mkdir, mkdtemp, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -7,7 +8,9 @@ const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 const defaultSourceDirectory = join(projectRoot, 'node_modules', '@ffmpeg', 'core', 'dist', 'esm')
 const defaultDestinationDirectory = join(projectRoot, 'public', 'vendor', 'ffmpeg')
 const defaultVendorDirectory = dirname(defaultDestinationDirectory)
-const expectedVendorFiles = runtimeFiles.map(filename => `ffmpeg/${filename}`).sort()
+const expectedVendorFiles = [...runtimeFiles.map(filename => `ffmpeg/${filename}`), 'pandoc/pandoc.wasm'].sort()
+const pandocSize = 58580800
+const pandocSha256 = 'b47c9de52b5b45f103c2dac6fea52591aeafe3dd6cafed13331b67575233a2ff'
 
 async function listVendorFiles(directory, root = directory) {
   const entries = await readdir(directory, { withFileTypes: true })
@@ -94,8 +97,28 @@ export async function syncRuntimeAssets({
   }
 }
 
+export async function syncPandocRuntime({
+  sourceFile = join(projectRoot, 'node_modules', 'pandoc-wasm', 'src', 'pandoc.wasm'),
+  destinationDirectory = join(defaultVendorDirectory, 'pandoc'),
+} = {}) {
+  if ((await stat(sourceFile)).size !== pandocSize) throw new Error('Pandoc runtime integrity mismatch.')
+  const bytes = await readFile(sourceFile)
+  if (createHash('sha256').update(bytes).digest('hex') !== pandocSha256) throw new Error('Pandoc runtime integrity mismatch.')
+  await mkdir(destinationDirectory, { recursive: true })
+  const stagedFile = join(destinationDirectory, `.pandoc-${randomUUID()}.tmp`)
+  try {
+    await writeFile(stagedFile, bytes)
+    await rename(stagedFile, join(destinationDirectory, 'pandoc.wasm'))
+  } finally { await rm(stagedFile, { force: true }) }
+}
+
+export async function syncAllRuntimeAssets({ sourceDirectory, destinationDirectory, pandocSourceFile, pandocDestinationDirectory } = {}) {
+  await syncRuntimeAssets({ sourceDirectory, destinationDirectory })
+  await syncPandocRuntime({ sourceFile: pandocSourceFile, destinationDirectory: pandocDestinationDirectory })
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  syncRuntimeAssets()
+  syncAllRuntimeAssets()
     .then(() => assertExactRuntimeAssets())
     .catch((error) => {
       console.error(error.message)

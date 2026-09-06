@@ -120,7 +120,7 @@ export async function generateServiceWorker({
   }
   // Optional modules are cached only after use, but their bytes still bind
   // the cache version so a runtime update cannot reuse an older engine.
-  for (const file of ['vendor/ffmpeg/ffmpeg-core.js', 'vendor/ffmpeg/ffmpeg-core.wasm']) {
+  for (const file of ['vendor/ffmpeg/ffmpeg-core.js', 'vendor/ffmpeg/ffmpeg-core.wasm', 'vendor/pandoc/pandoc.wasm']) {
     try {
       versionHash.update(file).update('\0').update(await readFile(resolve(distDir, file))).update('\0')
     } catch (error) {

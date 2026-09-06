@@ -9,10 +9,14 @@
       "id": "pdfium-studio-wasm",
       "component": "EmbedPDF PDFium browser engine",
       "version": "2.15.0",
-      "paths": ["assets/pdfium-*.wasm"],
+      "paths": [
+        "assets/pdfium-*.wasm"
+      ],
       "license": "BSD-3-Clause AND Apache-2.0",
       "sourceUrl": "https://github.com/embedpdf/embed-pdf-viewer/tree/v2/packages/pdfium",
-      "licenseTextFiles": ["scripts/license-texts/PDFium-2.15.0.txt"],
+      "licenseTextFiles": [
+        "scripts/license-texts/PDFium-2.15.0.txt"
+      ],
       "notices": []
     },
     {
@@ -61,6 +65,26 @@
         {
           "label": "GNU AGPL 3.0",
           "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+        }
+      ]
+    },
+    {
+      "id": "pandoc-document-wasm",
+      "component": "Pandoc document engine via pandoc-wasm 1.1.0",
+      "version": "3.10",
+      "paths": [
+        "public/vendor/pandoc/pandoc.wasm"
+      ],
+      "license": "GPL-2.0-or-later",
+      "sourceUrl": "https://github.com/jgm/pandoc/tree/3.10",
+      "licenseTextFiles": [
+        "scripts/license-texts/GPL-2.0-or-later.txt",
+        "scripts/license-texts/Pandoc-3.10-COPYRIGHT.txt"
+      ],
+      "notices": [
+        {
+          "label": "Pandoc WASM wrapper source at version1.1.0",
+          "url": "https://github.com/pandoc/pandoc-wasm/tree/8955473ea57f4b9c3f5a6b3c3c9d2564e411deed"
         }
       ]
     }
