@@ -7,6 +7,7 @@ import {Buffer} from 'node:buffer'
 import {fileURLToPath} from 'node:url'
 import {createOfflinePreview} from './helpers/offline-preview.mjs'
 import {builtModulePath} from './helpers/builtArtifact.js'
+import {installAudioStartupState,logAudioStartupFailure} from './helpers/audioStartupState.js'
 const fixture=type=>fileURLToPath(new URL(`./file-converter-fixtures/sample.${type}`,import.meta.url))
 const ffmpeg=process.env.FOLKKIT_TEST_FFMPEG||'ffmpeg',ffprobe=process.env.FOLKKIT_TEST_FFPROBE||'ffprobe'
 let server
@@ -19,8 +20,9 @@ async function open(page,locale='en') {
 async function field(page,name,value) {const input=page.getByLabel(name,{exact:true});await input.fill(String(value));await input.press('Tab')}
 async function load(page,type='wav') {
  await page.getByLabel('Choose audio',{exact:true}).setInputFiles(fixture(type))
- await expect(page.locator('.audio-wave, .audio-editor [role=alert]')).toBeVisible({timeout:90000});await expect(page.locator('.audio-wave')).toBeVisible()
- await expect(page.locator('.audio-editor [role=alert]')).toHaveCount(0)
+ await expect(page.locator('.audio-wave, .audio-editor [role=alert]')).toBeVisible({timeout:90000})
+ expect(await page.locator('.audio-editor [role=alert]').count(),'Audio preparation returned an error').toBe(0)
+ await expect(page.locator('.audio-wave')).toBeVisible()
 }
 function probe(path,to) {
  const result=spawnSync(ffprobe,['-v','error','-show_streams','-show_format','-of','json',path],{encoding:'utf8',windowsHide:true});expect(result.status,result.stderr).toBe(0)
@@ -54,13 +56,16 @@ async function nativePlaybackAvailable(page) {
 }
 test('@matrix audio gestures playback cancel themes and accessibility under production CSP',async({page},info)=>{
  test.setTimeout(180000);const violations=[],external=[]
+ await installAudioStartupState(page)
  await page.addInitScript(()=>{globalThis.audioCsp=[];document.addEventListener('securitypolicyviolation',event=>globalThis.audioCsp.push(event.violatedDirective))})
  page.on('request',request=>{if(/^https?:/.test(request.url())&&!request.url().startsWith(server.url))external.push(request.url())})
  page.on('pageerror',error=>violations.push(error.message));await open(page);const nativePlayback=await nativePlaybackAvailable(page);await load(page)
  await field(page,'Start (seconds)',.2);await field(page,'End (seconds)',.8)
- await page.getByRole('button',{name:'Play selection',exact:true}).click()
- if(nativePlayback){await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Play selection',exact:true})).toBeVisible({timeout:3000})}
- else {await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.');await info.attach('native-playback-unavailable',{body:'Independent MP3 fixture fails in native HTMLAudioElement. Editing and export remain tested.',contentType:'text/plain'})}
+ try {
+  await page.getByRole('button',{name:'Play selection',exact:true}).click()
+  if(nativePlayback){await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Play selection',exact:true})).toBeVisible({timeout:3000})}
+  else {await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.');await info.attach('native-playback-unavailable',{body:'Independent MP3 fixture fails in native HTMLAudioElement. Editing and export remain tested.',contentType:'text/plain'})}
+ } catch(error) {await logAudioStartupFailure(page);throw error}
  const start=page.getByRole('slider',{name:'Selection start'});await start.focus();await start.press('ArrowRight');await expect(start).toHaveAttribute('aria-valuenow','0.21')
  await page.getByRole('button',{name:'Undo',exact:true}).click();await expect(start).toHaveAttribute('aria-valuenow','0.2')
  if(info.project.name.includes('mobile')) {
@@ -103,8 +108,12 @@ test('@matrix audio home-only cold offline UI and warm offline editing',async({p
   await page.goto(coldServer.url+'/audio');await expect(page.getByRole('heading',{name:'Trim audio'})).toBeVisible()
   await page.getByLabel('Choose audio',{exact:true}).setInputFiles(fixture('wav'));await expect(page.locator('.audio-editor [role=alert]')).toContainText('The audio runtime is unavailable.',{timeout:30000})
  }finally{await coldServer.close()}
- const warm=await context.newPage();await open(warm);await load(warm)
- await warm.evaluate(async()=>{await navigator.serviceWorker.ready});await warm.reload();await expect.poll(()=>warm.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true)
+ const warm=await context.newPage();await open(warm)
+ // Requests made before installation/claim cannot populate the service-worker cache.
+ await warm.evaluate(async()=>{await navigator.serviceWorker.ready});await expect.poll(()=>warm.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true)
+ await load(warm)
+ const runtimePaths=['/vendor/ffmpeg/ffmpeg-core.js','/vendor/ffmpeg/ffmpeg-core.wasm',builtModulePath('media'),builtModulePath('mediaEngine')]
+ await expect.poll(()=>warm.evaluate(paths=>Promise.all(paths.map(async path=>!!await caches.match(path))),runtimePaths)).toEqual(runtimePaths.map(()=>true))
  server.setOffline();await warm.reload();await load(warm);await field(warm,'End (seconds)',.6);await warm.getByRole('button',{name:'Export audio',exact:true}).click();await expect(warm.getByRole('link',{name:'Download audio file'})).toBeVisible({timeout:90000});await warm.close()
 })
 
