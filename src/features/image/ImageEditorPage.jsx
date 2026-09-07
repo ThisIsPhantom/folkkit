@@ -48,7 +48,7 @@ export default function ImageEditorPage({
   const [cropAspect, setCropAspect] = useState(null)
   const resourcesRef = useRef(new Map()), sourceRef = useRef(null), historyRef = useRef(null)
   const operationRef = useRef(null), watermarkRef = useRef(null), controlGestureRef = useRef(null)
-  const seenRequestRef = useRef(null), documentGenerationRef = useRef(0)
+  const seenRequestRef = useRef(null), documentGenerationRef = useRef(0), opacityPointerRef = useRef(null), opacityInputRef = useRef(null)
   const imageDocument = history?.present
   const selected = imageDocument?.elements.find(element => element.id === imageDocument.selectedId) || null
 
@@ -90,6 +90,38 @@ export default function ImageEditorPage({
 
   function setCurrentResources(next) {
     resourcesRef.current = next; setResources(next)
+  }
+
+  function releaseOpacityCapture(pointer) {
+    if (pointer?.target.hasPointerCapture?.(pointer.id)) pointer.target.releasePointerCapture(pointer.id)
+  }
+
+  function blockOpacityPointer() {
+    const pointer = opacityPointerRef.current
+    if (!pointer) return
+    // Keep the owner until physical release, even after Escape or an independent commit.
+    pointer.blocked = true
+    releaseOpacityCapture(pointer)
+  }
+
+  function completeControlGesture() {
+    blockOpacityPointer()
+    const gesture = controlGestureRef.current
+    if (!gesture) return
+    controlGestureRef.current = null
+    if (!gesture.changed || gesture.generation !== documentGenerationRef.current || !historyRef.current) return
+    const next = commitHistory(gesture.base, historyRef.current.present)
+    const retained = new Map(resourcesRef.current)
+    releaseUnreferencedResources(next, retained)
+    setCurrentHistory(next); setCurrentResources(retained)
+  }
+
+  function cancelControlGesture() {
+    blockOpacityPointer()
+    const gesture = controlGestureRef.current
+    if (!gesture) return
+    controlGestureRef.current = null
+    if (gesture.generation === documentGenerationRef.current) setCurrentHistory(gesture.base)
   }
 
   function invalidateDocument() {
@@ -167,6 +199,69 @@ export default function ImageEditorPage({
     } catch (caught) { setError(errorCode(caught)) }
   }
 
+  function beginOpacityPointer(event, id) {
+    if (!active || opacityPointerRef.current || event.button !== 0 || event.isPrimary === false) {
+      event.preventDefault()
+      return
+    }
+    // Finish the previous focused control before this pointer owns the range.
+    event.currentTarget.focus({ preventScroll: true })
+    completeControlGesture()
+    opacityPointerRef.current = { id: event.pointerId, target: event.currentTarget, blocked: false }
+    beginControlGesture(id, 'opacity')
+    // Keep the native range's own capture; overriding it prevents WebKit thumb dragging.
+  }
+
+  function changeOpacity(event, id) {
+    const gesture = controlGestureRef.current
+    if (!active || opacityPointerRef.current?.blocked || gesture?.key !== 'opacity' || gesture.id !== id) {
+      const element = historyRef.current?.present.elements.find(item => item.id === id)
+      if (element) event.currentTarget.value = String(Math.round(element.opacity * 100))
+      return
+    }
+    previewControlGesture(id, 'opacity', { opacity: Number(event.target.value) / 100 })
+  }
+
+  useEffect(() => {
+    const finish = event => {
+      const pointer = opacityPointerRef.current
+      if (!pointer || event.pointerId !== pointer.id) return
+      opacityPointerRef.current = null
+      releaseOpacityCapture(pointer)
+      if (!pointer.blocked) {
+        if (event.type === 'pointercancel') cancelControlGesture()
+        else completeControlGesture()
+      }
+    }
+    document.addEventListener('pointerup', finish)
+    document.addEventListener('pointercancel', finish)
+    return () => {
+      document.removeEventListener('pointerup', finish)
+      document.removeEventListener('pointercancel', finish)
+      const pointer = opacityPointerRef.current
+      opacityPointerRef.current = null
+      releaseOpacityCapture(pointer)
+    }
+    // Document listeners survive capture release and read only current gesture refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    const input = opacityInputRef.current
+    if (!input) return undefined
+    // Native range touch actions also need cancellation: pointerdown alone is insufficient.
+    const guardTouch = event => {
+      const pointer = opacityPointerRef.current
+      if (!pointer || pointer.blocked || event.touches.length > 1) event.preventDefault()
+    }
+    input.addEventListener('touchstart', guardTouch, { passive: false })
+    input.addEventListener('touchmove', guardTouch, { passive: false })
+    return () => {
+      input.removeEventListener('touchstart', guardTouch)
+      input.removeEventListener('touchmove', guardTouch)
+    }
+  }, [selected?.id])
+
   function beginControlGesture(id, key) {
     if (controlGestureRef.current) return
     const current = historyRef.current
@@ -183,24 +278,6 @@ export default function ImageEditorPage({
     } catch (caught) { setError(errorCode(caught)) }
   }
 
-  function completeControlGesture() {
-    const gesture = controlGestureRef.current
-    if (!gesture) return
-    controlGestureRef.current = null
-    if (!gesture.changed || gesture.generation !== documentGenerationRef.current || !historyRef.current) return
-    const next = commitHistory(gesture.base, historyRef.current.present)
-    const retained = new Map(resourcesRef.current)
-    releaseUnreferencedResources(next, retained)
-    setCurrentHistory(next); setCurrentResources(retained)
-  }
-
-  function cancelControlGesture() {
-    const gesture = controlGestureRef.current
-    if (!gesture) return
-    controlGestureRef.current = null
-    if (gesture.generation === documentGenerationRef.current) setCurrentHistory(gesture.base)
-  }
-
   function moveHistory(action) {
     completeControlGesture()
     if (historyRef.current) setCurrentHistory(action(historyRef.current))
@@ -209,7 +286,12 @@ export default function ImageEditorPage({
   useEffect(() => {
     if (!active) return undefined
     const escape = (event) => {
-      if (event.key === 'Escape' && controlGestureRef.current) { event.preventDefault(); cancelControlGesture() }
+      if (event.key === 'Escape' && controlGestureRef.current) {
+        event.preventDefault()
+        // A handled range Escape must not also deselect its element in ImageCanvas.
+        if (opacityPointerRef.current) event.stopImmediatePropagation()
+        cancelControlGesture()
+      }
     }
     document.addEventListener('keydown', escape, true)
     return () => document.removeEventListener('keydown', escape, true)
@@ -281,6 +363,7 @@ export default function ImageEditorPage({
 
   function reset() {
     if (!source) return
+    cancelControlGesture()
     invalidateDocument(); abortOperation(); clearResources(); setCurrentHistory(createHistory(createImageState(source))); setCropAspect(null); setError(null); setNotice(null)
   }
 
@@ -311,7 +394,7 @@ export default function ImageEditorPage({
       <section className="studio-page image-editor" aria-labelledby="image-editor-title">
         <header className="image-editor-heading"><h1 id="image-editor-title">{t('studioImage.title')}</h1><p>{t('studioImage.intro')}</p></header>
         <section className="image-empty" onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); acceptFile(event.dataTransfer.files?.[0]) }}>
-          {fileInput}<IconPhotoPlus aria-hidden="true" size={36} /><label className="studio-primary image-file-label" htmlFor="image-editor-file">{t('studioImage.choose')}</label>
+          <IconPhotoPlus aria-hidden="true" size={36} />{fileInput}<label className="studio-primary image-file-label" htmlFor="image-editor-file">{t('studioImage.choose')}</label>
           <strong>{t('studioImage.drop')}</strong><p>{t('studioImage.limits')}</p>
         </section>
         {busyStatus}
@@ -368,7 +451,7 @@ export default function ImageEditorPage({
           </div></details>
           {selected && bounds && <details open><summary>{t('studioImage.properties')}</summary><div className="image-panel-body image-field-grid">
             {selected.type === 'text' && <><label className="image-field-wide">{t('studioImage.textContent')}<textarea name="selected-text" maxLength="500" value={selected.text} onChange={event => commit(current => updateElement(current, selected.id, { text: event.target.value }))} /></label><label>{t('studioImage.fontSize')}<input name="font-size" type="number" min="6" max="512" value={selected.fontSize} onChange={event => commit(current => updateElement(current, selected.id, { fontSize: Number(event.target.value) }))} /></label><label>{t('studioImage.color')}<input name="text-color" type="color" value={selected.color} onFocus={() => beginControlGesture(selected.id, 'color')} onChange={event => previewControlGesture(selected.id, 'color', { color: event.target.value })} onBlur={completeControlGesture} onKeyDown={event => { if (event.key === 'Escape') cancelControlGesture(); else beginControlGesture(selected.id, 'color') }} /></label></>}
-            <label>{t('studioImage.opacity')}<input name="opacity" type="range" min="0" max="100" value={Math.round(selected.opacity * 100)} onPointerDown={() => beginControlGesture(selected.id, 'opacity')} onChange={event => previewControlGesture(selected.id, 'opacity', { opacity: Number(event.target.value) / 100 })} onPointerUp={completeControlGesture} onPointerCancel={cancelControlGesture} onKeyDown={event => { if (event.key === 'Escape') cancelControlGesture(); else beginControlGesture(selected.id, 'opacity') }} onKeyUp={completeControlGesture} onBlur={completeControlGesture} /></label>
+            <label>{t('studioImage.opacity')}<input ref={opacityInputRef} name="opacity" type="range" min="0" max="100" value={Math.round(selected.opacity * 100)} onPointerDown={event => beginOpacityPointer(event, selected.id)} onChange={event => changeOpacity(event, selected.id)} onLostPointerCapture={event => { if (opacityPointerRef.current?.id === event.pointerId && !opacityPointerRef.current.blocked) cancelControlGesture() }} onKeyDown={event => { if (event.key === 'Escape') cancelControlGesture(); else if (opacityPointerRef.current) event.preventDefault(); else beginControlGesture(selected.id, 'opacity') }} onKeyUp={() => { if (!opacityPointerRef.current) completeControlGesture() }} onBlur={() => { if (!opacityPointerRef.current) completeControlGesture() }} /></label>
             {[['x', 'x'], ['y', 'y'], ['width', 'width'], ['height', 'height']].map(([key, label]) => <label key={key}>{t(`studioImage.${label}`)}<input name={`element-${key}`} type="number" min={key === 'width' || key === 'height' ? 1 : undefined} value={Math.round(bounds[key])} onChange={event => commit(current => updateElement(current, selected.id, { [key]: Number(event.target.value) }))} /></label>)}
             <button type="button" onClick={() => commit(current => centreElement(current, selected.id))}>{t('studioImage.centre')}</button>
             <button type="button" className="image-danger" onClick={() => commit(current => removeElement(current, selected.id))}><IconTrash aria-hidden="true" />{t('studioImage.remove')}</button>

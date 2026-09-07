@@ -288,7 +288,7 @@ test('colour, asynchronous watermark, undo and Escape remain separate history st
   await expect(page.getByLabel('Farbe')).toHaveValue('#111111')
 })
 
-test('one opacity or colour gesture creates one undo step and Escape cancels the draft', async ({ page }) => {
+test('one opacity or colour gesture creates one undo step and Escape cancels the draft @matrix', async ({ page }) => {
   await page.goto('/image')
   await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
   await page.getByLabel('Textinhalt', { exact: true }).fill('Gesture history')
@@ -302,11 +302,119 @@ test('one opacity or colour gesture creates one undo step and Escape cancels the
   await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
   await expect(opacity).toHaveValue('100')
 
+  await opacity.focus()
+  await page.keyboard.down('ArrowLeft')
+  await page.keyboard.press('ArrowLeft')
+  await page.keyboard.up('ArrowLeft')
+  await expect(opacity).toHaveValue('98')
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+  await expect(opacity).toHaveValue('100')
+  await page.getByRole('button', { name: 'Wiederholen', exact: true }).click()
+  await expect(opacity).toHaveValue('98')
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+
   const colour = page.getByLabel('Farbe')
   await colour.focus(); await colour.fill('#224466'); await colour.fill('#446688'); await colour.blur()
   await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
   await expect(page.getByLabel('Farbe')).toHaveValue('#111111')
+  await colour.focus(); await colour.fill('#224466')
+  await opacity.scrollIntoViewIfNeeded()
+  const afterColour = await opacity.boundingBox()
+  await page.mouse.move(afterColour.x + afterColour.width - 3, afterColour.y + afterColour.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(afterColour.x + afterColour.width * 0.39, afterColour.y + afterColour.height / 2, { steps: 4 })
+  await page.mouse.up()
+  expect(Number(await opacity.inputValue())).toBeLessThan(60)
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+  await expect(opacity).toHaveValue('100')
+  await expect(colour).toHaveValue('#224466')
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+  await expect(colour).toHaveValue('#111111')
   await page.getByLabel('Farbe').focus(); await page.getByLabel('Farbe').fill('#224466'); await page.keyboard.press('Escape')
   await page.getByRole('button', { name: 'Text: Gesture history', exact: true }).click()
   await expect(page.getByLabel('Farbe')).toHaveValue('#111111')
+})
+
+
+test('image file pickers show a visible label indicator through real Tab focus @matrix', async ({ page }, testInfo) => {
+  await page.goto('/image')
+  async function tabToPicker(id) {
+    const input = page.locator(`#${id}`)
+    for (let step = 0; step < 80; step += 1) {
+      await page.keyboard.press('Tab')
+      if (await input.evaluate(element => element === document.activeElement)) break
+    }
+    await expect(input).toBeFocused()
+    expect(await input.evaluate(element => element.matches(':focus-visible'))).toBe(true)
+    const label = page.locator(`label[for="${id}"]`)
+    await expect(label).toBeVisible()
+    const indicator = await label.evaluate(element => {
+      const style = getComputedStyle(element)
+      return { style: style.outlineStyle, width: parseFloat(style.outlineWidth), color: style.outlineColor }
+    })
+    expect(indicator.style).not.toBe('none')
+    expect(indicator.width).toBeGreaterThanOrEqual(2)
+    expect(indicator.color).not.toBe('rgba(0, 0, 0, 0)')
+  }
+  await tabToPicker('image-editor-file')
+  await page.screenshot({ path: testInfo.outputPath('initial-image-picker-focus.png'), fullPage: true })
+  await page.locator('#image-editor-file').setInputFiles(imageFixture())
+  await expect(page.getByText('300 × 200 px', { exact: true })).toBeVisible()
+  await tabToPicker('image-editor-file')
+  await tabToPicker('image-watermark-file')
+})
+
+test('opacity rejects a real second touch and Escape blocks late owner movement @matrix', async ({ page, browserName }, testInfo) => {
+  test.skip(browserName !== 'chromium', 'Two simultaneous touches use the Chromium CDP input API.')
+  const requests = []
+  await page.addInitScript(() => {
+    window.__imageCspViolations = []
+    window.__opacityEvents = []
+    for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'lostpointercapture', 'touchstart', 'touchend', 'input', 'blur', 'keydown']) {
+      document.addEventListener(type, event => {
+        window.__opacityEvents.push({ type, pointerId: event.pointerId, isPrimary: event.isPrimary, key: event.key, target: event.target.name || event.target.tagName, value: document.querySelector('[name=opacity]')?.value })
+      }, true)
+    }
+    document.addEventListener('securitypolicyviolation', event => window.__imageCspViolations.push(event.violatedDirective))
+  })
+  page.on('request', request => requests.push(request.url()))
+  await page.goto('/image')
+  await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
+  await page.getByLabel('Textinhalt', { exact: true }).fill('Touch owner')
+  await page.getByRole('button', { name: 'Text hinzufügen', exact: true }).click()
+  const opacity = page.getByLabel('Deckkraft')
+  await opacity.scrollIntoViewIfNeeded()
+  const box = await opacity.boundingBox()
+  const point = (fraction, id) => ({ x: box.x + box.width * fraction, y: box.y + box.height / 2, id })
+  const session = await page.context().newCDPSession(page)
+  const touch = (type, touchPoints) => session.send('Input.dispatchTouchEvent', { type, touchPoints })
+  try {
+    await touch('touchStart', [point(0.98, 1)])
+    await touch('touchMove', [point(0.3, 1)])
+    const ownedValue = await opacity.inputValue()
+    expect(Number(ownedValue)).toBeLessThan(45)
+    await touch('touchStart', [point(0.3, 1), point(0.72, 2)])
+    await expect(opacity).toHaveValue(ownedValue)
+    await touch('touchEnd', [point(0.72, 2)])
+    expect(await page.evaluate(() => window.__opacityEvents.filter(event => event.type === 'pointerup').at(-1))).toMatchObject({ pointerId: 3, isPrimary: false })
+    await expect(opacity).toHaveValue(ownedValue)
+    await page.keyboard.press('Escape')
+    await expect(opacity).toHaveValue('100')
+    await touch('touchMove', [point(0.6, 1)])
+    await expect(opacity).toHaveValue('100')
+    await touch('touchEnd', [])
+    await expect(opacity).toHaveValue('100')
+    await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Text: Touch owner', exact: true })).toHaveCount(0)
+    await page.getByRole('button', { name: 'Wiederholen', exact: true }).click()
+    await expect(opacity).toHaveValue('100')
+    await expect(page.getByRole('button', { name: 'Wiederholen', exact: true })).toBeDisabled()
+    expect(await page.evaluate(() => window.__imageCspViolations)).toEqual([])
+    expect(requests.filter(url => /^https?:/.test(url) && new URL(url).origin !== new URL(page.url()).origin)).toEqual([])
+    await testInfo.attach('two-touch-result', { body: JSON.stringify({ ownedValue, afterEscapeAndRelease: await opacity.inputValue(), cspViolations: [], externalRequests: [] }), contentType: 'application/json' })
+  } finally {
+    await testInfo.attach('opacity-events', { body: JSON.stringify(await page.evaluate(() => window.__opacityEvents), null, 2), contentType: 'application/json' })
+    await touch('touchEnd', []).catch(() => {})
+    await session.detach()
+  }
 })
