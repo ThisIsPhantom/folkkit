@@ -1,11 +1,12 @@
 import {test,expect} from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import {readFileSync} from 'node:fs'
+import {readFileSync,writeFileSync} from 'node:fs'
 import {spawnSync} from 'node:child_process'
 import process from 'node:process'
+import {Buffer} from 'node:buffer'
 import {fileURLToPath} from 'node:url'
 import {createOfflinePreview} from './helpers/offline-preview.mjs'
-import {builtArtifactPath} from './helpers/builtArtifact.js'
+import {builtModulePath} from './helpers/builtArtifact.js'
 const fixture=type=>fileURLToPath(new URL(`./file-converter-fixtures/sample.${type}`,import.meta.url))
 const ffmpeg=process.env.FOLKKIT_TEST_FFMPEG||'ffmpeg',ffprobe=process.env.FOLKKIT_TEST_FFPROBE||'ffprobe'
 let server
@@ -82,7 +83,7 @@ test('@matrix audio gestures playback cancel themes and accessibility under prod
 })
 test('full-band opposite-phase stereo waveform stays visible',async({page})=>{
  test.setTimeout(120000);await open(page)
- const manifest=JSON.parse(readFileSync(builtArtifactPath('.vite/manifest.json'),'utf8')),moduleUrl='/'+manifest['src/features/audio/audioEngine.js'].file
+ const moduleUrl=builtModulePath('audioEngine')
  const result=await page.evaluate(async moduleUrl=>{
   const rate=44100,n=rate*2,bytes=new Uint8Array(44+n*4),view=new DataView(bytes.buffer),write=(offset,text)=>bytes.set(new TextEncoder().encode(text),offset)
   write(0,'RIFF');view.setUint32(4,bytes.length-8,true);write(8,'WAVEfmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,2,true);view.setUint32(24,rate,true);view.setUint32(28,rate*4,true);view.setUint16(32,4,true);view.setUint16(34,16,true);write(36,'data');view.setUint32(40,n*4,true)
@@ -109,7 +110,6 @@ test('@matrix audio home-only cold offline UI and warm offline editing',async({p
 
 test('real private and legacy FFmpeg runtimes survive cancellation in both directions',async({page})=>{
  test.setTimeout(120000);await open(page)
- const manifest=JSON.parse(readFileSync(builtArtifactPath('.vite/manifest.json'),'utf8'))
  const result=await page.evaluate(async({engineUrl,mediaUrl,bytes})=>{
   const engine=await import(engineUrl),media=await import(mediaUrl),file=new File([Uint8Array.from(bytes)],'sample.wav',{type:'audio/wav'})
   await media.getFFmpeg();let killedLegacy=false
@@ -119,13 +119,12 @@ test('real private and legacy FFmpeg runtimes survive cancellation in both direc
    try{await engine.prepareAudio(file,{signal:controller.signal,onProgress:()=>controller.abort()})}catch(error){cancelled=error.code==='cancelled'}
    return {killedLegacy,preview:prepared.preview.size,cancelled,legacySame:legacy===await media.getFFmpeg(),legacyWorks:await legacy.exec(['-version'])}
   }finally{media.terminateMediaExecution()}
- },{engineUrl:'/'+manifest['src/features/audio/audioEngine.js'].file,mediaUrl:'/'+manifest['src/converters/media.js'].file,bytes:Array.from(readFileSync(fixture('wav')))})
+ },{engineUrl:builtModulePath('audioEngine'),mediaUrl:builtModulePath('media'),bytes:Array.from(readFileSync(fixture('wav')))})
  expect(result.killedLegacy).toBe(true);expect(result.preview).toBeGreaterThan(1000);expect(result.cancelled).toBe(true);expect(result.legacySame).toBe(true);expect(result.legacyWorks).toBe(0)
 })
 
 test('8000 Hz mono converter MP3 result opens in audio editor with exact decoded duration',async({page})=>{
  test.setTimeout(120000);await open(page)
- const manifest=JSON.parse(readFileSync(builtArtifactPath('.vite/manifest.json'),'utf8'))
  const result=await page.evaluate(async({engineUrl,convertUrl})=>{
   const rate=8000,count=rate*8,bytes=new Uint8Array(44+count*2),view=new DataView(bytes.buffer),write=(offset,text)=>bytes.set(new TextEncoder().encode(text),offset)
   write(0,'RIFF');view.setUint32(4,bytes.length-8,true);write(8,'WAVEfmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,rate,true);view.setUint32(28,rate*2,true);view.setUint16(32,2,true);view.setUint16(34,16,true);write(36,'data');view.setUint32(40,count*2,true)
@@ -133,6 +132,40 @@ test('8000 Hz mono converter MP3 result opens in audio editor with exact decoded
   const file=new File([bytes],'low-rate.wav',{type:'audio/wav'}),{convertMediaFile}=await import(convertUrl),{prepareAudio}=await import(engineUrl)
   const mp3=await convertMediaFile(file,{from:'wav',to:'mp3'},{}),prepared=await prepareAudio(new File([mp3],'converted.mp3',{type:'audio/mpeg'}))
   return {duration:prepared.duration,windows:prepared.peaks.length,peak:Math.max(...prepared.peaks.map(peak=>peak[1])),bytes:mp3.size}
- },{engineUrl:'/'+manifest['src/features/audio/audioEngine.js'].file,convertUrl:'/'+manifest['src/features/convert/mediaEngine.js'].file})
+ },{engineUrl:builtModulePath('audioEngine'),convertUrl:builtModulePath('mediaEngine')})
  expect(Math.abs(result.duration-8)).toBeLessThan(.01);expect(result.windows).toBeLessThanOrEqual(2048);expect(result.peak).toBeGreaterThan(.2);expect(result.bytes).toBeGreaterThan(1000)
+})
+
+test('real MPEG-2.5 MP3 at 8000 Hz preserves gapless duration and exports',async({page},info)=>{
+ test.setTimeout(120000);await open(page)
+ const result=await page.evaluate(async({engineUrl,mediaUrl,probeUrl})=>{
+  const {createBrowserFFmpegRuntime}=await import(mediaUrl),{prepareAudio,exportAudio}=await import(engineUrl),runtime=createBrowserFFmpegRuntime(),{probeMedia}=await import(probeUrl)
+  let encoded,decodedSamples,containerDuration
+  try{
+   const ff=await runtime.get(),rate=8000,count=rate*8,bytes=new Uint8Array(44+count*2),view=new DataView(bytes.buffer),write=(offset,text)=>bytes.set(new TextEncoder().encode(text),offset)
+   write(0,'RIFF');view.setUint32(4,bytes.length-8,true);write(8,'WAVEfmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,rate,true);view.setUint32(28,rate*2,true);view.setUint16(32,2,true);view.setUint16(34,16,true);write(36,'data');view.setUint32(40,count*2,true)
+   for(let i=0;i<count;i++)view.setInt16(44+i*2,Math.round(.5*32767*Math.sin(2*Math.PI*440*i/rate)),true)
+   await ff.writeFile('real8k.wav',bytes)
+   if(await ff.exec(['-i','real8k.wav','-ac','1','-ar','8000','-c:a','libmp3lame','-b:a','32k','real8k.mp3'])!==0)throw new Error('fixture encoding failed')
+   containerDuration=(await probeMedia(ff,'real8k.mp3')).duration
+   encoded=await ff.readFile('real8k.mp3')
+   if(await ff.exec(['-i','real8k.mp3','-ac','1','-ar','8000','-f','s16le','decoded.pcm'])!==0)throw new Error('fixture decoding failed')
+   decodedSamples=(await ff.readFile('decoded.pcm')).length/2
+  }finally{runtime.terminate()}
+  const input=new File([encoded],'real8k.mp3',{type:'audio/mpeg'}),prepared=await prepareAudio(input)
+  const output=await exportAudio(input,{from:'mp3',to:'wav',start:1,end:2,fadeIn:0,fadeOut:0})
+  return {encoded:Array.from(encoded),output:Array.from(new Uint8Array(await output.blob.arrayBuffer())),decodedSamples,containerDuration,duration:prepared.duration,windows:prepared.peaks.length,peak:Math.max(...prepared.peaks.map(peak=>peak[1])),previewBytes:prepared.preview.size}
+ },{engineUrl:builtModulePath('audioEngine'),mediaUrl:builtModulePath('media'),probeUrl:builtModulePath('mediaEngine')})
+ expect(result.containerDuration).toBe(8.21);expect(result.decodedSamples).toBe(64000);expect(Math.abs(result.duration-8)).toBeLessThan(.001);expect(result.windows).toBeLessThanOrEqual(2048);expect(result.peak).toBeGreaterThan(.2);expect(result.previewBytes).toBeGreaterThan(1000)
+ const inputPath=info.outputPath('real8k.mp3'),outputPath=info.outputPath('trim.wav')
+ writeFileSync(inputPath,Buffer.from(result.encoded));writeFileSync(outputPath,Buffer.from(result.output))
+ const inputProbe=spawnSync(ffprobe,['-v','error','-show_streams','-show_format','-of','json',inputPath],{encoding:'utf8',windowsHide:true})
+ expect(inputProbe.status,inputProbe.stderr).toBe(0)
+ const inputMetadata=JSON.parse(inputProbe.stdout);expect(inputMetadata.streams[0]).toMatchObject({codec_name:'mp3',sample_rate:'8000',channels:1});expect(Number(inputMetadata.format.duration)).toBeGreaterThanOrEqual(8)
+ const decoded=spawnSync(ffmpeg,['-v','error','-i',inputPath,'-ac','1','-ar','8000','-f','s16le','-'],{windowsHide:true})
+ expect(decoded.status,decoded.stderr?.toString()).toBe(0);expect(decoded.stdout.length/2).toBe(64000)
+ const outputProbe=spawnSync(ffprobe,['-v','error','-show_streams','-show_format','-of','json',outputPath],{encoding:'utf8',windowsHide:true})
+ expect(outputProbe.status,outputProbe.stderr).toBe(0)
+ const outputMetadata=JSON.parse(outputProbe.stdout);expect(outputMetadata.streams[0].codec_name).toBe('pcm_s16le');expect(Number(outputMetadata.format.duration)).toBe(1)
+ await info.attach('verified-mpeg25-timing',{body:JSON.stringify({browserContainerDuration:result.containerDuration,nativeDuration:inputMetadata.format.duration,decodedSamples:result.decodedSamples,preparedDuration:result.duration,windows:result.windows,previewBytes:result.previewBytes,outputDuration:outputMetadata.format.duration}),contentType:'application/json'})
 })

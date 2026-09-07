@@ -37,7 +37,7 @@ export function commitHistory(history,present) {
 export function undoHistory(h) { return h.past.length ? {past:h.past.slice(0,-1),present:h.past.at(-1),future:[h.present,...h.future]} : h }
 export function redoHistory(h) { return h.future.length ? {past:[...h.past,h.present].slice(-30),present:h.future[0],future:h.future.slice(1)} : h }
 export function waveformWindow(duration) { return Math.max(1,Math.ceil(duration*44100/AUDIO_LIMITS.buckets)) }
-export function parseWaveform(bytes,duration,window) {
+export function parseWaveform(bytes,duration,window,timing=null) {
  if(!bytes?.length||bytes.length>AUDIO_LIMITS.analysis) throw audioError('resource_limit')
  const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes), peaks=[]
  const blocks=text.trim().split(/(?=frame:)/).filter(Boolean)
@@ -50,16 +50,16 @@ export function parseWaveform(bytes,duration,window) {
   peaks.push([clamp(min,-1,1),clamp(max,-1,1)])
  }
  // Demuxer duration may differ by a few codec frames, but never accept a partial analysis.
- if(!peaks.length||(peaks.length*window/44100)<duration-0.08) throw audioError('resource_limit')
+ if(!peaks.length||(peaks.length*window/44100)<(timing?.duration??duration)-(timing?.tolerance??0.08)) throw audioError('resource_limit')
  return peaks
 }
 
-export function parseWaveformAnalysis(bytes,duration,window) {
- const peaks=parseWaveform(bytes,duration,window)
+export function parseWaveformAnalysis(bytes,duration,window,timing=null) {
+ const peaks=parseWaveform(bytes,duration,window,timing)
  const samples=[...new TextDecoder().decode(bytes).matchAll(/lavfi\.astats\.Overall\.Number_of_samples=([^\r\n]+)/g)].map(match=>Number(match[1]))
  if(samples.length!==peaks.length||samples.some((count,i)=>!Number.isInteger(count)||count<1||count>window||(i<samples.length-1&&count!==window)))throw audioError('invalid_file')
  const actual=samples.reduce((sum,count)=>sum+count,0)/44100
- if(actual<0.05||actual>AUDIO_LIMITS.duration||Math.abs(actual-duration)>0.08)throw audioError('resource_limit')
+ if(actual<0.05||actual>AUDIO_LIMITS.duration||Math.abs(actual-(timing?.duration??duration))>(timing?.tolerance??0.08))throw audioError('resource_limit')
  return {peaks,duration:actual}
 }
 export function buildAudioArgs(from,to,settings,duration) {

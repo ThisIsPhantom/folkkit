@@ -1,4 +1,5 @@
 import {createBrowserFFmpegRuntime,attachMediaProgress} from '../../converters/media.js'
+import {mp3DecodedTiming} from './audioMp3Timing.js'
 import {probeMedia} from '../convert/mediaEngine.js'
 import {detectFile,readBytes} from '../convert/detection.js'
 import {AUDIO_LIMITS,AUDIO_FORMATS,AUDIO_MIME,audioError,validateAudioFile,validateAudioProbe,parseWaveformAnalysis,waveformWindow,buildAudioArgs} from './audioModel.js'
@@ -22,17 +23,21 @@ export function createAudioEngine({runtimeFactory=createBrowserFFmpegRuntime,det
    if(settings?.from&&settings.from!==from)throw audioError('type_mismatch')
    ff=await runtime.get();guard()
    const input=`audio-input.${from}`;names.push(input)
-   const bytes=await read(file);guard();await ff.writeFile(input,bytes);guard()
+   const bytes=await read(file);guard()
+   // writeFile transfers the input buffer, so verify complete MP3 frames first.
+   const mp3Timing=prepare&&from==='mp3'?mp3DecodedTiming(bytes):null
+   await ff.writeFile(input,bytes);guard()
    const {duration}=validateAudioProbe(from,await probeMedia(ff,input));guard()
    detach=attachMediaProgress(ff,value=>{if(!closed)onProgress?.(Math.max(0,Math.min(99,value)))})
    if(prepare) {
+    const timing=mp3Timing&&Math.abs(mp3Timing.encodedSamples/mp3Timing.sampleRate-duration)<=.011?mp3Timing:null
     const window=waveformWindow(duration),analysis='audio-waveform.txt',preview='audio-preview.mp3';names.push(analysis,preview)
     // Preserve every channel and the full audio band before taking extrema.
     // The time bound and fixed window size also bound metadata written in WASM.
     const filter=`atrim=end=${duration},asetpts=PTS-STARTPTS,aformat=sample_fmts=fltp:sample_rates=44100,asetnsamples=n=${window}:p=0,astats=metadata=1:reset=1:measure_perchannel=none:measure_overall=Min_level+Max_level+Number_of_samples,ametadata=mode=print:file=${analysis}`
     const code=await ff.exec(['-hide_banner','-nostdin','-protocol_whitelist','file,pipe','-t',String(duration),'-i',input,'-map','0:a:0','-af',filter,'-threads','1','-f','null','-'],AUDIO_LIMITS.timeout);guard()
     if(code!==0)throw audioError('conversion_failed')
-    const {peaks,duration:actualDuration}=parseWaveformAnalysis(await ff.readFile(analysis),duration,window);guard()
+    const {peaks,duration:actualDuration}=parseWaveformAnalysis(await ff.readFile(analysis),duration,window,timing);guard()
     const args=buildAudioArgs(from,'mp3',{start:0,end:actualDuration,bitrate:128},duration);args[args.indexOf('-fs')+1]=String(AUDIO_LIMITS.preview);args[args.length-1]=preview
     if(await ff.exec(args,AUDIO_LIMITS.timeout)!==0)throw audioError('conversion_failed');guard()
     const data=await ff.readFile(preview);guard()
