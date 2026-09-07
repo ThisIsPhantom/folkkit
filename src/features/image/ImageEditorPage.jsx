@@ -120,12 +120,20 @@ export default function ImageEditorPage({
   }
 
   useEffect(() => {
-    if (!fileRequest?.id || fileRequest.id === seenRequestRef.current) return
-    seenRequestRef.current = fileRequest.id
-    Promise.resolve(acceptFile(fileRequest.file)).finally(() => onFileRequestConsumed?.(fileRequest.id))
+    if (!active || !fileRequest?.id || fileRequest.id === seenRequestRef.current) return
+    let live = true
+    const id = fileRequest.id, file = fileRequest.file
+    queueMicrotask(async () => {
+      if (!live || seenRequestRef.current === id) return
+      await acceptFile(file)
+      if (!live || seenRequestRef.current === id) return
+      seenRequestRef.current = id
+      onFileRequestConsumed?.(id)
+    })
+    return () => { live = false }
     // The request id is the handoff boundary. Other values are read from the render that introduced it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileRequest?.id])
+  }, [active, fileRequest?.id])
 
   useEffect(() => {
     if (!active) { abortOperation(); abortWatermark(); cancelControlGesture() }
@@ -193,6 +201,29 @@ export default function ImageEditorPage({
     if (gesture.generation === documentGenerationRef.current) setCurrentHistory(gesture.base)
   }
 
+  function commitResourceWithControlDraft(current, resource, element) {
+    const gesture = controlGestureRef.current
+    if (!gesture?.changed || gesture.generation !== documentGenerationRef.current) {
+      if (gesture) controlGestureRef.current = null
+      return commitResourceElement(current, resourcesRef.current, resource, element)
+    }
+    const draftElement = current.present.elements.find(item => item.id === gesture.id)
+    const baseElement = gesture.base.present.elements.find(item => item.id === gesture.id)
+    if (!draftElement || !baseElement || !['color', 'opacity'].includes(gesture.key)) {
+      completeControlGesture()
+      return commitResourceElement(historyRef.current, resourcesRef.current, resource, element)
+    }
+    const result = commitResourceElement(gesture.base, resourcesRef.current, resource, element)
+    gesture.base = result.history
+    return {
+      ...result,
+      history: {
+        ...result.history,
+        present: updateElement(result.history.present, gesture.id, { [gesture.key]: draftElement[gesture.key] }),
+      },
+    }
+  }
+
   useEffect(() => {
     if (!active) return undefined
     const escape = (event) => {
@@ -242,7 +273,7 @@ export default function ImageEditorPage({
       const currentDocument = current.present
       const scale = Math.min(1, currentDocument.width * 0.28 / loaded.width, currentDocument.height * 0.28 / loaded.height)
       const width = Math.max(1, Math.round(loaded.width * scale)), height = Math.max(1, Math.round(loaded.height * scale))
-      const result = commitResourceElement(current, resourcesRef.current, candidate, { id: nextId('image'), x: (currentDocument.width - width) / 2, y: (currentDocument.height - height) / 2, width, height, opacity: 0.75 })
+      const result = commitResourceWithControlDraft(current, candidate, { id: nextId('image'), x: (currentDocument.width - width) / 2, y: (currentDocument.height - height) / 2, width, height, opacity: 0.75 })
       if (watermarkRef.current !== operation || operation.generation !== documentGenerationRef.current) return
       setCurrentHistory(result.history); setCurrentResources(result.resources)
     } catch (caught) {

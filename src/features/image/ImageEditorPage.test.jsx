@@ -1,4 +1,5 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { StrictMode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { I18nContext } from '../../i18n/context.js'
 import { translate } from '../../i18n/index.js'
@@ -61,6 +62,43 @@ describe('image editor page', () => {
     await waitFor(() => expect(consumed).toHaveBeenCalledWith('second'))
     expect(confirmDiscard).toHaveBeenCalledOnce()
     expect(screen.getByText('first.png')).toBeVisible()
+  })
+
+  it('loads and acknowledges one initial handoff through StrictMode effect replay', async () => {
+    const consumed = vi.fn(), loadFile = vi.fn(loader), handoff = { id: 'strict', file: file('strict.png') }
+    const t = (key, vars) => translate({ studioImage: messagesDe }, key, vars)
+    const result = render(<StrictMode><I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t }}><ImageEditorPage fileRequest={handoff} onFileRequestConsumed={consumed} loadFile={loadFile} renderPreview={async () => {}} /></I18nContext.Provider></StrictMode>)
+    await screen.findByText('strict.png')
+    await waitFor(() => expect(consumed).toHaveBeenCalledExactlyOnceWith('strict'))
+    expect(loadFile).toHaveBeenCalledOnce()
+    result.rerender(<StrictMode><I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t }}><ImageEditorPage fileRequest={{ ...handoff }} onFileRequestConsumed={consumed} loadFile={loadFile} renderPreview={async () => {}} /></I18nContext.Provider></StrictMode>)
+    await Promise.resolve()
+    expect(loadFile).toHaveBeenCalledOnce()
+    expect(consumed).toHaveBeenCalledOnce()
+  })
+
+  it('does not start or acknowledge a handoff after an immediate real unmount', async () => {
+    const consumed = vi.fn(), loadFile = vi.fn(loader)
+    const result = renderEditor({ fileRequest: { id: 'unmounted', file: file('unmounted.png') }, onFileRequestConsumed: consumed, loadFile })
+    result.unmount()
+    await Promise.resolve(); await Promise.resolve()
+    expect(loadFile).not.toHaveBeenCalled()
+    expect(consumed).not.toHaveBeenCalled()
+  })
+
+  it('does not start a handoff while inactive or after becoming inactive before its microtask', async () => {
+    const consumed = vi.fn(), loadFile = vi.fn(loader), handoff = { id: 'inactive', file: file('inactive.png') }
+    const first = renderEditor({ active: false, fileRequest: handoff, onFileRequestConsumed: consumed, loadFile })
+    await Promise.resolve(); await Promise.resolve()
+    expect(loadFile).not.toHaveBeenCalled()
+    expect(consumed).not.toHaveBeenCalled()
+    first.unmount()
+
+    const second = renderEditor({ active: true, fileRequest: { ...handoff, id: 'transition' }, onFileRequestConsumed: consumed, loadFile })
+    second.rerender(<I18nContext.Provider value={{ locale: 'de', setLocale: vi.fn(), t: (key, vars) => translate({ studioImage: messagesDe }, key, vars) }}><ImageEditorPage active={false} fileRequest={{ ...handoff, id: 'transition' }} onFileRequestConsumed={consumed} loadFile={loadFile} renderPreview={async () => {}} /></I18nContext.Provider>)
+    await Promise.resolve(); await Promise.resolve()
+    expect(loadFile).not.toHaveBeenCalled()
+    expect(consumed).not.toHaveBeenCalled()
   })
 
   it('adds and edits text with keyboard controls and applies a numeric crop explicitly', async () => {
@@ -140,6 +178,42 @@ describe('image editor page', () => {
     pending.resolve({ file: file('mark.png'), kind: 'png', width: 60, height: 30 })
     expect(await screen.findByRole('button', { name: 'Wasserzeichen: mark.png' })).toBeVisible()
     expect(screen.getByText('200 × 300 px')).toBeVisible()
+  })
+
+  it('cancels only an open colour draft after an asynchronous watermark commit', async () => {
+    const pending = deferred()
+    const loadFile = vi.fn((input, options) => options.role === 'watermark' ? pending.promise : loader(input))
+    renderEditor({ loadFile })
+    fireEvent.change(screen.getByLabelText('Bild auswählen'), { target: { files: [file()] } })
+    await screen.findByText('300 × 200 px')
+    fireEvent.change(screen.getByLabelText('Textinhalt'), { target: { value: 'Original' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Text hinzufügen' }))
+    fireEvent.change(screen.getByLabelText('Wasserzeichen hinzufügen'), { target: { files: [file('delayed.png')] } })
+    const colour = screen.getByLabelText('Farbe')
+    fireEvent.focus(colour)
+    fireEvent.change(colour, { target: { value: '#224466' } })
+    pending.resolve({ file: file('delayed.png'), kind: 'png', width: 60, height: 30 })
+    await screen.findByRole('button', { name: 'Wasserzeichen: delayed.png' })
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.getByRole('button', { name: 'Wasserzeichen: delayed.png' })).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Text: Original' }))
+    expect(screen.getByLabelText('Farbe')).toHaveValue('#111111')
+  })
+
+  it('closes an unchanged colour focus before an asynchronous watermark commit', async () => {
+    const pending = deferred()
+    const loadFile = vi.fn((input, options) => options.role === 'watermark' ? pending.promise : loader(input))
+    renderEditor({ loadFile })
+    fireEvent.change(screen.getByLabelText('Bild auswählen'), { target: { files: [file()] } })
+    await screen.findByText('300 × 200 px')
+    fireEvent.change(screen.getByLabelText('Textinhalt'), { target: { value: 'Focused' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Text hinzufügen' }))
+    fireEvent.change(screen.getByLabelText('Wasserzeichen hinzufügen'), { target: { files: [file('focus-delayed.png')] } })
+    fireEvent.focus(screen.getByLabelText('Farbe'))
+    pending.resolve({ file: file('focus-delayed.png'), kind: 'png', width: 60, height: 30 })
+    await screen.findByRole('button', { name: 'Wasserzeichen: focus-delayed.png' })
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.getByRole('button', { name: 'Wasserzeichen: focus-delayed.png' })).toBeVisible()
   })
 
   it('commits one opacity or colour gesture and restores cancelled drafts', async () => {

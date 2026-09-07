@@ -69,7 +69,6 @@
   .image-editor-layout { grid-template-columns: minmax(0, 1fr); }
   .image-inspector { order: -1; }
   .image-preview-panel { min-height: 20rem; padding: .75rem; }
-  .image-canvas-stage { max-height: 62vh; }
   .studio-page .image-element-resize { width: 1.6rem; height: 1.6rem; min-height: 1.6rem; right: -.8rem; bottom: -.8rem; }
 }
 

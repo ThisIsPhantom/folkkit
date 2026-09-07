@@ -162,7 +162,7 @@ test('EXIF dimensions, invalid files, English dark mobile layout and accessibili
   await expect(page.getByRole('alert')).not.toContainText('private-image-content')
 })
 
-test('portrait preview, numeric crop and pointer resize preserve their selected aspect', async ({ page }) => {
+test('portrait preview, numeric crop and pointer resize preserve their selected aspect @matrix', async ({ page }, testInfo) => {
   await page.goto('/image')
   await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture(600, 1200))
   const stage = page.getByRole('application', { name: 'Bild und Elemente bearbeiten' })
@@ -180,6 +180,9 @@ test('portrait preview, numeric crop and pointer resize preserve their selected 
   await page.mouse.down(); await page.mouse.move(resizeBounds.x + resizeBounds.width / 2 + 80, resizeBounds.y + resizeBounds.height / 2 + 20, { steps: 5 }); await page.mouse.up()
   expect(await page.getByLabel('Breite des Ausschnitts').inputValue()).toBe(await page.getByLabel('Höhe des Ausschnitts').inputValue())
   await expect(page.getByRole('button', { name: '1:1', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  if (testInfo.project.name.startsWith('chromium-image')) {
+    await page.screenshot({ path: testInfo.outputPath(`image-fix-2-${testInfo.project.name}.png`), fullPage: true })
+  }
 })
 
 test('cancelled and superseded exports release busy state without clearing newer edits', async ({ page }) => {
@@ -253,6 +256,34 @@ test('watermark generation rejects late reset results, preserves newer edits and
   await expect(page.locator('.image-element-list button')).toHaveCount(1)
   await page.getByRole('button', { name: 'Wasserzeichen erneut einfügen', exact: true }).click()
   await expect(page.locator('.image-element-list button')).toHaveCount(2)
+})
+
+test('Escape cancels an open colour draft without removing an asynchronously committed watermark', async ({ page }) => {
+  await page.addInitScript(() => {
+    const nativeCreateImageBitmap = createImageBitmap.bind(globalThis)
+    globalThis.createImageBitmap = (source, options) => {
+      if (source?.name === 'async-colour-watermark.png') return new Promise((resolve, reject) => {
+        window.__releaseColourWatermark = async () => {
+          try { resolve(await nativeCreateImageBitmap(source, options)) } catch (error) { reject(error) }
+        }
+      })
+      return nativeCreateImageBitmap(source, options)
+    }
+  })
+  await page.goto('/image')
+  await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
+  await page.getByLabel('Textinhalt', { exact: true }).fill('Original')
+  await page.getByRole('button', { name: 'Text hinzufügen', exact: true }).click()
+  await page.getByLabel('Wasserzeichen hinzufügen').setInputFiles({ ...watermarkFixture(), name: 'async-colour-watermark.png' })
+  await expect.poll(() => page.evaluate(() => typeof window.__releaseColourWatermark)).toBe('function')
+  await page.getByLabel('Farbe').focus()
+  await page.getByLabel('Farbe').fill('#224466')
+  await page.evaluate(() => window.__releaseColourWatermark())
+  await expect(page.getByRole('button', { name: 'Wasserzeichen: async-colour-watermark.png' })).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('button', { name: 'Wasserzeichen: async-colour-watermark.png' })).toBeVisible()
+  await page.getByRole('button', { name: 'Text: Original', exact: true }).click()
+  await expect(page.getByLabel('Farbe')).toHaveValue('#111111')
 })
 
 test('one opacity or colour gesture creates one undo step and Escape cancels the draft', async ({ page }) => {
