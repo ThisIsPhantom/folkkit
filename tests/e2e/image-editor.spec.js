@@ -258,7 +258,7 @@ test('watermark generation rejects late reset results, preserves newer edits and
   await expect(page.locator('.image-element-list button')).toHaveCount(2)
 })
 
-test('Escape cancels an open colour draft without removing an asynchronously committed watermark', async ({ page }) => {
+test('colour, asynchronous watermark, undo and Escape remain separate history steps', async ({ page }) => {
   await page.addInitScript(() => {
     const nativeCreateImageBitmap = createImageBitmap.bind(globalThis)
     globalThis.createImageBitmap = (source, options) => {
@@ -280,9 +280,12 @@ test('Escape cancels an open colour draft without removing an asynchronously com
   await page.getByLabel('Farbe').fill('#224466')
   await page.evaluate(() => window.__releaseColourWatermark())
   await expect(page.getByRole('button', { name: 'Wasserzeichen: async-colour-watermark.png' })).toBeVisible()
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
   await page.keyboard.press('Escape')
-  await expect(page.getByRole('button', { name: 'Wasserzeichen: async-colour-watermark.png' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Wasserzeichen: async-colour-watermark.png' })).toHaveCount(0)
   await page.getByRole('button', { name: 'Text: Original', exact: true }).click()
+  await expect(page.getByLabel('Farbe')).toHaveValue('#224466')
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
   await expect(page.getByLabel('Farbe')).toHaveValue('#111111')
 })
 

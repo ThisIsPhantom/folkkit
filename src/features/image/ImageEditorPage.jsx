@@ -201,27 +201,9 @@ export default function ImageEditorPage({
     if (gesture.generation === documentGenerationRef.current) setCurrentHistory(gesture.base)
   }
 
-  function commitResourceWithControlDraft(current, resource, element) {
-    const gesture = controlGestureRef.current
-    if (!gesture?.changed || gesture.generation !== documentGenerationRef.current) {
-      if (gesture) controlGestureRef.current = null
-      return commitResourceElement(current, resourcesRef.current, resource, element)
-    }
-    const draftElement = current.present.elements.find(item => item.id === gesture.id)
-    const baseElement = gesture.base.present.elements.find(item => item.id === gesture.id)
-    if (!draftElement || !baseElement || !['color', 'opacity'].includes(gesture.key)) {
-      completeControlGesture()
-      return commitResourceElement(historyRef.current, resourcesRef.current, resource, element)
-    }
-    const result = commitResourceElement(gesture.base, resourcesRef.current, resource, element)
-    gesture.base = result.history
-    return {
-      ...result,
-      history: {
-        ...result.history,
-        present: updateElement(result.history.present, gesture.id, { [gesture.key]: draftElement[gesture.key] }),
-      },
-    }
+  function moveHistory(action) {
+    completeControlGesture()
+    if (historyRef.current) setCurrentHistory(action(historyRef.current))
   }
 
   useEffect(() => {
@@ -268,12 +250,13 @@ export default function ImageEditorPage({
       loaded = await loadFile(file, { role: 'watermark', signal: operation.controller.signal })
       if (operation.controller.signal.aborted || watermarkRef.current !== operation || operation.generation !== documentGenerationRef.current) return
       const id = nextId('watermark'), candidate = { id, file, name: file.name, width: loaded.width, height: loaded.height }
+      completeControlGesture()
       const current = historyRef.current
       if (!current) return
       const currentDocument = current.present
       const scale = Math.min(1, currentDocument.width * 0.28 / loaded.width, currentDocument.height * 0.28 / loaded.height)
       const width = Math.max(1, Math.round(loaded.width * scale)), height = Math.max(1, Math.round(loaded.height * scale))
-      const result = commitResourceWithControlDraft(current, candidate, { id: nextId('image'), x: (currentDocument.width - width) / 2, y: (currentDocument.height - height) / 2, width, height, opacity: 0.75 })
+      const result = commitResourceElement(current, resourcesRef.current, candidate, { id: nextId('image'), x: (currentDocument.width - width) / 2, y: (currentDocument.height - height) / 2, width, height, opacity: 0.75 })
       if (watermarkRef.current !== operation || operation.generation !== documentGenerationRef.current) return
       setCurrentHistory(result.history); setCurrentResources(result.resources)
     } catch (caught) {
@@ -286,6 +269,7 @@ export default function ImageEditorPage({
 
   function duplicateWatermark(resource) {
     if (!resource || !historyRef.current) return
+    completeControlGesture()
     try {
       const current = historyRef.current, currentDocument = current.present
       const scale = Math.min(1, currentDocument.width * 0.28 / resource.width, currentDocument.height * 0.28 / resource.height)
@@ -346,8 +330,8 @@ export default function ImageEditorPage({
       </header>
       <div className="image-toolbar" aria-label={t('studioImage.transform')}>
         {fileInput}<label className="image-file-label" htmlFor="image-editor-file">{t('studioImage.replace')}</label>
-        <button type="button" onClick={() => setCurrentHistory(undoHistory(historyRef.current))} disabled={!history.past.length || Boolean(busy)}><IconArrowBackUp aria-hidden="true" />{t('studioImage.undo')}</button>
-        <button type="button" onClick={() => setCurrentHistory(redoHistory(historyRef.current))} disabled={!history.future.length || Boolean(busy)}><IconArrowForwardUp aria-hidden="true" />{t('studioImage.redo')}</button>
+        <button type="button" onClick={() => moveHistory(undoHistory)} disabled={!history.past.length || Boolean(busy)}><IconArrowBackUp aria-hidden="true" />{t('studioImage.undo')}</button>
+        <button type="button" onClick={() => moveHistory(redoHistory)} disabled={!history.future.length || Boolean(busy)}><IconArrowForwardUp aria-hidden="true" />{t('studioImage.redo')}</button>
         <button type="button" onClick={reset} disabled={Boolean(busy)}>{t('studioImage.reset')}</button>
       </div>
       <div className="image-editor-layout">

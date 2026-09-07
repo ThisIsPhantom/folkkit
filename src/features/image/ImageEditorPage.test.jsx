@@ -180,7 +180,7 @@ describe('image editor page', () => {
     expect(screen.getByText('200 × 300 px')).toBeVisible()
   })
 
-  it('cancels only an open colour draft after an asynchronous watermark commit', async () => {
+  it('finishes colour before an asynchronous watermark so undo and Escape cannot revive the watermark', async () => {
     const pending = deferred()
     const loadFile = vi.fn((input, options) => options.role === 'watermark' ? pending.promise : loader(input))
     renderEditor({ loadFile })
@@ -194,13 +194,16 @@ describe('image editor page', () => {
     fireEvent.change(colour, { target: { value: '#224466' } })
     pending.resolve({ file: file('delayed.png'), kind: 'png', width: 60, height: 30 })
     await screen.findByRole('button', { name: 'Wasserzeichen: delayed.png' })
+    fireEvent.click(screen.getByRole('button', { name: 'Rückgängig' }))
     fireEvent.keyDown(document, { key: 'Escape' })
-    expect(screen.getByRole('button', { name: 'Wasserzeichen: delayed.png' })).toBeVisible()
+    expect(screen.queryByRole('button', { name: 'Wasserzeichen: delayed.png' })).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Text: Original' }))
+    expect(screen.getByLabelText('Farbe')).toHaveValue('#224466')
+    fireEvent.click(screen.getByRole('button', { name: 'Rückgängig' }))
     expect(screen.getByLabelText('Farbe')).toHaveValue('#111111')
   })
 
-  it('closes an unchanged colour focus before an asynchronous watermark commit', async () => {
+  it('adds no history step for unchanged colour focus before an asynchronous watermark commit', async () => {
     const pending = deferred()
     const loadFile = vi.fn((input, options) => options.role === 'watermark' ? pending.promise : loader(input))
     renderEditor({ loadFile })
@@ -212,8 +215,11 @@ describe('image editor page', () => {
     fireEvent.focus(screen.getByLabelText('Farbe'))
     pending.resolve({ file: file('focus-delayed.png'), kind: 'png', width: 60, height: 30 })
     await screen.findByRole('button', { name: 'Wasserzeichen: focus-delayed.png' })
-    fireEvent.keyDown(document, { key: 'Escape' })
-    expect(screen.getByRole('button', { name: 'Wasserzeichen: focus-delayed.png' })).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Rückgängig' }))
+    expect(screen.queryByRole('button', { name: 'Wasserzeichen: focus-delayed.png' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Text: Focused' })).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Rückgängig' }))
+    expect(screen.queryByRole('button', { name: 'Text: Focused' })).not.toBeInTheDocument()
   })
 
   it('commits one opacity or colour gesture and restores cancelled drafts', async () => {
