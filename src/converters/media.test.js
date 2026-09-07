@@ -292,3 +292,17 @@ async function waitUntil(predicate) {
   }
   throw new Error('condition_not_reached')
 }
+
+test('private browser runtimes do not share cancellation with each other', async () => {
+ const { createBrowserFFmpegRuntime } = await import('./media.js')
+ const instances=[]
+ const createFFmpeg=async()=>{ const instance={load:vi.fn(async()=>{}),terminate:vi.fn()};instances.push(instance);return instance }
+ const a=createBrowserFFmpegRuntime({createFFmpeg,ensureAsset:async()=>{}})
+ const b=createBrowserFFmpegRuntime({createFFmpeg,ensureAsset:async()=>{}})
+ const first=await a.get(),second=await b.get()
+ a.terminate()
+ expect(await b.get()).toBe(second)
+ expect(first.terminate).toHaveBeenCalledOnce()
+ expect(second.terminate).not.toHaveBeenCalled()
+ b.terminate()
+})

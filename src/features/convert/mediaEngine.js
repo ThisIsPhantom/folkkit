@@ -19,7 +19,7 @@ export function parseProbeLog(lines) {
   return { duration, streams }
 }
 
-async function probeMedia(ffmpeg, filename) {
+export async function probeMedia(ffmpeg, filename) {
   const lines = []
   const listener = ({ message }) => {
     // Keep only bounded technical stream metadata. Never forward filenames or payload logs.

@@ -121,7 +121,8 @@ export function createFFmpegRuntime({
   return Object.freeze({ get, terminate })
 }
 
-const ffmpegRuntime = createFFmpegRuntime({
+export function createBrowserFFmpegRuntime(overrides = {}) {
+ return createFFmpegRuntime({
   baseURL: runtimeAssetUrl('vendor/ffmpeg'),
   createFFmpeg: async () => {
     const { FFmpeg } = await import('@ffmpeg/ffmpeg')
@@ -134,8 +135,12 @@ const ffmpegRuntime = createFFmpegRuntime({
       throw new TypeError(`FFmpeg asset is unavailable: ${url}`)
     }
   },
-  notify: notifyLoadListeners,
-})
+  notify: () => {},
+  ...overrides,
+ })
+}
+
+const ffmpegRuntime = createBrowserFFmpegRuntime({ notify: notifyLoadListeners })
 
 export function terminateMediaExecution() {
   ffmpegRuntime.terminate()
