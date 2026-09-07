@@ -62,6 +62,30 @@ function selfHostFFmpegWorkerFallback() {
   }
 }
 
+// The FFmpeg wrapper imports this exact self-hosted ESM file. Vite's generic
+// public-file import guard otherwise rejects its development-only ?import URL.
+function serveGeneratedFFmpegCore() {
+  return {
+    name: 'serve-generated-ffmpeg-core',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if (!['GET', 'HEAD'].includes(request.method) || request.url !== '/vendor/ffmpeg/ffmpeg-core.js?import' || !server.config.publicDir) return next()
+        try {
+          const source = readFileSync(resolve(server.config.publicDir, 'vendor/ffmpeg/ffmpeg-core.js'))
+          response.statusCode = 200
+          response.setHeader('Content-Type', 'text/javascript; charset=utf-8')
+          response.setHeader('Cache-Control', 'no-store')
+          response.end(request.method === 'HEAD' ? undefined : source)
+        } catch {
+          response.statusCode = 404
+          response.end('Runtime asset unavailable')
+        }
+      })
+    },
+  }
+}
+
 function testOldServiceWorker() {
   const source = `
 self.addEventListener('install', event => {
@@ -93,7 +117,7 @@ self.addEventListener('activate', event => {
 export default defineConfig({
   base: '/',
   server: {
-    watch: { ignored: ['**/.superpowers/**', '**/test-results/**', resolve('.worktrees').replaceAll('\\', '/') + '/**'] },
+    watch: { ignored: ['**/.superpowers/**', '**/test-results/**', resolve('.worktrees').replaceAll('\\', '/') + '/**', resolve('public/vendor').replaceAll('\\', '/') + '/**'] },
   },
   define: {
     'globalThis.__FOLKKIT_COMMIT__': JSON.stringify(resolveBuildCommit()),
@@ -102,6 +126,7 @@ export default defineConfig({
     react(),
     pruneHiddenBrowserConverters(),
     selfHostFFmpegWorkerFallback(),
+    serveGeneratedFFmpegCore(),
     assertBuiltOwnershipMetadata(),
     ...(env.FOLKKIT_E2E_OLD_SW === '1' ? [testOldServiceWorker()] : []),
   ],

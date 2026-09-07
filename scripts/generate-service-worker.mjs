@@ -6,8 +6,8 @@ import { parse } from 'acorn'
 
 const STATIC_SHELL_URLS = ['/', '/index.html', '/favicon.svg', '/manifest.json', '/theme-init.js']
 const CORE_MODULE_PATTERN = /(?:^|\/)src\/converters\/(?:qr|pdf)\.js$/
-const STUDIO_MODULE_PATTERN = /^src\/features\/(?:qr\/QrDesignerPage|pdf\/PdfEditorPage|convert\/FileConverterPage|calculate\/CalculatorPage)\.jsx$/
-const STUDIO_CHUNK_NAMES = new Set(['QrDesignerPage', 'PdfEditorPage', 'FileConverterPage', 'CalculatorPage'])
+const STUDIO_MODULE_PATTERN = /^src\/features\/(?:qr\/QrDesignerPage|pdf\/PdfEditorPage|convert\/FileConverterPage|calculate\/CalculatorPage|image\/ImageEditorPage|audio\/AudioEditorPage)\.jsx$/
+const STUDIO_CHUNK_NAMES = new Set(['QrDesignerPage', 'PdfEditorPage', 'FileConverterPage', 'CalculatorPage', 'ImageEditorPage', 'AudioEditorPage'])
 const isStudioChunk = (key, chunk) => STUDIO_MODULE_PATTERN.test(key)
   || (key.startsWith('_') && chunk.isDynamicEntry === true && STUDIO_CHUNK_NAMES.has(chunk.name))
 const EXCLUDED_PATTERN = /(?:\.map$|(?:^|\/)tests?(?:\/|\.)|(?:^|[\/_-])(?:ffmpeg|media(?:Engine)?|experimental)(?:[\/_\-.]|$))/i
@@ -101,7 +101,9 @@ export async function generateServiceWorker({
   selected.add(toSameOriginPath(`assets/${pdfWorkerFiles[0]}`))
   if (roots.some(key => isStudioChunk(key, manifest[key]))) {
     const emitted = await readdir(resolve(distDir, 'assets'))
-    for (const prefix of ['pdfStudioWorker', 'imageWorker', 'qr-reader.worker']) {
+    const prefixes = ['pdfStudioWorker', 'imageWorker', 'qr-reader.worker']
+    if (roots.some(key => manifest[key].name === 'ImageEditorPage' || key.endsWith('/ImageEditorPage.jsx'))) prefixes.push('imageEditorWorker')
+    for (const prefix of prefixes) {
       const files = emitted.filter(file => new RegExp(`^${prefix.replaceAll('.', '\\.')}-[A-Za-z0-9_-]+\\.js$`).test(file))
       if (files.length !== 1) throw new Error(`Expected one emitted ${prefix}, found ${files.length}.`)
       await collectWorkerGraph(distDir, `assets/${files[0]}`, selected)

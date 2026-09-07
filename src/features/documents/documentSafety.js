@@ -4,6 +4,7 @@ export { inspectDocx, decodeDocumentText } from './documentZip.js'
 const allowed = new Set('p h1 h2 h3 h4 h5 h6 div span section article header footer main blockquote pre code em strong b i u s del ins sub sup small mark abbr br hr ul ol li dl dt dd table caption colgroup col thead tbody tfoot tr th td a img figure figcaption'.split(' '))
 const blocked = new Set('script style iframe frame frameset form input button textarea select option object embed applet svg math template noscript video audio source link meta base'.split(' '))
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+const safeIdentifier = value => typeof value === 'string' && /^[A-Za-z0-9_.:-]{1,100}$/.test(value) ? value : ''
 export function safeLink(value) { return typeof value === 'string' && (/^https?:\/\/[^\s<>]+$/i.test(value) || /^#[A-Za-z0-9_.:-]+$/.test(value)) ? value : null }
 export function rasterType(bytes) {
   if ([137,80,78,71,13,10,26,10].every((n, i) => bytes[i] === n)) return 'png'
@@ -39,7 +40,7 @@ export function sanitizeHtml(source) {
       if (!readDataImage(attrs.src)) { warnings.add(/^data:/i.test(attrs.src || '') ? 'unsupported_images_omitted' : 'external_resources_omitted'); return '' }
       out.push(`src="${escape(attrs.src)}"`, `alt="${escape((attrs.alt || '').slice(0, 1000))}"`)
     }
-    if (attrs.id && /^[A-Za-z0-9_.:-]{1,100}$/.test(attrs.id)) out.push(`id="${attrs.id}"`)
+    if (safeIdentifier(attrs.id)) out.push(`id="${attrs.id}"`)
     for (const key of ['colspan', 'rowspan', 'start']) if (/^\d{1,3}$/.test(attrs[key] || '')) out.push(`${key}="${attrs[key]}"`)
     return `<${tag}${out.length ? ` ${out.join(' ')}` : ''}>${['img', 'br', 'hr', 'col'].includes(tag) ? '' : `${children()}</${tag}>`}`
   }
@@ -70,7 +71,7 @@ export async function cleanDocumentAst(ast, media, target) {
   const walk = async (value, depth = 0) => {
     if (++nodes > L.nodes || depth > L.depth) throw documentError('document_too_large')
     if (Array.isArray(value)) {
-      if (value.length === 3 && typeof value[0] === 'string' && Array.isArray(value[1]) && Array.isArray(value[2])) return ['', [], []]
+      if (value.length === 3 && typeof value[0] === 'string' && Array.isArray(value[1]) && Array.isArray(value[2])) return [safeIdentifier(value[0]), [], []]
       const result = []; for (const child of value) { const clean = await walk(child, depth + 1); if (clean !== undefined) result.push(clean) }; return result
     }
     if (!value || typeof value !== 'object') return value

@@ -1,3 +1,5 @@
+import audioMessages from '../features/audio/messages.de.js'
+import imageMessages from '../features/image/messages.de.js'
 import qrMessages from '../features/qr/messages.de.js'
 import convertMessages from '../features/convert/messages.de.js'
 import pdfMessages from '../features/pdf/messages.de.js'
@@ -8,6 +10,8 @@ const messagesDe = Object.freeze({
   studioConvert: convertMessages,
   studioPdf: pdfMessages,
   studioCalculate: calculateMessages,
+  studioImage: imageMessages,
+  studioAudio: audioMessages,
   shell: Object.freeze({
     skip: 'Zum Inhalt springen',
     home: 'Startseite',
@@ -16,6 +20,7 @@ const messagesDe = Object.freeze({
     pdf: 'PDF',
     convert: 'Konvertieren',
     calculate: 'Rechner',
+    image: 'Bildeditor', audio: 'Audio schneiden',
     loading: 'Wird geladen …',
     loadError: 'Der Arbeitsbereich konnte nicht geladen werden.',
     retry: 'Erneut laden',
@@ -57,6 +62,12 @@ const messagesDe = Object.freeze({
     catalogLink: 'Weitere Werkzeuge entdecken',
   }),
   catalog: Object.freeze({
+    imageEditor: 'Bild bearbeiten',
+    imageEditorDescription: 'Zuschneiden, drehen, Text und Wasserzeichen ergänzen',
+    audioTrim: 'Audio schneiden',
+    audioTrimDescription: 'Ausschnitt wählen, anhören und ein- oder ausblenden',
+    documentConvert: 'Dokumente konvertieren',
+    documentConvertDescription: 'DOCX, Markdown und HTML umwandeln',
     toolCount: '{count} Werkzeuge',
     eyebrow: 'Werkzeugkatalog',
     title: 'Weitere Werkzeuge',

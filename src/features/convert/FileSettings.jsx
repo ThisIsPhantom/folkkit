@@ -1,5 +1,5 @@
 import { useI18n } from '../../i18n/index.js'
-import { IMAGE_FORMATS, VIDEO_FORMATS } from './profiles.js'
+import { IMAGE_FORMATS, VIDEO_FORMATS, DOCUMENT_FORMATS } from './profiles.js'
 
 function Choice({ name,label,value,options,disabled,onChange }) {
   return <label>{label}<select name={name} value={value} disabled={disabled} onChange={event => onChange(event.target.value)}>{options.map(([id,text]) => <option key={id} value={id}>{text}</option>)}</select></label>
@@ -11,6 +11,7 @@ export default function FileSettings({ item, disabled, onChange }) {
   const set = (key, value) => onChange({ ...settings, [key]: value })
   const number = (key,label,fallback,max,min = 1,step = 1) => <label>{tr(label)}<input name={`file-${item.id}-${key}`} type="number" min={min} max={max} step={step} value={settings[key] ?? fallback} disabled={disabled} onChange={event => set(key,event.target.value)} /></label>
   const optimize = item.task === 'optimize'
+  if (DOCUMENT_FORMATS.includes(item.from)) return null
   return <details className="converter-settings" open={item.target === 'gif'}><summary>{tr('settings')}</summary><div>
     {IMAGE_FORMATS.includes(item.from) && <>
       {number('width',optimize ? 'maxWidth' : 'width','',8192)}{number('height',optimize ? 'maxHeight' : 'height','',8192)}

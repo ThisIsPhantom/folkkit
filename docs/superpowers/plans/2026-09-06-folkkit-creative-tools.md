@@ -49,7 +49,7 @@ expect(safeHtml).not.toMatch(/<script|onerror=|<iframe|<form|src="https:/i)
 ```jsx
 <ImageEditorPage active={true} fileRequest={{id,file}} onFileRequestConsumed={id=>{}} />
 ```
-Standalone no required props; Root routes /image, retains session in hidden+inert wrapper and acknowledges handoff. Page imports its locale dictionaries using existing feature pattern. Expose pure model/renderer helpers with consistent canvas pixel coordinates; rendering options may inject source/font/canvas for tests. Worker emitted prefix imageEditorWorker.
+Standalone no required props; Root routes /image, retains session in hidden+inert wrapper and acknowledges handoff. Page uses useI18n with studioImage keys; Root merges the default locale dictionaries under studioImage. Expose pure model/renderer helpers with consistent canvas pixel coordinates; rendering options may inject source/font/canvas for tests. Worker emitted prefix imageEditorWorker.
 
 - [ ] Write pure red geometry/history tests for crop then rotate/mirror, transformed element bounds, strict limits and metadata-only 30-state history. Use deterministic non-square source and off-centre text/image, not only square smoke cases.
 - [ ] Build original-based render pipeline and bounded preview, worker export and abort-safe fallback. Example invariant:
@@ -76,10 +76,12 @@ export async function prepareAudio(file, {signal,onProgress} = {})
 export async function exportAudio(file, {from,to,start,end,fadeIn,fadeOut,bitrate}, {signal,onProgress} = {})
 // => {name,blob}
 ```
-Each operation owns a private existing-class FFmpeg runtime; cancellation cannot terminate unrelated legacy/converter tasks. Root retains page and gives active=false on navigation.
+Each operation owns a private existing-class FFmpeg runtime; cancellation cannot terminate unrelated legacy/converter tasks. Page uses useI18n with studioAudio keys; Root merges the default locale dictionaries under studioAudio. Root retains page and gives active=false on navigation.
 
 - [ ] Write red time-range/fade/history/wave bucket tests, strict 100MiB/1800s/cap/codec checks, safe fixed command construction and independent runtime cancellation tests.
-- [ ] Implement local prep: bounded probe, mono2000Hz PCM→max2048 min/max buckets plus128k MP3 preview; release WASM/temp files after prep. Reject truncated/missing outputs. File data and logs never leave browser.
+- [ ] Implement local prep: bounded probe, full-band/channel min/max analysis→max2048 buckets plus128k MP3 preview; cap analysis text512KiB; release WASM/temp files after prep. Reject truncated/missing outputs. File data and logs never leave browser.
+  One bounded approach to prove in the pinned WASM runtime is `aformat=sample_fmts=fltp:sample_rates=44100,asetnsamples=n=N:p=0,astats=metadata=1:reset=1:measure_perchannel=none:measure_overall=Min_level+Max_level,ametadata=mode=print:file=waveform.txt`, with `N=max(1,ceil(duration*44100/2048))`. Bound input duration before filtering and parse only finite Min_level/Max_level records, rejecting excess rows/bytes. Verify an8kHz tone and opposite-phase stereo produce nonzero peaks. If exact filter support differs, choose an equally bounded full-band envelope and record the evidence.
+
 - [ ] Implement direct waveform selection and precise time fields, user-triggered selection playback with gain fades and end stop, presets whole/selection, undo/redo, export settings and reset. Abort/pause on inactive/reset/unmount; protect late play/prepare/export promises. Cap all buffers before allocation.
 - [ ] Implement export from original with atrim/asetpts/afade and fixed encoder settings; validate true result duration and resource cap. Example filter for start2/end5 with fades0.2/0.3:
 ```text
@@ -93,7 +95,7 @@ atrim=start=2:end=5,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.2,afade=t=out:st=2.
 **Files:** src/App.jsx and session tests; routing/studioRoutes.*; pages/HomePage.jsx/CatalogPage.jsx/pages.css; i18n/messages.*; convert/{profiles,detection,engine,FileSettings,FileConverterPage,messages} and tests; package.json/bun.lock; runtime asset/notices/PWA scripts and tests; README/PROJECT_MEMORY; relevant E2E/workflows.
 **Interfaces:** exact feature props/functions above; /image, /audio and new convert targets docx/markdown/html. New catalog keys image-editor, audio-trim, document-convert. Shared converter queue still sequential, one result budget, genuine types only.
 
-- [ ] Install pandoc-wasm1.1.0 pinned after clean baseline, preserve QR UTF-8 patch; verify actual WASM3.9/source/hash. Promote safety dependencies only if needed and reviewed. Document all runtime license obligations.
+- [ ] Install pandoc-wasm1.1.0 pinned after clean baseline, preserve QR UTF-8 patch; verify actual WASM3.10/source/hash. Promote safety dependencies only if needed and reviewed. Document all runtime license obligations.
 - [ ] Add failing routing/session/intake/profile tests. Preserve files while hiding studios, but set inactive immediately enough to cancel/pause; optional handoffs exactly once under StrictMode. Add six document profiles and candidate-only validation; UI targets/extensions/format notes reflect true supported pairs.
 - [ ] Add compact image/audio entries to home and convert, three catalog entries with existing search/favorites. Keep initial three studio cards above added entries. Existing header remains compact. Use ordinary field hints, no internal engine jargon in product UI.
 - [ ] Extend initial-shell offline graph for new UI/image assets; heavy Pandoc/FFmpeg remain lazy, cache on explicit use, no automatic startpage download. Account for worker imports/WASM in runtime-origin validation and exact asset license manifest. No budget or CSP weakening.

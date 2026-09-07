@@ -304,6 +304,8 @@ export default function ImageEditorPage({
     <input id="image-editor-file" className="image-file-input" name="image" type="file" accept={IMAGE_ACCEPT} disabled={Boolean(busy)} aria-label={t('studioImage.choose')} onChange={(event) => { const chosen = event.target.files?.[0]; event.target.value = ''; acceptFile(chosen) }} />
   )
 
+  const busyStatus = busy && <div className="image-busy" role="status"><span>{t(busy.kind === 'load' ? 'studioImage.working' : 'studioImage.exporting')}</span><button type="button" onClick={abortOperation}>{t('studioImage.cancel')}</button></div>
+
   if (!source || !imageDocument) {
     return (
       <section className="studio-page image-editor" aria-labelledby="image-editor-title">
@@ -312,7 +314,7 @@ export default function ImageEditorPage({
           {fileInput}<IconPhotoPlus aria-hidden="true" size={36} /><label className="studio-primary image-file-label" htmlFor="image-editor-file">{t('studioImage.choose')}</label>
           <strong>{t('studioImage.drop')}</strong><p>{t('studioImage.limits')}</p>
         </section>
-        {busy && <p role="status" className="studio-status">{t('studioImage.working')}</p>}
+        {busyStatus}
         {error && <p role="alert">{t(`studioImage.errors.${error}`)}</p>}
       </section>
     )
@@ -378,7 +380,7 @@ export default function ImageEditorPage({
           </section>
         </div>
       </div>
-      {busy && <div className="image-busy" role="status"><span>{t(busy.kind === 'load' ? 'studioImage.working' : 'studioImage.exporting')}</span><button type="button" onClick={abortOperation}>{t('studioImage.cancel')}</button></div>}
+      {busyStatus}
       {error && <p role="alert" className="image-message">{t(`studioImage.errors.${error}`)}</p>}
       {notice && <p role="status" className="image-message">{t(`studioImage.${notice}`)}</p>}
     </section>

@@ -29,7 +29,7 @@ test('studio entry screens stay accessible in both themes and languages', async 
   await page.goto('/')
   for (const locale of ['de', 'en']) {
     await page.evaluate(value => localStorage.setItem('folkkit:locale', value), locale)
-    for (const route of ['/qr', '/pdf', '/convert', '/calculate']) {
+    for (const route of ['/qr', '/pdf', '/convert', '/calculate', '/image', '/audio']) {
       await page.goto(route)
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       await expect(page.locator('.studio-loading')).toHaveCount(0)

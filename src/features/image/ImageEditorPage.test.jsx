@@ -274,3 +274,20 @@ describe('image editor page', () => {
     expect(result.container.querySelectorAll('.image-element-list button')).toHaveLength(2)
   })
 })
+
+
+it('cancels initial image loading and closes its late bitmap without replacing a retry', async () => {
+  const pending = deferred()
+  let calls = 0
+  renderEditor({ loadFile: chosen => ++calls === 1 ? pending.promise : loader(chosen) })
+  fireEvent.change(screen.getByLabelText('Bild auswählen'), { target: { files: [file('old.png')] } })
+  fireEvent.click(screen.getByRole('button', { name: 'Abbrechen', exact: true }))
+  expect(screen.getByLabelText('Bild auswählen')).toBeEnabled()
+  fireEvent.change(screen.getByLabelText('Bild auswählen'), { target: { files: [file('retry.png')] } })
+  await screen.findByText('retry.png')
+  const late = await loader(file('old.png'))
+  pending.resolve(late)
+  await waitFor(() => expect(late.bitmap.close).toHaveBeenCalledOnce())
+  expect(screen.getByText('retry.png')).toBeVisible()
+  expect(screen.queryByText('old.png')).not.toBeInTheDocument()
+})

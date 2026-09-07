@@ -46,6 +46,9 @@ const svgCssUrlAttributeNames = new Set([
 ])
 
 const reviewedLegalNavigation = new Set(JSON.parse(readFileSync(join(projectRoot, 'scripts', 'reviewed-browser-navigation.json'), 'utf8')))
+// parse5@8.0.1 namespace and quirks-mode identifiers. These are allowed
+// only as passive literals; every network/navigation/resource sink below still rejects them.
+const passiveParserIdentifiers = new Set(['http://www.w3.org/2000/xmlns/', 'http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd'])
 
 function externalUrlMatches(value) {
   return [...String(value || '').matchAll(/(?:^|[\s'"`(<\[=:,])((?:https?:)?\/\/[^\s'"`<>\])}]+)/gi)].map(match => ({
@@ -414,7 +417,7 @@ function hasExternalJavaScriptSink(contents) {
     if (found || !node || typeof node !== 'object') return
     if (['Literal', 'TemplateLiteral', 'BinaryExpression'].includes(node.type)) {
       const value = resolveStatic(node).value
-      const unreviewed = value === null ? null : externalUrls(value).find(url => !isReviewedLegalNavigation(url))
+      const unreviewed = value === null ? null : externalUrls(value).find(url => !isReviewedLegalNavigation(url) && !passiveParserIdentifiers.has(url))
       if (unreviewed) found = unreviewed
     }
     if (node.type === 'ImportExpression' && resolvedExternal(node.source).value) found = resolvedExternal(node.source).value

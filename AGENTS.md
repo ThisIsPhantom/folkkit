@@ -4,7 +4,8 @@
 
 - Folkkit is an AGPL-3.0-only, local-first browser utility suite derived from `MercuriusDream/convert-everything`.
 - The original architecture is documented in `docs/superpowers/specs/2026-08-31-folkkit-design.md`. The user-approved Studio extension and current visual direction are canonical in `docs/superpowers/plans/2026-09-05-folkkit-studio.md`.
-- The repository is in planning/foundation status. Do not present Folkkit as deployed or production-ready until the approved release gates pass.
+- The existing Studio baseline has passed its release gates and is published on GitHub. New changes must pass the same gates before publication; GitHub branch publication does not establish live hosting.
+- The approved image/document/audio extension is defined in `docs/superpowers/specs/2026-09-06-folkkit-creative-tools-design.md` and its matching implementation plan.
 
 ## Required context order
 

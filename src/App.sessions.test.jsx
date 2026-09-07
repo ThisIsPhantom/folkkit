@@ -13,6 +13,11 @@ vi.mock('./features/convert/FileConverterPage.jsx', () => ({ default: function C
   return <section><h1>Konvertieren</h1><label>Queue entry<input value={value} onChange={e => setValue(e.target.value)} /></label></section>
 } }))
 
+vi.mock('./features/image/ImageEditorPage.jsx', () => ({ default: function ImageSession({ active }) {
+  const [value,setValue] = useState('')
+  return <section><h1>Bildeditor-Test</h1><label>Image edit<input value={value} onChange={e=>setValue(e.target.value)} /></label><span data-testid="image-active">{String(active)}</span></section>
+} }))
+
 beforeEach(() => { localStorage.clear(); history.replaceState(null, '', '/qr'); window.scrollTo = vi.fn() })
 
 test('keeps QR, converter and calculator inputs in memory across navigation and hides inactive controls', async () => {
@@ -33,4 +38,21 @@ test('keeps QR, converter and calculator inputs in memory across navigation and 
   act(() => { history.replaceState(null, '', '/calculate'); window.dispatchEvent(new PopStateEvent('popstate')) })
   expect(await screen.findByRole('textbox', { name: 'Grundwert' })).toHaveValue('480')
   expect(JSON.stringify({ ...localStorage })).not.toMatch(/private|480/)
+})
+
+
+test('retains the image editor through header navigation and exposes its home entry', async () => {
+  history.replaceState(null,'','/image')
+  renderWithProviders(<App />)
+  fireEvent.change(await screen.findByLabelText('Image edit'),{target:{value:'private watermark'}})
+  fireEvent.click(screen.getByRole('link',{name:'Konvertieren',exact:true}))
+  await screen.findByLabelText('Queue entry')
+  expect(screen.queryByRole('textbox',{name:'Image edit'})).not.toBeInTheDocument()
+  expect(screen.getByTestId('image-active')).toHaveTextContent('false')
+  fireEvent.click(screen.getByRole('link',{name:'Startseite',exact:true}))
+  fireEvent.click(await screen.findByRole('button',{name:/Bild bearbeiten/}))
+  expect(await screen.findByLabelText('Image edit')).toHaveValue('private watermark')
+  expect(screen.getByTestId('image-active')).toHaveTextContent('true')
+  expect(screen.getAllByRole('heading',{level:1})).toHaveLength(1)
+  expect(JSON.stringify({...localStorage})).not.toContain('private watermark')
 })

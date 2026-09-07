@@ -93,6 +93,17 @@ try {
     Assert-Equal $shortPathReport.Report.FileCount 10 'The short-path alias must retain the complete hosting tree.'
     Assert-Equal $shortPathReport.Report.TreeHash $validReportA.Report.TreeHash 'The hosting tree hash must not depend on long or short root spelling.'
 
+    $documentRuntimeTree = Join-Path $temporaryRoot 'document-runtime'
+    New-ValidTree $documentRuntimeTree
+    Write-FixtureFile $documentRuntimeTree 'vendor/pandoc/pandoc.wasm' 'document runtime'
+    $documentRuntimeReport = Invoke-Validator $documentRuntimeTree
+    Assert-Equal $documentRuntimeReport.ExitCode 0 'The exact Pandoc runtime path must be allowed.'
+    Assert-Equal $documentRuntimeReport.Report.FileCount 11 'The document runtime must be included in the hosting tree.'
+    Write-FixtureFile $documentRuntimeTree 'vendor/pandoc/unreviewed.js' 'void 0'
+    $unknownDocumentRuntime = Invoke-Validator $documentRuntimeTree
+    Assert-True ($unknownDocumentRuntime.ExitCode -ne 0) 'The document runtime allowlist must not allow neighbouring arbitrary files.'
+    Assert-Equal $unknownDocumentRuntime.Report.ForbiddenFileCount 1 'The unreviewed document runtime file must be counted.'
+
     $insecureReviewPath = Join-Path $temporaryRoot 'insecure.htaccess'
     $insecureTree = Join-Path $temporaryRoot 'insecure-tree'
     New-ValidTree $insecureTree

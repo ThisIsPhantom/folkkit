@@ -24,6 +24,11 @@ test('prepares all studios, native PDF and QR reader worker imports for offline 
     'assets/pdf-encoder-123456.js': 'export {}',
     'assets/WorkspacePage-123456.js': 'export {}',
     'assets/CalculatorPage-123456.js': 'export {}',
+    'assets/ImageEditorPage-123456.js': 'export {}',
+    'assets/AudioEditorPage-123456.js': 'export {}',
+    'assets/imageEditorWorker-123456.js': 'import "./editor-renderer-123456.js";',
+    'assets/editor-renderer-123456.js': 'export {}',
+    'vendor/pandoc/pandoc.wasm': 'optional-pandoc-bytes',
   }
   const manifest = {
     'index.html': { file: 'assets/app-123456.js', isEntry: true, assets: ['assets/qr-preview-123456.svg'] },
@@ -36,6 +41,8 @@ test('prepares all studios, native PDF and QR reader worker imports for offline 
     'src/converters/media.js': { file: 'assets/media-123456.js' },
     'src/pages/WorkspacePage.jsx': { file: 'assets/WorkspacePage-123456.js' },
     'src/features/calculate/CalculatorPage.jsx': { file: 'assets/CalculatorPage-123456.js' },
+    'src/features/image/ImageEditorPage.jsx': { file: 'assets/ImageEditorPage-123456.js' },
+    'src/features/audio/AudioEditorPage.jsx': { file: 'assets/AudioEditorPage-123456.js' },
   }
   try {
     for (const [file, content] of Object.entries({ ...assets, '.vite/manifest.json': JSON.stringify(manifest) })) {
@@ -51,8 +58,12 @@ test('prepares all studios, native PDF and QR reader worker imports for offline 
       'assets/imageWorker-123456.js', 'assets/image-codec-123456.js',
       'assets/pdf-encoder-123456.js',
       'assets/WorkspacePage-123456.js',
-      'assets/CalculatorPage-123456.js',
+      'assets/CalculatorPage-123456.js', 'assets/ImageEditorPage-123456.js', 'assets/AudioEditorPage-123456.js',
+      'assets/imageEditorWorker-123456.js', 'assets/editor-renderer-123456.js',
     ]) expect(result.precacheUrls).toContain(`/${file}`)
     expect(result.precacheUrls).not.toContain('/assets/media-123456.js')
+    expect(result.precacheUrls).not.toContain('/vendor/pandoc/pandoc.wasm')
+    await writeFile(join(directory,'vendor/pandoc/pandoc.wasm'),'different-optional-pandoc')
+    expect((await generateServiceWorker({distDir:directory})).cacheName).not.toBe(result.cacheName)
   } finally { await rm(directory, { recursive: true, force: true }) }
 })

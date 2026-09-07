@@ -30,9 +30,9 @@ describe('file conversion contracts', () => {
     expect(resolvePdfScale(300)).toBe(300 / 72)
     expect(() => resolvePdfScale(10000)).toThrow('invalid_settings')
   })
-  it('has exactly the 33 approved directed pairs and cannot execute missing pairs', () => {
-    expect(FILE_PROFILES).toHaveLength(33)
-    expect(new Set(FILE_PROFILES.map(p => p.id)).size).toBe(33)
+  it('has the 33 original and six document directed pairs and cannot execute missing pairs', () => {
+    expect(FILE_PROFILES).toHaveLength(39)
+    expect(new Set(FILE_PROFILES.map(p => p.id)).size).toBe(39)
     expect(() => getProfile('pdf', 'mp4')).toThrow('unsupported_pair')
     expect(() => getProfile('mov', 'mov')).toThrow('unsupported_pair')
   })
@@ -72,4 +72,21 @@ describe('file conversion contracts', () => {
     await expect(detectFile(new File([bytes], 'test.png', { type: 'application/pdf' }))).rejects.toThrow('type_mismatch')
     await expect(detectFile(new File(['bad'], 'test.png'))).rejects.toThrow('unsupported_type')
   })
+})
+
+
+it('adds exactly six semantic document pairs, without inventing PDF or document-media conversions', () => {
+  const documents=FILE_PROFILES.filter(profile=>profile.engine === 'document')
+  expect(documents.map(({from,to})=>`${from}-${to}`).sort()).toEqual(['docx-html','docx-markdown','html-docx','html-markdown','markdown-docx','markdown-html'])
+  expect(()=>getProfile('docx','pdf')).toThrow('unsupported_pair')
+  expect(()=>getProfile('html','mp3')).toThrow('unsupported_pair')
+})
+
+
+it('detects document candidates without reclassifying signed images or accepting binary text', async () => {
+  expect(await detectFile(new File(['# Hello'], 'hello.md', {type:'text/markdown'}))).toBe('markdown')
+  expect(await detectFile(new File(['<p>Hello</p>'], 'hello.html', {type:'text/html'}))).toBe('html')
+  await expect(detectFile(new File([Uint8Array.of(0xc3,0x28)],'bad.md'))).rejects.toMatchObject({code:'invalid_document'})
+  await expect(detectFile(new File(['x'.repeat(2*1024*1024+1)],'large.md'))).rejects.toMatchObject({code:'document_too_large'})
+  await expect(detectFile(new File([Uint8Array.of(137,80,78,71,13,10,26,10)],'image.md'))).rejects.toMatchObject({code:'type_mismatch'})
 })

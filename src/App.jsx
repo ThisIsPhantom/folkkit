@@ -1,4 +1,5 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getStudioTools } from './catalog/studioCatalog.js'
+import { createElement, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getReleasedTools } from './catalog/releaseCatalog'
 import AppShell from './components/shell/AppShell'
 import { useI18n } from './i18n'
@@ -18,7 +19,8 @@ const FileConverterPage = lazy(() => import('./features/convert/FileConverterPag
 const PdfEditorPage = lazy(() => import('./features/pdf/PdfEditorPage.jsx'))
 const WorkspacePage = lazy(() => import('./pages/WorkspacePage.jsx'))
 const CalculatorPage = lazy(() => import('./features/calculate/CalculatorPage.jsx'))
-const retainedStudios = ['qr', 'convert', 'calculate']
+const editorPages = { image: lazy(() => import('./features/image/ImageEditorPage.jsx')), audio: lazy(() => import('./features/audio/AudioEditorPage.jsx')) }
+const retainedStudios = ['qr', 'convert', 'calculate', ...Object.keys(editorPages)]
 
 const legalPages = Object.freeze({
   privacy: PrivacyPage,
@@ -134,16 +136,16 @@ export default function App() {
 
   return (
     <AppShell locale={locale} onLocaleChange={setLocale} route={shellRoute} onNavigate={navigate}>
-      {route === 'home' && <HomePage onOpenCore={openCore} onOpenCatalog={() => navigate('/tools')} />}
+      {route === 'home' && <HomePage editors={Object.keys(editorPages)} onOpenCore={openCore} onOpenCatalog={() => navigate('/tools')} />}
       {route === 'catalog' && <CatalogPage entries={[
-        { id: 'qr-reader', name: t('catalog.qrReader'), description: t('catalog.qrReaderDescription'), category: 'studio', categoryName: t('catalog.studioCategory') },
-        { id: 'image-optimize', name: t('catalog.imageOptimize'), description: t('catalog.imageOptimizeDescription'), category: 'studio', categoryName: t('catalog.studioCategory') },
+        ...getStudioTools(t).filter(tool => !tool.editor || Object.hasOwn(editorPages,tool.editor)),
         ...releasedTools.filter(tool => !legacyCalculatorIds.includes(tool.id)),
       ]} onSelect={selectCatalogEntry} />}
       {retainedStudios.filter(kind => studios[kind]).map(kind => <div key={kind} hidden={route !== kind} inert={route !== kind} className="studio-session">
         <ErrorBoundary onRetry={() => window.location.reload()}><Suspense fallback={<div className="studio-page studio-loading"><h1>{t(`shell.${kind}`)}</h1><p role="status">{t('shell.loading')}</p></div>}>
+          {editorPages[kind] && createElement(editorPages[kind], { active:route === kind, fileRequest:fileRequest?.route === kind ? fileRequest : undefined, onFileRequestConsumed:consumeFileRequest })}
           {kind === 'qr' && <QrDesignerPage initialMode={studios.qr.mode} onModeChange={mode => navigate(`/qr?mode=${mode}`)} active={route === kind} />}
-          {kind === 'convert' && <FileConverterPage initialMode={studios.convert.mode} initialTarget={studios.convert.target} initialCombine={studios.convert.combine} fileRequest={fileRequest?.route === 'convert' ? fileRequest : undefined} onFileRequestConsumed={consumeFileRequest} onModeChange={mode => navigate(`/convert?mode=${mode}`)} active={route === kind} />}
+          {kind === 'convert' && <FileConverterPage editorKinds={Object.keys(editorPages)} onOpenEditor={(editor,file) => openStudioTool(editor === 'image' ? 'image-editor' : 'audio-trim',file)} initialMode={studios.convert.mode} initialTarget={studios.convert.target} initialCombine={studios.convert.combine} fileRequest={fileRequest?.route === 'convert' ? fileRequest : undefined} onFileRequestConsumed={consumeFileRequest} onModeChange={mode => navigate(`/convert?mode=${mode}`)} active={route === kind} />}
           {kind === 'calculate' && <CalculatorPage initialCalculator={studios.calculate.calculator} onSelectCalculator={id => { if (id !== studios.calculate.calculator) navigate(`/calculate?calculator=${id}`) }} />}
         </Suspense></ErrorBoundary>
       </div>)}

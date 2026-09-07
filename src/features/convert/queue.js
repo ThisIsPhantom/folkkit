@@ -1,3 +1,4 @@
+import { DOCUMENT_ERRORS } from '../documents/documentConstants.js'
 import { CONVERT_LIMITS, IMAGE_FORMATS, conversionError, targetsFor } from './profiles.js'
 import { detectFile } from './detection.js'
 
@@ -10,7 +11,7 @@ export function uniqueFilename(name, used) {
   used.add(candidate.toLowerCase())
   return candidate
 }
-const knownErrors = new Set(['unsupported_type','type_mismatch','unsupported_pair','too_large','resource_limit','invalid_file','invalid_settings','unsupported_codec','invalid_pages','invalid_clip','no_audio','media_runtime_unavailable','conversion_failed','cancelled'])
+const knownErrors = new Set([...DOCUMENT_ERRORS,'unsupported_type','type_mismatch','unsupported_pair','too_large','resource_limit','invalid_file','invalid_settings','unsupported_codec','invalid_pages','invalid_clip','no_audio','media_runtime_unavailable','conversion_failed','cancelled'])
 function errorCode(error) { const code = error?.code || error?.message; return knownErrors.has(code) ? code : 'conversion_failed' }
 
 export function createConversionQueue({ detect = detectFile, convert } = {}) {

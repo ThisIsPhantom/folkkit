@@ -29,7 +29,15 @@ export async function detectFile(file) {
   if (!file || file.size <= 0) throw conversionError('invalid_file')
   if (file.size > CONVERT_LIMITS.perFile) throw conversionError('too_large')
   const kind = signatureType(await readBytes(file.slice(0, 64 * 1024)))
-  if (!kind) throw conversionError('unsupported_type')
+  if (!kind) {
+    const documentCandidate = /\.(?:docx|md|markdown|html|htm)$/i.test(String(file.name || '')) || /^(?:application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document|text\/(?:markdown|x-markdown|html))(?:;|$)/i.test(String(file.type || ''))
+    if (documentCandidate) {
+      const { detectDocumentFile } = await import('../documents/documentModel.js')
+      const documentKind = await detectDocumentFile(file)
+      if (documentKind) return documentKind
+    }
+    throw conversionError('unsupported_type')
+  }
   if (kind === 'pdf' && file.size > CONVERT_LIMITS.pdfInput) throw conversionError('too_large')
   const ext = String(file.name || '').match(/\.([^.]+)$/)?.[1]?.toLowerCase()
   const mime = String(file.type || '').toLowerCase()

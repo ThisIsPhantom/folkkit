@@ -1,3 +1,5 @@
+import audioMessages from '../features/audio/messages.en.js'
+import imageMessages from '../features/image/messages.en.js'
 import qrMessages from '../features/qr/messages.en.js'
 import convertMessages from '../features/convert/messages.en.js'
 import pdfMessages from '../features/pdf/messages.en.js'
@@ -8,6 +10,8 @@ const messagesEn = Object.freeze({
   studioConvert: convertMessages,
   studioPdf: pdfMessages,
   studioCalculate: calculateMessages,
+  studioImage: imageMessages,
+  studioAudio: audioMessages,
   shell: Object.freeze({
     skip: 'Skip to content',
     home: 'Home',
@@ -16,6 +20,7 @@ const messagesEn = Object.freeze({
     pdf: 'PDF',
     convert: 'Convert',
     calculate: 'Calculators',
+    image: 'Image editor', audio: 'Trim audio',
     loading: 'Loading …',
     loadError: 'This workspace could not be loaded.',
     retry: 'Reload',
@@ -57,6 +62,12 @@ const messagesEn = Object.freeze({
     catalogLink: 'Discover more tools',
   }),
   catalog: Object.freeze({
+    imageEditor: 'Edit images',
+    imageEditorDescription: 'Crop, rotate, add text and watermarks',
+    audioTrim: 'Trim audio',
+    audioTrimDescription: 'Select, listen to and fade an audio clip',
+    documentConvert: 'Convert documents',
+    documentConvertDescription: 'Convert DOCX, Markdown and HTML',
     toolCount: '{count} tools',
     eyebrow: 'Tool catalog',
     title: 'More tools',

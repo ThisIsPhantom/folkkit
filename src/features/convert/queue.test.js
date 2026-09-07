@@ -133,3 +133,12 @@ describe('sequential conversion queue', () => {
     expect(queue.snapshot().items[1]).toMatchObject({ status:'unsupported',target:'',task:'optimize' })
   })
 })
+
+
+it('retains useful document validation errors instead of exposing engine details', async () => {
+  for (const code of ['invalid_document','unsafe_document','document_too_large','document_timeout','document_runtime_unavailable']) {
+    const queue=createConversionQueue({detect:async()=>{throw Object.assign(new Error('private diagnostic'),{code})}})
+    await queue.add([new File(['test'],'doc.md')])
+    expect(queue.snapshot().items[0]).toMatchObject({status:'error',error:code})
+  }
+})

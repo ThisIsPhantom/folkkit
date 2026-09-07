@@ -347,3 +347,12 @@ test('copies the pinned Pandoc binary and refuses tampering without replacing a 
   await expect(syncPandocRuntime({ sourceFile:invalidSource,destinationDirectory })).rejects.toThrow(/Pandoc.*integrity/i)
   expect((await readFile(join(destinationDirectory,'pandoc.wasm'))).equals(expected)).toBe(true)
 })
+
+
+test.each(['http://www.w3.org/2000/xmlns/','http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd'])('allows passive parser identifier %s only as data', uri => {
+  expect(()=>assertNoExternalRuntimeOrigins('parser.js',`const namespaces={XMLNS:"${uri}"};`)).not.toThrow()
+  for (const source of [`fetch("${uri}")`,`const namespace="${uri}"; fetch(namespace)`,`new Worker("${uri}")`,`image.src="${uri}"`,`link.href="${uri}"`,`window.open("${uri}")`]) {
+    expect(()=>assertNoExternalRuntimeOrigins('app.js',source)).toThrow('external runtime origin')
+  }
+  expect(()=>assertNoExternalRuntimeOrigins('style.css',`body{background:url("${uri}")}`)).toThrow('external runtime origin')
+})

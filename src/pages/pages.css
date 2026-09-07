@@ -505,3 +505,11 @@
     border-radius: 0;
   }
 }
+
+.editor-entry-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:1rem;margin-top:1rem; }
+.editor-entry { display:flex;align-items:center;gap:1rem;min-height:5.25rem;padding:1rem;text-align:left;border:1px solid var(--shell-border);border-radius:var(--radius-surface);background:var(--shell-raised);color:var(--ink); }
+.editor-entry > span { display:grid;gap:.25rem;flex:1;min-width:0; }
+.editor-entry strong { font-size:1rem;font-weight:600; }
+.editor-entry span span { color:var(--text-secondary);font-size:.875rem;line-height:1.5; }
+.editor-entry > svg { flex-shrink:0; }
+.editor-entry:hover { border-color:var(--shell-border-strong); }

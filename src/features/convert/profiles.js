@@ -1,18 +1,21 @@
 import { MEDIA_LIMITS } from '../../runtime/workBudgets.js'
 
+import { DOCUMENT_FORMATS } from '../documents/documentConstants.js'
+export { DOCUMENT_FORMATS }
 export const IMAGE_FORMATS = Object.freeze(['png', 'jpeg', 'webp'])
 export const AUDIO_FORMATS = Object.freeze(['mp3', 'wav', 'flac', 'ogg'])
 export const VIDEO_FORMATS = Object.freeze(['mp4', 'webm', 'mov'])
-export const FORMAT_MIME = Object.freeze({ png: 'image/png', jpeg: 'image/jpeg', webp: 'image/webp', pdf: 'application/pdf', mp3: 'audio/mpeg', wav: 'audio/wav', flac: 'audio/flac', ogg: 'audio/ogg', mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime', gif: 'image/gif' })
+export const FORMAT_MIME = Object.freeze({ png: 'image/png', jpeg: 'image/jpeg', webp: 'image/webp', pdf: 'application/pdf', mp3: 'audio/mpeg', wav: 'audio/wav', flac: 'audio/flac', ogg: 'audio/ogg', mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime', gif: 'image/gif', docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document', markdown:'text/markdown', html:'text/html' })
 export const CONVERT_LIMITS = Object.freeze({ maxFiles: 20, perFile: 100 * 1024 * 1024, pdfInput: 32 * 1024 * 1024, pdfPixels: 16 * 1024 * 1024, totalInput: 250 * 1024 * 1024, totalOutput: 128 * 1024 * 1024, output: MEDIA_LIMITS.maxOutputBytes, maxPages: 100, maxPixels: 24_000_000, maxDimension: 8192, timeout: 120000 })
 
 const pairs = [
+  ...DOCUMENT_FORMATS.flatMap(from => DOCUMENT_FORMATS.filter(to => to !== from).map(to => ({ from, to, engine:'document' }))),
   ...IMAGE_FORMATS.flatMap(from => [...IMAGE_FORMATS.filter(to => to !== from), 'pdf'].map(to => ({ from, to, engine: 'image' }))),
   ...['png', 'jpeg'].map(to => ({ from: 'pdf', to, engine: 'pdf' })),
   ...AUDIO_FORMATS.flatMap(from => AUDIO_FORMATS.filter(to => to !== from).map(to => ({ from, to, engine: 'media' }))),
   ...VIDEO_FORMATS.flatMap(from => [...['mp4', 'webm'].filter(to => to !== from), 'gif', 'mp3'].map(to => ({ from, to, engine: 'media' }))),
 ]
-// Every released pair is exercised by file-converter-matrix.spec.js against real fixtures.
+// Released pairs are exercised by the real file-converter and document-conversion browser fixtures.
 export const FILE_PROFILES = Object.freeze(pairs.map(pair => Object.freeze({ ...pair, id: `${pair.from}-${pair.to}`, released: true })))
 export function conversionError(code) { return Object.assign(new Error(code), { code }) }
 export function assertArchiveBudget(entries) {

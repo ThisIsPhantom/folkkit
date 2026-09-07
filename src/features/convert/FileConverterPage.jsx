@@ -4,10 +4,13 @@ import { createConversionQueue } from './queue.js'
 import { convertFileItem,createZip } from './engine.js'
 import { optimizeImageItem } from './imageOptimization.js'
 import { formatFileSize } from './formatFileSize.js'
-import { FORMAT_MIME,IMAGE_FORMATS,targetsFor } from './profiles.js'
+import { FORMAT_MIME,IMAGE_FORMATS,AUDIO_FORMATS,DOCUMENT_FORMATS,targetsFor } from './profiles.js'
 import FileSettings from './FileSettings.jsx'
 import './converter.css'
 
+const editorForFormat = format => IMAGE_FORMATS.includes(format) ? 'image' : AUDIO_FORMATS.includes(format) ? 'audio' : null
+const formatLabel = value => value === 'markdown' ? 'MD' : String(value || '').toUpperCase()
+const documentWarnings = new Set(['external_resources_omitted','unsupported_images_omitted','layout_changed'])
 const MODES = new Set(['convert','optimize'])
 const normalizeMode = value => MODES.has(value) ? value : 'convert'
 const normalizeTarget = value => value === 'jpg' ? 'jpeg' : String(value || '').toLowerCase()
@@ -65,7 +68,7 @@ function ImageComparison({ item,result,tr,locale }) {
   </div>
 }
 
-export default function FileConverterPage({ initialMode='convert',onModeChange,initialTarget='',initialCombine=false,active=true,fileRequest,onFileRequestConsumed }) {
+export default function FileConverterPage({ initialMode='convert',onModeChange,initialTarget='',initialCombine=false,active=true,fileRequest,onFileRequestConsumed,editorKinds=[],onOpenEditor }) {
   const { t,locale } = useI18n()
   const tr = key => t(`studioConvert.${key}`)
   const requestedMode = normalizeMode(initialMode)
@@ -166,7 +169,7 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   const results = state.items.flatMap(item => item.results)
   const canCombine = mode === 'convert' && state.items.length > 1 && state.items.every(item => IMAGE_FORMATS.includes(item.from) && item.target === 'pdf')
   const setTarget = (item,target) => queue.configure(item.id,{ target,settings:target === 'gif' ? { start:0,duration:5 } : {} })
-  const accept = mode === 'optimize' ? '.png,.jpg,.jpeg,.webp' : '.png,.jpg,.jpeg,.webp,.pdf,.mp3,.wav,.flac,.ogg,.mp4,.webm,.mov'
+  const accept = mode === 'optimize' ? '.png,.jpg,.jpeg,.webp' : '.png,.jpg,.jpeg,.webp,.pdf,.docx,.md,.markdown,.html,.htm,.mp3,.wav,.flac,.ogg,.mp4,.webm,.mov'
   const picker = label => <label className="converter-file-label">{label}<input name="converter-files" type="file" multiple aria-label={label} disabled={state.running || state.adding} accept={accept} onChange={event => { add(event.target.files); event.target.value = '' }} /></label>
   const dropProps = {
     onDragOver:event => { event.preventDefault(); if (!state.running) setDragging(true) },
@@ -180,6 +183,7 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
       <button type="button" aria-pressed={mode === 'optimize'} disabled={state.running || state.adding} onClick={() => selectMode('optimize')}>{tr('modeOptimize')}</button>
     </nav>
     <header className="converter-heading"><h1 id="convert-title">{tr(mode === 'optimize' ? 'optimizeTitle' : 'title')}</h1><p>{tr(mode === 'optimize' ? 'optimizeSubtitle' : 'subtitle')}</p></header>
+    {mode === 'convert' && (DOCUMENT_FORMATS.includes(requestedTarget) || state.items.some(item => DOCUMENT_FORMATS.includes(item.from))) && <p className="converter-document-note">{tr('documentLayout')} <span>{tr('documentLimits')}</span></p>}
     {state.items.length === 0 ? <div className={`converter-drop${dragging ? ' is-dragging' : ''}`} {...dropProps}>
       <span className="converter-drop-icon" aria-hidden="true">↥</span><strong>{tr('drop')}</strong>
       {picker(tr('choose'))}
@@ -188,14 +192,14 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
     {error && <p role="alert" className="converter-error">{tr(`errors.${error}`)}</p>}
     {state.items.length > 0 && <div className="converter-workspace">
       <div className="converter-toolbar"><h2>{tr('files')} <span>{state.items.length}</span></h2>
-        {mode === 'convert' && <label>{tr('commonTarget')}<select name="converter-common-target" value={commonTargets.includes(commonTarget) ? commonTarget : ''} disabled={state.running} onChange={event => { if (event.target.value) for (const item of state.items) setTarget(item,event.target.value) }}><option value="">{tr('individual')}</option>{commonTargets.map(target => <option key={target} value={target}>{target.toUpperCase()}</option>)}</select></label>}
+        {mode === 'convert' && <label>{tr('commonTarget')}<select name="converter-common-target" value={commonTargets.includes(commonTarget) ? commonTarget : ''} disabled={state.running} onChange={event => { if (event.target.value) for (const item of state.items) setTarget(item,event.target.value) }}><option value="">{tr('individual')}</option>{commonTargets.map(target => <option key={target} value={target}>{formatLabel(target)}</option>)}</select></label>}
         <button className="converter-subtle" type="button" disabled={state.running} onClick={() => { queue.clear(); setCombine(Boolean(initialCombine)) }}>{tr('clear')}</button>
       </div>
       {canCombine && <label className="converter-combine"><input name="converter-combine" type="checkbox" checked={combine} disabled={state.running} onChange={event => changeCombined(event.target.checked)} />{tr('combine')}</label>}
       <ol className="converter-files">{state.items.map((item,index) => <li key={item.id} className="converter-file" data-status={item.status}>
-        <div className="converter-file-main"><span className="converter-format" aria-hidden="true">{item.from?.toUpperCase() || '?'}</span>
+        <div className="converter-file-main"><span className="converter-format" aria-hidden="true">{item.from ? formatLabel(item.from) : '?'}</span>
           <div className="converter-file-name"><strong>{item.file.name}</strong><small>{formatFileSize(item.file.size,locale)}</small></div>
-          {mode === 'convert' && <label className="converter-target"><span>{tr('target')}</span><select name={`file-${item.id}-target`} aria-label={`${tr('target')}: ${item.file.name}`} value={item.target} disabled={state.running || !item.from} onChange={event => setTarget(item,event.target.value)}>{!item.from && <option value="">{tr('unknown')}</option>}{allowedTargetsFor(item).map(target => <option key={target} value={target}>{target.toUpperCase()}</option>)}</select></label>}
+          {mode === 'convert' && <label className="converter-target"><span>{tr('target')}</span><select name={`file-${item.id}-target`} aria-label={`${tr('target')}: ${item.file.name}`} value={item.target} disabled={state.running || !item.from} onChange={event => setTarget(item,event.target.value)}>{!item.from && <option value="">{tr('unknown')}</option>}{allowedTargetsFor(item).map(target => <option key={target} value={target}>{formatLabel(target)}</option>)}</select></label>}
           <span className="converter-status" aria-live="polite">{tr(`status.${item.status}`)}</span>
           <button className="converter-subtle converter-remove" type="button" disabled={state.running} aria-label={`${tr('remove')}: ${item.file.name}`} onClick={() => queue.remove(item.id)}>×</button>
         </div>
@@ -204,13 +208,16 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
         {item.status === 'running' && <progress aria-label={tr('status.running')} max="100" value={item.progress ?? undefined} />}
         {item.error && <p className="converter-error">{tr(`errors.${item.error}`)}</p>}
         <div className="converter-row-actions">{canCombine && <><button type="button" disabled={state.running || index === 0} onClick={() => queue.move(item.id,-1)}>{tr('moveUp')}</button><button type="button" disabled={state.running || index === state.items.length - 1} onClick={() => queue.move(item.id,1)}>{tr('moveDown')}</button></>}
+          {onOpenEditor && editorKinds.includes(editorForFormat(item.from)) && <button type="button" disabled={state.running} aria-label={`${tr('editOriginal')}: ${item.file.name}`} onClick={() => onOpenEditor(editorForFormat(item.from),item.file)}>{tr('editOriginal')}</button>}
           {['error','cancelled'].includes(item.status) && item.from && <button type="button" disabled={state.running} onClick={() => queue.retry(item.id)}>{tr('retry')}</button>}
           {item.combinedWith && <small>{tr('combined')}</small>}
         </div>
         {item.results.map(result => <div className="converter-result" key={result.name}>
           <div className="converter-result-summary"><span><small>{tr('result')}</small><strong>{result.name}</strong></span><span>{formatFileSize(result.blob.size,locale)}</span></div>
           {IMAGE_FORMATS.includes(item.from) && IMAGE_FORMATS.includes(item.target) && <><ImageComparison item={item} result={result} tr={tr} locale={locale} /><p className="converter-size-result">{comparisonText(item.file,result,tr)}</p></>}
+          {Array.isArray(result.warnings) && [...new Set(result.warnings)].filter(code => documentWarnings.has(code)).map(code => <p className="converter-document-note" key={code}>{tr(`warnings.${code}`)}</p>)}
           <button type="button" aria-label={`${tr('downloadResult')}: ${result.name}`} onClick={() => download(result.blob,result.name)}>{tr('download')}</button>
+          {onOpenEditor && editorKinds.includes(editorForFormat(item.target)) && <button type="button" disabled={state.running} aria-label={`${tr('editResult')}: ${result.name}`} onClick={() => onOpenEditor(editorForFormat(item.target),new File([result.blob],result.name,{type:result.blob.type}))}>{tr('editResult')}</button>}
         </div>)}
         {item.results.length > 1 && <button type="button" aria-label={`${tr('downloadFileZip')}: ${item.file.name} (${tr('fileNumber')} ${index + 1})`} disabled={zipping} onClick={() => zip(item.results)}>{tr('downloadFileZip')}</button>}
       </li>)}</ol>

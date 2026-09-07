@@ -1,5 +1,5 @@
 import { useI18n } from '../i18n'
-import { IconArrowRight, IconArrowsExchange, IconCalculator, IconFileTypePdf, IconPhoto, IconQrcode } from '@tabler/icons-react'
+import { IconArrowRight, IconArrowsExchange, IconCalculator, IconFileTypePdf, IconPhoto, IconQrcode, IconMusic } from '@tabler/icons-react'
 import qrPreviewUrl from '../assets/qr-preview.svg?url&no-inline'
 
 const entries = [
@@ -23,7 +23,7 @@ function ToolPreview({ kind, t }) {
   </div>
 }
 
-export default function HomePage({ onOpenCore, onOpenCatalog }) {
+export default function HomePage({ onOpenCore, onOpenCatalog, editors = [] }) {
   const { t } = useI18n()
 
   return (
@@ -56,6 +56,11 @@ export default function HomePage({ onOpenCore, onOpenCatalog }) {
           <span><strong>{t('home.calculateTitle')}</strong><span>{t('home.calculateBody')}</span></span>
           <IconArrowRight size={22} aria-hidden="true" />
         </button>
+        {editors.length > 0 && <div className="editor-entry-grid">{editors.map(kind => <button className="editor-entry" type="button" key={kind} onClick={() => onOpenCore(kind)}>
+          {kind === 'image' ? <IconPhoto size={24} aria-hidden="true" /> : <IconMusic size={24} aria-hidden="true" />}
+          <span><strong>{t(kind === 'image' ? 'catalog.imageEditor' : 'catalog.audioTrim')}</strong><span>{t(kind === 'image' ? 'catalog.imageEditorDescription' : 'catalog.audioTrimDescription')}</span></span>
+          <IconArrowRight size={21} aria-hidden="true" />
+        </button>)}</div>}
         <button className="catalog-link" type="button" onClick={onOpenCatalog}>{t('home.catalogLink')}<IconArrowRight size={18} aria-hidden="true" /></button>
       </section>
     </div>

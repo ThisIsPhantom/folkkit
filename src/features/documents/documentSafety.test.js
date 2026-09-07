@@ -28,7 +28,7 @@ describe('document preflight',()=>{
   const wrong=zip.slice();wrong[30]=65;expect(()=>inspectDocx(wrong)).toThrow()
   expect(()=>inspectDocx(zip.subarray(0,zip.length-10))).toThrow()
  })
- it('rejects excessive entry count and external DTDs',()=>{
+ it('rejects excessive entry count and invalid UTF-8',()=>{
   const entries=Object.fromEntries(Array.from({length:1001},(_,i)=>[`${i}.xml`,new Uint8Array()]))
   expect(()=>inspectDocx(zipSync(entries))).toThrow(expect.objectContaining({code:'document_too_large'}))
   expect(()=>decodeDocumentText(new Uint8Array([0xc0,0xaf]))).toThrow()
@@ -84,4 +84,27 @@ it('counts repeated resource strings before allocating serialized AST output',as
  const large='x'.repeat(16*1024*1024)
  expect(()=>serializeDocumentAst([large,large,large,large,large])).toThrow(expect.objectContaining({code:'document_too_large'}))
  expect(serializeDocumentAst({text:'Grüezi 世界\n"quoted"'})).toBe(JSON.stringify({text:'Grüezi 世界\n"quoted"'}))
+})
+
+
+it('preserves safe heading identifiers for internal links while stripping executable attributes', async () => {
+ const ast = { 'pandoc-api-version': [1,23], meta: {}, blocks: [
+  { t: 'Header', c: [2, ['custom-section', ['unsafe-class'], [['onclick','alert(1)']]], [{t:'Str',c:'Section'}]] },
+  { t: 'Para', c: [{t:'Link',c:[['',[],[]],[{t:'Str',c:'Jump'}],['#custom-section','']]}] },
+  { t: 'Header', c: [2, ['bad" onclick="x', [], []], [{t:'Str',c:'Unsafe'}]] },
+  { t: 'Header', c: [2, ['x'.repeat(101), [], []], [{t:'Str',c:'Long'}]] },
+ ] }
+ const { ast: clean } = await cleanDocumentAst(ast, {}, 'html')
+ expect(clean.blocks[0].c[1]).toEqual(['custom-section',[],[]])
+ expect(clean.blocks[1].c[0].c[2][0]).toBe('#custom-section')
+ expect(clean.blocks[2].c[1]).toEqual(['',[],[]])
+ expect(clean.blocks[3].c[1]).toEqual(['',[],[]])
+ expect(sanitizeHtml('<h2 id="custom-section" onclick="x">Section</h2><a href="#custom-section">Jump</a>').html).toContain('id="custom-section"')
+})
+
+it.each(['<!DOCTYPE document SYSTEM "https://external.invalid/dtd">', '<!ENTITY external SYSTEM "file:///private.txt">'])('rejects XML declarations in DOCX before Pandoc: %s', declaration => {
+ const entries = inspectDocx(word())
+ const document = new TextDecoder().decode(entries['word/document.xml'])
+ const bytes = zipSync({ ...entries, 'word/document.xml': strToU8(declaration + document) })
+ expect(() => inspectDocx(bytes)).toThrow(expect.objectContaining({ code:'unsafe_document' }))
 })

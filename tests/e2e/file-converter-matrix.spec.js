@@ -22,7 +22,8 @@ async function open(page) {
   await page.goto('/convert')
   await expect(page.getByRole('heading', { name: 'Convert files' })).toBeVisible()
 }
-for (const profile of FILE_PROFILES) {
+// Document pairs have their own real semantic/resource matrix.
+for (const profile of FILE_PROFILES.filter(profile => profile.engine !== 'document')) {
   test(`file converter actual ${profile.from} to ${profile.to}`, async ({ page }, testInfo) => {
     test.setTimeout(120000)
     await open(page)

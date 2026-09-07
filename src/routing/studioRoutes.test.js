@@ -53,3 +53,14 @@ test('calculator selection preserves specific links and bounds unknown identifie
   expect(legacyCalculatorTool({ search: '?tool=loan-calc' })).toBe('loan-calc')
   expect(legacyCalculatorTool({ search: '?tool=reverse-text' })).toBeNull()
 })
+
+
+test.each(['image','audio'])('opens and links the %s editor without losing explicit routes', kind => {
+  expect(resolveAppRoute({pathname:`/${kind}`})).toBe(kind)
+  expect(coreDestinations[kind]).toBe(`/${kind}`)
+  expect(toolStudioHref(kind === 'image' ? 'image-editor' : 'audio-trim')).toBe(`/${kind}`)
+})
+test.each(['docx','markdown','html'])('accepts the document target %s in converter routes', target => {
+  expect(studioOptions('convert',{search:`?target=${target}`})).toEqual({mode:'convert',target,combine:false})
+  expect(toolStudioHref('document-convert')).toBe('/convert?target=docx')
+})

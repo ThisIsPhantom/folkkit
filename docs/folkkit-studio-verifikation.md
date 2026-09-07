@@ -67,3 +67,18 @@ bun run build:site
 Für die unabhängige Medienprüfung benötigen die Tests natives `ffmpeg` und `ffprobe` im `PATH` oder die Umgebungsvariablen `FOLKKIT_TEST_FFMPEG` und `FOLKKIT_TEST_FFPROBE`. Diese Programme werden nicht an Website-Nutzer ausgeliefert. Browser-Sicherheitsheader werden mit `FOLKKIT_E2E_HOSTING_HEADERS=1` gegen den zuvor erzeugten Hosting-Build geprüft.
 
 Einzelberichte, Testlogs und Screenshots liegen im ignorierten Arbeitsverzeichnis `.superpowers/sdd/2026-09-05-folkkit-studio/`.
+
+
+## Erweiterung für Bilder, Dokumente und Audio vom 7. September 2026
+
+Die lokale Abnahme umfasst 908 Unit- und Vertragstests, 282 Browserfälle in Chromium, Firefox, WebKit und Chromium-Mobile sowie 119 zusätzliche Fälle unter den Hosting-Headern. Alle genannten Prüfungen bestanden.
+
+- Bildeditor: PNG/JPEG/WebP, Zuschnitt, Drehung, Spiegelung, Texte und wiederverwendbare Wasserzeichen. Pixelvergleiche prüfen Originalgeometrie, Transparenz, weissen JPEG-Hintergrund und Exporte ohne Auswahlgriffe. Initiales Einlesen ist abbrechbar; verspätete Bitmaps überschreiben keinen neuen Versuch. Auf Mobilgeräten steht die Vorschau vor den zusätzlichen Einstellungen.
+- Dokumentkonvertierung: alle sechs Richtungen zwischen DOCX, Markdown und HTML. Word-XML, Tabellen, Unicode und eingebettete PNG-/JPEG-/WebP-Dateien wurden unabhängig geprüft. HTML bleibt passiv; Markdown mit Bildern wird als ZIP ausgegeben. Sichere Überschriften-IDs aus Markdown/HTML bleiben erhalten. Eigene Word-Sprungmarken können beim DOCX-Rundlauf bereits in der Engine verloren gehen; identische Word-Seitenlayouts sind nicht zugesagt.
+- Audio: alle 16 Ein-/Ausgabepaare von MP3, WAV, FLAC und OGG/Vorbis, einschliesslich Bearbeitung im gleichen Format. Natives FFprobe und vollständiges FFmpeg-Decoding prüfen Codec, Dauer und Fade-Amplituden. Ein echter 8-kHz-MPEG-2.5-Eingang wird anhand validierter Frame- und Encoderangaben mit seiner decodierten Dauer verarbeitet. Hohe Töne und gegenphasiges Stereo bleiben in der Wellenform sichtbar.
+- Integration: Originale und Konvertergebnisse lassen sich im passenden Editor öffnen. Auswahl und Dateien bleiben bei interner Navigation erhalten; Audio pausiert beim Verlassen. Fehler beim Dateiersatz bewahren die bestehende Audioauswahl. Tastatur, Touch, beide Sprachen/Themes, Axe und Netzwerkgrenzen sind abgedeckt.
+- Offline: UI und Bildeditor funktionieren nach einer Startseiteninstallation. Pandoc und FFmpeg werden erst bei Verwendung geladen und danach aus dem Browsercache genutzt. Die Prüfungen schliessen tatsächliche Serververbindungen und laden die Seite neu. Die grossen Engines werden nicht beim Startseitenbesuch vorab geladen.
+
+Die Windows-WebKit-Testumgebung kann auch unveränderte WAV-, MP3- und OGG-Fixtures nativ nicht abspielen. Dort wurden die konkrete Fehlermeldung, Bearbeitung und Export geprüft. Tatsächliche Auswahlwiedergabe und Endstopp bestehen in Chromium, Firefox und Chromium-Mobile. Daraus wird keine Safari-Einschränkung abgeleitet.
+
+Der normale Browser-Testbuild behält das Vite-Manifest für die bisherigen Testwerkzeuge. Das Hosting-Artefakt enthält es weiterhin nicht. Die zusätzlichen Audio-CSP-Belege finden ihre Module direkt in den generierten Assets. Die Hosting-Allowlist und der CSP wurden nicht gelockert.

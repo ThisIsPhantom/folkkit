@@ -12,10 +12,18 @@ Die freigegebene [Studio-Erweiterung](docs/superpowers/plans/2026-09-05-folkkit-
 
 - `/qr`: QR-Designer für Text, Links, WLAN, Kontakte, E-Mail und SMS. Farben, Formen und Logo lassen sich anpassen. Ausgabe als PNG/SVG; QR-Codes aus lokalen PNG-, JPEG- und WebP-Bildern lesen.
 - `/pdf`: native Textobjekt-Bearbeitung, direktes Verschieben/Skalieren, Ergänzungen und Seitenverwaltung mit Mehrfachauswahl. Unterstützte lateinische Textobjekte sind bearbeitbar; OCR, Absatzrekonstruktion und Formularerstellung sind ausgenommen. Unsichere Operationen an vorhandenen Formularstrukturen werden vorab verweigert.
-- `/convert`: Dateiwarteschlange mit 33 Formatpaaren, Bildoptimierung, Vorher-/Nachher-Vorschau, Einstellungen, Abbruch, Einzel- und ZIP-Downloads.
+- `/convert`: Dateiwarteschlange mit 39 Formatpaaren, darunter alle sechs Richtungen zwischen DOCX, Markdown und HTML. Bildoptimierung, Vorher-/Nachher-Vorschau, Einstellungen, Abbruch, Einzel- und ZIP-Downloads.
 - `/calculate`: Prozentfelder, Dreisatz, Pythagoras, Kreis, Flächen, Volumen, Einheiten, Seitenverhältnis, Kreditrate, BMI, Datum und Zeitspannen. Eigene Formulare, Beispiele und kopierbare Ergebnisse; alte Links bleiben erreichbar.
 
-Der [freigegebene Bedienausbau](docs/superpowers/plans/2026-09-05-folkkit-usability.md) ergänzt ausserdem Katalogsuche, Kategorien und Werkzeugfavoriten. QR-, Rechner- und Konvertersitzungen bleiben beim internen Bereichswechsel im Arbeitsspeicher erhalten.
+Die [Erweiterung für Bilder, Dokumente und Audio](docs/superpowers/specs/2026-09-06-folkkit-creative-tools-design.md) ergänzt zwei Editoren und die Dokumentformate im Konverter:
+
+- `/image`: PNG, JPEG und WebP zuschneiden, drehen und spiegeln; eigene Texte und Wasserzeichen platzieren. Rückgängig, Wiederholen und Export verwenden das unveränderte Original als Grundlage.
+- `/audio`: MP3, WAV, FLAC und OGG/Vorbis zuschneiden, anhand der Wellenform auswählen, mit Ein-/Ausblenden anhören und exportieren.
+- DOCX/Markdown/HTML: Texte, Listen, Tabellen und unterstützte eingebettete Bilder konvertieren. Word-Seitenlayouts werden nicht identisch nachgebildet; eigene Word-Sprungmarken können verloren gehen. HTML-Ausgaben sind passiv; externe Bilder werden ausgelassen. Markdown mit Bildern wird als ZIP ausgegeben.
+
+Bildoriginale sind auf 32 MiB und 24 Megapixel begrenzt, Audiodateien auf 100 MiB und 30 Minuten. DOCX darf 20 MiB, Markdown oder HTML 2 MiB gross sein. Die Dokumentengine Pandoc 3.10 (Wrapper 1.1.0, rund 58.6 MB WASM) und die Audioengine laden erst bei der Nutzung; nach erfolgreichem Laden können sie aus dem Browsercache auch offline arbeiten.
+
+Der [freigegebene Bedienausbau](docs/superpowers/plans/2026-09-05-folkkit-usability.md) ergänzt ausserdem Katalogsuche, Kategorien und Werkzeugfavoriten. QR-, Rechner-, Konverter- und Editorsitzungen bleiben beim internen Bereichswechsel im Arbeitsspeicher erhalten.
 
 Alte `/workspace`-Links führen für passende Werkzeuge in die Studios. Der Textarbeitsbereich bleibt für die weiteren Text- und Datenwerkzeuge verfügbar. Dateiinhalte bleiben im Browser und werden in diesen Arbeitsbereichen nicht dauerhaft gespeichert. Die QR-Abhängigkeit erhält einen dokumentierten [UTF-8-Patch](patches/README.md).
 
@@ -62,7 +70,7 @@ The validator builds an isolated `git archive`, installs `bun.lock` with lifecyc
 
 ## Stack
 
-React 19 · Vite 7 · Vanilla CSS · PDFium WASM · pdf-lib · qr-code-styling · jsQR · qrcode · FFmpeg WASM · fflate
+React 19 · Vite 7 · Vanilla CSS · PDFium WASM · pdf-lib · qr-code-styling · jsQR · qrcode · FFmpeg WASM · Pandoc WASM · parse5 · fflate
 
 ## Documentation
 

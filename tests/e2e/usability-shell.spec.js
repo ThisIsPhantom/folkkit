@@ -79,7 +79,7 @@ test('catalog search and favorites work with keyboard, reload and empty results 
   await page.getByRole('combobox', { name: 'Kategorie', exact: true }).selectOption('image')
   await expect(page.getByRole('heading', { name: 'Keine passenden Werkzeuge', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Filter zurücksetzen', exact: true }).click()
-  await expect(page.getByRole('status')).toHaveText('47 von 47 Werkzeugen')
+  await expect(page.getByRole('status')).toHaveText('50 von 50 Werkzeugen')
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 })
 

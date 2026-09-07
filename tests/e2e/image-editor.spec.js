@@ -180,9 +180,8 @@ test('portrait preview, numeric crop and pointer resize preserve their selected 
   await page.mouse.down(); await page.mouse.move(resizeBounds.x + resizeBounds.width / 2 + 80, resizeBounds.y + resizeBounds.height / 2 + 20, { steps: 5 }); await page.mouse.up()
   expect(await page.getByLabel('Breite des Ausschnitts').inputValue()).toBe(await page.getByLabel('Höhe des Ausschnitts').inputValue())
   await expect(page.getByRole('button', { name: '1:1', exact: true })).toHaveAttribute('aria-pressed', 'true')
-  if (testInfo.project.name.startsWith('chromium-image')) {
-    await page.screenshot({ path: testInfo.outputPath(`image-fix-2-${testInfo.project.name}.png`), fullPage: true })
-  }
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+  await page.screenshot({ path: testInfo.outputPath('image-portrait.png'), fullPage: true })
 })
 
 test('cancelled and superseded exports release busy state without clearing newer edits', async ({ page }) => {

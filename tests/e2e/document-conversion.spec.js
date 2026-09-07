@@ -6,8 +6,8 @@ import { unzipSync, strFromU8 } from 'fflate'
 
 const raster = ['png', 'jpg', 'webp'].map(extension => ({ extension, mime: extension === 'jpg' ? 'image/jpeg' : `image/${extension}`, bytes: readFileSync(fileURLToPath(new URL(`./file-converter-fixtures/sample.${extension}`, import.meta.url))) }))
 const images = raster.map(image => `data:${image.mime};base64,${image.bytes.toString('base64')}`)
-const markdown = `# Grüezi 世界\n\n| Ort | Wert |\n|---|---|\n| Zürich | 42 |\n\n${images.map((url, i) => `![Bild ${i + 1}](${url})`).join('\n\n')}`
-const html = `<h1>Grüezi 世界</h1><table><thead><tr><th>Ort</th><th>Wert</th></tr></thead><tbody><tr><td>Zürich</td><td>42</td></tr></tbody></table>${images.map(url => `<img src="${url}" alt="Bild">`).join('')}<script>window.documentCanary=true</script><img src="https://document-external.invalid/image.png" onerror="window.documentCanary=true"><iframe src="https://document-external.invalid/frame"></iframe><a href="https://example.com">Link</a>`
+const markdown = `# Grüezi 世界 {#custom-section}\n\n[Zum Abschnitt](#custom-section)\n\n| Ort | Wert |\n|---|---|\n| Zürich | 42 |\n\n${images.map((url, i) => `![Bild ${i + 1}](${url})`).join('\n\n')}`
+const html = `<h1 id="custom-section">Grüezi 世界</h1><a href="#custom-section">Zum Abschnitt</a><table><thead><tr><th>Ort</th><th>Wert</th></tr></thead><tbody><tr><td>Zürich</td><td>42</td></tr></tbody></table>${images.map(url => `<img src="${url}" alt="Bild">`).join('')}<script>window.documentCanary=true</script><img src="https://document-external.invalid/image.png" onerror="window.documentCanary=true"><iframe src="https://document-external.invalid/frame"></iframe><a href="https://example.com">Link</a>`
 async function convert(page, file, to) {
   if (await page.getByRole('button', { name: 'Clear files', exact: true }).isVisible()) await page.getByRole('button', { name: 'Clear files', exact: true }).click()
   await page.getByLabel('Choose files', { exact: true }).setInputFiles(file)
@@ -51,8 +51,11 @@ test('@matrix documents convert all six pairs with Unicode, tables and three loc
     } else {
       const document = await page.evaluate(text => {
         const dom = new DOMParser().parseFromString(text, 'text/html')
-        return { text: dom.body.textContent, tables: dom.querySelectorAll('table').length, images: [...dom.images].map(img => img.src), active: dom.querySelectorAll('script,iframe,form,svg,style,[onerror],[onclick]').length }
+        return { anchors: [...dom.querySelectorAll('a[href^="#"]')].map(link => ({ href: link.getAttribute('href'), target: Boolean(dom.getElementById(link.getAttribute('href').slice(1))) })), text: dom.body.textContent, tables: dom.querySelectorAll('table').length, images: [...dom.images].map(img => img.src), active: dom.querySelectorAll('script,iframe,form,svg,style,[onerror],[onclick]').length }
       }, result.bytes.toString('utf8'))
+      // The pinned DOCX reader regenerates heading IDs and drops custom bookmarks.
+      // Preserve IDs that reach the AST from Markdown/HTML; do not claim a DOCX bookmark round-trip.
+      if (from !== 'docx') { expect(document.anchors.length).toBeGreaterThan(0); expect(document.anchors.every(anchor => anchor.target)).toBe(true) }
       expect(document.text).toContain('Grüezi'); expect(document.text).toContain('世界'); expect(document.tables).toBe(1); expect(document.active).toBe(0)
       expect(document.images).toHaveLength(3); expect(document.images.every(src => /^data:image\/(png|jpeg|webp);base64,/.test(src))).toBe(true)
     }
@@ -96,18 +99,29 @@ test('documents reject invalid UTF-8, cancel a stalled runtime and retry cleanly
 
 })
 
-test('documents reuse cached runtime offline after first successful conversion', async ({ page, context }) => {
+test('documents reuse cached runtime after a real offline reload @matrix', async ({ page }) => {
   test.setTimeout(150_000)
-  await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'en'))
-  await page.goto('/convert')
-  await page.evaluate(() => navigator.serviceWorker.ready)
-  const file = { name: 'offline.md', mimeType: 'text/markdown', buffer: Buffer.from('# Offline Grüezi') }
-  await convert(page, file, 'html')
-  await expect.poll(() => page.evaluate(async () => Boolean(await caches.match('/vendor/pandoc/pandoc.wasm')))).toBe(true)
-  await context.setOffline(true)
-  try { const result = await convert(page, file, 'html'); expect(result.bytes.toString('utf8')).toContain('Offline Grüezi') } finally { await context.setOffline(false) }
+  const { createOfflinePreview } = await import('./helpers/offline-preview.mjs')
+  const preview = await createOfflinePreview()
+  try {
+    await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'en'))
+    await page.goto(preview.url + '/convert')
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready
+      if (!navigator.serviceWorker.controller) await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, { once:true }))
+    })
+    const file = { name:'offline.md',mimeType:'text/markdown',buffer:Buffer.from('# Offline Grüezi') }
+    await convert(page,file,'html')
+    await expect.poll(() => page.evaluate(async () => Boolean(await caches.match('/vendor/pandoc/pandoc.wasm')))).toBe(true)
+    await page.evaluate(() => { window.documentReloadMarker = 'before' })
+    preview.setOffline()
+    await page.reload()
+    expect(await page.evaluate(() => window.documentReloadMarker)).toBeUndefined()
+    const result = await convert(page,file,'html')
+    expect(result.bytes.toString('utf8')).toContain('Offline Grüezi')
+    expect(preview.deniedRequests).toBeGreaterThan(0)
+  } finally { await preview.close() }
 })
-
 
 test.describe('documents unavailable runtime', () => {
   test.use({ serviceWorkers: 'block' })

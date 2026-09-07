@@ -25,6 +25,10 @@ export async function convertFileItem(item, { signal, onProgress } = {}) {
   const from = await detectFile(item.file)
   const profile = getProfile(from, item.target)
   const stem = item.file.name.replace(/\.[^.]+$/, '') || 'result'
+  if (profile.engine === 'document') {
+    const { convertDocumentFile } = await import('../documents/documentEngine.js')
+    return convertDocumentFile(item.file, from, profile.to, { signal, onProgress })
+  }
   if (profile.engine === 'media') {
     const { convertMediaFile } = await import('./mediaEngine.js')
     return [{ name: `${stem}.${profile.to}`, blob: await convertMediaFile(item.file, profile, item.settings, { signal, onProgress }) }]

@@ -10,8 +10,8 @@ const viteManifest = JSON.parse(await readFile(builtArtifactPath('.vite/manifest
 test('shows the derived released count and excludes hidden entries', async ({ page }) => {
   await page.goto('./tools')
 
-  await expect(page.getByText('47 von 47 Werkzeugen')).toBeVisible()
-  await expect(page.locator('.catalog-list > li')).toHaveCount(47)
+  await expect(page.getByText('50 von 50 Werkzeugen')).toBeVisible()
+  await expect(page.locator('.catalog-list > li')).toHaveCount(50)
   await expect(page.getByRole('button', { name: 'Prozentrechner öffnen', exact: true })).toHaveCount(0)
   await expect(page.getByText('Random Password', { exact: true })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'QR-Code lesen öffnen', exact: true })).toBeVisible()

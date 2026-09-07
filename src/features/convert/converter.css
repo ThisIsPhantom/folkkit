@@ -73,3 +73,6 @@
   .converter-start p { width: 100%; margin: 0; }
   .converter-start > button { flex: 1; }
 }
+
+.converter-document-note { color:var(--text-secondary);font-size:.875rem;line-height:1.6;margin:.5rem 0 1rem; }
+.converter-document-note span { display:block; }

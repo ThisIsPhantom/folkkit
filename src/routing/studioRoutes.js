@@ -8,6 +8,8 @@ export const coreDestinations = Object.freeze({
   qr: '/qr',
   convert: '/convert',
   calculate: '/calculate',
+  image: '/image',
+  audio: '/audio',
 })
 
 const legacyCalculatorMap = Object.freeze({ 'percentage-calc': 'percent', 'aspect-ratio': 'aspect-ratio', 'bmi-calc': 'bmi', 'loan-calc': 'loan' })
@@ -26,6 +28,7 @@ export function calculatorSelection({ search = '', hash = '' }) {
 }
 
 const toolDestinations = Object.freeze({
+  'image-editor':'/image', 'audio-trim':'/audio', 'document-convert':'/convert?target=docx',
   'text-to-qr': '/qr', 'qr-to-text': '/qr?mode=read', 'qr-reader': '/qr?mode=read', 'image-optimize': '/convert?mode=optimize',
   'merge-pdf': '/pdf?action=merge', 'pdf-split': '/pdf?action=extract', 'pdf-extract-range': '/pdf?action=extract',
   'pdf-rotate': '/pdf?action=rotate', 'pdf-page-count': '/pdf?action=count',
@@ -51,7 +54,7 @@ export function studioOptions(route, location) {
   if (route === 'qr') return { mode: params.get('mode') === 'read' ? 'read' : 'create' }
   if (route === 'pdf') return { action: ['merge', 'extract', 'rotate', 'count', 'organize'].includes(params.get('action')) ? params.get('action') : 'edit' }
   if (route === 'convert') {
-    const target = ['png', 'jpeg', 'webp', 'pdf', 'mp3', 'wav', 'flac', 'ogg', 'mp4', 'webm', 'gif'].includes(params.get('target')) ? params.get('target') : undefined
+    const target = ['png', 'jpeg', 'webp', 'pdf', 'mp3', 'wav', 'flac', 'ogg', 'mp4', 'webm', 'gif', 'docx', 'markdown', 'html'].includes(params.get('target')) ? params.get('target') : undefined
     return { mode: params.get('mode') === 'optimize' ? 'optimize' : 'convert', target, combine: target === 'pdf' && params.get('combine') === '1' }
   }
   return {}
