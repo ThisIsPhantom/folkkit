@@ -5,6 +5,7 @@ import { PNG } from 'pngjs'
 import { createOfflinePreview } from './helpers/offline-preview.mjs'
 import { installAudioStartupState, logAudioStartupFailure } from './helpers/audioStartupState.js'
 import { nativeAudioCapability } from './helpers/nativeAudioCapability.js'
+import { observePreviewMediaErrors, takePreviewMediaErrors } from './helpers/previewMediaErrors.js'
 
 function imageFixture() {
   const png = new PNG({ width: 120, height: 80 })
@@ -117,14 +118,18 @@ test('converter audio handoffs retain the selection, pause hidden playback and o
   await expect(page.locator('.audio-editor').getByRole('alert')).toHaveCount(0)
   await setAudioTime(page, 'Start (seconds)', '1')
   await setAudioTime(page, 'End (seconds)', '6')
+  await observePreviewMediaErrors(page)
   await page.getByRole('button', { name: 'Play selection', exact: true }).click()
   const pause = page.getByRole('button', { name: 'Pause', exact: true })
   try { await expect(pause.or(page.locator('.audio-editor').getByRole('alert')).first()).toBeVisible() }
-  catch (error) { await logAudioStartupFailure(page); throw error }
+  catch (error) { await takePreviewMediaErrors(page); await logAudioStartupFailure(page); throw error }
+  const previewErrors = await takePreviewMediaErrors(page)
   if (await pause.isVisible()) await expect(page.locator('.audio-editor').getByRole('alert')).toHaveCount(0)
   else {
     // Exempt only a proven native decoder failure, never a Folkkit preview failure.
     // A resolved play promise alone does not prove successful decoding.
+    expect(previewErrors.length).toBeGreaterThan(0)
+    expect(previewErrors.every(code => [3, 4].includes(code))).toBe(true)
     const capability = await nativeAudioCapability(page)
     expect(capability.supported).toBe(false)
     expect([3, 4]).toContain(capability.code)

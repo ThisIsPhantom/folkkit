@@ -10,6 +10,7 @@ import {builtModulePath} from './helpers/builtArtifact.js'
 import {installAudioStartupState,logAudioStartupFailure} from './helpers/audioStartupState.js'
 import {logNativeCueComparison} from './helpers/nativeAudioCueProbe.js'
 import {nativeAudioCapability} from './helpers/nativeAudioCapability.js'
+import {observePreviewMediaErrors,takePreviewMediaErrors} from './helpers/previewMediaErrors.js'
 const fixture=type=>fileURLToPath(new URL(`./file-converter-fixtures/sample.${type}`,import.meta.url))
 const ffmpeg=process.env.FOLKKIT_TEST_FFMPEG||'ffmpeg',ffprobe=process.env.FOLKKIT_TEST_FFPROBE||'ffprobe'
 let server
@@ -44,6 +45,9 @@ for(const from of ['wav','mp3','flac','ogg'])test(`audio real ${from} input to a
  expect(readFileSync(fixture(from))).toEqual(original)
 })
 async function expectUnavailablePreview(page, capability) {
+ const codes=await takePreviewMediaErrors(page)
+ expect(codes.length,'Actual preview must provide a native decoder error').toBeGreaterThan(0)
+ expect(codes.every(code=>[3,4].includes(code)),'Actual preview errors must only be decoder errors 3/4').toBe(true)
  expect(capability.supported).toBe(false);expect([3,4]).toContain(capability.code)
  await expect(page.locator('.audio-editor [role=alert]')).toHaveText('This browser cannot play the audio preview. You can still export the file.')
 }
@@ -71,6 +75,7 @@ test('@matrix audio gestures playback cancel themes and accessibility under prod
    return result
   }
  })
+ await observePreviewMediaErrors(page)
  try {
   await page.getByRole('button',{name:'Play selection',exact:true}).click()
   await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.started||document.querySelector('.audio-editor [role=alert]'),null,{timeout:5000})
@@ -78,6 +83,7 @@ test('@matrix audio gestures playback cancel themes and accessibility under prod
   if(await page.locator('.audio-editor [role=alert]').count())await expectUnavailablePreview(page,capability)
   else {const playback=await page.evaluate(()=>globalThis.__audioSelectionPlayback);expect(playback.started).toBe(true);expect(playback.paused).toBe(true)}
  } catch(error) {await logAudioStartupFailure(page);throw error}
+ finally {await takePreviewMediaErrors(page)}
  const start=page.getByRole('slider',{name:'Selection start'});await start.focus();await start.press('ArrowRight');await expect(start).toHaveAttribute('aria-valuenow','0.21')
  await page.getByRole('button',{name:'Undo',exact:true}).click();await expect(start).toHaveAttribute('aria-valuenow','0.2')
  if(info.project.name.includes('mobile')) {
@@ -226,6 +232,8 @@ test('@matrix audio playback falls back from a permanently suspended Web Audio s
  await page.getByLabel('Choose audio',{exact:true}).setInputFiles({name:'startup.wav',mimeType:'audio/wav',buffer})
  await expect(page.locator('.audio-wave')).toBeVisible({timeout:90000})
  await field(page,'Start (seconds)',1);await field(page,'End (seconds)',2.5);await field(page,'Fade in (seconds)',.5);await field(page,'Fade out (seconds)',.5)
+ await observePreviewMediaErrors(page)
+ try {
  await page.getByRole('button',{name:'Play selection',exact:true}).click()
  await page.waitForFunction(()=>globalThis.__suspendedAudioProof.started||document.querySelector('.audio-editor [role=alert]'),null,{timeout:5000})
  await page.evaluate(()=>globalThis.__lateAudioResume.forEach(resolve=>resolve()))
@@ -247,6 +255,7 @@ test('@matrix audio playback falls back from a permanently suspended Web Audio s
  await page.getByRole('button',{name:'Reset',exact:true}).click()
  const disposed=await page.evaluate(()=>{clearInterval(globalThis.__suspendedSampler);return {hasSource:globalThis.__suspendedMedia.hasAttribute('src'),paused:globalThis.__suspendedMedia.paused,revocations:globalThis.__suspendedAudioProof.revocations,resumeCalls:globalThis.__suspendedAudioProof.resumeCalls}})
  expect(disposed).toMatchObject({hasSource:false,paused:true,revocations:1,resumeCalls:start.resumeCalls})
+ } finally {await takePreviewMediaErrors(page)}
 })
 
 
@@ -280,11 +289,12 @@ test('@matrix audio native selection boundary stops playback without the progres
    return result
   }
  })
+ await observePreviewMediaErrors(page)
+ try {
  await page.getByRole('button',{name:'Play selection',exact:true}).click()
  await page.waitForFunction(()=>globalThis.__nativeBoundary.started||document.querySelector('.audio-editor [role=alert]'),null,{timeout:5000})
  await page.waitForFunction(()=>globalThis.__nativeBoundary.ended||document.querySelector('.audio-editor [role=alert]'),null,{timeout:3000})
  const stopped=await page.evaluate(()=>globalThis.__nativeBoundary)
- try {
   if(await page.locator('.audio-editor [role=alert]').count()){
    await expectUnavailablePreview(page,capability);await page.getByRole('button',{name:'Reset',exact:true}).click();return
   }
@@ -294,6 +304,42 @@ test('@matrix audio native selection boundary stops playback without the progres
   expect(await page.evaluate(()=>globalThis.__nativeBoundaryTrack.cues.length)).toBe(0)
   await page.getByRole('button',{name:'Reset',exact:true}).click()
  } finally {
+  await takePreviewMediaErrors(page)
   if(process.env.FOLKKIT_AUDIO_CUE_DIAGNOSTICS==='1')await logNativeCueComparison(page)
+ }
+})
+
+
+test('@matrix preview decoder exemption rejects missing codes and non-decoder errors',async({page})=>{
+ await open(page);await expect(page.locator('.audio-editor')).toBeVisible()
+ await page.evaluate(()=>{
+  const descriptor=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'error'),values=new WeakMap()
+  Object.defineProperty(HTMLMediaElement.prototype,'error',{...descriptor,get(){return values.get(this)||descriptor.get.call(this)}})
+  const alert=document.createElement('p');alert.setAttribute('role','alert');alert.textContent='This browser cannot play the audio preview. You can still export the file.';document.querySelector('.audio-editor').append(alert)
+  globalThis.__previewErrorControl={values,descriptor,alert,create:document.createElement,play:HTMLMediaElement.prototype.play,forwarded:true}
+ })
+ try {
+  for(const code of [0,1,2,3,4]){
+   await observePreviewMediaErrors(page)
+   await page.evaluate(code=>{
+    const state=globalThis.__previewErrorControl,media=document.createElement('audio');state.media=media
+    if(code){
+     const error={code};state.values.set(media,error)
+     if(code===4)state.forwarded=media.error===error
+     else {media.addEventListener('error',()=>state.values.delete(media),{once:true});media.dispatchEvent(new Event('error'))}
+     state.values.delete(media)
+    }
+   },code)
+   const check=expectUnavailablePreview(page,{supported:false,code:3})
+   if(code===3||code===4)await check
+   else await expect(check).rejects.toThrow()
+   expect(await page.evaluate(()=>{
+    const state=globalThis.__previewErrorControl
+    return state.forwarded&&document.createElement===state.create&&HTMLMediaElement.prototype.play===state.play&&!Object.getOwnPropertyDescriptor(state.media,'error')
+   })).toBe(true)
+  }
+ }finally{
+  await takePreviewMediaErrors(page)
+  await page.evaluate(()=>{const state=globalThis.__previewErrorControl;Object.defineProperty(HTMLMediaElement.prototype,'error',state.descriptor);state.alert.remove();delete globalThis.__previewErrorControl})
  }
 })

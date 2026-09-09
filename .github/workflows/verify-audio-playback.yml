@@ -38,4 +38,4 @@ jobs:
         env:
           FOLKKIT_E2E_PORT: '4182'
           FOLKKIT_AUDIO_CUE_DIAGNOSTICS: '1'
-        run: node ./node_modules/playwright/cli.js test audio-editor.spec.js --project firefox-desktop --grep "audio gestures|permanently suspended|native selection boundary"
+        run: node ./node_modules/playwright/cli.js test audio-editor.spec.js --project firefox-desktop --grep "audio gestures|permanently suspended|native selection boundary|preview decoder exemption"
