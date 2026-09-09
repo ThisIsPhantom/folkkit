@@ -63,15 +63,28 @@ test('@matrix audio gestures playback cancel themes and accessibility under prod
  await field(page,'Start (seconds)',.2);await field(page,'End (seconds)',.8)
  // Observe this attempt before clicking: polling can miss the 0.6-second Pause label.
  if(nativePlayback)await page.evaluate(()=>{
-  const originalPlay=HTMLMediaElement.prototype.play
-  globalThis.__audioSelectionPlayback={started:false,ended:false,paused:false,time:0}
+  const originalPlay=HTMLMediaElement.prototype.play,originalPause=HTMLMediaElement.prototype.pause
+  let selectionMedia=null
+  globalThis.__audioSelectionPlayback={started:false,pauseCalled:false,ended:false,paused:false,time:0}
+  HTMLMediaElement.prototype.pause=function(...args){
+   const result=originalPause.apply(this,args)
+   const observation=globalThis.__audioSelectionPlayback
+   if(this===selectionMedia&&observation.started&&!observation.pauseCalled){
+    // Freeze immediately after the native call. Firefox may advance currentTime
+    // before a queued pause-event listener runs, even while paused stays true.
+    Object.assign(observation,{pauseCalled:true,paused:this.paused,time:this.currentTime})
+    HTMLMediaElement.prototype.pause=originalPause
+   }
+   return result
+  }
   HTMLMediaElement.prototype.play=function(...args){
    HTMLMediaElement.prototype.play=originalPlay
-   const result=originalPlay.apply(this,args),media=this
+   selectionMedia=this
+   const result=originalPlay.apply(this,args)
    Promise.resolve(result).then(()=>{
     globalThis.__audioSelectionPlayback.started=true
-    media.addEventListener('pause',()=>{
-     Object.assign(globalThis.__audioSelectionPlayback,{ended:true,paused:media.paused,time:media.currentTime})
+    selectionMedia.addEventListener('pause',()=>{
+     globalThis.__audioSelectionPlayback.ended=true
     },{once:true})
    },()=>{})
    return result
@@ -83,7 +96,7 @@ test('@matrix audio gestures playback cancel themes and accessibility under prod
    await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.started,null,{timeout:5000})
    await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.ended&&document.querySelector('.audio-toolbar button')?.textContent==='Play selection',null,{timeout:3000})
    const playback=await page.evaluate(()=>globalThis.__audioSelectionPlayback)
-   expect(playback.paused).toBe(true);expect(playback.time).toBeGreaterThanOrEqual(.8);expect(playback.time).toBeLessThan(.95)
+   expect(playback.pauseCalled).toBe(true);expect(playback.paused).toBe(true);expect(playback.time).toBeGreaterThanOrEqual(.8);expect(playback.time).toBeLessThan(.95)
    expect(await page.locator('.audio-editor [role=alert]').count()).toBe(0)
   }
   else {await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.');await info.attach('native-playback-unavailable',{body:'Independent MP3 fixture fails in native HTMLAudioElement. Editing and export remain tested.',contentType:'text/plain'})}
