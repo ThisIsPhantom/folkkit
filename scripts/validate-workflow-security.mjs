@@ -58,6 +58,7 @@ export function validateWorkflowText(name, text) {
 export async function validateWorkflowFiles(paths = []) {
   const selected = paths.length > 0 ? paths.map(path => resolve(path)) : [
     join(projectRoot, '.github', 'workflows', 'verify.yml'),
+    join(projectRoot, '.github', 'workflows', 'verify-audio-playback.yml'),
     join(projectRoot, '.github', 'workflows', 'publish-plesk.yml'),
   ]
   const failures = []

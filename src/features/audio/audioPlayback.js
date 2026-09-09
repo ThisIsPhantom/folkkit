@@ -136,7 +136,6 @@ export function createAudioPlayback(blob, {
     closeGraph(target)
     if (target.bound) {
       releaseChannel(target); channel = makeChannel(); run.channel = channel
-      channel.media.currentTime = run.position
     }
   }
 
@@ -148,7 +147,7 @@ export function createAudioPlayback(blob, {
     const run = { channel, controller: new AbortController(), selection: { ...settings }, position: start, started: false }
     active = run
     try {
-      setGain(channel, 0); channel.media.currentTime = start
+      setGain(channel, 0)
       await startGraph(run)
       if (!owns(run)) return
       const media = run.channel.media
@@ -156,6 +155,7 @@ export function createAudioPlayback(blob, {
       armNativeStop(run)
       run.onPause = () => { if (owns(run) && media.paused) pause() }
       media.addEventListener('pause', run.onPause)
+      media.currentTime = run.position
       const pendingPlay = media.play()
       Promise.resolve(pendingPlay).then(() => {
         if (!owns(run)) media.pause()

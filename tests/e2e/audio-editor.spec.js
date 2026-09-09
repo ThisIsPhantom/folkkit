@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url'
 import {createOfflinePreview} from './helpers/offline-preview.mjs'
 import {builtModulePath} from './helpers/builtArtifact.js'
 import {installAudioStartupState,logAudioStartupFailure} from './helpers/audioStartupState.js'
+import {logNativeCueComparison} from './helpers/nativeAudioCueProbe.js'
 const fixture=type=>fileURLToPath(new URL(`./file-converter-fixtures/sample.${type}`,import.meta.url))
 const ffmpeg=process.env.FOLKKIT_TEST_FFMPEG||'ffmpeg',ffprobe=process.env.FOLKKIT_TEST_FFPROBE||'ffprobe'
 let server
@@ -298,9 +299,13 @@ test('@matrix audio native selection boundary stops playback without the progres
  await page.waitForFunction(()=>globalThis.__nativeBoundary.started,null,{timeout:5000})
  await page.waitForFunction(()=>globalThis.__nativeBoundary.ended,null,{timeout:3000})
  const stopped=await page.evaluate(()=>globalThis.__nativeBoundary)
- expect(stopped.time).toBeGreaterThanOrEqual(.8);expect(stopped.time).toBeLessThan(.95)
- expect(stopped).toMatchObject({paused:true,progressTimerArmed:true,metadataTracks:1})
- await expect(page.getByRole('button',{name:'Play selection',exact:true})).toBeVisible()
- expect(await page.evaluate(()=>globalThis.__nativeBoundaryTrack.cues.length)).toBe(0)
- await page.getByRole('button',{name:'Reset',exact:true}).click()
+ try {
+  expect(stopped.time).toBeGreaterThanOrEqual(.8);expect(stopped.time).toBeLessThan(.95)
+  expect(stopped).toMatchObject({paused:true,progressTimerArmed:true,metadataTracks:1})
+  await expect(page.getByRole('button',{name:'Play selection',exact:true})).toBeVisible()
+  expect(await page.evaluate(()=>globalThis.__nativeBoundaryTrack.cues.length)).toBe(0)
+  await page.getByRole('button',{name:'Reset',exact:true}).click()
+ } finally {
+  if(process.env.FOLKKIT_AUDIO_CUE_DIAGNOSTICS==='1')await logNativeCueComparison(page)
+ }
 })

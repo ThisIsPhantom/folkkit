@@ -1,0 +1,41 @@
+name: Verify audio playback
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  firefox-playback:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the requested source revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.3
+
+      - name: Install the locked dependency graph
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Verify workflow credential boundaries
+        run: node scripts/validate-workflow-security.mjs
+
+      - name: Build the static hosting tree
+        run: bun run build:site
+
+      - name: Install Firefox
+        run: node ./node_modules/playwright/cli.js install firefox
+
+      - name: Verify audio startup and selection boundaries
+        env:
+          FOLKKIT_E2E_PORT: '4182'
+          FOLKKIT_AUDIO_CUE_DIAGNOSTICS: '1'
+        run: node ./node_modules/playwright/cli.js test audio-editor.spec.js --project firefox-desktop --grep "audio gestures|permanently suspended|native selection boundary"

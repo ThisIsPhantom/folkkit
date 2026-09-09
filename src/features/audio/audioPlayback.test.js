@@ -180,3 +180,14 @@ test('cancelling pending native play removes its armed cue before a late result 
   expect(f.onState).toHaveBeenCalledTimes(calls);expect(f.media.paused).toBe(true)
  }finally{f.player.dispose();vi.unstubAllGlobals();vi.useRealTimers()}
 })
+
+
+test('the native boundary is armed before seeking into the selection',async()=>{
+ vi.useFakeTimers();vi.stubGlobal('VTTCue',class {constructor(start,end,text){this.startTime=start;this.endTime=end;this.text=text;this.pauseOnExit=false}})
+ const f=cueFixture();let time=0,unarmedSeeks=0
+ Object.defineProperty(f.media,'currentTime',{get:()=>time,set:value=>{if(value>0&&f.track.cues.length===0)unarmedSeeks++;time=value}})
+ try {
+  await f.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0})
+  expect(unarmedSeeks).toBe(0);expect(f.media.currentTime).toBe(.2)
+ }finally{f.player.dispose();vi.unstubAllGlobals();vi.useRealTimers()}
+})

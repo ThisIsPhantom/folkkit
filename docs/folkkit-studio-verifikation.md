@@ -96,3 +96,9 @@ Die Auswahlgrenze verwendet nun eine versteckte Metadata-Spur mit `VTTCue.pauseO
 Die lokale Firefox-Gegenprobe meldete nach einem Stopp bei etwa 0,835 Sekunden beim späteren Lesen sowohl `currentTime` als auch das Ende von `played` als 1 Sekunde, obwohl das Element pausiert blieb. Endmessungen werden deshalb beim Pause-Ereignis festgehalten. Ein später abgefragter Medienzeitwert allein belegt die tatsächliche Stoppzeit nicht.
 
 Mit der nativen Auswahlgrenze bestand die vollständige Unit- und Vertragssuite mit 926 Tests; auch die vollständige Codeprüfung bestand.
+
+Die Cue und ihr Pause-Listener werden auf dem endgültigen Audiokanal vor dem Sprung zur Startposition eingerichtet. Im direkten lokalen Vergleich erreichte die frühere Reihenfolge das Dateiende bei 1 Sekunde; dieselbe Prüfung bestand nach der Reihenfolgekorrektur mit der unveränderten Grenze von weniger als 0,95 Sekunden.
+
+Der manuell auslösbare Workflow `Verify audio playback` prüft die drei Wiedergabefälle gezielt auf dem Windows-Firefox-Runner. Seine optionale Vergleichsprobe verwendet feste synthetische Audiodateien und schreibt höchstens drei begrenzte Zustandsdatensätze in das Testlog. Der Workflow hat ausschliesslich Leserechte und lädt keine Testartefakte hoch. Die vollständige Veröffentlichung verlangt weiterhin die gesamte reguläre Abnahme.
+
+Nach der Reihenfolgekorrektur bestanden 927 Unit- und Vertragstests sowie die vollständige Codeprüfung.
