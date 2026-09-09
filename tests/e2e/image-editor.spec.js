@@ -516,7 +516,7 @@ test('rotated image pixels resize live and navigation discards an unfinished ges
   const cropWidth = page.getByLabel('Breite des Ausschnitts', { exact: true })
   const cropHeight = page.getByLabel('Höhe des Ausschnitts', { exact: true })
   const cropBefore = await Promise.all([cropX, cropY, cropWidth, cropHeight].map(field => field.inputValue()))
-  await page.getByRole('button', { name: 'Ausschnitt verschieben', exact: true }).click()
+  await page.getByRole('button', { name: 'Ausschnitt verschieben', exact: true }).click({ position: { x: 8, y: 8 } })
   await expect(cropX).toHaveValue(cropBefore[0])
   await expect(cropY).toHaveValue(cropBefore[1])
   await expect(cropWidth).toHaveValue(cropBefore[2])
