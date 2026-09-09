@@ -191,3 +191,64 @@ test('the native boundary is armed before seeking into the selection',async()=>{
   expect(unarmedSeeks).toBe(0);expect(f.media.currentTime).toBe(.2)
  }finally{f.player.dispose();vi.unstubAllGlobals();vi.useRealTimers()}
 })
+
+
+function decoderErrorFixture() {
+ const media=[],errorCallbacks=[],onError=vi.fn(),onState=vi.fn()
+ const createMedia=()=>{
+  const element=new EventTarget(),track={mode:'disabled',cues:[],addCue(cue){this.cues.push(cue)},removeCue(cue){this.cues=this.cues.filter(item=>item!==cue)}}
+  const add=element.addEventListener.bind(element)
+  element.addEventListener=(type,callback,...args)=>{if(type==='error')errorCallbacks.push(callback);add(type,callback,...args)}
+  Object.assign(element,{currentTime:0,paused:true,ended:false,error:null,volume:1,track,play:async()=>{element.paused=false},pause:()=>{element.paused=true},load:vi.fn(),removeAttribute:vi.fn(),addTextTrack:()=>track})
+  media.push(element);return element
+ }
+ const player=createAudioPlayback(new Blob(['mp3']),{createMedia,createContext:()=>null,urlApi:{createObjectURL:()=> 'blob:decoder',revokeObjectURL:()=>{}},onError,onState})
+ return {player,media,errorCallbacks,onError,onState}
+}
+
+test('decode errors after successful play stop once and release the defective channel and cue',async()=>{
+ vi.useFakeTimers();vi.stubGlobal('VTTCue',class {constructor(start,end){this.startTime=start;this.endTime=end;this.pauseOnExit=false}})
+ const f=decoderErrorFixture()
+ try {
+  await f.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0});const media=f.media[0]
+  expect(f.onState).toHaveBeenLastCalledWith(true);expect(media.track.cues).toHaveLength(1)
+  media.error={code:3};media.currentTime=.6;media.dispatchEvent(new Event('error'));media.dispatchEvent(new Event('error'))
+  expect(f.onError).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({code:'playback_unavailable'}));expect(f.onState).toHaveBeenLastCalledWith(false)
+  expect(media.paused).toBe(true);expect(media.track.cues).toHaveLength(0);expect(media.removeAttribute).toHaveBeenCalledWith('src');expect(vi.getTimerCount()).toBe(0)
+ }finally{f.player.dispose();vi.unstubAllGlobals();vi.useRealTimers()}
+})
+
+test.each(['pause','ended'])('an existing decoder error is reported before a native %s removes listeners',async event=>{
+ const f=decoderErrorFixture()
+ try {
+  await f.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0});const media=f.media[0]
+  media.error={code:3};media.ended=true;media.paused=true;media.dispatchEvent(new Event(event));media.dispatchEvent(new Event('error'))
+  expect(f.onError).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({code:'playback_unavailable'}))
+ }finally{f.player.dispose()}
+})
+
+test('old decode callbacks cannot affect a healthy retry',async()=>{
+ const f=decoderErrorFixture()
+ try {
+  const selection={start:.2,end:.8,fadeIn:0,fadeOut:0}
+  await f.player.play(selection);const oldError=f.errorCallbacks[0],old=f.media[0]
+  old.error={code:3};old.currentTime=.6;old.dispatchEvent(new Event('error'))
+  await f.player.play(selection);expect(f.media).toHaveLength(2);expect(f.media[1].currentTime).toBe(.2)
+  oldError();old.dispatchEvent(new Event('error'))
+  expect(f.onError).toHaveBeenCalledOnce();expect(f.onState).toHaveBeenLastCalledWith(true);expect(f.media[1].paused).toBe(false)
+ }finally{f.player.dispose()}
+})
+
+
+test('start and progress checks do not overlook an already assigned MediaError',async()=>{
+ vi.useFakeTimers()
+ const starting=decoderErrorFixture(),playing=decoderErrorFixture()
+ try {
+  const first=starting.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0})
+  starting.media[0].error={code:3};await first
+  expect(starting.onError).toHaveBeenCalledOnce();expect(starting.onState).toHaveBeenLastCalledWith(false)
+  await playing.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0});playing.media[0].error={code:3}
+  await vi.advanceTimersByTimeAsync(15)
+  expect(playing.onError).toHaveBeenCalledOnce();expect(playing.onState).toHaveBeenLastCalledWith(false)
+ }finally{starting.player.dispose();playing.player.dispose();vi.useRealTimers()}
+})

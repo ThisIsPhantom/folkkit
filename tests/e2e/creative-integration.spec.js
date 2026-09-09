@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test'
 import { PNG } from 'pngjs'
 import { createOfflinePreview } from './helpers/offline-preview.mjs'
 import { installAudioStartupState, logAudioStartupFailure } from './helpers/audioStartupState.js'
+import { nativeAudioCapability } from './helpers/nativeAudioCapability.js'
 
 function imageFixture() {
   const png = new PNG({ width: 120, height: 80 })
@@ -103,23 +104,6 @@ async function setAudioTime(page, label, value) {
   await field.press('Tab')
 }
 
-async function nativeAudioCapability(page) {
-  const original = await readFile(new URL('./file-converter-fixtures/sample.mp3', import.meta.url))
-  return page.evaluate(base64 => new Promise(resolve => {
-    const bytes = Uint8Array.from(atob(base64), char => char.charCodeAt(0))
-    const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }))
-    const audio = new Audio(url)
-    let ended = false
-    const finish = result => {
-      if (ended) return
-      ended = true; clearTimeout(timer); audio.pause(); audio.removeAttribute('src'); audio.load(); URL.revokeObjectURL(url); resolve(result)
-    }
-    const timer = setTimeout(() => finish({ timeout: true }), 5000)
-    audio.addEventListener('error', () => finish({ supported: false, code: audio.error?.code }), { once: true })
-    audio.play().then(() => finish({ supported: true })).catch(error => finish({ supported: false, code: audio.error?.code, name: error.name }))
-  }), original.toString('base64'))
-}
-
 test('converter audio handoffs retain the selection, pause hidden playback and open the actual converted result @matrix', async ({ page }, testInfo) => {
   test.setTimeout(150000)
   await installAudioStartupState(page)
@@ -140,9 +124,11 @@ test('converter audio handoffs retain the selection, pause hidden playback and o
   if (await pause.isVisible()) await expect(page.locator('.audio-editor').getByRole('alert')).toHaveCount(0)
   else {
     // Exempt only a proven native decoder failure, never a Folkkit preview failure.
-    // This Windows WebKit build reports MP3 support but rejects original fixtures.
+    // A resolved play promise alone does not prove successful decoding.
     const capability = await nativeAudioCapability(page)
-    expect(capability).toMatchObject({ supported: false, code: 4 })
+    expect(capability.supported).toBe(false)
+    expect([3, 4]).toContain(capability.code)
+    await expect(page.locator('.audio-editor').getByRole('alert')).toHaveText('This browser cannot play the audio preview. You can still export the file.')
     testInfo.annotations.push({ type: 'platform', description: 'Native audio playback unavailable; confirmed with an independent original MP3.' })
   }
   await navigateToConverter(page)

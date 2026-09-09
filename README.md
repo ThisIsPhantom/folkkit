@@ -21,6 +21,8 @@ Die [Erweiterung für Bilder, Dokumente und Audio](docs/superpowers/specs/2026-0
 - `/audio`: MP3, WAV, FLAC und OGG/Vorbis zuschneiden, anhand der Wellenform auswählen, mit Ein-/Ausblenden anhören und exportieren.
 - DOCX/Markdown/HTML: Texte, Listen, Tabellen und unterstützte eingebettete Bilder konvertieren. Word-Seitenlayouts werden nicht identisch nachgebildet; eigene Word-Sprungmarken können verloren gehen. HTML-Ausgaben sind passiv; externe Bilder werden ausgelassen. Markdown mit Bildern wird als ZIP ausgegeben.
 
+Die Audiovorschau verwendet den nativen Decoder des Browsers. Fehler können auch nach einem erfolgreichen Start auftreten. Folkkit zeigt sie an; Bearbeiten und Exportieren bleiben verfügbar.
+
 Bildoriginale sind auf 32 MiB und 24 Megapixel begrenzt, Audiodateien auf 100 MiB und 30 Minuten. DOCX darf 20 MiB, Markdown oder HTML 2 MiB gross sein. Die Dokumentengine Pandoc 3.10 (Wrapper 1.1.0, rund 58.6 MB WASM) und die Audioengine laden erst bei der Nutzung; nach erfolgreichem Laden können sie aus dem Browsercache auch offline arbeiten.
 
 Der [freigegebene Bedienausbau](docs/superpowers/plans/2026-09-05-folkkit-usability.md) ergänzt ausserdem Katalogsuche, Kategorien und Werkzeugfavoriten. QR-, Rechner-, Konverter- und Editorsitzungen bleiben beim internen Bereichswechsel im Arbeitsspeicher erhalten.

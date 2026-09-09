@@ -34,7 +34,7 @@ export function createAudioPlayback(blob, {
     const Context = globalThis.AudioContext || globalThis.webkitAudioContext
     return Context ? new Context() : null
   },
-  urlApi = URL, onState = () => {}, onTime = () => {},
+  urlApi = URL, onState = () => {}, onTime = () => {}, onError = () => {},
 } = {}) {
   if (!blob?.size || blob.size > AUDIO_LIMITS.preview) throw audioError('resource_limit')
   const url = urlApi.createObjectURL(blob)
@@ -90,6 +90,7 @@ export function createAudioPlayback(blob, {
     run?.controller.abort(); clearInterval(run?.timer)
     if (run?.onEnded) run.channel.media.removeEventListener('ended', run.onEnded)
     if (run?.onPause) run.channel.media.removeEventListener('pause', run.onPause)
+    if (run?.onError) run.channel.media.removeEventListener('error', run.onError)
     clearNativeStop(run)
     if (channel) {
       if (Number.isFinite(channel.media.currentTime)) position = channel.media.currentTime
@@ -99,8 +100,22 @@ export function createAudioPlayback(blob, {
     }
     onState(false)
   }
+  function mediaFailed(run) {
+    if (!owns(run)) return
+    // Mark the channel unusable even if play() already resolved successfully.
+    run.started = false
+    pause()
+    position = run.position
+    onError(audioError('playback_unavailable'))
+  }
+  function nativeStopped(run) {
+    if (!owns(run)) return
+    if (run.channel.media.error) mediaFailed(run)
+    else pause()
+  }
   function tick(run) {
     if (!owns(run)) return false
+    if (run.channel.media.error) { mediaFailed(run); return false }
     const time = run.channel.media.currentTime
     onTime(time)
     if (time >= run.selection.end) { pause(); return false }
@@ -142,6 +157,7 @@ export function createAudioPlayback(blob, {
   async function play(settings) {
     if (dead) return
     if (active) pause()
+    if (channel?.media.error) { releaseChannel(channel); channel = null }
     channel ||= makeChannel()
     const start = position < settings.start || position >= settings.end - .02 ? settings.start : position
     const run = { channel, controller: new AbortController(), selection: { ...settings }, position: start, started: false }
@@ -151,10 +167,13 @@ export function createAudioPlayback(blob, {
       await startGraph(run)
       if (!owns(run)) return
       const media = run.channel.media
+      if (media.error) { mediaFailed(run); return }
       // The native cue enforces the selection boundary even if UI timers are delayed.
       armNativeStop(run)
-      run.onPause = () => { if (owns(run) && media.paused) pause() }
+      run.onPause = () => { if (media.paused) nativeStopped(run) }
+      run.onError = () => mediaFailed(run)
       media.addEventListener('pause', run.onPause)
+      media.addEventListener('error', run.onError)
       media.currentTime = run.position
       const pendingPlay = media.play()
       Promise.resolve(pendingPlay).then(() => {
@@ -162,10 +181,11 @@ export function createAudioPlayback(blob, {
       }, () => {})
       const outcome = await waitForStart(pendingPlay, NATIVE_START_MS, run.controller.signal)
       if (!owns(run)) return
+      if (media.error) { mediaFailed(run); return }
       if (outcome.state !== 'ready') throw outcome.error || audioError('playback_unavailable')
       if (media.currentTime >= run.selection.end) throw audioError('playback_unavailable')
       run.started = true
-      run.onEnded = () => { if (owns(run) && media.ended) pause() }
+      run.onEnded = () => { if (media.ended) nativeStopped(run) }
       media.addEventListener('ended', run.onEnded)
       run.timer = setInterval(() => tick(run), 15)
       if (tick(run)) onState(true)

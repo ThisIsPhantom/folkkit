@@ -2,7 +2,7 @@ import {StrictMode} from 'react'
 
 import {expect,test,vi} from 'vitest'
 
-import {render,screen,fireEvent,waitFor} from '@testing-library/react'
+import {render,screen,fireEvent,waitFor,act} from '@testing-library/react'
 
 import {I18nContext} from '../../i18n/context.js'
 
@@ -71,4 +71,23 @@ test('failed replacement preserves the original audio and edited selection',asyn
  const input=screen.getByLabelText('Start (Sekunden)');fireEvent.change(input,{target:{value:'.4'}});fireEvent.blur(input)
  fireEvent.change(screen.getByLabelText('Audio auswählen'),{target:{files:[new File(['bad'],'broken.mp3')]}})
  await screen.findByRole('alert');expect(screen.getByText('sample.wav')).toBeVisible();expect(screen.getByLabelText('Start (Sekunden)')).toHaveValue(.4);expect(screen.getByRole('button',{name:'Rückgängig'})).toBeEnabled()
+})
+
+
+test('late playback errors keep editing available, clear on retry and ignore replaced or inactive players',async()=>{
+ const callbacks=[]
+ const playbackFactory=(_blob,options)=>{callbacks.push(options);return {play:async()=>options.onState(true),pause:()=>options.onState(false),dispose:vi.fn()}}
+ const prepare=async()=>prepared
+ const view=render(provider(<AudioEditorPage prepare={prepare} playbackFactory={playbackFactory}/>))
+ fireEvent.change(screen.getByLabelText('Audio auswählen'),{target:{files:[file]}});await screen.findByText('sample.wav')
+ fireEvent.click(screen.getByRole('button',{name:'Auswahl abspielen'}));await screen.findByRole('button',{name:'Pausieren'})
+ act(()=>callbacks[0].onError({code:'playback_unavailable'}))
+ expect(screen.getByRole('alert')).toHaveTextContent('Dieser Browser kann die Audiovorschau nicht abspielen.');expect(screen.getByRole('button',{name:'Audio exportieren'})).toBeEnabled();expect(screen.getByLabelText('Start (Sekunden)')).toBeEnabled()
+ fireEvent.click(screen.getByRole('button',{name:'Auswahl abspielen'}));await screen.findByRole('button',{name:'Pausieren'});expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+ fireEvent.change(screen.getByLabelText('Audio auswählen'),{target:{files:[new File(['audio'],'replacement.wav')]}});await screen.findByText('replacement.wav')
+ fireEvent.click(screen.getByRole('button',{name:'Auswahl abspielen'}));await screen.findByRole('button',{name:'Pausieren'})
+ act(()=>callbacks[0].onError({code:'playback_unavailable'}));expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+ view.rerender(provider(<AudioEditorPage active={false} prepare={prepare} playbackFactory={playbackFactory}/>))
+ act(()=>callbacks[1].onError({code:'playback_unavailable'}));expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+ view.unmount();act(()=>callbacks[1].onError({code:'playback_unavailable'}))
 })

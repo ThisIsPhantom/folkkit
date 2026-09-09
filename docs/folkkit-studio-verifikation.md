@@ -83,22 +83,16 @@ Die Windows-WebKit-Testumgebung kann auch unveränderte WAV-, MP3- und OGG-Fixtu
 
 Der normale Browser-Testbuild behält das Vite-Manifest für die bisherigen Testwerkzeuge. Das Hosting-Artefakt enthält es weiterhin nicht. Die zusätzlichen Audio-CSP-Belege finden ihre Module direkt in den generierten Assets. Die Hosting-Allowlist und der CSP wurden nicht gelockert.
 
-## Audiostart im Firefox-Runner vom 9. September 2026
+## Audiowiedergabe vom 9. September 2026
 
-Die spätere GitHub-Abnahme belegte einen ausstehenden Web-Audio-Start. Der Player begrenzt beide Startphasen und verwendet bei ausstehendem Resume die lokale Audioelement-Wiedergabe. Ein kontrolliert nie auflösendes Resume prüft Fallback, Fades, Endstopp, Wiederholen und Bereinigung im echten Firefox. Die vollständige Unit- und Vertragssuite bestand danach mit 923 Tests.
+Der Player begrenzt Web-Audio- und native Startphase auf jeweils zwei Sekunden. Bei ausstehendem Web-Audio-Start verwendet er die lokale Audioelement-Wiedergabe. Eine versteckte Metadata-Spur mit `VTTCue.pauseOnExit` schützt das Auswahlende auch bei verspäteten Fortschrittstimern. Cue und Listener werden auf dem endgültigen Kanal vor dem Sprung zur Startposition eingerichtet und bei Pause, Abbruch, Fehler oder Freigabe entfernt.
 
-Die Offline-Testeinrichtung wartet vor der ersten Verarbeitung auf einen installierten, kontrollierenden Service Worker und prüft die gecachten Runtime-Antworten vor dem Serverausfall. Der Anwendungs-CSP und die Dateigrenzen bleiben unverändert. Die zusätzliche Fehlerdiagnose enthält nur inhaltsfreie technische Zustände; Browser-Traces und Screenshots bleiben lokal.
+Auch Decoderfehler nach einem aufgelösten `play()`-Promise werden behandelt. Der Player stoppt den aktuellen Versuch, verwirft den defekten Kanal und meldet den Fehler einmal. Nur die aktuelle, aktive Editorinstanz darf die Meldung anzeigen. Ein neuer Versuch löscht sie; Dateiauswahl, Bearbeitung und Export bleiben nutzbar.
 
-Der allgemeine Bedienfall beobachtet Start und Pause vor dem Klick direkt am Audioelement. Ein eigener Regressionstest hält den Fortschrittstimer an und prüft die präzise Auswahlgrenze mit unveränderter Toleranz. Der bisherige Player scheitert daran, weil er bis zum Dateiende läuft.
+Der Windows-Firefox-Runner meldete bei drei unabhängigen nativen Referenzwiedergaben Fehlercode 3. Das bedeutet einen Fehler beim Dekodieren, auch wenn das Medium zuvor als nutzbar galt ([MediaError.code](https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code)). Die Prüfung der Browserfähigkeit spielt deshalb eine unveränderte MP3-Referenz vollständig ab und kontrolliert auch den endgültigen Fehlerzustand. Nur ausdrücklich belegte native Fehler 3 oder 4 dürfen eine tatsächlich angezeigte Preview-Fehlermeldung als Plattformfall erklären. Erfolgreiche Wiedergaben müssen weiterhin die normalen Start-, End- und Zeitgrenzen erfüllen. Daraus wird keine allgemeine Firefox- oder Safari-Einschränkung abgeleitet.
 
-Die Auswahlgrenze verwendet nun eine versteckte Metadata-Spur mit `VTTCue.pauseOnExit`. Der Browser kann damit selbst pausieren, wenn JavaScript-Timer verspätet laufen. Pro Audiokanal wird eine Spur wiederverwendet; jeder Versuch entfernt seine Cue und Ereignislistener bei Pause, Wiederholen oder Freigabe. Die bisherigen Timer übernehmen weiterhin Fortschritt, Fades und den Rückfall für Browser ohne diese API.
+Ein eigener Regressionstest hält den Fortschrittstimer an und prüft die Auswahl von 0,2 bis 0,8 Sekunden mit unveränderter Obergrenze unter 0,95 Sekunden. Der bisherige Timerplayer scheitert daran. Weitere Fälle prüfen Fades, erneutes Abspielen, Navigation, Dateiwechsel, verspätete Promises und die einmalige Freigabe von Ressourcen. Endmessungen werden am Ereignis festgehalten, weil die lokale Firefox-Probe beim späteren Lesen trotz pausiertem Element weiterlaufende Medienzeitwerte zeigte.
 
-Die lokale Firefox-Gegenprobe meldete nach einem Stopp bei etwa 0,835 Sekunden beim späteren Lesen sowohl `currentTime` als auch das Ende von `played` als 1 Sekunde, obwohl das Element pausiert blieb. Endmessungen werden deshalb beim Pause-Ereignis festgehalten. Ein später abgefragter Medienzeitwert allein belegt die tatsächliche Stoppzeit nicht.
+Der manuell auslösbare Workflow `Verify audio playback` prüft die Wiedergabe gezielt auf dem Windows-Firefox-Runner. Die optionale Vergleichsprobe schreibt höchstens drei begrenzte Zustandsdatensätze zu festen synthetischen Dateien in das Testlog. Der Workflow hat ausschliesslich Leserechte und lädt keine Testartefakte hoch. Vor der Veröffentlichung bleibt die vollständige reguläre Abnahme erforderlich.
 
-Mit der nativen Auswahlgrenze bestand die vollständige Unit- und Vertragssuite mit 926 Tests; auch die vollständige Codeprüfung bestand.
-
-Die Cue und ihr Pause-Listener werden auf dem endgültigen Audiokanal vor dem Sprung zur Startposition eingerichtet. Im direkten lokalen Vergleich erreichte die frühere Reihenfolge das Dateiende bei 1 Sekunde; dieselbe Prüfung bestand nach der Reihenfolgekorrektur mit der unveränderten Grenze von weniger als 0,95 Sekunden.
-
-Der manuell auslösbare Workflow `Verify audio playback` prüft die drei Wiedergabefälle gezielt auf dem Windows-Firefox-Runner. Seine optionale Vergleichsprobe verwendet feste synthetische Audiodateien und schreibt höchstens drei begrenzte Zustandsdatensätze in das Testlog. Der Workflow hat ausschliesslich Leserechte und lädt keine Testartefakte hoch. Die vollständige Veröffentlichung verlangt weiterhin die gesamte reguläre Abnahme.
-
-Nach der Reihenfolgekorrektur bestanden 927 Unit- und Vertragstests sowie die vollständige Codeprüfung.
+Nach der Behandlung später Decoderfehler bestanden 933 Unit- und Vertragstests sowie die vollständige Codeprüfung.

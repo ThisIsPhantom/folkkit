@@ -9,6 +9,7 @@ import {createOfflinePreview} from './helpers/offline-preview.mjs'
 import {builtModulePath} from './helpers/builtArtifact.js'
 import {installAudioStartupState,logAudioStartupFailure} from './helpers/audioStartupState.js'
 import {logNativeCueComparison} from './helpers/nativeAudioCueProbe.js'
+import {nativeAudioCapability} from './helpers/nativeAudioCapability.js'
 const fixture=type=>fileURLToPath(new URL(`./file-converter-fixtures/sample.${type}`,import.meta.url))
 const ffmpeg=process.env.FOLKKIT_TEST_FFMPEG||'ffmpeg',ffprobe=process.env.FOLKKIT_TEST_FFPROBE||'ffprobe'
 let server
@@ -42,28 +43,20 @@ for(const from of ['wav','mp3','flac','ogg'])test(`audio real ${from} input to a
  }
  expect(readFileSync(fixture(from))).toEqual(original)
 })
-async function nativePlaybackAvailable(page) {
- // Windows Playwright WebKit can expose canPlayType while lacking all native decoders.
- // Probe an independently generated MP3 through a real user gesture before judging playback.
- await page.evaluate(bytes=>{
-  const button=document.createElement('button');button.id='audio-capability-check';button.textContent='Check native audio'
-  globalThis.audioNativeResult=null
-  button.onclick=async()=>{const audio=document.createElement('audio'),url=URL.createObjectURL(new Blob([Uint8Array.from(bytes)],{type:'audio/mpeg'}));audio.src=url
-   try{await audio.play();globalThis.audioNativeResult=true}catch{globalThis.audioNativeResult=false}finally{audio.pause();audio.removeAttribute('src');audio.load();URL.revokeObjectURL(url)}}
-  document.body.append(button)
- },Array.from(readFileSync(fixture('mp3'))))
- await page.locator('#audio-capability-check').click();await page.waitForFunction(()=>globalThis.audioNativeResult!==null)
- const supported=await page.evaluate(()=>globalThis.audioNativeResult);await page.locator('#audio-capability-check').evaluate(element=>element.remove());return supported
+async function expectUnavailablePreview(page, capability) {
+ expect(capability.supported).toBe(false);expect([3,4]).toContain(capability.code)
+ await expect(page.locator('.audio-editor [role=alert]')).toHaveText('This browser cannot play the audio preview. You can still export the file.')
 }
+
 test('@matrix audio gestures playback cancel themes and accessibility under production CSP',async({page},info)=>{
  test.setTimeout(180000);const violations=[],external=[]
  await installAudioStartupState(page)
  await page.addInitScript(()=>{globalThis.audioCsp=[];document.addEventListener('securitypolicyviolation',event=>globalThis.audioCsp.push(event.violatedDirective))})
  page.on('request',request=>{if(/^https?:/.test(request.url())&&!request.url().startsWith(server.url))external.push(request.url())})
- page.on('pageerror',error=>violations.push(error.message));await open(page);const nativePlayback=await nativePlaybackAvailable(page);await load(page)
+ page.on('pageerror',error=>violations.push(error.message));await open(page);const capability=await nativeAudioCapability(page);await load(page)
  await field(page,'Start (seconds)',.2);await field(page,'End (seconds)',.8)
  // Observe this attempt before clicking: polling can miss the 0.6-second Pause label.
- if(nativePlayback)await page.evaluate(()=>{
+ await page.evaluate(()=>{
   const originalPlay=HTMLMediaElement.prototype.play
   globalThis.__audioSelectionPlayback={started:false,ended:false,paused:false}
   HTMLMediaElement.prototype.play=function(...args){
@@ -80,14 +73,10 @@ test('@matrix audio gestures playback cancel themes and accessibility under prod
  })
  try {
   await page.getByRole('button',{name:'Play selection',exact:true}).click()
-  if(nativePlayback){
-   await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.started,null,{timeout:5000})
-   await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.ended&&document.querySelector('.audio-toolbar button')?.textContent==='Play selection',null,{timeout:3000})
-   const playback=await page.evaluate(()=>globalThis.__audioSelectionPlayback)
-   expect(playback.paused).toBe(true)
-   expect(await page.locator('.audio-editor [role=alert]').count()).toBe(0)
-  }
-  else {await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.');await info.attach('native-playback-unavailable',{body:'Independent MP3 fixture fails in native HTMLAudioElement. Editing and export remain tested.',contentType:'text/plain'})}
+  await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.started||document.querySelector('.audio-editor [role=alert]'),null,{timeout:5000})
+  await page.waitForFunction(()=>document.querySelector('.audio-editor [role=alert]')||(globalThis.__audioSelectionPlayback.ended&&document.querySelector('.audio-toolbar button')?.textContent==='Play selection'),null,{timeout:3000})
+  if(await page.locator('.audio-editor [role=alert]').count())await expectUnavailablePreview(page,capability)
+  else {const playback=await page.evaluate(()=>globalThis.__audioSelectionPlayback);expect(playback.started).toBe(true);expect(playback.paused).toBe(true)}
  } catch(error) {await logAudioStartupFailure(page);throw error}
  const start=page.getByRole('slider',{name:'Selection start'});await start.focus();await start.press('ArrowRight');await expect(start).toHaveAttribute('aria-valuenow','0.21')
  await page.getByRole('button',{name:'Undo',exact:true}).click();await expect(start).toHaveAttribute('aria-valuenow','0.2')
@@ -206,10 +195,10 @@ test('real MPEG-2.5 MP3 at 8000 Hz preserves gapless duration and exports',async
 test('@matrix audio playback falls back from a permanently suspended Web Audio start',async({page})=>{
  test.setTimeout(120000)
  await open(page)
- const nativePlayback=await nativePlaybackAvailable(page)
+ const capability=await nativeAudioCapability(page)
  await page.evaluate(()=>{
   const Context=globalThis.AudioContext||globalThis.webkitAudioContext
-  globalThis.__suspendedAudioProof={hasContext:!!Context,resumeCalls:0,bindingCalls:0,closeCalls:0,playCalls:0,revocations:0,samples:[],pauses:[]}
+  globalThis.__suspendedAudioProof={hasContext:!!Context,resumeCalls:0,bindingCalls:0,closeCalls:0,playCalls:0,revocations:0,started:false,samples:[],pauses:[]}
   globalThis.__lateAudioResume=[]
   if(Context){
    Context.prototype.resume=function(){globalThis.__suspendedAudioProof.resumeCalls++;return new Promise(resolve=>globalThis.__lateAudioResume.push(resolve))}
@@ -222,6 +211,7 @@ test('@matrix audio playback falls back from a permanently suspended Web Audio s
    globalThis.__suspendedAudioProof.playCalls++;globalThis.__suspendedMedia=this
    const result=play.call(this)
    Promise.resolve(result).then(()=>{
+    globalThis.__suspendedAudioProof.started=true
     this.addEventListener('pause',()=>{if(globalThis.__suspendedAudioProof.pauses.length<8)globalThis.__suspendedAudioProof.pauses.push({time:this.currentTime,paused:this.paused})},{once:true})
     clearInterval(globalThis.__suspendedSampler)
     globalThis.__suspendedSampler=setInterval(()=>{if(globalThis.__suspendedAudioProof.samples.length<180)globalThis.__suspendedAudioProof.samples.push({time:this.currentTime,volume:this.volume,paused:this.paused})},20)
@@ -237,15 +227,14 @@ test('@matrix audio playback falls back from a permanently suspended Web Audio s
  await expect(page.locator('.audio-wave')).toBeVisible({timeout:90000})
  await field(page,'Start (seconds)',1);await field(page,'End (seconds)',2.5);await field(page,'Fade in (seconds)',.5);await field(page,'Fade out (seconds)',.5)
  await page.getByRole('button',{name:'Play selection',exact:true}).click()
- if(!nativePlayback){
-  await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.')
-  await page.getByRole('button',{name:'Reset',exact:true}).click();return
+ await page.waitForFunction(()=>globalThis.__suspendedAudioProof.started||document.querySelector('.audio-editor [role=alert]'),null,{timeout:5000})
+ await page.evaluate(()=>globalThis.__lateAudioResume.forEach(resolve=>resolve()))
+ await page.waitForFunction(()=>document.querySelector('.audio-editor [role=alert]')||(globalThis.__suspendedAudioProof.pauses.length>0&&document.querySelector('.audio-toolbar button')?.textContent==='Play selection'),null,{timeout:4000})
+ if(await page.locator('.audio-editor [role=alert]').count()){
+  await expectUnavailablePreview(page,capability);await page.getByRole('button',{name:'Reset',exact:true}).click();return
  }
- await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible()
  const start=await page.evaluate(()=>({hasContext:globalThis.__suspendedAudioProof.hasContext,resumeCalls:globalThis.__suspendedAudioProof.resumeCalls,bindingCalls:globalThis.__suspendedAudioProof.bindingCalls,closeCalls:globalThis.__suspendedAudioProof.closeCalls,playCalls:globalThis.__suspendedAudioProof.playCalls}))
  expect(start.bindingCalls).toBe(0);expect(start.resumeCalls).toBe(start.hasContext?1:0);expect(start.closeCalls).toBe(start.hasContext?1:0);expect(start.playCalls).toBe(1)
- await page.evaluate(()=>globalThis.__lateAudioResume.forEach(resolve=>resolve()))
- await page.waitForFunction(()=>globalThis.__suspendedAudioProof.pauses.length>0&&document.querySelector('.audio-toolbar button')?.textContent==='Play selection',null,{timeout:4000})
  const ended=await page.evaluate(()=>({bindingCalls:globalThis.__suspendedAudioProof.bindingCalls,playCalls:globalThis.__suspendedAudioProof.playCalls,time:globalThis.__suspendedAudioProof.pauses[0].time,paused:globalThis.__suspendedAudioProof.pauses[0].paused,fadeIn:globalThis.__suspendedAudioProof.samples.some(sample=>sample.time>1&&sample.time<1.5&&sample.volume>0&&sample.volume<1),fadeOut:globalThis.__suspendedAudioProof.samples.some(sample=>sample.time>2&&sample.time<2.5&&sample.volume>0&&sample.volume<1)}))
  expect(ended).toMatchObject({bindingCalls:0,playCalls:1,paused:true,fadeIn:true,fadeOut:true});expect(ended.time).toBeGreaterThanOrEqual(2.5);expect(ended.time).toBeLessThan(2.65)
  await page.getByRole('button',{name:'Play selection',exact:true}).click();await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible();await page.getByRole('button',{name:'Pause',exact:true}).click()
@@ -263,7 +252,7 @@ test('@matrix audio playback falls back from a permanently suspended Web Audio s
 
 test('@matrix audio native selection boundary stops playback without the progress ticker',async({page})=>{
  test.setTimeout(120000)
- await open(page);const nativePlayback=await nativePlaybackAvailable(page);await load(page)
+ await open(page);const capability=await nativeAudioCapability(page);await load(page)
  await field(page,'Start (seconds)',.2);await field(page,'End (seconds)',.8)
  await page.evaluate(()=>{
   const Context=globalThis.AudioContext||globalThis.webkitAudioContext
@@ -292,14 +281,13 @@ test('@matrix audio native selection boundary stops playback without the progres
   }
  })
  await page.getByRole('button',{name:'Play selection',exact:true}).click()
- if(!nativePlayback){
-  await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.')
-  await page.getByRole('button',{name:'Reset',exact:true}).click();return
- }
- await page.waitForFunction(()=>globalThis.__nativeBoundary.started,null,{timeout:5000})
- await page.waitForFunction(()=>globalThis.__nativeBoundary.ended,null,{timeout:3000})
+ await page.waitForFunction(()=>globalThis.__nativeBoundary.started||document.querySelector('.audio-editor [role=alert]'),null,{timeout:5000})
+ await page.waitForFunction(()=>globalThis.__nativeBoundary.ended||document.querySelector('.audio-editor [role=alert]'),null,{timeout:3000})
  const stopped=await page.evaluate(()=>globalThis.__nativeBoundary)
  try {
+  if(await page.locator('.audio-editor [role=alert]').count()){
+   await expectUnavailablePreview(page,capability);await page.getByRole('button',{name:'Reset',exact:true}).click();return
+  }
   expect(stopped.time).toBeGreaterThanOrEqual(.8);expect(stopped.time).toBeLessThan(.95)
   expect(stopped).toMatchObject({paused:true,progressTimerArmed:true,metadataTracks:1})
   await expect(page.getByRole('button',{name:'Play selection',exact:true})).toBeVisible()

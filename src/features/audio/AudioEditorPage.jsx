@@ -59,8 +59,18 @@ export default function AudioEditorPage({active=true,fileRequest,onFileRequestCo
   if(!source||!active||busy)return
   if(playing){stopPlayback();return}
   const mine=++playGeneration.current
+  setError(null)
   try {
-   if(!player.current)player.current=playbackFactory(source.preview,{onState:value=>{if(alive.current&&isActive.current)setPlaying(value)},onTime:value=>{if(alive.current&&isActive.current)setPosition(value)}})
+   if(!player.current){
+    let instance
+    const current=()=>alive.current&&isActive.current&&player.current===instance
+    instance=playbackFactory(source.preview,{
+     onState:value=>{if(current())setPlaying(value)},
+     onTime:value=>{if(current())setPosition(value)},
+     onError:()=>{if(current()){setPlaying(false);setError('playback_unavailable')}},
+    })
+    player.current=instance
+   }
    await player.current.play(state)
   }catch(error){if(alive.current&&isActive.current&&playGeneration.current===mine)setError(error?.code==='playback_unavailable'?'playback_unavailable':'playback')}
  }
