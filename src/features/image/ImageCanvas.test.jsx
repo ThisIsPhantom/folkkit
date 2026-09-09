@@ -1,7 +1,7 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import ImageCanvas from './ImageCanvas.jsx'
-import { addElement, createImageState } from './imageModel.js'
+import { addElement, createImageState, transformedBounds, updateElement } from './imageModel.js'
 
 function imageDocument() {
   return addElement(createImageState({ width: 300, height: 200 }), {
@@ -60,4 +60,42 @@ describe('image canvas gestures', () => {
     fireEvent.pointerUp(stage, { pointerId: 1, clientX: 300, clientY: 900 })
     expect(onCropDraft).toHaveBeenCalledWith({ x: 0, y: 300, width: 300, height: 300 })
   })
+})
+
+
+it('previews draft element geometry without committing, then restores it on Escape', async () => {
+  const renderPreview = vi.fn(async () => {}), commit = vi.fn(), model = imageDocument()
+  const view = render(<ImageCanvas document={model} source={{}} resources={new Map()} selectedId="caption" onElementCommit={commit} renderPreview={renderPreview} t={key => key} />)
+  const stage = view.getByRole('application')
+  stage.getBoundingClientRect = () => ({ left: 0, top: 0, width: 300, height: 200 })
+  fireEvent.pointerDown(view.getByRole('button', { name: 'studioImage.element' }), { pointerId: 1, button: 0, isPrimary: true, clientX: 60, clientY: 50 })
+  fireEvent.pointerMove(stage, { pointerId: 1, clientX: 90, clientY: 70 })
+  await waitFor(() => expect(transformedBounds(renderPreview.mock.calls.at(-1)[0].document.elements[0])).toMatchObject({ x: 80, y: 60 }))
+  expect(commit).not.toHaveBeenCalled()
+  expect(transformedBounds(model.elements[0])).toMatchObject({ x: 50, y: 40 })
+  fireEvent.keyDown(document, { key: 'Escape' })
+  await waitFor(() => expect(transformedBounds(renderPreview.mock.calls.at(-1)[0].document.elements[0])).toMatchObject({ x: 50, y: 40 }))
+  fireEvent.pointerUp(stage, { pointerId: 1 })
+  expect(commit).not.toHaveBeenCalled()
+})
+
+
+it('discards unfinished geometry when hidden or when the document changes', async () => {
+  const commit = vi.fn(), renderPreview = vi.fn(async () => {}), source = {}, resources = new Map(), model = imageDocument()
+  const props = { source, resources, selectedId: 'caption', onElementCommit: commit, renderPreview, t: key => key }
+  const view = render(<ImageCanvas {...props} active document={model} />)
+  const stage = view.getByRole('application')
+  stage.getBoundingClientRect = () => ({ left: 0, top: 0, width: 300, height: 200 })
+  const target = view.getByRole('button', { name: 'studioImage.element' })
+  const begin = () => { fireEvent.pointerDown(target, { pointerId: 1, button: 0, isPrimary: true, clientX: 60, clientY: 50 }); fireEvent.pointerMove(stage, { pointerId: 1, clientX: 90, clientY: 70 }) }
+  begin()
+  view.rerender(<ImageCanvas {...props} active={false} document={model} />)
+  view.rerender(<ImageCanvas {...props} active document={model} />)
+  expect(target.parentElement.style.getPropertyValue('--image-left')).toBe(`${50 / 300 * 100}%`)
+  fireEvent.pointerUp(stage, { pointerId: 1 }); expect(commit).not.toHaveBeenCalled()
+  begin()
+  const changed = updateElement(model, 'caption', { x: 10 })
+  view.rerender(<ImageCanvas {...props} active document={changed} />)
+  fireEvent.pointerUp(stage, { pointerId: 1 }); expect(commit).not.toHaveBeenCalled()
+  await waitFor(() => expect(transformedBounds(renderPreview.mock.calls.at(-1)[0].document.elements[0]).x).toBe(10))
 })

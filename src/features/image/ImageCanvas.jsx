@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { resizeCropDraft, transformedBounds } from './imageModel.js'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { resizeCropDraft, transformedBounds, updateElement } from './imageModel.js'
 import { fitPreviewDisplay, paintImageDocument } from './imageRenderer.js'
+import { createImagePreviewController } from './imagePreviewController.js'
 
 function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value))
@@ -37,6 +38,14 @@ export default function ImageCanvas({
   const canvasRef = useRef(null), frameRef = useRef(null), stageRef = useRef(null), gestureRef = useRef(null)
   const onSelectRef = useRef(onSelect)
   const [visual, setVisual] = useState(null)
+  const visualRef = useRef(null), previewRef = useRef(null), committedScopeRef = useRef(null)
+  const paintDocument = useMemo(() => ({ width: imageDocument.width, height: imageDocument.height, sourceTransform: imageDocument.sourceTransform, elements: imageDocument.elements }), [imageDocument.width, imageDocument.height, imageDocument.sourceTransform, imageDocument.elements])
+  const scope = useMemo(() => ({ active, document: paintDocument, source, resources, renderPreview }), [active, paintDocument, source, resources, renderPreview])
+  const shownVisual = active && visual?.scope === scope ? visual : null
+  const showVisual = value => { visualRef.current = value; setVisual(value) }
+  const elementChanges = value => value.mode === 'resize'
+    ? { width: Math.max(1, Math.round(value.width)), height: Math.max(1, Math.round(value.height)) }
+    : { x: Math.round(value.x), y: Math.round(value.y) }
 
   useEffect(() => { onSelectRef.current = onSelect }, [onSelect])
 
@@ -58,14 +67,28 @@ export default function ImageCanvas({
   }, [imageDocument.width, imageDocument.height])
 
   useEffect(() => {
-    if (!active || !canvasRef.current || !source) return undefined
-    const controller = new AbortController()
-    Promise.resolve(renderPreview({
-      document: imageDocument, source, resources, canvas: canvasRef.current,
-      maxAxis: 1600, signal: controller.signal,
-    })).catch(error => { if (error?.code !== 'cancelled') console.error('image preview failed') })
-    return () => controller.abort()
-  }, [active, imageDocument, source, resources, renderPreview])
+    if (!scope.active || !canvasRef.current || !scope.source) return undefined
+    const stage = stageRef.current
+    const painter = createImagePreviewController({ canvas: canvasRef.current, document: scope.document, source: scope.source, resources: scope.resources, render: scope.renderPreview, onError: () => console.error('image preview failed') })
+    previewRef.current = painter
+    return () => {
+      if (committedScopeRef.current !== scope) painter.rollback()
+      painter.dispose()
+      if (previewRef.current === painter) previewRef.current = null
+      const gesture = gestureRef.current
+      if (gesture?.scope === scope) {
+        gestureRef.current = null
+        if (stage?.hasPointerCapture?.(gesture.pointerId)) stage.releasePointerCapture(gesture.pointerId)
+      }
+    }
+  }, [scope])
+
+  useEffect(() => {
+    const painter = previewRef.current
+    if (!painter) return
+    if (shownVisual?.kind === 'element') painter.preview(updateElement(scope.document, shownVisual.id, elementChanges(shownVisual)))
+    else painter.rollback()
+  }, [scope, shownVisual])
 
   const elements = useMemo(() => imageDocument.elements.map(element => ({ element, bounds: transformedBounds(element) })), [imageDocument])
 
@@ -77,54 +100,57 @@ export default function ImageCanvas({
     }
   }
 
-  function cleanup() {
+  const cleanup = useCallback((restore = true) => {
     const gesture = gestureRef.current
     gestureRef.current = null
     if (gesture && stageRef.current?.hasPointerCapture?.(gesture.pointerId)) stageRef.current.releasePointerCapture(gesture.pointerId)
-    setVisual(null)
+    if (restore) previewRef.current?.rollback()
+    visualRef.current = null; setVisual(null)
     return gesture
-  }
+  }, [])
 
   function beginElement(event, element, mode = 'move') {
     if (!active || gestureRef.current || event.button !== 0 || event.isPrimary === false) return
-    event.preventDefault(); event.stopPropagation(); setVisual(null); onSelect?.(element.id)
+    event.preventDefault(); event.stopPropagation(); showVisual(null); committedScopeRef.current = null; onSelect?.(element.id)
     const start = stagePoint(event), bounds = transformedBounds(element)
-    gestureRef.current = { pointerId: event.pointerId, kind: 'element', mode, id: element.id, start, bounds }
+    gestureRef.current = { scope, pointerId: event.pointerId, kind: 'element', mode, id: element.id, start, bounds }
     stageRef.current.setPointerCapture?.(event.pointerId)
   }
 
   function beginCrop(event, mode = 'move') {
     if (!active || gestureRef.current || event.button !== 0 || event.isPrimary === false || !cropDraft) return
     event.preventDefault(); event.stopPropagation()
-    gestureRef.current = { pointerId: event.pointerId, kind: 'crop', mode, start: stagePoint(event), bounds: { ...cropDraft } }
+    gestureRef.current = { scope, pointerId: event.pointerId, kind: 'crop', mode, start: stagePoint(event), bounds: { ...cropDraft } }
     stageRef.current.setPointerCapture?.(event.pointerId)
   }
 
   function move(event) {
     const gesture = gestureRef.current
     if (!gesture || event.pointerId !== gesture.pointerId) return
+    if (!active || gesture.scope !== scope) { cleanup(); return }
     const point = stagePoint(event), dx = point.x - gesture.start.x, dy = point.y - gesture.start.y
     if (gesture.kind === 'crop') {
-      if (gesture.mode === 'resize') setVisual({ kind: 'crop', ...resizeCropDraft(gesture.bounds, imageDocument, cropAspect, gesture.bounds.width + dx, gesture.bounds.height + dy) })
-      else setVisual({ kind: 'crop', x: clamp(gesture.bounds.x + dx, 0, imageDocument.width - gesture.bounds.width), y: clamp(gesture.bounds.y + dy, 0, imageDocument.height - gesture.bounds.height), width: gesture.bounds.width, height: gesture.bounds.height })
+      if (gesture.mode === 'resize') showVisual({ scope, kind: 'crop', ...resizeCropDraft(gesture.bounds, imageDocument, cropAspect, gesture.bounds.width + dx, gesture.bounds.height + dy) })
+      else showVisual({ scope, kind: 'crop', x: clamp(gesture.bounds.x + dx, 0, imageDocument.width - gesture.bounds.width), y: clamp(gesture.bounds.y + dy, 0, imageDocument.height - gesture.bounds.height), width: gesture.bounds.width, height: gesture.bounds.height })
       return
     }
     if (gesture.mode === 'resize') {
-      setVisual({ kind: 'element', id: gesture.id, x: gesture.bounds.x, y: gesture.bounds.y, width: clamp(gesture.bounds.width + dx, 1, imageDocument.width), height: clamp(gesture.bounds.height + dy, 1, imageDocument.height) })
+      showVisual({ scope, kind: 'element', mode: gesture.mode, id: gesture.id, x: gesture.bounds.x, y: gesture.bounds.y, width: clamp(gesture.bounds.width + dx, 1, imageDocument.width), height: clamp(gesture.bounds.height + dy, 1, imageDocument.height) })
     } else {
-      setVisual({ kind: 'element', id: gesture.id, x: clamp(gesture.bounds.x + dx, -gesture.bounds.width + 1, imageDocument.width - 1), y: clamp(gesture.bounds.y + dy, -gesture.bounds.height + 1, imageDocument.height - 1), width: gesture.bounds.width, height: gesture.bounds.height })
+      showVisual({ scope, kind: 'element', mode: gesture.mode, id: gesture.id, x: clamp(gesture.bounds.x + dx, -gesture.bounds.width + 1, imageDocument.width - 1), y: clamp(gesture.bounds.y + dy, -gesture.bounds.height + 1, imageDocument.height - 1), width: gesture.bounds.width, height: gesture.bounds.height })
     }
   }
 
   function finish(event) {
     const gesture = gestureRef.current
     if (!gesture || event.pointerId !== gesture.pointerId) return
-    const next = visual
-    cleanup()
+    if (!active || gesture.scope !== scope) { cleanup(); return }
+    const next = visualRef.current
+    committedScopeRef.current = scope
+    cleanup(false)
     if (!next) return
     if (gesture.kind === 'crop') onCropDraft?.({ x: Math.round(next.x), y: Math.round(next.y), width: Math.round(next.width), height: Math.round(next.height) })
-    else if (gesture.mode === 'resize') onElementCommit?.(gesture.id, { width: Math.max(1, Math.round(next.width)), height: Math.max(1, Math.round(next.height)) })
-    else onElementCommit?.(gesture.id, { x: Math.round(next.x), y: Math.round(next.y) })
+    else onElementCommit?.(gesture.id, elementChanges(next))
   }
 
   function cancel(event) {
@@ -140,10 +166,7 @@ export default function ImageCanvas({
       if (event.key !== 'Escape') return
       if (gestureRef.current) {
         event.preventDefault()
-        const gesture = gestureRef.current
-        gestureRef.current = null
-        if (stage?.hasPointerCapture?.(gesture.pointerId)) stage.releasePointerCapture(gesture.pointerId)
-        setVisual(null)
+        cleanup()
       }
       else onSelectRef.current?.(null)
     }
@@ -154,11 +177,11 @@ export default function ImageCanvas({
       gestureRef.current = null
       if (gesture && stage?.hasPointerCapture?.(gesture.pointerId)) stage.releasePointerCapture(gesture.pointerId)
     }
-  }, [active])
+  }, [active, cleanup])
 
-  useEffect(() => () => cleanup(), [])
+  useEffect(() => () => cleanup(), [cleanup])
 
-  const displayCrop = visual?.kind === 'crop' ? visual : cropDraft
+  const displayCrop = shownVisual?.kind === 'crop' ? shownVisual : cropDraft
   return (
     <div ref={frameRef} className="image-canvas-frame">
       <div
@@ -174,7 +197,7 @@ export default function ImageCanvas({
         <canvas ref={canvasRef} role="img" aria-label={t('studioImage.preview')} />
         <div className="image-canvas-overlay" aria-hidden={showCrop ? undefined : false}>
           {elements.map(({ element, bounds }) => {
-            const shown = visual?.kind === 'element' && visual.id === element.id ? visual : bounds
+            const shown = shownVisual?.kind === 'element' && shownVisual.id === element.id ? shownVisual : bounds
             return (
               <DynamicBox key={element.id} className="image-element-wrap" box={shown} imageDocument={imageDocument}>
                 <button

@@ -96,3 +96,9 @@ Ein eigener Regressionstest hält den Fortschrittstimer an und prüft die Auswah
 Der manuell auslösbare Workflow `Verify audio playback` prüft die Wiedergabe gezielt auf dem Windows-Firefox-Runner. Die optionale Vergleichsprobe schreibt höchstens drei begrenzte Zustandsdatensätze zu festen synthetischen Dateien in das Testlog. Der Workflow hat ausschliesslich Leserechte und lädt keine Testartefakte hoch. Vor der Veröffentlichung bleibt die vollständige reguläre Abnahme erforderlich.
 
 Nach der Behandlung später Decoderfehler bestanden 933 Unit- und Vertragstests sowie die vollständige Codeprüfung.
+
+## Direkte Bildvorschau vom 9. September 2026
+
+Der Bildeditor zeigte beim Ziehen zunächst nur den bewegten Auswahlrahmen. Ein Komponententest und ein echter Browser-Pixelvergleich belegten diesen Fehler. Die Vorschau zeichnet nun Text und Wasserzeichen während der Geste neu. Langsame Renderaufträge werden nicht aufgestaut; nur die jeweils neueste wartende Position bleibt erhalten. Fertige Frames werden vollständig angezeigt, abgebrochene oder veraltete Frames verworfen.
+
+Die lokale Prüfung umfasst 51 Bild-Komponenten-/Logiktests und 37 Browserfälle in Chromium, Firefox, WebKit und Chromium-Mobile; zwei bereits bestehende CDP-Touch-Prüfungen werden auf Firefox/WebKit übersprungen. Geprüft wurden sichtbare Pixel vor dem Loslassen, Escape ohne zusätzlichen Undo-Schritt, die pixelgenaue Gleichheit von fertiger Vorschau und PNG-Export, Text und Wasserzeichen sowie Resize nach Drehung. Ein echter Touch-Resize auf dem mobilen Chromium und ein Bereichswechsel mit noch gehaltener Geste bestätigen das Zurücksetzen auf den gespeicherten Zustand. Die vorherige Datei bleibt unverändert.

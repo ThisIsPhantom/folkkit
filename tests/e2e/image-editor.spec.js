@@ -418,3 +418,97 @@ test('opacity rejects a real second touch and Escape blocks late owner movement 
     await session.detach()
   }
 })
+
+
+for (const kind of ['watermark', 'text']) test(`image pixels follow a ${kind} gesture before commit and Escape restores them @matrix`, async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'de'))
+  await page.goto('/image')
+  const white = new PNG({ width: 320, height: 200 }); white.data.fill(255)
+  await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles({ name: 'white.png', mimeType: 'image/png', buffer: PNG.sync.write(white) })
+  await expect(page.getByText('320 × 200 px', { exact: true })).toBeVisible()
+  if (kind === 'watermark') await page.getByLabel('Wasserzeichen hinzufügen', { exact: true }).setInputFiles(watermarkFixture())
+  else { await page.getByLabel('Textinhalt', { exact: true }).fill('Text in Bewegung'); await page.getByRole('button', { name: 'Text hinzufügen', exact: true }).click() }
+  const canvas = page.locator('.image-canvas-stage canvas')
+  await expect.poll(() => canvas.evaluate(node => {
+    const data = node.getContext('2d').getImageData(0, 0, node.width, node.height).data
+    let ink = 0
+    for (let i = 0; i < data.length; i += 4) if (data[i + 1] < 250) ink++
+    return ink
+  })).toBeGreaterThan(50)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  const original = await canvas.evaluate(node => node.toDataURL())
+  const x = page.getByLabel('X-Position', { exact: true }), initialX = await x.inputValue()
+  const target = page.getByRole('button', { name: kind === 'watermark' ? 'local-watermark.png auswählen' : 'Text in Bewegung auswählen', exact: true })
+  await page.screenshot({ path: testInfo.outputPath('image-before-gesture.png'), fullPage: true })
+  await target.scrollIntoViewIfNeeded()
+  const box = await target.boundingBox(), stage = await page.locator('.image-canvas-stage').boundingBox()
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+  await page.mouse.down()
+  try {
+    await page.mouse.move(box.x + box.width / 2 + stage.width * .15, box.y + box.height / 2 + stage.height * .1, { steps: 8 })
+    await expect.poll(async () => await canvas.evaluate(node => node.toDataURL()) !== original, { message: 'Actual element pixels must move while the pointer is held.' }).toBe(true)
+    await page.screenshot({ path: testInfo.outputPath('image-during-gesture.png') })
+    await expect(x).toHaveValue(initialX)
+    await page.keyboard.press('Escape')
+    await expect.poll(async () => await canvas.evaluate(node => node.toDataURL()) === original).toBe(true)
+  } finally { await page.mouse.up() }
+  await expect(x).toHaveValue(initialX)
+  const again = await target.boundingBox()
+  await page.mouse.move(again.x + again.width / 2, again.y + again.height / 2)
+  await page.mouse.down(); await page.mouse.move(again.x + again.width / 2 + stage.width * .1, again.y + again.height / 2, { steps: 4 }); await page.mouse.up()
+  await expect(x).not.toHaveValue(initialX)
+  await expect.poll(async () => await canvas.evaluate(node => node.toDataURL()) !== original).toBe(true)
+  const exported = PNG.sync.read((await downloadImage(page, 'PNG herunterladen')).bytes)
+  const preview = PNG.sync.read(Buffer.from((await canvas.evaluate(node => node.toDataURL())).split(',')[1], 'base64'))
+  expect(exported.width).toBe(preview.width); expect(exported.height).toBe(preview.height)
+  expect(exported.data.equals(preview.data), 'Final preview and original-based export must agree').toBe(true)
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+  await expect(x).toHaveValue(initialX)
+  await expect.poll(async () => await canvas.evaluate(node => node.toDataURL()) === original).toBe(true)
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+  await expect(target).toHaveCount(0)
+})
+
+
+test('rotated image pixels resize live and navigation discards an unfinished gesture @matrix', async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'de'))
+  await page.goto('/image')
+  await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
+  await expect(page.getByText('300 × 200 px', { exact: true })).toBeVisible()
+  await page.getByLabel('Wasserzeichen hinzufügen', { exact: true }).setInputFiles(watermarkFixture())
+  await expect(page.getByRole('button', { name: 'local-watermark.png auswählen', exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '90° nach rechts drehen', exact: true }).click()
+  const canvas = page.locator('.image-canvas-stage canvas')
+  await expect.poll(() => canvas.evaluate(node => [node.width, node.height])).toEqual([200, 300])
+  const original = await canvas.evaluate(node => node.toDataURL())
+  const width = page.getByLabel('Breite', { exact: true }), initialWidth = await width.inputValue()
+  const handle = page.getByRole('button', { name: 'Elementgrösse ändern', exact: true })
+  await handle.scrollIntoViewIfNeeded()
+  const box = await handle.boundingBox(), stage = await page.locator('.image-canvas-stage').boundingBox()
+  const x = box.x + box.width / 2, y = box.y + box.height / 2
+  const touch = testInfo.project.name.includes('mobile') ? await page.context().newCDPSession(page) : null
+  if (touch) {
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] })
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + stage.width * .1, y: y + stage.height * .08, id: 1 }] })
+  } else {
+    await page.mouse.move(x, y); await page.mouse.down()
+    await page.mouse.move(x + stage.width * .1, y + stage.height * .08, { steps: 6 })
+  }
+  try {
+    await expect.poll(async () => await canvas.evaluate(node => node.toDataURL()) !== original).toBe(true)
+    await expect(width).toHaveValue(initialWidth)
+    // Keyboard navigation leaves the pointer gesture unfinished.
+    const menu = page.getByRole('button', { name: 'Menü öffnen', exact: true })
+    if (await menu.isVisible()) { await menu.focus(); await menu.press('Enter') }
+    const link = page.locator('.site-nav:visible').getByRole('link', { name: 'Konvertieren', exact: true })
+    await link.focus(); await link.press('Enter')
+    await expect(page).toHaveURL(/\/convert$/)
+    await page.goBack()
+    await expect(page).toHaveURL(/\/image$/)
+    await expect.poll(async () => await canvas.evaluate(node => node.toDataURL()) === original).toBe(true)
+  } finally {
+    if (touch) { await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await touch.detach() }
+    else await page.mouse.up()
+  }
+  await expect(width).toHaveValue(initialWidth)
+})
