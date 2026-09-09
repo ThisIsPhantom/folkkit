@@ -61,9 +61,31 @@ test('@matrix audio gestures playback cancel themes and accessibility under prod
  page.on('request',request=>{if(/^https?:/.test(request.url())&&!request.url().startsWith(server.url))external.push(request.url())})
  page.on('pageerror',error=>violations.push(error.message));await open(page);const nativePlayback=await nativePlaybackAvailable(page);await load(page)
  await field(page,'Start (seconds)',.2);await field(page,'End (seconds)',.8)
+ // Observe this attempt before clicking: polling can miss the 0.6-second Pause label.
+ if(nativePlayback)await page.evaluate(()=>{
+  const originalPlay=HTMLMediaElement.prototype.play
+  globalThis.__audioSelectionPlayback={started:false,ended:false,paused:false,time:0}
+  HTMLMediaElement.prototype.play=function(...args){
+   HTMLMediaElement.prototype.play=originalPlay
+   const result=originalPlay.apply(this,args),media=this
+   Promise.resolve(result).then(()=>{
+    globalThis.__audioSelectionPlayback.started=true
+    media.addEventListener('pause',()=>{
+     Object.assign(globalThis.__audioSelectionPlayback,{ended:true,paused:media.paused,time:media.currentTime})
+    },{once:true})
+   },()=>{})
+   return result
+  }
+ })
  try {
   await page.getByRole('button',{name:'Play selection',exact:true}).click()
-  if(nativePlayback){await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Play selection',exact:true})).toBeVisible({timeout:3000})}
+  if(nativePlayback){
+   await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.started,null,{timeout:5000})
+   await page.waitForFunction(()=>globalThis.__audioSelectionPlayback.ended&&document.querySelector('.audio-toolbar button')?.textContent==='Play selection',null,{timeout:3000})
+   const playback=await page.evaluate(()=>globalThis.__audioSelectionPlayback)
+   expect(playback.paused).toBe(true);expect(playback.time).toBeGreaterThanOrEqual(.8);expect(playback.time).toBeLessThan(.95)
+   expect(await page.locator('.audio-editor [role=alert]').count()).toBe(0)
+  }
   else {await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.');await info.attach('native-playback-unavailable',{body:'Independent MP3 fixture fails in native HTMLAudioElement. Editing and export remain tested.',contentType:'text/plain'})}
  } catch(error) {await logAudioStartupFailure(page);throw error}
  const start=page.getByRole('slider',{name:'Selection start'});await start.focus();await start.press('ArrowRight');await expect(start).toHaveAttribute('aria-valuenow','0.21')

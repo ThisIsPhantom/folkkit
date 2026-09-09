@@ -71,7 +71,7 @@ Einzelberichte, Testlogs und Screenshots liegen im ignorierten Arbeitsverzeichni
 
 ## Erweiterung für Bilder, Dokumente und Audio vom 7. September 2026
 
-Die lokale Abnahme umfasst 908 Unit- und Vertragstests, 282 Browserfälle in Chromium, Firefox, WebKit und Chromium-Mobile sowie 119 zusätzliche Fälle unter den Hosting-Headern. Alle genannten Prüfungen bestanden.
+Die erste lokale Abnahme dieser Erweiterung umfasste 908 Unit- und Vertragstests, 282 Browserfälle in Chromium, Firefox, WebKit und Chromium-Mobile sowie 119 zusätzliche Fälle unter den Hosting-Headern. Alle genannten Prüfungen bestanden.
 
 - Bildeditor: PNG/JPEG/WebP, Zuschnitt, Drehung, Spiegelung, Texte und wiederverwendbare Wasserzeichen. Pixelvergleiche prüfen Originalgeometrie, Transparenz, weissen JPEG-Hintergrund und Exporte ohne Auswahlgriffe. Initiales Einlesen ist abbrechbar; verspätete Bitmaps überschreiben keinen neuen Versuch. Auf Mobilgeräten steht die Vorschau vor den zusätzlichen Einstellungen.
 - Dokumentkonvertierung: alle sechs Richtungen zwischen DOCX, Markdown und HTML. Word-XML, Tabellen, Unicode und eingebettete PNG-/JPEG-/WebP-Dateien wurden unabhängig geprüft. HTML bleibt passiv; Markdown mit Bildern wird als ZIP ausgegeben. Sichere Überschriften-IDs aus Markdown/HTML bleiben erhalten. Eigene Word-Sprungmarken können beim DOCX-Rundlauf bereits in der Engine verloren gehen; identische Word-Seitenlayouts sind nicht zugesagt.
@@ -82,3 +82,11 @@ Die lokale Abnahme umfasst 908 Unit- und Vertragstests, 282 Browserfälle in Chr
 Die Windows-WebKit-Testumgebung kann auch unveränderte WAV-, MP3- und OGG-Fixtures nativ nicht abspielen. Dort wurden die konkrete Fehlermeldung, Bearbeitung und Export geprüft. Tatsächliche Auswahlwiedergabe und Endstopp bestehen in Chromium, Firefox und Chromium-Mobile. Daraus wird keine Safari-Einschränkung abgeleitet.
 
 Der normale Browser-Testbuild behält das Vite-Manifest für die bisherigen Testwerkzeuge. Das Hosting-Artefakt enthält es weiterhin nicht. Die zusätzlichen Audio-CSP-Belege finden ihre Module direkt in den generierten Assets. Die Hosting-Allowlist und der CSP wurden nicht gelockert.
+
+## Audiostart im Firefox-Runner vom 9. September 2026
+
+Die spätere GitHub-Abnahme belegte einen ausstehenden Web-Audio-Start. Der Player begrenzt beide Startphasen und verwendet bei ausstehendem Resume die lokale Audioelement-Wiedergabe. Ein kontrolliert nie auflösendes Resume prüft Fallback, Fades, Endstopp, Wiederholen und Bereinigung im echten Firefox. Die vollständige Unit- und Vertragssuite bestand danach mit 923 Tests.
+
+Die Offline-Testeinrichtung wartet vor der ersten Verarbeitung auf einen installierten, kontrollierenden Service Worker und prüft die gecachten Runtime-Antworten vor dem Serverausfall. Der Anwendungs-CSP und die Dateigrenzen bleiben unverändert. Die zusätzliche Fehlerdiagnose enthält nur inhaltsfreie technische Zustände; Browser-Traces und Screenshots bleiben lokal.
+
+Der kurze Auswahltest beobachtet Start und Pause vor dem Klick direkt am Audioelement. Damit bleibt der Nachweis auch dann erhalten, wenn das Testsystem den nur 0,6 Sekunden sichtbaren Pause-Knopf beim Abfragen verpasst. Die Start- und Endzeitgrenzen wurden nicht erhöht.
