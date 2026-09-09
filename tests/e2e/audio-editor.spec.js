@@ -178,3 +178,60 @@ test('real MPEG-2.5 MP3 at 8000 Hz preserves gapless duration and exports',async
  const outputMetadata=JSON.parse(outputProbe.stdout);expect(outputMetadata.streams[0].codec_name).toBe('pcm_s16le');expect(Number(outputMetadata.format.duration)).toBe(1)
  await info.attach('verified-mpeg25-timing',{body:JSON.stringify({browserContainerDuration:result.containerDuration,nativeDuration:inputMetadata.format.duration,decodedSamples:result.decodedSamples,preparedDuration:result.duration,windows:result.windows,previewBytes:result.previewBytes,outputDuration:outputMetadata.format.duration}),contentType:'application/json'})
 })
+
+
+test('@matrix audio playback falls back from a permanently suspended Web Audio start',async({page})=>{
+ test.setTimeout(120000)
+ await open(page)
+ const nativePlayback=await nativePlaybackAvailable(page)
+ await page.evaluate(()=>{
+  const Context=globalThis.AudioContext||globalThis.webkitAudioContext
+  globalThis.__suspendedAudioProof={hasContext:!!Context,resumeCalls:0,bindingCalls:0,closeCalls:0,playCalls:0,revocations:0,samples:[]}
+  globalThis.__lateAudioResume=[]
+  if(Context){
+   Context.prototype.resume=function(){globalThis.__suspendedAudioProof.resumeCalls++;return new Promise(resolve=>globalThis.__lateAudioResume.push(resolve))}
+   const source=Context.prototype.createMediaElementSource,close=Context.prototype.close
+   Context.prototype.createMediaElementSource=function(...args){globalThis.__suspendedAudioProof.bindingCalls++;return source.apply(this,args)}
+   Context.prototype.close=function(...args){globalThis.__suspendedAudioProof.closeCalls++;return close.apply(this,args)}
+  }
+  const play=HTMLMediaElement.prototype.play,revoke=URL.revokeObjectURL.bind(URL)
+  HTMLMediaElement.prototype.play=function(){
+   globalThis.__suspendedAudioProof.playCalls++;globalThis.__suspendedMedia=this
+   const result=play.call(this)
+   Promise.resolve(result).then(()=>{
+    clearInterval(globalThis.__suspendedSampler)
+    globalThis.__suspendedSampler=setInterval(()=>{if(globalThis.__suspendedAudioProof.samples.length<180)globalThis.__suspendedAudioProof.samples.push({time:this.currentTime,volume:this.volume,paused:this.paused})},20)
+   },()=>{})
+   return result
+  }
+  URL.revokeObjectURL=function(url){globalThis.__suspendedAudioProof.revocations++;return revoke(url)}
+ })
+ const rate=8000,count=rate*6,buffer=Buffer.alloc(44+count*2)
+ buffer.write('RIFF',0);buffer.writeUInt32LE(buffer.length-8,4);buffer.write('WAVEfmt ',8);buffer.writeUInt32LE(16,16);buffer.writeUInt16LE(1,20);buffer.writeUInt16LE(1,22);buffer.writeUInt32LE(rate,24);buffer.writeUInt32LE(rate*2,28);buffer.writeUInt16LE(2,32);buffer.writeUInt16LE(16,34);buffer.write('data',36);buffer.writeUInt32LE(count*2,40)
+ for(let i=0;i<count;i++)buffer.writeInt16LE(Math.round(.5*32767*Math.sin(2*Math.PI*440*i/rate)),44+i*2)
+ await page.getByLabel('Choose audio',{exact:true}).setInputFiles({name:'startup.wav',mimeType:'audio/wav',buffer})
+ await expect(page.locator('.audio-wave')).toBeVisible({timeout:90000})
+ await field(page,'Start (seconds)',1);await field(page,'End (seconds)',2.5);await field(page,'Fade in (seconds)',.5);await field(page,'Fade out (seconds)',.5)
+ await page.getByRole('button',{name:'Play selection',exact:true}).click()
+ if(!nativePlayback){
+  await expect(page.locator('.audio-editor [role=alert]')).toContainText('This browser cannot play the audio preview.')
+  await page.getByRole('button',{name:'Reset',exact:true}).click();return
+ }
+ await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible()
+ const start=await page.evaluate(()=>({hasContext:globalThis.__suspendedAudioProof.hasContext,resumeCalls:globalThis.__suspendedAudioProof.resumeCalls,bindingCalls:globalThis.__suspendedAudioProof.bindingCalls,closeCalls:globalThis.__suspendedAudioProof.closeCalls,playCalls:globalThis.__suspendedAudioProof.playCalls}))
+ expect(start.bindingCalls).toBe(0);expect(start.resumeCalls).toBe(start.hasContext?1:0);expect(start.closeCalls).toBe(start.hasContext?1:0);expect(start.playCalls).toBe(1)
+ await page.evaluate(()=>globalThis.__lateAudioResume.forEach(resolve=>resolve()))
+ await expect(page.getByRole('button',{name:'Play selection',exact:true})).toBeVisible({timeout:4000})
+ const ended=await page.evaluate(()=>({bindingCalls:globalThis.__suspendedAudioProof.bindingCalls,playCalls:globalThis.__suspendedAudioProof.playCalls,time:globalThis.__suspendedMedia.currentTime,paused:globalThis.__suspendedMedia.paused,fadeIn:globalThis.__suspendedAudioProof.samples.some(sample=>sample.time>1&&sample.time<1.5&&sample.volume>0&&sample.volume<1),fadeOut:globalThis.__suspendedAudioProof.samples.some(sample=>sample.time>2&&sample.time<2.5&&sample.volume>0&&sample.volume<1)}))
+ expect(ended).toMatchObject({bindingCalls:0,playCalls:1,paused:true,fadeIn:true,fadeOut:true});expect(ended.time).toBeGreaterThanOrEqual(2.5);expect(ended.time).toBeLessThan(2.65)
+ await page.getByRole('button',{name:'Play selection',exact:true}).click();await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible();await page.getByRole('button',{name:'Pause',exact:true}).click()
+ expect(await page.evaluate(()=>globalThis.__suspendedMedia.paused)).toBe(true)
+ await page.getByRole('button',{name:'Play selection',exact:true}).click();await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible()
+ if(await page.locator('.menu-button').isVisible())await page.locator('.menu-button').click()
+ await page.locator('.site-nav:visible').getByRole('link',{name:'Convert',exact:true}).click()
+ await expect.poll(()=>page.evaluate(()=>globalThis.__suspendedMedia.paused)).toBe(true)
+ await page.goBack();await expect(page.getByRole('heading',{name:'Trim audio'})).toBeVisible()
+ await page.getByRole('button',{name:'Reset',exact:true}).click()
+ const disposed=await page.evaluate(()=>{clearInterval(globalThis.__suspendedSampler);return {hasSource:globalThis.__suspendedMedia.hasAttribute('src'),paused:globalThis.__suspendedMedia.paused,revocations:globalThis.__suspendedAudioProof.revocations,resumeCalls:globalThis.__suspendedAudioProof.resumeCalls}})
+ expect(disposed).toMatchObject({hasSource:false,paused:true,revocations:1,resumeCalls:start.resumeCalls})
+})
