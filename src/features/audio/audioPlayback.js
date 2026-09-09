@@ -43,7 +43,7 @@ export function createAudioPlayback(blob, {
   function makeChannel() {
     const media = createMedia()
     media.preload = 'metadata'; media.src = url; media.volume = 0
-    return { media, context: null, source: null, gain: null, bound: false, released: false }
+    return { media, context: null, source: null, gain: null, stopTrack: null, bound: false, released: false }
   }
   function closeGraph(target) {
     for (const node of [target.source, target.gain]) {
@@ -65,10 +65,32 @@ export function createAudioPlayback(blob, {
   }
   const owns = run => !dead && active === run && !run.controller.signal.aborted
 
+  function clearNativeStop(run) {
+    const cue = run?.stopCue
+    if (!cue) return
+    run.stopCue = null
+    try { run.channel.stopTrack.removeCue(cue) } catch { /* The media resource may already be gone. */ }
+  }
+  function armNativeStop(run) {
+    const target = run.channel, Cue = globalThis.VTTCue
+    if (typeof Cue !== 'function' || typeof target.media.addTextTrack !== 'function') return
+    try {
+      const cue = new Cue(run.selection.start, run.selection.end, '')
+      if (!('pauseOnExit' in cue)) return
+      cue.pauseOnExit = true
+      target.stopTrack ||= target.media.addTextTrack('metadata')
+      target.stopTrack.mode = 'hidden'
+      run.stopCue = cue
+      target.stopTrack.addCue(cue)
+    } catch { clearNativeStop(run) /* Keep the existing timer fallback when cues are unavailable. */ }
+  }
+
   function pause() {
     const run = active; active = null
     run?.controller.abort(); clearInterval(run?.timer)
     if (run?.onEnded) run.channel.media.removeEventListener('ended', run.onEnded)
+    if (run?.onPause) run.channel.media.removeEventListener('pause', run.onPause)
+    clearNativeStop(run)
     if (channel) {
       if (Number.isFinite(channel.media.currentTime)) position = channel.media.currentTime
       channel.media.pause(); setGain(channel, 0)
@@ -130,6 +152,10 @@ export function createAudioPlayback(blob, {
       await startGraph(run)
       if (!owns(run)) return
       const media = run.channel.media
+      // The native cue enforces the selection boundary even if UI timers are delayed.
+      armNativeStop(run)
+      run.onPause = () => { if (owns(run) && media.paused) pause() }
+      media.addEventListener('pause', run.onPause)
       const pendingPlay = media.play()
       Promise.resolve(pendingPlay).then(() => {
         if (!owns(run)) media.pause()

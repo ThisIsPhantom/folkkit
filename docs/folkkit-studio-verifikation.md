@@ -89,4 +89,10 @@ Die spätere GitHub-Abnahme belegte einen ausstehenden Web-Audio-Start. Der Play
 
 Die Offline-Testeinrichtung wartet vor der ersten Verarbeitung auf einen installierten, kontrollierenden Service Worker und prüft die gecachten Runtime-Antworten vor dem Serverausfall. Der Anwendungs-CSP und die Dateigrenzen bleiben unverändert. Die zusätzliche Fehlerdiagnose enthält nur inhaltsfreie technische Zustände; Browser-Traces und Screenshots bleiben lokal.
 
-Der kurze Auswahltest beobachtet Start und Pause vor dem Klick direkt am Audioelement. Damit bleibt der Nachweis auch dann erhalten, wenn das Testsystem den nur 0,6 Sekunden sichtbaren Pause-Knopf beim Abfragen verpasst. Die Start- und Endzeitgrenzen wurden nicht erhöht. Der Stoppwert wird beim tatsächlichen `pause()`-Aufruf festgehalten: Die Firefox-Gegenprobe stoppte bei etwa 0,825 Sekunden, meldete beim späteren Lesen trotz pausiertem Element aber 1 Sekunde. Ein erst am Dateiende ausgelöster Stopp darf diesen Test weiterhin nicht bestehen.
+Der allgemeine Bedienfall beobachtet Start und Pause vor dem Klick direkt am Audioelement. Ein eigener Regressionstest hält den Fortschrittstimer an und prüft die präzise Auswahlgrenze mit unveränderter Toleranz. Der bisherige Player scheitert daran, weil er bis zum Dateiende läuft.
+
+Die Auswahlgrenze verwendet nun eine versteckte Metadata-Spur mit `VTTCue.pauseOnExit`. Der Browser kann damit selbst pausieren, wenn JavaScript-Timer verspätet laufen. Pro Audiokanal wird eine Spur wiederverwendet; jeder Versuch entfernt seine Cue und Ereignislistener bei Pause, Wiederholen oder Freigabe. Die bisherigen Timer übernehmen weiterhin Fortschritt, Fades und den Rückfall für Browser ohne diese API.
+
+Die lokale Firefox-Gegenprobe meldete nach einem Stopp bei etwa 0,835 Sekunden beim späteren Lesen sowohl `currentTime` als auch das Ende von `played` als 1 Sekunde, obwohl das Element pausiert blieb. Endmessungen werden deshalb beim Pause-Ereignis festgehalten. Ein später abgefragter Medienzeitwert allein belegt die tatsächliche Stoppzeit nicht.
+
+Mit der nativen Auswahlgrenze bestand die vollständige Unit- und Vertragssuite mit 926 Tests; auch die vollständige Codeprüfung bestand.

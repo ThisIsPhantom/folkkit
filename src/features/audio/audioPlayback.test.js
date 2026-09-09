@@ -129,3 +129,54 @@ test('a rejected context start falls back immediately to working native playback
   expect(f.context.createMediaElementSource).not.toHaveBeenCalled();expect(f.context.close).toHaveBeenCalledOnce();expect(f.media[0].play).toHaveBeenCalledOnce();expect(f.onState).toHaveBeenLastCalledWith(true)
  }finally{f.player.dispose()}
 })
+
+
+function cueFixture() {
+ const track={mode:'disabled',cues:[],addCue(cue){this.cues.push(cue)},removeCue(cue){this.cues=this.cues.filter(item=>item!==cue)}}
+ const media=new EventTarget()
+ Object.assign(media,{currentTime:0,paused:true,volume:1,ended:false,play:async()=>{media.paused=false},pause:()=>{media.paused=true},load:()=>{},removeAttribute:()=>{},addTextTrack:vi.fn(()=>track)})
+ const onState=vi.fn(),player=createAudioPlayback(new Blob(['mp3']),{createMedia:()=>media,createContext:()=>null,urlApi:{createObjectURL:()=> 'blob:cue',revokeObjectURL:()=>{}},onState})
+ return {track,media,onState,player}
+}
+
+test('a native selection cue stops the lifecycle without any progress timer tick',async()=>{
+ vi.useFakeTimers();vi.stubGlobal('VTTCue',class {constructor(start,end,text){this.startTime=start;this.endTime=end;this.text=text;this.pauseOnExit=false}})
+ const f=cueFixture()
+ try {
+  await f.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0})
+  expect(f.media.addTextTrack).toHaveBeenCalledWith('metadata');expect(f.track.mode).toBe('hidden');expect(f.track.cues).toHaveLength(1)
+  expect(f.track.cues[0]).toMatchObject({startTime:.2,endTime:.8,pauseOnExit:true})
+  f.media.currentTime=.8;f.media.paused=true;f.media.dispatchEvent(new Event('pause'))
+  expect(f.onState).toHaveBeenLastCalledWith(false);expect(f.track.cues).toHaveLength(0)
+  expect(vi.getTimerCount()).toBe(0)
+ }finally{f.player.dispose();vi.unstubAllGlobals();vi.useRealTimers()}
+})
+
+test('cue retries reuse one track and discard old cues and native pause listeners',async()=>{
+ vi.useFakeTimers();vi.stubGlobal('VTTCue',class {constructor(start,end,text){this.startTime=start;this.endTime=end;this.text=text;this.pauseOnExit=false}})
+ const f=cueFixture()
+ try {
+  await f.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0});const oldCue=f.track.cues[0]
+  f.player.pause();expect(f.track.cues).toHaveLength(0)
+  await f.player.play({start:.1,end:.6,fadeIn:0,fadeOut:0})
+  expect(f.media.addTextTrack).toHaveBeenCalledOnce();expect(f.track.cues).toHaveLength(1);expect(f.track.cues[0]).not.toBe(oldCue);expect(f.track.cues[0].endTime).toBe(.6)
+  // An old queued pause event cannot stop a newer, actively playing attempt.
+  f.media.dispatchEvent(new Event('pause'));expect(f.onState).toHaveBeenLastCalledWith(true)
+  f.player.dispose();expect(f.track.cues).toHaveLength(0)
+  const calls=f.onState.mock.calls.length;f.media.paused=true;f.media.dispatchEvent(new Event('pause'));expect(f.onState).toHaveBeenCalledTimes(calls)
+ }finally{f.player.dispose();vi.unstubAllGlobals();vi.useRealTimers()}
+})
+
+
+test('cancelling pending native play removes its armed cue before a late result arrives',async()=>{
+ vi.useFakeTimers();vi.stubGlobal('VTTCue',class {constructor(start,end,text){this.startTime=start;this.endTime=end;this.text=text;this.pauseOnExit=false}})
+ const f=cueFixture(),pending=deferredStart()
+ f.media.play=()=>{f.media.paused=false;return pending.promise}
+ try {
+  const playing=f.player.play({start:.2,end:.8,fadeIn:0,fadeOut:0});await Promise.resolve()
+  expect(f.track.cues).toHaveLength(1)
+  f.player.pause();await playing;expect(f.track.cues).toHaveLength(0)
+  const calls=f.onState.mock.calls.length;pending.resolve();await Promise.resolve();f.media.dispatchEvent(new Event('pause'))
+  expect(f.onState).toHaveBeenCalledTimes(calls);expect(f.media.paused).toBe(true)
+ }finally{f.player.dispose();vi.unstubAllGlobals();vi.useRealTimers()}
+})
