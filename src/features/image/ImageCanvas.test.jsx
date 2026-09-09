@@ -99,3 +99,28 @@ it('discards unfinished geometry when hidden or when the document changes', asyn
   fireEvent.pointerUp(stage, { pointerId: 1 }); expect(commit).not.toHaveBeenCalled()
   await waitFor(() => expect(transformedBounds(renderPreview.mock.calls.at(-1)[0].document.elements[0]).x).toBe(10))
 })
+
+
+it.each(['visibility', 'document', 'source'])('does not reuse a cancelled element draft for a crop click after a %s change', (change) => {
+  const onCropDraft = vi.fn(), onElementCommit = vi.fn(), model = imageDocument()
+  const props = { source: {}, resources: new Map(), selectedId: 'caption', onElementCommit, onCropDraft, cropDraft: { x: 0, y: 0, width: 150, height: 100 }, showCrop: true, renderPreview: async () => {}, t: key => key }
+  const view = render(<ImageCanvas {...props} active document={model} />)
+  const stage = view.getByRole('application')
+  stage.getBoundingClientRect = () => ({ left: 0, top: 0, width: 300, height: 200 })
+  fireEvent.pointerDown(view.getByRole('button', { name: 'studioImage.element' }), { pointerId: 1, button: 0, isPrimary: true, clientX: 60, clientY: 50 })
+  fireEvent.pointerMove(stage, { pointerId: 1, clientX: 90, clientY: 70 })
+  if (change === 'visibility') {
+    view.rerender(<ImageCanvas {...props} active={false} document={model} />)
+    view.rerender(<ImageCanvas {...props} active document={model} />)
+  } else if (change === 'document') view.rerender(<ImageCanvas {...props} active document={updateElement(model, 'caption', { x: 10 })} />)
+  else view.rerender(<ImageCanvas {...props} active document={model} source={{}} />)
+  const crop = view.getByRole('button', { name: 'studioImage.cropSelection' })
+  fireEvent.pointerDown(crop, { pointerId: 2, button: 0, isPrimary: true, clientX: 10, clientY: 10 })
+  fireEvent.pointerUp(stage, { pointerId: 2, clientX: 10, clientY: 10 })
+  expect(onElementCommit).not.toHaveBeenCalled()
+  expect(onCropDraft).not.toHaveBeenCalled()
+  fireEvent.pointerDown(crop, { pointerId: 3, button: 0, isPrimary: true, clientX: 10, clientY: 10 })
+  fireEvent.pointerMove(stage, { pointerId: 3, clientX: 30, clientY: 20 })
+  fireEvent.pointerUp(stage, { pointerId: 3, clientX: 30, clientY: 20 })
+  expect(onCropDraft).toHaveBeenCalledExactlyOnceWith({ x: 20, y: 10, width: 150, height: 100 })
+})

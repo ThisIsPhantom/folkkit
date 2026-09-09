@@ -75,6 +75,7 @@ export default function ImageCanvas({
       if (committedScopeRef.current !== scope) painter.rollback()
       painter.dispose()
       if (previewRef.current === painter) previewRef.current = null
+      if (visualRef.current?.scope === scope) visualRef.current = null
       const gesture = gestureRef.current
       if (gesture?.scope === scope) {
         gestureRef.current = null
@@ -119,7 +120,7 @@ export default function ImageCanvas({
 
   function beginCrop(event, mode = 'move') {
     if (!active || gestureRef.current || event.button !== 0 || event.isPrimary === false || !cropDraft) return
-    event.preventDefault(); event.stopPropagation()
+    event.preventDefault(); event.stopPropagation(); showVisual(null); committedScopeRef.current = null
     gestureRef.current = { scope, pointerId: event.pointerId, kind: 'crop', mode, start: stagePoint(event), bounds: { ...cropDraft } }
     stageRef.current.setPointerCapture?.(event.pointerId)
   }
@@ -146,9 +147,9 @@ export default function ImageCanvas({
     if (!gesture || event.pointerId !== gesture.pointerId) return
     if (!active || gesture.scope !== scope) { cleanup(); return }
     const next = visualRef.current
+    if (!next || next.scope !== scope || next.kind !== gesture.kind || (gesture.kind === 'element' && next.id !== gesture.id)) { cleanup(); return }
     committedScopeRef.current = scope
     cleanup(false)
-    if (!next) return
     if (gesture.kind === 'crop') onCropDraft?.({ x: Math.round(next.x), y: Math.round(next.y), width: Math.round(next.width), height: Math.round(next.height) })
     else onElementCommit?.(gesture.id, elementChanges(next))
   }
