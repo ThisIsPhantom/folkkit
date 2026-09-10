@@ -34,9 +34,21 @@ async function downloadImage(page, name) {
   return { name: download.suggestedFilename(), bytes: await readFile(await download.path()) }
 }
 
+async function centreImageControl(control) {
+  // Wait for settled geometry before sending raw pointer coordinates.
+  await control.evaluate(async node => { await document.fonts.ready; node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }) })
+  let previous = null
+  await expect.poll(async () => {
+    const box = await control.boundingBox()
+    const stable = box !== null && JSON.stringify(box) === JSON.stringify(previous)
+    previous = box
+    return stable
+  }, { message: 'Canvas pointer coordinates must be stable after scrolling.', intervals: [50, 100, 200] }).toBe(true)
+}
+
 async function revealImageControl(control) {
   // Protocol scrollIntoViewIfNeeded can place a canvas control beneath the sticky header.
-  await control.evaluate(node => node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }))
+  await centreImageControl(control)
   await expect.poll(() => control.evaluate(node => {
     const box = node.getBoundingClientRect()
     const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
@@ -599,16 +611,19 @@ test('small image elements and crop areas keep direct move separate from resize 
   await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'de'))
   await page.goto('/image')
   await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
-  async function dragBody(control) {
-    await control.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }))
-    const box = await control.boundingBox()
-    await page.mouse.move(box.x + 2, box.y + 2); await page.mouse.down()
-    await page.mouse.move(box.x + 22, box.y + 22, { steps: 4 }); await page.mouse.up()
+  async function dragBody(control, handle) {
+    await centreImageControl(control)
+    const box = await control.boundingBox(), grip = await handle.boundingBox()
+    const radius = await handle.evaluate(node => Math.min(parseFloat(getComputedStyle(node, '::after').width), parseFloat(getComputedStyle(node, '::after').height)) / 2)
+    const x = box.x + 1, y = box.y + 1
+    expect(Math.hypot(x - grip.x - grip.width / 2, y - grip.y - grip.height / 2), 'Move starts outside the visible resize circle').toBeGreaterThan(radius + 1)
+    await page.mouse.move(x, y); await page.mouse.down()
+    await page.mouse.move(x + 20, y + 20, { steps: 4 }); await page.mouse.up()
   }
   const cropWidth = page.getByLabel('Breite des Ausschnitts', { exact: true }), cropHeight = page.getByLabel('Höhe des Ausschnitts', { exact: true })
   const cropX = page.getByLabel('X-Position des Ausschnitts', { exact: true }), cropY = page.getByLabel('Y-Position des Ausschnitts', { exact: true })
   await cropWidth.fill('24'); await cropHeight.fill('24'); await cropX.fill('100'); await cropY.fill('70')
-  await dragBody(page.getByRole('button', { name: 'Ausschnitt verschieben', exact: true }))
+  await dragBody(page.getByRole('button', { name: 'Ausschnitt verschieben', exact: true }), page.getByRole('button', { name: 'Ausschnittsgrösse ändern', exact: true }))
   await expect(cropWidth).toHaveValue('24'); await expect(cropHeight).toHaveValue('24')
   expect(Number(await cropX.inputValue())).toBeGreaterThan(100); expect(Number(await cropY.inputValue())).toBeGreaterThan(70)
   await page.getByLabel('Textinhalt', { exact: true }).fill('Klein')
@@ -616,7 +631,7 @@ test('small image elements and crop areas keep direct move separate from resize 
   const width = page.getByLabel('Breite', { exact: true }), height = page.getByLabel('Höhe', { exact: true })
   const x = page.getByLabel('X-Position', { exact: true }), y = page.getByLabel('Y-Position', { exact: true })
   await width.fill('12'); await height.fill('12'); await x.fill('100'); await y.fill('70')
-  await dragBody(page.getByRole('button', { name: 'Klein auswählen', exact: true }))
+  await dragBody(page.getByRole('button', { name: 'Klein auswählen', exact: true }), page.getByRole('button', { name: 'Elementgrösse ändern', exact: true }))
   await expect(width).toHaveValue('12'); await expect(height).toHaveValue('12')
   expect(Number(await x.inputValue())).toBeGreaterThan(100); expect(Number(await y.inputValue())).toBeGreaterThan(70)
   await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
