@@ -50,6 +50,7 @@ test('native PDF text replacement exports offline with same-origin assets and un
 })
 
 test('English PDF keyboard insertion and page actions preserve real PDF contents', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 600 })
   await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'en'))
   await page.goto('/pdf')
   await page.getByLabel('Choose PDF', { exact: true }).setInputFiles(await pdfFixture())
@@ -63,7 +64,9 @@ test('English PDF keyboard insertion and page actions preserve real PDF contents
   await expect(page.getByRole('button', { name: /Page 2/ })).toBeVisible()
   await page.getByRole('button', { name: 'Rotate page', exact: true }).click()
   const thumbnail = page.locator('.pdf-page-list [aria-current="page"] canvas')
-  await expect(thumbnail).toBeVisible()
+  // Thumbnails update lazily; page actions can scroll the sidebar past this item.
+  await thumbnail.scrollIntoViewIfNeeded()
+  await expect(thumbnail).toBeInViewport()
   await expect.poll(() => thumbnail.evaluate(canvas => canvas.width < canvas.height)).toBe(true)
   expect(await thumbnail.evaluate(canvas => Array.from(canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data).some((value, index) => index % 4 !== 3 && value < 220))).toBe(true)
   const download = page.waitForEvent('download')
