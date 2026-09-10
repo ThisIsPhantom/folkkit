@@ -55,3 +55,12 @@ test('Escape from an outside focused input cancels a gesture and releases captur
   expect(onTransform).not.toHaveBeenCalled()
   input.remove()
 })
+
+
+test('document viewport is a labelled keyboard scroll region even without page objects', () => {
+  render(<PdfCanvas frame={null} page={{ width: 300, height: 200 }} objects={[]} tool="select" t={key => key} zoom={200} />)
+  const region = screen.getByRole('region', { name: 'preview' })
+  expect(region).toHaveAttribute('tabindex', '0')
+  region.focus()
+  expect(region).toHaveFocus()
+})

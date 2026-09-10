@@ -63,3 +63,19 @@
 .pdf-sheet[data-tool="select"] .pdf-overlay { touch-action: none; }
 
 @media (max-width: 44rem) { .pdf-tool-strip { top: calc(4rem + 1px); } }
+
+.pdf-range-form { display: grid; gap: .4rem; margin-block: .85rem; font-size: .75rem; }
+.pdf-range-form input { min-width: 0; width: 100%; }
+.pdf-range-form button { font-size: inherit; }
+.pdf-field-error { color: var(--ink); font-size: .75rem; line-height: 1.5; margin: .25rem 0; }
+.pdf-editor input[aria-invalid="true"] { border-color: #ba4934; border-width: 2px; }
+.pdf-page-navigation { display: flex; flex-wrap: wrap; align-items: end; justify-content: center; gap: .4rem; margin-block-end: .85rem; padding: .65rem; border: 1px solid var(--line); border-radius: .75rem; background: var(--shell-raised); }
+.pdf-page-navigation form { display: grid; grid-template-columns: 3.5rem auto auto; align-items: center; gap: .35rem; }
+.pdf-page-navigation label { grid-column: 1 / -1; font-size: .7rem; }
+.pdf-page-navigation input { width: 100%; min-width: 0; padding-inline: .4rem; text-align: center; }
+.pdf-page-navigation button,.pdf-page-navigation input { min-height: 44px; }
+.pdf-page-navigation > button { display: grid; place-items: center; min-width: 44px; padding: .5rem; }
+.pdf-page-navigation span { font-size: .75rem; }
+.pdf-page-navigation .pdf-field-error { flex-basis: 100%; text-align: center; }
+.pdf-page-navigation input,.pdf-range-form input { scroll-margin-block: 10rem; }
+@media (max-width: 650px) { .pdf-range-form { grid-template-columns: minmax(0, 1fr) auto; }.pdf-range-form label,.pdf-range-form .pdf-field-error { grid-column: 1 / -1; } }

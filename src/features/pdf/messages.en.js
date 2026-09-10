@@ -1,4 +1,16 @@
 export default {
+  pageRange: "Page range",
+  applyPageRange: "Select range",
+  invalidPageRange: "Enter valid pages or ranges from 1 to {count}.",
+  pageNavigation: "Page navigation",
+  pageNumber: "Page number",
+  pageTotal: "of {count}",
+  pageLocation: "Page {number} of {count}",
+  goToPage: "Go",
+  previousPage: "View previous page",
+  nextPage: "View next page",
+  invalidPageNumber: "Enter a page number from 1 to {count}.",
+
 
   "resize": "Resize {corner}",
   "corner": {

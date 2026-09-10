@@ -73,7 +73,7 @@ export default function PdfCanvas({ frame, page, objects, selected, onSelect, on
   }
   function cancel(event) { if (gesture.current?.pointerId === event.pointerId) clear() }
   const selectionBounds = selected && viewBounds(preview?.index === selected.index ? preview.bounds : selected.bounds, page)
-  return <div className="pdf-stage" data-zoom={zoom}>
+  return <div className="pdf-stage" data-zoom={zoom} role="region" aria-label={t('preview')} tabIndex={0}>
     <div className="pdf-sheet" data-tool={tool} aria-busy={disabled}>
       <canvas ref={canvas} width={frame?.width || 1} height={frame?.height || 1} aria-label={t('preview')} />
       <svg ref={overlay} className="pdf-overlay" viewBox={`0 0 ${page.width} ${page.height}`} aria-label={t('document')} onPointerDown={event => { lastPointerObject.current = null; start(event) }} onDoubleClick={() => { const item = lastPointerObject.current; if (!disabled && item?.type === 'text' && item.editable) onEdit?.(item) }} onPointerMove={move} onPointerUp={finish} onPointerCancel={cancel} onLostPointerCapture={cancel} onKeyDown={event => { if (event.key === 'Escape') clear() }}>

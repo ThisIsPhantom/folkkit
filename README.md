@@ -11,7 +11,7 @@ The canonical design is [docs/superpowers/specs/2026-08-31-folkkit-design.md](do
 Die freigegebene [Studio-Erweiterung](docs/superpowers/plans/2026-09-05-folkkit-studio.md) ergänzt eigene Arbeitsbereiche und ersetzt die bisherige visuelle Richtung:
 
 - `/qr`: QR-Designer für Text, Links, WLAN, Kontakte, E-Mail und SMS. Farben, Formen und Logo lassen sich anpassen. Ausgabe als PNG/SVG; QR-Codes aus lokalen PNG-, JPEG- und WebP-Bildern lesen.
-- `/pdf`: native Textobjekt-Bearbeitung, direktes Verschieben/Skalieren, Ergänzungen und Seitenverwaltung mit Mehrfachauswahl. Unterstützte lateinische Textobjekte sind bearbeitbar; OCR, Absatzrekonstruktion und Formularerstellung sind ausgenommen. Unsichere Operationen an vorhandenen Formularstrukturen werden vorab verweigert.
+- `/pdf`: native Textobjekt-Bearbeitung, direktes Verschieben/Skalieren, Ergänzungen und Seitenverwaltung mit Mehrfachauswahl, Bereichen wie «1–3, 7» und direktem Seitensprung. Unterstützte lateinische Textobjekte sind bearbeitbar; OCR, Absatzrekonstruktion und Formularerstellung sind ausgenommen. Unsichere Operationen an vorhandenen Formularstrukturen werden vorab verweigert.
 - `/convert`: Dateiwarteschlange mit 39 Formatpaaren, darunter alle sechs Richtungen zwischen DOCX, Markdown und HTML. Bildoptimierung, Vorher-/Nachher-Vorschau, übertragbare Einstellungen für gleiche Formatpaare, Abbruch, Einzel- und ZIP-Downloads. Fertige Aufträge lassen sich gemeinsam entfernen.
 - `/calculate`: Prozentfelder, Dreisatz, Pythagoras, Kreis, Flächen, Volumen, Einheiten, Seitenverhältnis, Kreditrate, BMI, Datum und Zeitspannen. Eigene Formulare, Beispiele und kopierbare Ergebnisse; alte Links bleiben erreichbar. Der Prozentrechner berechnet auch Rabatt, Aufschlag und Endpreis.
 

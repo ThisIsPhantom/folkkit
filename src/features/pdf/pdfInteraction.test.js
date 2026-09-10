@@ -21,3 +21,17 @@ test('noncontiguous selection is moved as a block in document order and normalis
   expect(interaction.pageOrder(5, [1, 3], 3)).toEqual([0, 1, 2, 3, 4])
   expect(interaction.normalisePages([3, 1, 3, 9, -1], 5)).toEqual([1, 3])
 })
+
+
+test('page ranges select unique pages in document order up to the editor limit', () => {
+  expect(interaction.parseEditorPages).toBeTypeOf('function')
+  expect(interaction.parseEditorPages('5, 1–3, 2, 200', 200)).toEqual([0, 1, 2, 4, 199])
+  expect(interaction.parseEditorPages('1-200', 200)).toHaveLength(200)
+  expect(interaction.formatEditorPages([0, 1, 2, 4, 199])).toBe('1–3, 5, 200')
+  expect(interaction.formatEditorPages([])).toBe('')
+})
+
+test.each(['', '0', '201', '3-1', '1,', '1.5', '1e2', '1-2000000000', '1,secret', '1'.repeat(1201)])('invalid editor page range %s is rejected atomically', value => {
+  expect(interaction.parseEditorPages).toBeTypeOf('function')
+  expect(interaction.parseEditorPages(value, 200)).toBeNull()
+})

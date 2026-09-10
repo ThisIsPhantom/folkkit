@@ -4,6 +4,7 @@ import { PdfWorkerClient } from './pdfClient.js'
 import { downloadPdf, readPdfFile, readPdfImage } from './pdfFiles.js'
 import PdfCanvas from './PdfCanvas.jsx'
 import PdfThumbnail from './PdfThumbnail.jsx'
+import { PdfPageNavigation, PdfPageSelection } from './PdfPageControls.jsx'
 import { prepareStroke, toPdfVector, toViewPoint } from './pdfGeometry.js'
 import { normalisePages, pageOrder } from './pdfInteraction.js'
 import './pdfEditor.css'
@@ -284,6 +285,7 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
           <h2><button type="button" className="pdf-panel-toggle" aria-expanded={pagesOpen} aria-controls="pdf-page-panel" onClick={() => setPagesOpen(value => !value)}>{t('pages')} <span>{pageCount}</span></button></h2>
           <div id="pdf-page-panel" hidden={!pagesOpen}>
             <div className="pdf-selection-bar">{button(selectedPages.length === pageCount ? 'clearPages' : 'allPages', () => setSelectedPages(selectedPages.length === pageCount ? [] : documentState.pages.map((_, index) => index)))}<p role="status">{t('selectedPages', { count: selectedPages.length })}</p></div>
+            <PdfPageSelection selectedPages={selectedPages} pageCount={pageCount} revision={version} disabled={busy} onSelect={setSelectedPages} t={t} />
             <p className="pdf-small">{t('pageSelectionHint')}</p>
             <div className="pdf-page-list">{documentState.pages.map((item, index) => <div key={index} className={`pdf-page-card ${selectedPages.includes(index) ? 'is-selected' : ''}`} draggable={!busy} onDragStart={event => { draggedPages.current = selectedPages.includes(index) ? selectedPages : [index]; event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', 'folkkit-page') }} onDragEnd={() => { draggedPages.current = null }} onDragOver={event => { if (draggedPages.current && !busy) { event.preventDefault(); event.dataTransfer.dropEffect = 'move' } }} onDrop={event => { event.preventDefault(); if (!busy && draggedPages.current) reorder(draggedPages.current, index); draggedPages.current = null }}>
               <label className="pdf-page-check"><input type="checkbox" checked={selectedPages.includes(index)} disabled={busy} onChange={() => togglePage(index)} /><span>{t('selectPage', { number: index + 1 })}</span></label>
@@ -293,6 +295,7 @@ export default function PdfEditorPage({ onDirtyChange = noop, initialAction = 'e
           </div>
         </section>
         <div className="pdf-work-area">
+          <PdfPageNavigation pageIndex={pageIndex} pageCount={pageCount} revision={version} disabled={busy} onNavigate={selectPage} t={t} />
           <div className="pdf-view-controls"><form onSubmit={search}><label className="pdf-search"><span>{t('search')}</span><input type="search" value={query} maxLength={200} onChange={event => setQuery(event.target.value)} /></label><button type="submit" disabled={busy || !query.trim()}>{t('searchAction')}</button></form><label>{t('zoom')}<select value={zoom} onChange={event => setZoom(Number(event.target.value))} disabled={busy}>{[50, 75, 100, 125, 150, 200].map(value => <option key={value} value={value}>{value}%</option>)}</select></label></div>
           {results && <div className="pdf-search-results" role="status"><p>{results.length ? t('matches', { count: results.length }) : t('noResults')}</p>{results.map((result, index) => <button type="button" key={index} onClick={() => selectPage(result.page)}>{t('page', { number: result.page + 1 })}: {result.text}</button>)}</div>}
           {page && <PdfCanvas frame={frame} page={page} objects={objects} selected={selected} onSelect={chooseObject} onEdit={editObject} onTransform={(index, transform) => change('transformObject', pageIndex, index, transform)} tool={tool} onPlace={place} disabled={busy || !frame} t={t} zoom={zoom} />}

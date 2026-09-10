@@ -1,3 +1,4 @@
+import { PDF_LIMITS } from './pdfEngine.js'
 import { toPdfPoint, toPdfVector } from './pdfGeometry.js'
 
 export function objectTransform({ bounds, page, start, end, mode, anchor }) {
@@ -28,4 +29,30 @@ export function pageOrder(count, indices, target) {
   const rest = order.filter(index => !selected.includes(index))
   rest.splice(rest.indexOf(target) + (target > selected.at(-1) ? 1 : 0), 0, ...selected)
   return rest
+}
+
+
+// Editor selections always follow document order, independently of converter output order.
+export function parseEditorPages(value, count) {
+  if (typeof value !== 'string' || value.length > 1200 || !Number.isInteger(count) || count < 1 || count > PDF_LIMITS.pages) return null
+  const pages = new Set()
+  for (const part of value.split(',')) {
+    const match = part.trim().match(/^(\d+)(?:\s*[-–]\s*(\d+))?$/)
+    if (!match) return null
+    const start = Number(match[1]), end = Number(match[2] || match[1])
+    if (start < 1 || end < start || end > count) return null
+    for (let page = start; page <= end; page++) pages.add(page - 1)
+  }
+  return [...pages].sort((a, b) => a - b)
+}
+
+export function formatEditorPages(indices) {
+  const parts = []
+  for (let index = 0; index < indices.length; index++) {
+    const start = indices[index] + 1
+    while (index + 1 < indices.length && indices[index + 1] === indices[index] + 1) index++
+    const end = indices[index] + 1
+    parts.push(start === end ? String(start) : `${start}–${end}`)
+  }
+  return parts.join(', ')
 }

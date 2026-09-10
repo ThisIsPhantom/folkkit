@@ -1,4 +1,16 @@
 export default {
+  pageRange: "Seitenbereich",
+  applyPageRange: "Bereich auswählen",
+  invalidPageRange: "Gib gültige Seiten oder Bereiche von 1 bis {count} ein.",
+  pageNavigation: "Seitennavigation",
+  pageNumber: "Seitennummer",
+  pageTotal: "von {count}",
+  pageLocation: "Seite {number} von {count}",
+  goToPage: "Los",
+  previousPage: "Vorherige Seite anzeigen",
+  nextPage: "Nächste Seite anzeigen",
+  invalidPageNumber: "Gib eine Seitennummer von 1 bis {count} ein.",
+
 
   "resize": "Skalieren: {corner}",
   "corner": {
