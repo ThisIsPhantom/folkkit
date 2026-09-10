@@ -421,17 +421,50 @@ test('noncontiguous page selection exports in document order, rotates once and r
   await page.getByRole('checkbox', { name: 'Seite 2 auswählen', exact: true }).check()
   await page.getByRole('checkbox', { name: 'Seite 4 auswählen', exact: true }).check()
   const source = page.locator('.pdf-page-card').nth(1), target = page.locator('.pdf-page-card').nth(0)
-  await source.scrollIntoViewIfNeeded()
-  const start = await source.boundingBox()
-  await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2)
-  await page.mouse.down(); await page.mouse.move(start.x + start.width / 2 + 8, start.y + start.height / 2, { steps: 3 })
+  await page.locator('.pdf-page-list').evaluate(list => {
+    window.pdfReorderEvents = []
+    window.pdfReorderOver = null
+    list.addEventListener('dragover', event => { window.pdfReorderOver = [...list.children].indexOf(event.target.closest('.pdf-page-card')) })
+    for (const type of ['dragstart', 'drop']) list.addEventListener(type, event => {
+      window.pdfReorderEvents.push({ type, trusted: event.isTrusted, index: [...list.children].indexOf(event.target.closest('.pdf-page-card')) })
+    })
+  })
+  await source.evaluate(element => element.addEventListener('pointermove', event => {
+    window.pdfReorderStart = { x: event.clientX, y: event.clientY }
+  }, { once: true }))
+  await source.hover()
+  const start = await page.evaluate(() => window.pdfReorderStart)
+  expect(start).toBeDefined()
+  await page.mouse.down()
+  // Establish a native drag before scrolling changes the source's screen position.
+  await page.mouse.move(start.x + 24, start.y, { steps: 6 })
+  await expect.poll(() => page.evaluate(() => window.pdfReorderEvents[0]?.type)).toBe('dragstart')
   await target.scrollIntoViewIfNeeded()
-  const end = await target.boundingBox()
-  await page.mouse.move(end.x + end.width / 2, end.y + end.height / 2, { steps: 5 })
+  const dropPoint = () => target.evaluate(element => {
+    const bounds = element.getBoundingClientRect()
+    for (const offset of [.5, .4, .6, .3, .7, .2, .8]) {
+      const x = bounds.x + bounds.width / 2, y = bounds.y + bounds.height * offset
+      if (element.contains(document.elementFromPoint(x, y))) return { x, y }
+    }
+    return null
+  })
+  await expect.poll(dropPoint).not.toBeNull()
+  const end = await dropPoint()
+  await page.mouse.move(end.x, end.y, { steps: 8 })
+  await page.mouse.move(end.x, end.y)
+  await expect.poll(() => page.evaluate(() => window.pdfReorderOver)).toBe(0)
   await page.mouse.up()
+  await expect.poll(() => page.evaluate(() => window.pdfReorderEvents)).toEqual([
+    { type: 'dragstart', trusted: true, index: 1 }, { type: 'drop', trusted: true, index: 0 },
+  ])
   await expect(page.getByRole('button', { name: 'Rückgängig', exact: true })).toBeEnabled()
-  const reordered = await inspectPdf(await downloadEditor(page))
-  expect(reordered.text).toBeUndefined()
+  const reordered = getDocument({ data: await downloadEditor(page), useSystemFonts: true })
+  try {
+    const document = await reordered.promise
+    const texts = []
+    for (let index = 1; index <= document.numPages; index++) texts.push((await (await document.getPage(index)).getTextContent()).items.map(item => item.str).join(''))
+    expect(texts).toEqual(['Page 2', 'Page 4', 'Before', 'Page 3'])
+  } finally { await reordered.destroy() }
   await page.getByRole('button', { name: 'Ausgewählte Seiten löschen', exact: true }).click()
   await expect(page.locator('.pdf-page-card')).toHaveCount(2)
   await expect(page.getByText('0 ausgewählt', { exact: true })).toBeVisible()
