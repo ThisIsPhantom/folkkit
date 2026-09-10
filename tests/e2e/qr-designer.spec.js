@@ -376,3 +376,59 @@ test('@matrix keeps the QR controls keyboard-operable without horizontal page ov
     expect(inputBounds.y).toBeLessThan(previewBounds.y)
   }
 })
+
+
+test('copies a PNG and resets only the design while preserving content and logo @matrix', async ({ page, context, browserName }, info) => {
+  if (browserName === 'chromium') await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  const payload = 'https://folkkit.test/qr/clipboard-fixture'
+  await page.goto('/qr')
+  await page.getByRole('textbox', { name: 'Inhalt', exact: true }).fill(payload)
+  await page.getByRole('tab', { name: 'Logo', exact: true }).click()
+  await page.getByLabel('Logo auswählen', { exact: true }).setInputFiles({ name: 'copy-logo.png', mimeType: 'image/png', buffer: makeLogoPng() })
+  await expect(page.getByText('Ausgewählt: copy-logo.png', { exact: true })).toBeVisible()
+  await page.getByRole('tab', { name: 'Design', exact: true }).click()
+  await page.getByRole('button', { name: 'Grün als Vordergrund wählen', exact: true }).click()
+  await page.getByRole('combobox', { name: 'Modulstil', exact: true }).selectOption('rounded')
+  await page.getByRole('button', { name: 'Design zurücksetzen', exact: true }).click()
+  await expect(page.getByLabel('Vordergrund', { exact: true })).toHaveValue('#111111')
+  await expect(page.getByRole('combobox', { name: 'Modulstil', exact: true })).toHaveValue('square')
+  await waitForPreview(page)
+  const supported = await page.evaluate(() => typeof navigator.clipboard?.write === 'function' && typeof ClipboardItem === 'function' && (!ClipboardItem.supports || ClipboardItem.supports('image/png')))
+  const copy = page.getByRole('button', { name: 'Als Bild kopieren', exact: true })
+  if (supported) {
+    await copy.focus()
+    await page.keyboard.press('Enter')
+    await expect(page.getByText('Bild kopiert', { exact: true })).toBeVisible()
+    await expect(copy).toBeFocused()
+    if (browserName === 'chromium') {
+      const bytes = await page.evaluate(async () => {
+        const items = await navigator.clipboard.read()
+        const item = items.find(value => value.types.includes('image/png'))
+        return Array.from(new Uint8Array(await (await item.getType('image/png')).arrayBuffer()))
+      })
+      const decoded = decodePng(Buffer.from(bytes))
+      expect(decoded.value).toBe(payload)
+      expect(decoded.png.width).toBe(320)
+      let logoPixels = 0
+      for (let offset = 0; offset < decoded.png.data.length; offset += 4) {
+        if (decoded.png.data[offset] === 182 && decoded.png.data[offset + 1] === 111 && decoded.png.data[offset + 2] === 74) logoPixels++
+      }
+      expect(logoPixels).toBeGreaterThan(20)
+    }
+  } else {
+    await expect(copy).toBeDisabled()
+    await expect(page.getByText('Dieser Browser unterstützt das Kopieren von Bildern nicht. Nutze den PNG-Download.', { exact: true })).toBeVisible()
+  }
+  await page.getByRole('tab', { name: 'Logo', exact: true }).click()
+  await expect(page.getByText('Ausgewählt: copy-logo.png', { exact: true })).toBeVisible()
+  await page.getByRole('tab', { name: 'Inhalt', exact: true }).click()
+  await expect(page.getByRole('textbox', { name: 'Inhalt', exact: true })).toHaveValue(payload)
+  const exported = await downloadFrom(page, 'PNG herunterladen')
+  expect(decodePng(exported.buffer).value).toBe(payload)
+  await page.getByRole('button', { name: 'English', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Copy as image', exact: true })).toBeVisible()
+  if (supported) await expect(page.getByText('Image copied', { exact: true })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.screenshot({ path: info.outputPath('qr-copy-image.png'), fullPage: true })
+})

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { IconStar } from '@tabler/icons-react'
 import { useI18n } from '../i18n'
 import { preferenceKeys } from '../privacy/preferences'
@@ -17,6 +17,7 @@ function readFavorites(entries) {
 
 export default function CatalogPage({ entries, onSelect }) {
   const { t } = useI18n()
+  const searchRef = useRef(null), favoritesFilterRef = useRef(null), favoriteRefs = useRef(new Map())
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
   const [favoritesOnly, setFavoritesOnly] = useState(false)
@@ -27,7 +28,19 @@ export default function CatalogPage({ entries, onSelect }) {
   const visible = entries.filter(tool => (category === 'all' || tool.category === category)
     && (!favoritesOnly || favorites.includes(tool.id))
     && terms.every(term => searchable(`${tool.name} ${tool.description} ${tool.categoryName}`).includes(term)))
+  const hasFilters = Boolean(query || category !== 'all' || favoritesOnly)
   const toggleFavorite = id => {
+    if (favoritesOnly && favorites.includes(id)) {
+      const remaining = visible.filter(tool => tool.id !== id)
+      const index = visible.findIndex(tool => tool.id === id)
+      const nextId = remaining[Math.min(index, remaining.length - 1)]?.id
+      requestAnimationFrame(() => {
+        if (document.activeElement !== document.body) return
+        const target = favoriteRefs.current.get(nextId) || favoritesFilterRef.current
+        target?.focus({ preventScroll: true })
+        target?.scrollIntoView?.({ block: 'center', inline: 'nearest', behavior: 'instant' })
+      })
+    }
     const next = favorites.includes(id) ? favorites.filter(value => value !== id) : [...favorites, id]
     setFavorites(next)
     try {
@@ -35,7 +48,11 @@ export default function CatalogPage({ entries, onSelect }) {
       setStorageError(false)
     } catch { setStorageError(true) }
   }
-  const clearFilters = () => { setQuery(''); setCategory('all'); setFavoritesOnly(false) }
+  const clearFilters = () => {
+    setQuery(''); setCategory('all'); setFavoritesOnly(false)
+    searchRef.current?.focus({ preventScroll: true })
+    searchRef.current?.scrollIntoView?.({ block: 'center', inline: 'nearest', behavior: 'instant' })
+  }
 
   return (
     <div className="catalog-page page-frame">
@@ -44,13 +61,13 @@ export default function CatalogPage({ entries, onSelect }) {
         <p>{t('catalog.intro')}</p>
       </header>
       <form className="catalog-toolbar" onSubmit={event => event.preventDefault()} role="search">
-        <label className="catalog-search" htmlFor="catalog-search"><span>{t('catalog.search')}</span><input id="catalog-search" name="search" type="search" maxLength={128} value={query} onChange={event => setQuery(event.target.value)} placeholder={t('catalog.searchPlaceholder')} autoComplete="off" /></label>
+        <label className="catalog-search" htmlFor="catalog-search"><span>{t('catalog.search')}</span><input ref={searchRef} id="catalog-search" name="search" type="search" maxLength={128} value={query} onChange={event => setQuery(event.target.value)} placeholder={t('catalog.searchPlaceholder')} autoComplete="off" /></label>
         <label htmlFor="catalog-category"><span>{t('catalog.category')}</span><select id="catalog-category" name="category" value={category} onChange={event => setCategory(event.target.value)}><option value="all">{t('catalog.allCategories')}</option>{categories.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
-        <button type="button" className="catalog-favorites-filter" aria-pressed={favoritesOnly} onClick={() => setFavoritesOnly(value => !value)}><IconStar size={18} aria-hidden="true" />{t('catalog.favoritesOnly')}</button>
+        <button ref={favoritesFilterRef} type="button" className="catalog-favorites-filter" aria-pressed={favoritesOnly} onClick={() => setFavoritesOnly(value => !value)}><IconStar size={18} aria-hidden="true" />{t('catalog.favoritesOnly')}</button>
       </form>
-      <p className="catalog-count" role="status">{t('catalog.filteredCount', { count: visible.length, total: entries.length })}</p>
+      <div className="catalog-results-bar"><p className="catalog-count" role="status">{t('catalog.filteredCount', { count: visible.length, total: entries.length })}</p>{hasFilters && <button type="button" onClick={clearFilters}>{t('catalog.clearFilters')}</button>}</div>
       {storageError && <p className="catalog-storage-note">{t('catalog.storageError')}</p>}
-      {visible.length === 0 && <div className="catalog-empty"><h2>{t('catalog.empty')}</h2><p>{t('catalog.emptyHint')}</p><button type="button" onClick={clearFilters}>{t('catalog.clearFilters')}</button></div>}
+      {visible.length === 0 && <div className="catalog-empty"><h2>{t('catalog.empty')}</h2><p>{t('catalog.emptyHint')}</p></div>}
       <ul className="catalog-list" role="list">
         {visible.map((tool) => (
           <li key={tool.id}>
@@ -64,7 +81,7 @@ export default function CatalogPage({ entries, onSelect }) {
                 {tool.tierLabel && <span className="tier-badge">{tool.tierLabel}</span>}
               </span>
             </button>
-            <button className="catalog-favorite" type="button" aria-pressed={favorites.includes(tool.id)} aria-label={t(favorites.includes(tool.id) ? 'catalog.removeFavorite' : 'catalog.addFavorite', { name: tool.name })} onClick={() => toggleFavorite(tool.id)}><IconStar size={20} aria-hidden="true" /></button>
+            <button ref={element => { if (element) favoriteRefs.current.set(tool.id, element); else favoriteRefs.current.delete(tool.id) }} className="catalog-favorite" type="button" aria-pressed={favorites.includes(tool.id)} aria-label={t(favorites.includes(tool.id) ? 'catalog.removeFavorite' : 'catalog.addFavorite', { name: tool.name })} onClick={() => toggleFavorite(tool.id)}><IconStar size={20} aria-hidden="true" /></button>
           </li>
         ))}
       </ul>

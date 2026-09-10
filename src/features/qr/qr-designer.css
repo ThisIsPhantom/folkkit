@@ -590,7 +590,7 @@
   grid-column: 1 / -1;
 }
 
-.qr-button:hover:not(:disabled) {
+.qr-button:hover:not(:disabled):not([aria-disabled="true"]) {
   filter: brightness(0.96);
 }
 
@@ -736,3 +736,8 @@
     scroll-behavior: auto;
   }
 }
+
+.qr-actions .qr-copy-image { grid-column: 1 / -1; }
+.qr-copy-feedback { margin: 0 0 .75rem; color: var(--qr-text); font-size: .875rem; }
+
+.qr-button[aria-disabled="true"] { cursor: progress; opacity: .48; }

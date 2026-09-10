@@ -35,3 +35,26 @@ export function downloadQrBlob(blob, filename, urlApi = URL) {
   anchor.remove()
   setTimeout(() => urlApi.revokeObjectURL(url), 0)
 }
+
+
+export function canCopyQrPng(clipboard = globalThis.navigator?.clipboard, Item = globalThis.ClipboardItem) {
+  return typeof clipboard?.write === 'function' && typeof Item === 'function'
+    && (typeof Item.supports !== 'function' || Item.supports('image/png'))
+}
+
+export function copyQrPng(generate, isCurrent = () => true, clipboard = globalThis.navigator?.clipboard, Item = globalThis.ClipboardItem) {
+  if (!canCopyQrPng(clipboard, Item)) return Promise.reject(qrError('clipboard_unavailable'))
+  const png = Promise.resolve().then(() => {
+    if (!isCurrent()) throw qrError('cancelled')
+    return generate()
+  }).then(blob => {
+    if (!isCurrent()) throw qrError('cancelled')
+    if (!(blob instanceof Blob) || blob.type !== 'image/png') throw qrError('generation_failed')
+    return blob
+  })
+  // Keep write() in the click event while the PNG is produced asynchronously.
+  // A permission rejection can happen before the browser consumes this promise.
+  png.catch(() => {})
+  try { return Promise.resolve(clipboard.write([new Item({ 'image/png': png })])) }
+  catch (error) { return Promise.reject(error) }
+}

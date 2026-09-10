@@ -6,11 +6,11 @@ import { renderWithProviders } from '../../test/renderWithProviders.jsx'
 import messagesDe from './messages.de.js'
 import QrDesignerPage from './QrDesignerPage.jsx'
 
-function renderDesigner(locale = 'de', messages = messagesDe) {
+function renderDesigner(locale = 'de', messages = messagesDe, props = {}) {
   const t = (key, vars) => translate(messages, key, vars)
   return renderWithProviders(
     <I18nContext.Provider value={{ locale, setLocale: vi.fn(), t }}>
-      <QrDesignerPage generateQr={async request => new Blob([request.data], { type: 'image/svg+xml' })} />
+      <QrDesignerPage generateQr={async request => new Blob([request.data], { type: 'image/svg+xml' })} {...props} />
     </I18nContext.Provider>,
     { locale },
   )
@@ -373,4 +373,84 @@ it('can copy a preserved result after leaving and returning to reader mode', asy
   fireEvent.click(screen.getByRole('button',{name:'Lesen'}))
   fireEvent.click(screen.getByRole('button',{name:'Inhalt kopieren'}))
   await screen.findByText('Inhalt kopiert.')
+})
+
+
+describe('QR image copying and design reset', () => {
+  beforeEach(() => { URL.createObjectURL = vi.fn(() => 'blob:qr-copy'); URL.revokeObjectURL = vi.fn() })
+  afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals() })
+
+  it('copies a generated PNG and starts the clipboard write before async generation resolves', async () => {
+    const pending = deferred(), types = [], writes = []
+    vi.stubGlobal('ClipboardItem', class { constructor(data) { this.data = data; types.push(...Object.keys(data)) } })
+    const write = vi.fn(async items => { writes.push(await items[0].data['image/png']) })
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { write } })
+    const generateQr = vi.fn((_request, extension) => extension === 'png' ? pending.promise : Promise.resolve(new Blob(['preview'], { type: 'image/svg+xml' })))
+    renderDesigner('de', messagesDe, { generateQr })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inhalt' }), { target: { value: 'Copy this QR' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Als Bild kopieren' }))
+    expect(write).toHaveBeenCalledTimes(1)
+    expect(types).toEqual(['image/png'])
+    expect(screen.getByRole('button', { name: 'Als Bild kopieren' })).toHaveAttribute('aria-disabled', 'true')
+    fireEvent.click(screen.getByRole('button', { name: 'Als Bild kopieren' }))
+    expect(write).toHaveBeenCalledTimes(1)
+    const png = new Blob(['PNG'], { type: 'image/png' })
+    await act(async () => pending.resolve(png))
+    expect(await screen.findByText('Bild kopiert')).toBeVisible()
+    expect(writes).toEqual([png])
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inhalt' }), { target: { value: 'A different QR' } })
+    expect(screen.queryByText('Bild kopiert')).not.toBeInTheDocument()
+  })
+
+  it('shows a download alternative after denied clipboard access and permits another attempt', async () => {
+    vi.stubGlobal('ClipboardItem', class { constructor(data) { this.data = data } })
+    const write = vi.fn(async () => { throw new DOMException('Denied', 'NotAllowedError') })
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { write } })
+    renderDesigner('de', messagesDe, { generateQr: async (_request, extension) => new Blob(['qr'], { type: extension === 'png' ? 'image/png' : 'image/svg+xml' }) })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inhalt' }), { target: { value: 'Denied copy' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Als Bild kopieren' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Lade den QR-Code als PNG herunter.')
+    expect(screen.getByRole('button', { name: 'PNG herunterladen' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Als Bild kopieren' })).toBeEnabled()
+  })
+
+  it('resets design controls while retaining content and the active design tab', () => {
+    renderDesigner()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inhalt' }), { target: { value: 'Keep this content' } })
+    fireEvent.click(screen.getByRole('tab', { name: 'Design' }))
+    fireEvent.input(screen.getByLabelText('Vordergrund'), { target: { value: '#166534' } })
+    fireEvent.change(screen.getByLabelText('Modulstil'), { target: { value: 'rounded' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Design zurücksetzen' }))
+    expect(screen.getByLabelText('Vordergrund')).toHaveValue('#111111')
+    expect(screen.getByLabelText('Modulstil')).toHaveValue('square')
+    expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true')
+    fireEvent.click(screen.getByRole('tab', { name: 'Inhalt' }))
+    expect(screen.getByRole('textbox', { name: 'Inhalt' })).toHaveValue('Keep this content')
+  })
+
+  it('keeps a reset authoritative when clipboard generation completes late', async () => {
+    const pending = deferred()
+    vi.stubGlobal('ClipboardItem', class { constructor(data) { this.data = data } })
+    const write = vi.fn(async items => { await items[0].data['image/png'] })
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { write } })
+    renderDesigner('de', messagesDe, { generateQr: (_request, extension) => extension === 'png' ? pending.promise : Promise.resolve(new Blob(['preview'], { type: 'image/svg+xml' })) })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inhalt' }), { target: { value: 'Pending QR' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Als Bild kopieren' }))
+    await act(async () => {})
+    fireEvent.click(screen.getByRole('button', { name: 'Zurücksetzen', exact: true }))
+    await act(async () => pending.resolve(new Blob(['png'], { type: 'image/png' })))
+    expect(screen.getByRole('textbox', { name: 'Inhalt' })).toHaveValue('')
+    expect(screen.queryByText('Bild kopiert')).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('disables image copying when the browser has no ClipboardItem support', () => {
+    vi.stubGlobal('ClipboardItem', undefined)
+    renderDesigner()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inhalt' }), { target: { value: 'QR without clipboard support' } })
+    expect(screen.getByRole('button', { name: 'Als Bild kopieren' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'PNG herunterladen' })).toBeEnabled()
+    expect(screen.getByText('Dieser Browser unterstützt das Kopieren von Bildern nicht. Nutze den PNG-Download.')).toBeVisible()
+  })
+
 })

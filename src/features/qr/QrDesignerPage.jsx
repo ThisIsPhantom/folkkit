@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../../i18n/index.js'
 import { createLatestPreview } from './latestPreview.js'
 import { computeSquareCrop, loadLogoAsset, moveCropByPixels } from './logoAsset.js'
-import { downloadQrBlob, generateQrBlob } from './qrGenerator.js'
+import { canCopyQrPng, copyQrPng, downloadQrBlob, generateQrBlob } from './qrGenerator.js'
 import { analyseQrPayload, contrastRatio } from './qrModel.js'
 import { buildQrPayload } from './qrPayloads.js'
 import { readQrImage, safeHttpUrl } from './qrReader.js'
@@ -21,6 +21,8 @@ const DEFAULTS = Object.freeze({
   logoSpacing: 4,
   crop: Object.freeze({ zoom: 1, x: 0, y: 0 }),
 })
+
+const DESIGN_KEYS = ['foreground', 'background', 'dotStyle', 'cornerSquareStyle', 'cornerDotStyle', 'size', 'quietZone']
 
 const CONTENT_DEFAULTS = Object.freeze({
   text: '',
@@ -302,6 +304,7 @@ export default function QrDesignerPage({
   const [previewState, setPreviewState] = useState('idle')
   const [exporting, setExporting] = useState(null)
   const [exportError, setExportError] = useState(null)
+  const [copyFeedback, setCopyFeedback] = useState(null)
   const previewRef = useRef(null)
   const exportGenerationRef = useRef(0)
   const mountedRef = useRef(false)
@@ -310,6 +313,8 @@ export default function QrDesignerPage({
   const readerAbortRef = useRef(null)
   const readerGenerationRef = useRef(0)
 
+  const copySupported = canCopyQrPng()
+  const designChanged = DESIGN_KEYS.some(key => settings[key] !== DEFAULTS[key])
   const level = logoAsset ? 'H' : 'Q'
   const payload = useMemo(
     () => buildQrPayload(settings.contentType, contentFields),
@@ -430,6 +435,11 @@ export default function QrDesignerPage({
     setSettings(current => ({ ...current, crop: DEFAULTS.crop, logoSize: DEFAULTS.logoSize, logoSpacing: DEFAULTS.logoSpacing }))
   }
 
+  const resetDesign = () => {
+    setSettings(current => ({ ...current, ...Object.fromEntries(DESIGN_KEYS.map(key => [key, DEFAULTS[key]])) }))
+    setCopyFeedback(null)
+  }
+
   const reset = () => {
     exportGenerationRef.current += 1
     removeLogo()
@@ -437,6 +447,7 @@ export default function QrDesignerPage({
     setContentFields(CONTENT_DEFAULTS)
     setTouchedFields({})
     setActiveTab('content')
+    setCopyFeedback(null)
     setExporting(null)
     setExportError(null)
   }
@@ -499,6 +510,23 @@ export default function QrDesignerPage({
       feedback('copied')
     } catch {
       feedback('copy_failed')
+    }
+  }
+
+  const copyQr = async () => {
+    if (!analysis.ok || exporting || !copySupported) return
+    const generation = ++exportGenerationRef.current
+    const isCurrent = () => mountedRef.current && generation === exportGenerationRef.current
+    setExporting('clipboard')
+    setCopyFeedback(null)
+    setExportError(null)
+    try {
+      await copyQrPng(() => generateQr(request, 'png'), isCurrent)
+      if (isCurrent()) setCopyFeedback({ request, status: 'copied' })
+    } catch {
+      if (isCurrent()) setCopyFeedback({ request, status: 'failed' })
+    } finally {
+      if (isCurrent()) setExporting(null)
     }
   }
 
@@ -655,6 +683,8 @@ export default function QrDesignerPage({
           <RangeControl id="qr-size" label={t('studioQr.size')} value={settings.size} minimum={256} maximum={1024} step={64} output={t('studioQr.sizeValue', { value: settings.size })} onChange={event => updateSetting('size', Number(event.target.value))} />
           <RangeControl id="qr-quiet-zone" label={t('studioQr.quietZone')} value={settings.quietZone} minimum={4} maximum={12} output={t('studioQr.quietZoneValue', { value: settings.quietZone })} onChange={event => updateSetting('quietZone', Number(event.target.value))} />
           <p className="qr-helper">{t('studioQr.quietZoneHint')}</p>
+          <button type="button" className="qr-button qr-button-secondary" disabled={!designChanged} onClick={resetDesign}>{t('studioQr.resetDesign')}</button>
+          <p className="qr-helper">{t('studioQr.resetDesignHint')}</p>
         </div>
       )
     }
@@ -773,12 +803,16 @@ export default function QrDesignerPage({
             {previewState === 'updating' ? t('studioQr.previewUpdating') : previewState === 'error' ? t('studioQr.previewError') : ''}
           </p>
           {exportError && <p className="qr-error" role="alert">{exportError}</p>}
-          {exporting && <p className="qr-preview-status" role="status">{t('studioQr.downloading')}</p>}
+          {exporting && <p className="qr-preview-status" role="status">{t(exporting === 'clipboard' ? 'studioQr.copyingImage' : 'studioQr.downloading')}</p>}
+          {copyFeedback?.request === request && copyFeedback.status === 'copied' && <p className="qr-copy-feedback" role="status">{t('studioQr.imageCopied')}</p>}
+          {copyFeedback?.request === request && copyFeedback.status === 'failed' && <p className="qr-error" role="alert">{t('studioQr.copyImageError')}</p>}
           <div className="qr-actions">
             <button type="button" className="qr-button qr-button-primary" disabled={!analysis.ok || Boolean(exporting)} onClick={() => exportQr('png')}>{t('studioQr.downloadPng')}</button>
             <button type="button" className="qr-button qr-button-secondary" disabled={!analysis.ok || Boolean(exporting)} onClick={() => exportQr('svg')}>{t('studioQr.downloadSvg')}</button>
+            <button type="button" className="qr-button qr-button-secondary qr-copy-image" disabled={!analysis.ok || !copySupported} aria-disabled={Boolean(exporting) || undefined} onClick={copyQr}>{t('studioQr.copyImage')}</button>
             <button type="button" className="qr-button qr-button-ghost" onClick={reset}>{t('studioQr.reset')}</button>
           </div>
+          {!copySupported && <p className="qr-helper">{t('studioQr.copyImageUnsupported')}</p>}
         </section>
       </div>}
     </section>

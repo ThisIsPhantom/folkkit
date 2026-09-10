@@ -47,3 +47,31 @@ test('ignores unknown or malformed stored favorites', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Bilder in PDF aus Favoriten entfernen' }))
   expect(localStorage.getItem(preferenceKeys.favoriteTools)).toBe('[]')
 })
+
+
+test('clears active filters even with matching results and returns focus to search', () => {
+  renderWithProviders(<CatalogPage entries={entries} onSelect={vi.fn()} />)
+  const search = screen.getByRole('searchbox', { name: 'Werkzeuge suchen' })
+  fireEvent.change(search, { target: { value: 'PDF' } })
+  expect(screen.getByRole('status')).toHaveTextContent('1 von 3 Werkzeugen')
+  fireEvent.click(screen.getByRole('button', { name: 'Filter zurücksetzen' }))
+  expect(search).toHaveValue('')
+  expect(search).toHaveFocus()
+  expect(screen.getByRole('status')).toHaveTextContent('3 von 3 Werkzeugen')
+})
+
+test('removing a favorite from the filtered list keeps keyboard focus on a useful control', async () => {
+  localStorage.setItem(preferenceKeys.favoriteTools, JSON.stringify(entries.map(entry => entry.id)))
+  renderWithProviders(<CatalogPage entries={entries} onSelect={vi.fn()} />)
+  const filter = screen.getByRole('button', { name: 'Nur Favoriten' })
+  fireEvent.click(filter)
+  const pdf = screen.getByRole('button', { name: 'Bilder in PDF aus Favoriten entfernen' })
+  pdf.focus(); fireEvent.click(pdf)
+  const color = screen.getByRole('button', { name: 'Farben umwandeln aus Favoriten entfernen' })
+  await vi.waitFor(() => expect(color).toHaveFocus())
+  fireEvent.click(color)
+  const qr = screen.getByRole('button', { name: 'QR-Code erstellen aus Favoriten entfernen' })
+  await vi.waitFor(() => expect(qr).toHaveFocus())
+  fireEvent.click(qr)
+  await vi.waitFor(() => expect(filter).toHaveFocus())
+})
