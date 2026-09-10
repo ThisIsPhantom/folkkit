@@ -42,7 +42,7 @@ export function parseNumber(input) {
 export function calculatorFields(id, options = {}) {
   const settings = { ...DEFAULT_OPTIONS[id], ...options }
   switch (id) {
-    case 'percent': return settings.mode === 'of' ? ['rate', 'base'] : settings.mode === 'share' ? ['part', 'base'] : ['previous', 'next']
+    case 'percent': return settings.mode === 'of' ? ['rate', 'base'] : settings.mode === 'share' ? ['part', 'base'] : ['discount', 'increase'].includes(settings.mode) ? ['base', 'rate'] : ['previous', 'next']
     case 'rule-of-three': return ['first', 'second', 'third']
     case 'pythagoras': return ['a', 'b', 'c'].filter(side => side !== settings.missing)
     case 'circle': return ['measure']
@@ -143,6 +143,16 @@ export function calculate(id, inputs = {}, options = {}) {
       } else if (settings.mode === 'change') {
         if (values.previous <= 0) return invalid('positive', 'previous')
         results = [result('result', ((values.next - values.previous) / values.previous) * 100, '%', values.next !== values.previous)]
+      } else if (['discount', 'increase'].includes(settings.mode)) {
+        if (values.base < 0) return invalid('nonnegative', 'base')
+        if (values.rate < 0) return invalid('nonnegative', 'rate')
+        if (settings.mode === 'discount' && values.rate > 100) return invalid('discountRate', 'rate')
+        const changeAmount = (values.rate / 100) * values.base
+        const finalPrice = settings.mode === 'discount' ? values.base - changeAmount : values.base + changeAmount
+        results = [
+          result('changeAmount', changeAmount, '', values.base !== 0 && values.rate !== 0),
+          result('finalPrice', finalPrice, '', values.base !== 0 && (settings.mode !== 'discount' || values.rate !== 100)),
+        ]
       } else return invalid('selection')
       break
     case 'rule-of-three':

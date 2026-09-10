@@ -4,9 +4,9 @@ import { IMAGE_FORMATS, VIDEO_FORMATS, DOCUMENT_FORMATS } from './profiles.js'
 function Choice({ name,label,value,options,disabled,onChange }) {
   return <label>{label}<select name={name} value={value} disabled={disabled} onChange={event => onChange(event.target.value)}>{options.map(([id,text]) => <option key={id} value={id}>{text}</option>)}</select></label>
 }
-export default function FileSettings({ item, disabled, onChange }) {
+export default function FileSettings({ item, disabled, onChange, applyCount = 0, applyDisabled = false, onApply, notice }) {
   const { t } = useI18n()
-  const tr = key => t(`studioConvert.${key}`)
+  const tr = (key,vars) => t(`studioConvert.${key}`,vars)
   const settings = item.settings
   const set = (key, value) => onChange({ ...settings, [key]: value })
   const number = (key,label,fallback,max,min = 1,step = 1) => <label>{tr(label)}<input name={`file-${item.id}-${key}`} type="number" min={min} max={max} step={step} value={settings[key] ?? fallback} disabled={disabled} onChange={event => set(key,event.target.value)} /></label>
@@ -38,5 +38,7 @@ export default function FileSettings({ item, disabled, onChange }) {
       {(item.target === 'gif' || settings.trim) && <>{number('start', 'clipStart', 0, 7200, 0, 0.1)}{number('duration', 'clipDuration', item.target === 'gif' ? 5 : 1, item.target === 'gif' ? 30 : 7200, 0.1, 0.1)}</>}
       <p>{tr(item.target === 'gif' ? 'clipHint' : 'videoHint')}</p>
     </>}
+    {applyCount > 0 && onApply && <div className="converter-settings-transfer"><button type="button" disabled={disabled || applyDisabled} onClick={onApply}>{tr(applyCount === 1 ? 'applySettingsOne' : 'applySettingsMany',{ count:applyCount })}</button><small>{tr('matchingSettings',{ pair:`${item.from.toUpperCase()} → ${item.target.toUpperCase()}` })}</small></div>}
+    {notice && <p className="converter-settings-notice" role="status">{notice}</p>}
   </div></details>
 }

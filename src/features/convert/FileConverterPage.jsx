@@ -1,6 +1,6 @@
 import { useCallback,useEffect,useRef,useState } from 'react'
 import { useI18n } from '../../i18n/index.js'
-import { createConversionQueue } from './queue.js'
+import { createConversionQueue,settingsRecipients } from './queue.js'
 import { convertFileItem,createZip } from './engine.js'
 import { optimizeImageItem } from './imageOptimization.js'
 import { formatFileSize } from './formatFileSize.js'
@@ -70,7 +70,7 @@ function ImageComparison({ item,result,tr,locale }) {
 
 export default function FileConverterPage({ initialMode='convert',onModeChange,initialTarget='',initialCombine=false,active=true,fileRequest,onFileRequestConsumed,editorKinds=[],onOpenEditor }) {
   const { t,locale } = useI18n()
-  const tr = key => t(`studioConvert.${key}`)
+  const tr = (key,vars) => t(`studioConvert.${key}`,vars)
   const requestedMode = normalizeMode(initialMode)
   const requestedTarget = normalizeTarget(initialTarget)
   const [localMode,setLocalMode] = useState(requestedMode)
@@ -79,6 +79,8 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   const [state,setState] = useState(() => queue.snapshot())
   const [dragging,setDragging] = useState(false)
   const [error,setError] = useState(null)
+  const [settingsNotice,setSettingsNotice] = useState(null)
+  const pickerRef = useRef(null), queueHeadingRef = useRef(null), focusAfterRemoval = useRef(false)
   const [combineChoice,setCombineChoice] = useState(() => ({ source:Boolean(initialCombine),value:Boolean(initialCombine) }))
   const combine = combineChoice.source === Boolean(initialCombine) ? combineChoice.value : Boolean(initialCombine)
   // Keep local checkbox overrides only until the explicit route preference changes.
@@ -94,7 +96,7 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   const appliedConfiguration = useRef(`${mode}:${requestedTarget}`)
 
   useEffect(() => {
-    const unsubscribe = queue.subscribe(setState)
+    const unsubscribe = queue.subscribe(next => { setState(next); setSettingsNotice(null) })
     const urls = downloads.current
     return () => {
       unsubscribe(); queue.dispose(); zipController.current?.abort()
@@ -115,6 +117,28 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   useEffect(() => {
     if (!active) { queue.cancel(); zipController.current?.abort() }
   },[active,queue])
+
+  useEffect(() => {
+    if (!focusAfterRemoval.current) return
+    focusAfterRemoval.current = false
+    if (active) {
+      const target = state.items.length ? queueHeadingRef.current : pickerRef.current
+      target?.focus({ preventScroll:true })
+      target?.scrollIntoView?.({ block:'center',inline:'nearest',behavior:'instant' })
+    }
+  },[state.items,active])
+
+  const applySettings = item => {
+    const current = queue.snapshot()
+    if (!active || current.running || current.adding || zipping) return
+    const count = queue.applySettings(item.id)
+    setSettingsNotice({ id:item.id,key:count ? 'settingsApplied' : 'settingsAlreadyMatch' })
+  }
+  const removeCompleted = () => {
+    if (!active || zipping) return
+    focusAfterRemoval.current = true
+    if (!queue.removeCompleted()) focusAfterRemoval.current = false
+  }
 
   const changeCombined = useCallback(value => {
     setCombineChoice({ source:Boolean(initialCombine),value })
@@ -167,10 +191,11 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
   const commonTargets = state.items.length ? allowedTargetsFor(state.items[0]).filter(target => state.items.every(item => allowedTargetsFor(item).includes(target))) : []
   const commonTarget = sharedTargetFor(state.items)
   const results = state.items.flatMap(item => item.results)
+  const completedCount = state.items.filter(item => item.status === 'done').length
   const canCombine = mode === 'convert' && state.items.length > 1 && state.items.every(item => IMAGE_FORMATS.includes(item.from) && item.target === 'pdf')
   const setTarget = (item,target) => queue.configure(item.id,{ target,settings:target === 'gif' ? { start:0,duration:5 } : {} })
   const accept = mode === 'optimize' ? '.png,.jpg,.jpeg,.webp' : '.png,.jpg,.jpeg,.webp,.pdf,.docx,.md,.markdown,.html,.htm,.mp3,.wav,.flac,.ogg,.mp4,.webm,.mov'
-  const picker = label => <label className="converter-file-label">{label}<input name="converter-files" type="file" multiple aria-label={label} disabled={state.running || state.adding} accept={accept} onChange={event => { add(event.target.files); event.target.value = '' }} /></label>
+  const picker = label => <label className="converter-file-label">{label}<input ref={pickerRef} name="converter-files" type="file" multiple aria-label={label} disabled={state.running || state.adding} accept={accept} onChange={event => { add(event.target.files); event.target.value = '' }} /></label>
   const dropProps = {
     onDragOver:event => { event.preventDefault(); if (!state.running) setDragging(true) },
     onDragLeave:() => setDragging(false),
@@ -191,8 +216,9 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
     </div> : <div className={`converter-add-more${dragging ? ' is-dragging' : ''}`} {...dropProps}>{picker(tr('add'))}<small>{tr(mode === 'optimize' ? 'optimizeDropHint' : 'dropHint')}</small></div>}
     {error && <p role="alert" className="converter-error">{tr(`errors.${error}`)}</p>}
     {state.items.length > 0 && <div className="converter-workspace">
-      <div className="converter-toolbar"><h2>{tr('files')} <span>{state.items.length}</span></h2>
+      <div className="converter-toolbar"><h2 ref={queueHeadingRef} tabIndex={-1}>{tr('files')} <span>{state.items.length}</span></h2>
         {mode === 'convert' && <label>{tr('commonTarget')}<select name="converter-common-target" value={commonTargets.includes(commonTarget) ? commonTarget : ''} disabled={state.running} onChange={event => { if (event.target.value) for (const item of state.items) setTarget(item,event.target.value) }}><option value="">{tr('individual')}</option>{commonTargets.map(target => <option key={target} value={target}>{formatLabel(target)}</option>)}</select></label>}
+        <button className="converter-subtle" type="button" disabled={!completedCount || state.running || state.adding || zipping} onClick={removeCompleted}>{tr('removeCompleted')}</button>
         <button className="converter-subtle" type="button" disabled={state.running} onClick={() => { queue.clear(); setCombine(Boolean(initialCombine)) }}>{tr('clear')}</button>
       </div>
       {canCombine && <label className="converter-combine"><input name="converter-combine" type="checkbox" checked={combine} disabled={state.running} onChange={event => changeCombined(event.target.checked)} />{tr('combine')}</label>}
@@ -203,7 +229,7 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
           <span className="converter-status" aria-live="polite">{tr(`status.${item.status}`)}</span>
           <button className="converter-subtle converter-remove" type="button" disabled={state.running} aria-label={`${tr('remove')}: ${item.file.name}`} onClick={() => queue.remove(item.id)}>×</button>
         </div>
-        {item.status !== 'unsupported' && item.from && <FileSettings item={item} disabled={state.running} onChange={settings => queue.configure(item.id,{ settings })} />}
+        {item.status !== 'unsupported' && item.from && <FileSettings item={item} disabled={state.running} onChange={settings => queue.configure(item.id,{ settings })} applyCount={settingsRecipients(state.items,item.id,{ includeUnchanged:true }).length} applyDisabled={state.running || state.adding || zipping} onApply={() => applySettings(item)} notice={settingsNotice?.id === item.id ? tr(settingsNotice.key) : null} />}
         {item.status === 'unsupported' && <p className="converter-error">{tr('optimizeUnsupported')}</p>}
         {item.status === 'running' && <progress aria-label={tr('status.running')} max="100" value={item.progress ?? undefined} />}
         {item.error && <p className="converter-error">{tr(`errors.${item.error}`)}</p>}

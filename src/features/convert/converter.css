@@ -76,3 +76,7 @@
 
 .converter-document-note { color:var(--text-secondary);font-size:.875rem;line-height:1.6;margin:.5rem 0 1rem; }
 .converter-document-note span { display:block; }
+
+.converter-toolbar h2:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: .25rem; }
+.converter-settings-transfer { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; width: 100%; }
+.converter-settings-notice { margin: 0; color: var(--text-secondary); }

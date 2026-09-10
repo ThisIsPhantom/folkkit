@@ -1,5 +1,6 @@
 import documentMessages from '../documents/messages.de.js'
 export default {
+  applySettingsOne: 'Für eine weitere Datei übernehmen', applySettingsMany: 'Für {count} weitere Dateien übernehmen', matchingSettings: 'Nur Dateien mit {pair}.', settingsApplied: 'Einstellungen übernommen.', settingsAlreadyMatch: 'Die passenden Dateien verwenden bereits diese Einstellungen.', removeCompleted: 'Fertige Aufträge entfernen',
   editOriginal: 'Original bearbeiten', editResult: 'Ergebnis bearbeiten',
   documentLayout: documentMessages.layoutHint, documentLimits: documentMessages.limits, warnings: documentMessages.warnings,
   title: 'Dateien konvertieren', subtitle: 'Bilder, Dokumente, Audio und Video.', optimizeTitle: 'Bilder verkleinern', optimizeSubtitle: 'PNG, JPEG und WebP lokal neu berechnen oder proportional verkleinern.', limitsLabel: 'Dateigrenzen',

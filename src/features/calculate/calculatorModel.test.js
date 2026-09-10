@@ -29,6 +29,22 @@ describe('everyday formulas', () => {
     expect(ready('percent', { part: '30', base: '240' }, { mode: 'share' })).toEqual({ result: 12.5 })
     expect(ready('percent', { previous: '80', next: '60' }, { mode: 'change' })).toEqual({ result: -25 })
   })
+  it('calculates discount and surcharge amounts from an original price', () => {
+    expect(ready('percent', { base: '120', rate: '20' }, { mode: 'discount' })).toEqual({ changeAmount: 24, finalPrice: 96 })
+    expect(ready('percent', { base: '120', rate: '20' }, { mode: 'increase' })).toEqual({ changeAmount: 24, finalPrice: 144 })
+  })
+  it('accepts zero and a complete discount while rejecting invalid price adjustments', () => {
+    expect(ready('percent', { base: '0', rate: '20' }, { mode: 'discount' })).toEqual({ changeAmount: 0, finalPrice: 0 })
+    expect(ready('percent', { base: '120', rate: '0' }, { mode: 'increase' })).toEqual({ changeAmount: 0, finalPrice: 120 })
+    expect(ready('percent', { base: '120', rate: '100' }, { mode: 'discount' })).toEqual({ changeAmount: 120, finalPrice: 0 })
+    expect(calculate('percent', { base: '-1', rate: '20' }, { mode: 'discount' })).toMatchObject({ status: 'invalid', error: { code: 'nonnegative', field: 'base' } })
+    expect(calculate('percent', { base: '120', rate: '-1' }, { mode: 'increase' })).toMatchObject({ status: 'invalid', error: { code: 'nonnegative', field: 'rate' } })
+    expect(calculate('percent', { base: '120', rate: '100.01' }, { mode: 'discount' })).toMatchObject({ status: 'invalid', error: { code: 'discountRate', field: 'rate' } })
+  })
+  it('rejects price adjustment overflow and underflow', () => {
+    expect(calculate('percent', { base: '1e308', rate: '1000' }, { mode: 'increase' })).toMatchObject({ status: 'invalid', error: { code: 'range' } })
+    expect(calculate('percent', { base: '1e-200', rate: '1e-200' }, { mode: 'discount' })).toMatchObject({ status: 'invalid', error: { code: 'range' } })
+  })
   it('requires a positive starting value for percentage change and a nonzero base for a share', () => {
     expect(calculate('percent', { previous: '-5', next: '10' }, { mode: 'change' })).toMatchObject({ status: 'invalid', error: { code: 'positive', field: 'previous' } })
     expect(calculate('percent', { part: '3', base: '0' }, { mode: 'share' })).toMatchObject({ status: 'invalid', error: { code: 'nonzero' } })

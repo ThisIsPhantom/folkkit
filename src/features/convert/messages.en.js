@@ -1,5 +1,6 @@
 import documentMessages from '../documents/messages.en.js'
 export default {
+  applySettingsOne: 'Apply to 1 other file', applySettingsMany: 'Apply to {count} other files', matchingSettings: 'Only files using {pair}.', settingsApplied: 'Settings applied.', settingsAlreadyMatch: 'The matching files already use these settings.', removeCompleted: 'Remove completed',
   editOriginal: 'Edit original', editResult: 'Edit result',
   documentLayout: documentMessages.layoutHint, documentLimits: documentMessages.limits, warnings: documentMessages.warnings,
   title: 'Convert files', subtitle: 'Images, documents, audio and video.', optimizeTitle: 'Make images smaller', optimizeSubtitle: 'Re-encode or proportionally resize PNG, JPEG and WebP images on this device.', limitsLabel: 'File limits',

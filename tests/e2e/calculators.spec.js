@@ -99,6 +99,37 @@ test('calculator fields solve everyday formulas and keep query history @matrix',
   await expect(page.getByTestId('result-result')).toHaveText('1048576 B')
 })
 
+test('percentage calculator applies a discount and keeps the values for a surcharge @matrix', async ({ page, context, browserName }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  if (browserName === 'chromium') await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/calculate?calculator=percent')
+  await page.getByRole('combobox', { name: 'Berechnung', exact: true }).selectOption('discount')
+  await page.getByRole('textbox', { name: 'Originalpreis', exact: true }).fill('120')
+  const discountRate = page.getByRole('textbox', { name: 'Rabatt (%)', exact: true })
+  await discountRate.fill('20')
+  await expect(page.getByTestId('result-changeAmount')).toHaveText('24,00')
+  await expect(page.getByTestId('result-finalPrice')).toHaveText('96,00')
+  await discountRate.fill('101')
+  await expect(discountRate).toHaveAttribute('aria-invalid', 'true')
+  await expect(page.getByTestId('result-finalPrice')).toHaveCount(0)
+  await discountRate.fill('20')
+
+  await page.getByRole('combobox', { name: 'Berechnung', exact: true }).selectOption('increase')
+  await expect(page.getByRole('textbox', { name: 'Originalpreis', exact: true })).toHaveValue('120')
+  await expect(page.getByRole('textbox', { name: 'Aufschlag (%)', exact: true })).toHaveValue('20')
+  await expect(page.getByTestId('result-finalPrice')).toHaveText('144,00')
+  await page.getByRole('button', { name: 'English', exact: true }).click()
+  await expect(page.getByRole('textbox', { name: 'Original price', exact: true })).toHaveValue('120')
+  await expect(page.getByRole('textbox', { name: 'Surcharge (%)', exact: true })).toHaveValue('20')
+  await expect(page.getByTestId('result-finalPrice')).toHaveText('144.00')
+  if (browserName === 'chromium') {
+    await page.getByRole('button', { name: 'Copy Final price', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Copy Final price', exact: true })).toHaveText('Copied')
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('144.00')
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+})
+
 test('calculators support keyboard input, mobile layout, and both languages and themes @matrix', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.emulateMedia({ reducedMotion: 'reduce' })

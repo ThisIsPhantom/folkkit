@@ -14,6 +14,15 @@ export function uniqueFilename(name, used) {
 const knownErrors = new Set([...DOCUMENT_ERRORS,'unsupported_type','type_mismatch','unsupported_pair','too_large','resource_limit','invalid_file','invalid_settings','unsupported_codec','invalid_pages','invalid_clip','no_audio','media_runtime_unavailable','conversion_failed','cancelled'])
 function errorCode(error) { const code = error?.code || error?.message; return knownErrors.has(code) ? code : 'conversion_failed' }
 
+export function settingsRecipients(items, sourceId, { includeUnchanged = false } = {}) {
+  const source = items.find(item => item.id === sourceId)
+  if (!source?.from || !source.target || !(source.allowedTargets || targetsFor(source.from)).includes(source.target)) return []
+  const settings = source.settings || {}
+  return items.filter(item => item.id !== sourceId && item.from === source.from && item.target === source.target
+    && (item.task || 'convert') === (source.task || 'convert') && (item.allowedTargets || targetsFor(item.from)).includes(item.target)
+    && (includeUnchanged || Object.keys(settings).length !== Object.keys(item.settings || {}).length || Object.keys(settings).some(key => !Object.is(settings[key], item.settings?.[key]))))
+}
+
 export function createConversionQueue({ detect = detectFile, convert } = {}) {
   let items = [], running = false, controller = null, nextId = 0, disposed = false, adding = 0
   const listeners = new Set()
@@ -55,6 +64,23 @@ export function createConversionQueue({ detect = detectFile, convert } = {}) {
     invalidateCombined(id)
     update(id, { ...patch, status: 'ready', results: [], progress: null, error: null })
   }
+  function applySettings(sourceId) {
+    if (running || adding || disposed) return 0
+    const recipients = settingsRecipients(items, sourceId)
+    if (!recipients.length) return 0
+    const settings = { ...items.find(item => item.id === sourceId).settings }
+    const ids = new Set(recipients.map(item => item.id))
+    for (const id of ids) invalidateCombined(id)
+    items = items.map(item => ids.has(item.id) ? { ...item, settings: { ...settings }, status: 'ready', results: [], progress: null, error: null, combinedWith: null } : item)
+    emit()
+    return ids.size
+  }
+  function removeCompleted() {
+    if (running || adding || disposed) return 0
+    const remaining = items.filter(item => item.status !== 'done'), removed = items.length - remaining.length
+    if (removed) { items = remaining; emit() }
+    return removed
+  }
   async function start({ combineImages = false } = {}) {
     if (running || adding || disposed) return
     running = true; controller = new AbortController(); emit()
@@ -79,7 +105,7 @@ export function createConversionQueue({ detect = detectFile, convert } = {}) {
       }
     } finally { running = false; controller = null; emit() }
   }
-  return Object.freeze({ snapshot, add, start, configure,
+  return Object.freeze({ snapshot, add, start, configure, applySettings, removeCompleted,
     subscribe(listener) { disposed = false; listeners.add(listener); return () => listeners.delete(listener) },
     cancel() { controller?.abort() },
     retry(id) { const item = items.find(item => item.id === id); if (item?.from && ['error','cancelled'].includes(item.status)) configure(id, {}) },

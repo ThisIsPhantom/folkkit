@@ -1,6 +1,6 @@
 export function calculatorExample(id, options) {
   switch (id) {
-    case 'percent': return options.mode === 'of' ? { rate: '15', base: '240' } : options.mode === 'share' ? { part: '36', base: '240' } : { previous: '80', next: '100' }
+    case 'percent': return options.mode === 'of' ? { rate: '15', base: '240' } : options.mode === 'share' ? { part: '36', base: '240' } : ['discount', 'increase'].includes(options.mode) ? { base: '120', rate: '20' } : { previous: '80', next: '100' }
     case 'rule-of-three': return { first: '4', second: '12', third: '7' }
     case 'pythagoras': return { a: '3', b: '4', c: '5' }
     case 'circle': return { measure: '5' }
