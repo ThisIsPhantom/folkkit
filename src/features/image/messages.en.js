@@ -2,7 +2,7 @@ export default {
   title: 'Edit image',
   intro: 'Crop, rotate and add your own text or watermark.',
   choose: 'Choose image',
-  replace: 'Choose another image',
+  replace: 'Change image',
   drop: 'Drop a PNG, JPEG or WebP here',
   limits: 'PNG, JPEG or WebP up to 32 MiB, 24 megapixels and 8192 px per side.',
   working: 'Preparing image …',

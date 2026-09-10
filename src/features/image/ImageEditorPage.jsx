@@ -410,8 +410,8 @@ export default function ImageEditorPage({
   return (
     <section className="studio-page image-editor" aria-labelledby="image-editor-title">
       <header className="image-editor-heading">
-        <div><h1 id="image-editor-title">{t('studioImage.title')}</h1><p>{t('studioImage.intro')}</p></div>
-        <div className="image-file-summary"><strong>{source.file.name}</strong><span>{t('studioImage.dimensions', imageDocument)}</span>{imageDocument.dirty && <span>{t('studioImage.unsaved')}</span>}</div>
+        <h1 id="image-editor-title">{t('studioImage.title')}</h1>
+        <div className="image-file-summary"><strong>{source.file.name}</strong><span>{t('studioImage.dimensions', imageDocument)}</span>{imageDocument.dirty && <span className="image-unsaved">{t('studioImage.unsaved')}</span>}</div>
       </header>
       <div className="image-toolbar" aria-label={t('studioImage.transform')}>
         {fileInput}<label className="image-file-label" htmlFor="image-editor-file">{t('studioImage.replace')}</label>
@@ -424,6 +424,11 @@ export default function ImageEditorPage({
           <ImageCanvas active={active} document={imageDocument} source={source.bitmap} resources={resources} selectedId={imageDocument.selectedId} onSelect={id => replacePresent(current => ({ ...current, selectedId: id }))} onElementCommit={(id, changes) => commit(current => updateElement(current, id, changes))} cropDraft={imageDocument.cropDraft} cropAspect={cropAspect} onCropDraft={crop => replacePresent(current => ({ ...current, cropDraft: crop }))} showCrop renderPreview={renderPreview} t={t} />
         </section>
         <div className="image-inspector">
+          <section className="image-export-panel"><h2>{t('studioImage.export')}</h2><div className="image-field-grid">
+            <label>{t('studioImage.format')}<select name="image-format" value={format} onChange={event => setFormat(event.target.value)}><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select></label>
+            {format !== 'png' && <label>{t('studioImage.quality')}<input name="image-quality" type="range" min="10" max="100" value={quality} onChange={event => setQuality(event.target.value)} /></label>}
+          </div><button type="button" className="studio-primary image-download" disabled={Boolean(busy)} onClick={exportCurrent}><IconDownload aria-hidden="true" />{t('studioImage.download', { format: format === 'jpeg' ? 'JPEG' : format.toUpperCase() })}</button>
+          </section>
           <details open><summary><IconCrop aria-hidden="true" />{t('studioImage.crop')}</summary><div className="image-panel-body">
             <p>{t('studioImage.cropHint')}</p>
             <div className="image-choice-row" role="group" aria-label={t('studioImage.cropAspect')}>{ratios.map(item => <button type="button" key={item.key} aria-pressed={cropAspect === item.value} onClick={() => setAspect(item.value)}>{t(`studioImage.${item.key}`)}</button>)}</div>
@@ -456,11 +461,6 @@ export default function ImageEditorPage({
             <button type="button" onClick={() => commit(current => centreElement(current, selected.id))}>{t('studioImage.centre')}</button>
             <button type="button" className="image-danger" onClick={() => commit(current => removeElement(current, selected.id))}><IconTrash aria-hidden="true" />{t('studioImage.remove')}</button>
           </div></details>}
-          <section className="image-export-panel"><h2>{t('studioImage.export')}</h2><div className="image-field-grid">
-            <label>{t('studioImage.format')}<select name="image-format" value={format} onChange={event => setFormat(event.target.value)}><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select></label>
-            {format !== 'png' && <label>{t('studioImage.quality')}<input name="image-quality" type="range" min="10" max="100" value={quality} onChange={event => setQuality(event.target.value)} /></label>}
-          </div><button type="button" className="studio-primary image-download" disabled={Boolean(busy)} onClick={exportCurrent}><IconDownload aria-hidden="true" />{t('studioImage.download', { format: format === 'jpeg' ? 'JPEG' : format.toUpperCase() })}</button>
-          </section>
         </div>
       </div>
       {busyStatus}

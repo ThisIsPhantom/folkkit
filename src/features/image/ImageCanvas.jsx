@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { resizeCropDraft, transformedBounds, updateElement } from './imageModel.js'
 import { fitPreviewDisplay, paintImageDocument } from './imageRenderer.js'
 import { createImagePreviewController } from './imagePreviewController.js'
@@ -18,6 +18,10 @@ function DynamicBox({ className, box, imageDocument, children, ...props }) {
     node.style.setProperty('--image-height', `${box.height / imageDocument.height * 100}%`)
   }, [box.x, box.y, box.width, box.height, imageDocument.width, imageDocument.height])
   return <div ref={ref} className={className} {...props}>{children}</div>
+}
+
+function ResizeHandle({ box, imageDocument, kind, ...props }) {
+  return <DynamicBox className={`image-resize-layer image-${kind}-resize-layer`} box={box} imageDocument={imageDocument}><button type="button" className={`image-${kind}-resize`} {...props} /></DynamicBox>
 }
 
 export default function ImageCanvas({
@@ -200,7 +204,7 @@ export default function ImageCanvas({
           {elements.map(({ element, bounds }) => {
             const shown = shownVisual?.kind === 'element' && shownVisual.id === element.id ? shownVisual : bounds
             return (
-              <DynamicBox key={element.id} className="image-element-wrap" box={shown} imageDocument={imageDocument}>
+              <Fragment key={element.id}><DynamicBox className="image-element-wrap" box={shown} imageDocument={imageDocument}>
                 <button
                   type="button"
                   className="image-element-target"
@@ -208,12 +212,13 @@ export default function ImageCanvas({
                   aria-pressed={selectedId === element.id}
                   onPointerDown={event => beginElement(event, element)}
                 />
-                {selectedId === element.id && <button type="button" className="image-element-resize" aria-label={t('studioImage.resize')} onPointerDown={event => beginElement(event, element, 'resize')} />}
               </DynamicBox>
+              {selectedId === element.id && <ResizeHandle kind="element" box={shown} imageDocument={imageDocument} aria-label={t('studioImage.resize')} onPointerDown={event => beginElement(event, element, 'resize')} />}
+              </Fragment>
             )
           })}
           {showCrop && displayCrop && (
-            <DynamicBox
+            <><DynamicBox
               className="image-crop-selection"
               box={displayCrop}
               imageDocument={imageDocument}
@@ -221,8 +226,8 @@ export default function ImageCanvas({
               aria-label={t('studioImage.cropSelection')}
             >
               <button type="button" className="image-crop-move" aria-label={t('studioImage.cropSelection')} onPointerDown={event => beginCrop(event, 'move')} />
-              <button type="button" className="image-crop-resize" aria-label={t('studioImage.cropResize')} onPointerDown={event => beginCrop(event, 'resize')} />
             </DynamicBox>
+            <ResizeHandle kind="crop" box={displayCrop} imageDocument={imageDocument} aria-label={t('studioImage.cropResize')} onPointerDown={event => beginCrop(event, 'resize')} /></>
           )}
         </div>
       </div>

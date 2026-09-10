@@ -2,7 +2,7 @@ export default {
   title: 'Bild bearbeiten',
   intro: 'Zuschneiden, drehen und eigene Texte oder Wasserzeichen ergänzen.',
   choose: 'Bild auswählen',
-  replace: 'Anderes Bild wählen',
+  replace: 'Bild wechseln',
   drop: 'PNG, JPEG oder WebP hier ablegen',
   limits: 'PNG, JPEG oder WebP bis 32 MiB, 24 Megapixel und 8192 px pro Seite.',
   working: 'Bild wird vorbereitet …',

@@ -34,6 +34,16 @@ async function downloadImage(page, name) {
   return { name: download.suggestedFilename(), bytes: await readFile(await download.path()) }
 }
 
+async function revealImageControl(control) {
+  // Protocol scrollIntoViewIfNeeded can place a canvas control beneath the sticky header.
+  await control.evaluate(node => node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }))
+  await expect.poll(() => control.evaluate(node => {
+    const box = node.getBoundingClientRect()
+    const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
+    return hit === node || node.contains(hit)
+  }), { message: 'Pointer gestures must start on the visible canvas control.' }).toBe(true)
+}
+
 test('crop, clockwise rotation and mirror map original pixels exactly through the worker', async ({ page }) => {
   await page.goto('/image')
   await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
@@ -101,7 +111,7 @@ test('text and watermark gestures create one undo step, Escape cancels, and expo
   const initialX = Number(await x.inputValue())
   const stage = page.getByRole('application', { name: 'Bild und Elemente bearbeiten' })
   const target = page.getByRole('button', { name: 'Grüsse für Jörg auswählen' })
-  await target.scrollIntoViewIfNeeded()
+  await revealImageControl(target)
   const box = await target.boundingBox()
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
   await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + 30, box.y + box.height / 2 + 15, { steps: 6 }); await page.mouse.up()
@@ -174,7 +184,7 @@ test('portrait preview, numeric crop and pointer resize preserve their selected 
   await page.getByLabel('Breite des Ausschnitts').fill('300')
   await expect(page.getByLabel('Höhe des Ausschnitts')).toHaveValue('300')
   const resize = page.getByRole('button', { name: 'Ausschnittsgrösse ändern', exact: true })
-  await resize.scrollIntoViewIfNeeded()
+  await revealImageControl(resize)
   const resizeBounds = await resize.boundingBox()
   await page.mouse.move(resizeBounds.x + resizeBounds.width / 2, resizeBounds.y + resizeBounds.height / 2)
   await page.mouse.down(); await page.mouse.move(resizeBounds.x + resizeBounds.width / 2 + 80, resizeBounds.y + resizeBounds.height / 2 + 20, { steps: 5 }); await page.mouse.up()
@@ -440,7 +450,7 @@ for (const kind of ['watermark', 'text']) test(`image pixels follow a ${kind} ge
   const x = page.getByLabel('X-Position', { exact: true }), initialX = await x.inputValue()
   const target = page.getByRole('button', { name: kind === 'watermark' ? 'local-watermark.png auswählen' : 'Text in Bewegung auswählen', exact: true })
   await page.screenshot({ path: testInfo.outputPath('image-before-gesture.png'), fullPage: true })
-  await target.scrollIntoViewIfNeeded()
+  await revealImageControl(target)
   const box = await target.boundingBox(), stage = await page.locator('.image-canvas-stage').boundingBox()
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
   await page.mouse.down()
@@ -483,7 +493,7 @@ test('rotated image pixels resize live and navigation discards an unfinished ges
   const original = await canvas.evaluate(node => node.toDataURL())
   const width = page.getByLabel('Breite', { exact: true }), initialWidth = await width.inputValue()
   const handle = page.getByRole('button', { name: 'Elementgrösse ändern', exact: true })
-  await handle.scrollIntoViewIfNeeded()
+  await revealImageControl(handle)
   const box = await handle.boundingBox(), stage = await page.locator('.image-canvas-stage').boundingBox()
   const x = box.x + box.width / 2, y = box.y + box.height / 2
   const touch = testInfo.project.name.includes('mobile') ? await page.context().newCDPSession(page) : null
@@ -521,4 +531,64 @@ test('rotated image pixels resize live and navigation discards an unfinished ges
   await expect(cropY).toHaveValue(cropBefore[1])
   await expect(cropWidth).toHaveValue(cropBefore[2])
   await expect(cropHeight).toHaveValue(cropBefore[3])
+})
+
+
+test('image export precedes settings and mobile controls use the available width @matrix', async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'de'))
+  await page.goto('/image')
+  await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
+  const exportPanel = page.locator('.image-export-panel'), cropPanel = page.locator('.image-inspector details').first()
+  await expect(exportPanel).toBeVisible()
+  const exportBox = await exportPanel.boundingBox(), cropBox = await cropPanel.boundingBox()
+  expect(exportBox.y + exportBox.height).toBeLessThanOrEqual(cropBox.y + 1)
+  if (testInfo.project.name.includes('mobile')) {
+    expect((await page.locator('.image-toolbar').boundingBox()).height).toBeLessThanOrEqual(160)
+    for (const field of await page.locator('.image-inspector input[type="number"], .image-inspector select, .image-inspector textarea').all()) {
+      expect(await field.evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(16)
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  }
+  expect(PNG.sync.read((await downloadImage(page, 'PNG herunterladen')).bytes)).toMatchObject({ width: 300, height: 200 })
+})
+
+test('image resize handles stay reachable at canvas edges and on tiny elements @matrix', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('folkkit:locale', 'de'))
+  await page.goto('/image')
+  await page.getByLabel('Bild auswählen', { exact: true }).setInputFiles(imageFixture())
+  const stage = page.locator('.image-canvas-stage')
+  async function handleBox(handle) {
+    await revealImageControl(handle)
+    const box = await handle.boundingBox(), canvas = await stage.boundingBox()
+    expect(box.width).toBeGreaterThanOrEqual(44)
+    expect(box.height).toBeGreaterThanOrEqual(44)
+    expect(box.x).toBeGreaterThanOrEqual(canvas.x - 1)
+    expect(box.y).toBeGreaterThanOrEqual(canvas.y - 1)
+    expect(box.x + box.width).toBeLessThanOrEqual(canvas.x + canvas.width + 1)
+    expect(box.y + box.height).toBeLessThanOrEqual(canvas.y + canvas.height + 1)
+    expect(await handle.evaluate(node => {
+      const box = node.getBoundingClientRect()
+      return document.elementFromPoint(box.x + 6, box.y + 6) === node
+    })).toBe(true)
+    return box
+  }
+  const crop = page.getByRole('button', { name: 'Ausschnittsgrösse ändern', exact: true })
+  const cropBox = await handleBox(crop)
+  await page.mouse.move(cropBox.x + 6, cropBox.y + 6); await page.mouse.down()
+  await page.mouse.move(cropBox.x - 14, cropBox.y - 14, { steps: 4 }); await page.mouse.up()
+  expect(Number(await page.getByLabel('Breite des Ausschnitts', { exact: true }).inputValue())).toBeLessThan(300)
+  await page.getByLabel('Textinhalt', { exact: true }).fill('Klein')
+  await page.getByRole('button', { name: 'Text hinzufügen', exact: true }).click()
+  const width = page.getByLabel('Breite', { exact: true })
+  await width.fill('12'); await page.getByLabel('Höhe', { exact: true }).fill('12')
+  await page.getByLabel('X-Position', { exact: true }).fill('0'); await page.getByLabel('Y-Position', { exact: true }).fill('0')
+  const handle = page.getByRole('button', { name: 'Elementgrösse ändern', exact: true })
+  const smallBox = await handleBox(handle)
+  await page.mouse.move(smallBox.x + 6, smallBox.y + 6); await page.mouse.down()
+  await page.mouse.move(smallBox.x + 26, smallBox.y + 26, { steps: 4 }); await page.mouse.up()
+  expect(Number(await width.inputValue())).toBeGreaterThan(12)
+  await page.getByRole('button', { name: 'Rückgängig', exact: true }).click()
+  await expect(width).toHaveValue('12')
+  await page.getByLabel('X-Position', { exact: true }).fill('288'); await page.getByLabel('Y-Position', { exact: true }).fill('188')
+  await handleBox(handle)
 })
