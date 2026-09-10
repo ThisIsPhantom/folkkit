@@ -105,6 +105,17 @@ export default function ImageCanvas({
     }
   }
 
+  function handleMode(event, box) {
+    const stage = stageRef.current.getBoundingClientRect(), hit = event.currentTarget.getBoundingClientRect()
+    if (box.width / imageDocument.width * stage.width > hit.width || box.height / imageDocument.height * stage.height > hit.height) return 'resize'
+    const point = stagePoint(event)
+    if (point.x < box.x || point.x > box.x + box.width || point.y < box.y || point.y > box.y + box.height) return 'resize'
+    // Expanded hit areas must not take the move gesture away from a small object.
+    const marker = getComputedStyle(event.currentTarget, '::after')
+    const radius = Math.min(parseFloat(marker.width), parseFloat(marker.height)) / 2
+    return Math.hypot(event.clientX - hit.left - hit.width / 2, event.clientY - hit.top - hit.height / 2) <= radius ? 'resize' : 'move'
+  }
+
   const cleanup = useCallback((restore = true) => {
     const gesture = gestureRef.current
     gestureRef.current = null
@@ -213,7 +224,7 @@ export default function ImageCanvas({
                   onPointerDown={event => beginElement(event, element)}
                 />
               </DynamicBox>
-              {selectedId === element.id && <ResizeHandle kind="element" box={shown} imageDocument={imageDocument} aria-label={t('studioImage.resize')} onPointerDown={event => beginElement(event, element, 'resize')} />}
+              {selectedId === element.id && <ResizeHandle kind="element" box={shown} imageDocument={imageDocument} aria-label={t('studioImage.resize')} onPointerDown={event => beginElement(event, element, handleMode(event, shown))} />}
               </Fragment>
             )
           })}
@@ -227,7 +238,7 @@ export default function ImageCanvas({
             >
               <button type="button" className="image-crop-move" aria-label={t('studioImage.cropSelection')} onPointerDown={event => beginCrop(event, 'move')} />
             </DynamicBox>
-            <ResizeHandle kind="crop" box={displayCrop} imageDocument={imageDocument} aria-label={t('studioImage.cropResize')} onPointerDown={event => beginCrop(event, 'resize')} /></>
+            <ResizeHandle kind="crop" box={displayCrop} imageDocument={imageDocument} aria-label={t('studioImage.cropResize')} onPointerDown={event => beginCrop(event, handleMode(event, displayCrop))} /></>
           )}
         </div>
       </div>
