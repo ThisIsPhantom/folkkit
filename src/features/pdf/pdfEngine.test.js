@@ -124,7 +124,8 @@ test('replaces German Latin1 text in a standard font and a reusable full embedde
     expect(text).not.toContain('Before')
   } finally { await task.destroy() }
   expect(() => engine.replaceText(0, embedded.index, '漢字')).toThrow('unsupported_text')
-})
+  // Full-font PDFium work plus an independent PDF.js cold start need headroom on shared runners.
+}, 15_000)
 
 test('scan-only pages expose no editable text and rotated text is honestly unsupported', async () => {
   const engine = await makeEngine()
