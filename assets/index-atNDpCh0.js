@@ -1,0 +1,5047 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/QrDesignerPage-DSY6s-gh.js","assets/pdf-lib-BYCLJ2U_.js","assets/jpegOrientation-CVoaSQDi.js","assets/QrDesignerPage-CmBXaxUL.css","assets/FileConverterPage-BxiGLjIM.js","assets/profiles-DFty1oBE.js","assets/workBudgets-Do-Hk6pD.js","assets/detection-D8q9yEoL.js","assets/imageOperations-D0KBE-jR.js","assets/FileConverterPage-D53_vJiB.css","assets/PdfEditorPage-BZrUsaqA.js","assets/pdfClient-B3O83sLH.js","assets/PdfEditorPage-Bh-6tEL2.css","assets/WorkspacePage-Cl3av8NG.js","assets/WorkspacePage-x1HfyxUR.css","assets/CalculatorPage-KW5OZMbE.js","assets/CalculatorPage-DiVfOUWI.css","assets/ImageEditorPage-CN2UWY8A.js","assets/IconDownload-CyAtK5tn.js","assets/ImageEditorPage-DIoWR3ha.css","assets/AudioEditorPage-CLdjPm8V.js","assets/AudioEditorPage-C0vXb6x0.css"])))=>i.map(i=>d[i]);
+(function(){const s=document.createElement("link").relList;if(s&&s.supports&&s.supports("modulepreload"))return;for(const p of document.querySelectorAll('link[rel="modulepreload"]'))l(p);new MutationObserver(p=>{for(const d of p)if(d.type==="childList")for(const f of d.addedNodes)f.tagName==="LINK"&&f.rel==="modulepreload"&&l(f)}).observe(document,{childList:!0,subtree:!0});function c(p){const d={};return p.integrity&&(d.integrity=p.integrity),p.referrerPolicy&&(d.referrerPolicy=p.referrerPolicy),p.crossOrigin==="use-credentials"?d.credentials="include":p.crossOrigin==="anonymous"?d.credentials="omit":d.credentials="same-origin",d}function l(p){if(p.ep)return;p.ep=!0;const d=c(p);fetch(p.href,d)}})();var ac={exports:{}},Ya={};var Ip;function _g(){if(Ip)return Ya;Ip=1;var n=Symbol.for("react.transitional.element"),s=Symbol.for("react.fragment");function c(l,p,d){var f=null;if(d!==void 0&&(f=""+d),p.key!==void 0&&(f=""+p.key),"key"in p){d={};for(var m in p)m!=="key"&&(d[m]=p[m])}else d=p;return p=d.ref,{$$typeof:n,type:l,key:f,ref:p!==void 0?p:null,props:d}}return Ya.Fragment=s,Ya.jsx=c,Ya.jsxs=c,Ya}var Fp;function qg(){return Fp||(Fp=1,ac.exports=_g()),ac.exports}var T=qg(),oc={exports:{}},Q={};var xp;function Vg(){if(xp)return Q;xp=1;var n=Symbol.for("react.transitional.element"),s=Symbol.for("react.portal"),c=Symbol.for("react.fragment"),l=Symbol.for("react.strict_mode"),p=Symbol.for("react.profiler"),d=Symbol.for("react.consumer"),f=Symbol.for("react.context"),m=Symbol.for("react.forward_ref"),y=Symbol.for("react.suspense"),b=Symbol.for("react.memo"),M=Symbol.for("react.lazy"),z=Symbol.for("react.activity"),N=Symbol.iterator;function x(O){return O===null||typeof O!="object"?null:(O=N&&O[N]||O["@@iterator"],typeof O=="function"?O:null)}var k={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},H=Object.assign,U={};function de(O,D,P){this.props=O,this.context=D,this.refs=U,this.updater=P||k}de.prototype.isReactComponent={},de.prototype.setState=function(O,D){if(typeof O!="object"&&typeof O!="function"&&O!=null)throw Error("takes an object of state variables to update or a function which returns an object of state variables.");this.updater.enqueueSetState(this,O,D,"setState")},de.prototype.forceUpdate=function(O){this.updater.enqueueForceUpdate(this,O,"forceUpdate")};function B(){}B.prototype=de.prototype;function J(O,D,P){this.props=O,this.context=D,this.refs=U,this.updater=P||k}var se=J.prototype=new B;se.constructor=J,H(se,de.prototype),se.isPureReactComponent=!0;var ne=Array.isArray;function ge(){}var X={H:null,A:null,T:null,S:null},Ie=Object.prototype.hasOwnProperty;function Y(O,D,P){var W=P.ref;return{$$typeof:n,type:O,key:D,ref:W!==void 0?W:null,props:P}}function K(O,D){return Y(O.type,D,O.props)}function he(O){return typeof O=="object"&&O!==null&&O.$$typeof===n}function Ne(O){var D={"=":"=0",":":"=2"};return"$"+O.replace(/[=:]/g,function(P){return D[P]})}var Et=/\/+/g;function Dt(O,D){return typeof O=="object"&&O!==null&&O.key!=null?Ne(""+O.key):D.toString(36)}function kt(O){switch(O.status){case"fulfilled":return O.value;case"rejected":throw O.reason;default:switch(typeof O.status=="string"?O.then(ge,ge):(O.status="pending",O.then(function(D){O.status==="pending"&&(O.status="fulfilled",O.value=D)},function(D){O.status==="pending"&&(O.status="rejected",O.reason=D)})),O.status){case"fulfilled":return O.value;case"rejected":throw O.reason}}throw O}function F(O,D,P,W,ee){var ae=typeof O;(ae==="undefined"||ae==="boolean")&&(O=null);var be=!1;if(O===null)be=!0;else switch(ae){case"bigint":case"string":case"number":be=!0;break;case"object":switch(O.$$typeof){case n:case s:be=!0;break;case M:return be=O._init,F(be(O._payload),D,P,W,ee)}}if(be)return ee=ee(O),be=W===""?"."+Dt(O,0):W,ne(ee)?(P="",be!=null&&(P=be.replace(Et,"$&/")+"/"),F(ee,D,P,"",function(Zi){return Zi})):ee!=null&&(he(ee)&&(ee=K(ee,P+(ee.key==null||O&&O.key===ee.key?"":(""+ee.key).replace(Et,"$&/")+"/")+be)),D.push(ee)),1;be=0;var Je=W===""?".":W+":";if(ne(O))for(var ke=0;ke<O.length;ke++)W=O[ke],ae=Je+Dt(W,ke),be+=F(W,D,P,ae,ee);else if(ke=x(O),typeof ke=="function")for(O=ke.call(O),ke=0;!(W=O.next()).done;)W=W.value,ae=Je+Dt(W,ke++),be+=F(W,D,P,ae,ee);else if(ae==="object"){if(typeof O.then=="function")return F(kt(O),D,P,W,ee);throw D=String(O),Error("Objects are not valid as a React child (found: "+(D==="[object Object]"?"object with keys {"+Object.keys(O).join(", ")+"}":D)+"). If you meant to render a collection of children, use an array instead.")}return be}function j(O,D,P){if(O==null)return O;var W=[],ee=0;return F(O,W,"","",function(ae){return D.call(P,ae,ee++)}),W}function Z(O){if(O._status===-1){var D=O._result;D=D(),D.then(function(P){(O._status===0||O._status===-1)&&(O._status=1,O._result=P)},function(P){(O._status===0||O._status===-1)&&(O._status=2,O._result=P)}),O._status===-1&&(O._status=0,O._result=D)}if(O._status===1)return O._result.default;throw O._result}var Oe=typeof reportError=="function"?reportError:function(O){if(typeof window=="object"&&typeof window.ErrorEvent=="function"){var D=new window.ErrorEvent("error",{bubbles:!0,cancelable:!0,message:typeof O=="object"&&O!==null&&typeof O.message=="string"?String(O.message):String(O),error:O});if(!window.dispatchEvent(D))return}else if(typeof process=="object"&&typeof process.emit=="function"){process.emit("uncaughtException",O);return}console.error(O)},Ae={map:j,forEach:function(O,D,P){j(O,function(){D.apply(this,arguments)},P)},count:function(O){var D=0;return j(O,function(){D++}),D},toArray:function(O){return j(O,function(D){return D})||[]},only:function(O){if(!he(O))throw Error("React.Children.only expected to receive a single React element child.");return O}};return Q.Activity=z,Q.Children=Ae,Q.Component=de,Q.Fragment=c,Q.Profiler=p,Q.PureComponent=J,Q.StrictMode=l,Q.Suspense=y,Q.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE=X,Q.__COMPILER_RUNTIME={__proto__:null,c:function(O){return X.H.useMemoCache(O)}},Q.cache=function(O){return function(){return O.apply(null,arguments)}},Q.cacheSignal=function(){return null},Q.cloneElement=function(O,D,P){if(O==null)throw Error("The argument must be a React element, but you passed "+O+".");var W=H({},O.props),ee=O.key;if(D!=null)for(ae in D.key!==void 0&&(ee=""+D.key),D)!Ie.call(D,ae)||ae==="key"||ae==="__self"||ae==="__source"||ae==="ref"&&D.ref===void 0||(W[ae]=D[ae]);var ae=arguments.length-2;if(ae===1)W.children=P;else if(1<ae){for(var be=Array(ae),Je=0;Je<ae;Je++)be[Je]=arguments[Je+2];W.children=be}return Y(O.type,ee,W)},Q.createContext=function(O){return O={$$typeof:f,_currentValue:O,_currentValue2:O,_threadCount:0,Provider:null,Consumer:null},O.Provider=O,O.Consumer={$$typeof:d,_context:O},O},Q.createElement=function(O,D,P){var W,ee={},ae=null;if(D!=null)for(W in D.key!==void 0&&(ae=""+D.key),D)Ie.call(D,W)&&W!=="key"&&W!=="__self"&&W!=="__source"&&(ee[W]=D[W]);var be=arguments.length-2;if(be===1)ee.children=P;else if(1<be){for(var Je=Array(be),ke=0;ke<be;ke++)Je[ke]=arguments[ke+2];ee.children=Je}if(O&&O.defaultProps)for(W in be=O.defaultProps,be)ee[W]===void 0&&(ee[W]=be[W]);return Y(O,ae,ee)},Q.createRef=function(){return{current:null}},Q.forwardRef=function(O){return{$$typeof:m,render:O}},Q.isValidElement=he,Q.lazy=function(O){return{$$typeof:M,_payload:{_status:-1,_result:O},_init:Z}},Q.memo=function(O,D){return{$$typeof:b,type:O,compare:D===void 0?null:D}},Q.startTransition=function(O){var D=X.T,P={};X.T=P;try{var W=O(),ee=X.S;ee!==null&&ee(P,W),typeof W=="object"&&W!==null&&typeof W.then=="function"&&W.then(ge,Oe)}catch(ae){Oe(ae)}finally{D!==null&&P.types!==null&&(D.types=P.types),X.T=D}},Q.unstable_useCacheRefresh=function(){return X.H.useCacheRefresh()},Q.use=function(O){return X.H.use(O)},Q.useActionState=function(O,D,P){return X.H.useActionState(O,D,P)},Q.useCallback=function(O,D){return X.H.useCallback(O,D)},Q.useContext=function(O){return X.H.useContext(O)},Q.useDebugValue=function(){},Q.useDeferredValue=function(O,D){return X.H.useDeferredValue(O,D)},Q.useEffect=function(O,D){return X.H.useEffect(O,D)},Q.useEffectEvent=function(O){return X.H.useEffectEvent(O)},Q.useId=function(){return X.H.useId()},Q.useImperativeHandle=function(O,D,P){return X.H.useImperativeHandle(O,D,P)},Q.useInsertionEffect=function(O,D){return X.H.useInsertionEffect(O,D)},Q.useLayoutEffect=function(O,D){return X.H.useLayoutEffect(O,D)},Q.useMemo=function(O,D){return X.H.useMemo(O,D)},Q.useOptimistic=function(O,D){return X.H.useOptimistic(O,D)},Q.useReducer=function(O,D,P){return X.H.useReducer(O,D,P)},Q.useRef=function(O){return X.H.useRef(O)},Q.useState=function(O){return X.H.useState(O)},Q.useSyncExternalStore=function(O,D,P){return X.H.useSyncExternalStore(O,D,P)},Q.useTransition=function(){return X.H.useTransition()},Q.version="19.2.8",Q}var Lp;function vc(){return Lp||(Lp=1,oc.exports=Vg()),oc.exports}var _=vc(),rc={exports:{}},Wa={},sc={exports:{}},lc={};var Cp;function Kg(){return Cp||(Cp=1,(function(n){function s(F,j){var Z=F.length;F.push(j);e:for(;0<Z;){var Oe=Z-1>>>1,Ae=F[Oe];if(0<p(Ae,j))F[Oe]=j,F[Z]=Ae,Z=Oe;else break e}}function c(F){return F.length===0?null:F[0]}function l(F){if(F.length===0)return null;var j=F[0],Z=F.pop();if(Z!==j){F[0]=Z;e:for(var Oe=0,Ae=F.length,O=Ae>>>1;Oe<O;){var D=2*(Oe+1)-1,P=F[D],W=D+1,ee=F[W];if(0>p(P,Z))W<Ae&&0>p(ee,P)?(F[Oe]=ee,F[W]=Z,Oe=W):(F[Oe]=P,F[D]=Z,Oe=D);else if(W<Ae&&0>p(ee,Z))F[Oe]=ee,F[W]=Z,Oe=W;else break e}}return j}function p(F,j){var Z=F.sortIndex-j.sortIndex;return Z!==0?Z:F.id-j.id}if(n.unstable_now=void 0,typeof performance=="object"&&typeof performance.now=="function"){var d=performance;n.unstable_now=function(){return d.now()}}else{var f=Date,m=f.now();n.unstable_now=function(){return f.now()-m}}var y=[],b=[],M=1,z=null,N=3,x=!1,k=!1,H=!1,U=!1,de=typeof setTimeout=="function"?setTimeout:null,B=typeof clearTimeout=="function"?clearTimeout:null,J=typeof setImmediate<"u"?setImmediate:null;function se(F){for(var j=c(b);j!==null;){if(j.callback===null)l(b);else if(j.startTime<=F)l(b),j.sortIndex=j.expirationTime,s(y,j);else break;j=c(b)}}function ne(F){if(H=!1,se(F),!k)if(c(y)!==null)k=!0,ge||(ge=!0,Ne());else{var j=c(b);j!==null&&kt(ne,j.startTime-F)}}var ge=!1,X=-1,Ie=5,Y=-1;function K(){return U?!0:!(n.unstable_now()-Y<Ie)}function he(){if(U=!1,ge){var F=n.unstable_now();Y=F;var j=!0;try{e:{k=!1,H&&(H=!1,B(X),X=-1),x=!0;var Z=N;try{t:{for(se(F),z=c(y);z!==null&&!(z.expirationTime>F&&K());){var Oe=z.callback;if(typeof Oe=="function"){z.callback=null,N=z.priorityLevel;var Ae=Oe(z.expirationTime<=F);if(F=n.unstable_now(),typeof Ae=="function"){z.callback=Ae,se(F),j=!0;break t}z===c(y)&&l(y),se(F)}else l(y);z=c(y)}if(z!==null)j=!0;else{var O=c(b);O!==null&&kt(ne,O.startTime-F),j=!1}}break e}finally{z=null,N=Z,x=!1}j=void 0}}finally{j?Ne():ge=!1}}}var Ne;if(typeof J=="function")Ne=function(){J(he)};else if(typeof MessageChannel<"u"){var Et=new MessageChannel,Dt=Et.port2;Et.port1.onmessage=he,Ne=function(){Dt.postMessage(null)}}else Ne=function(){de(he,0)};function kt(F,j){X=de(function(){F(n.unstable_now())},j)}n.unstable_IdlePriority=5,n.unstable_ImmediatePriority=1,n.unstable_LowPriority=4,n.unstable_NormalPriority=3,n.unstable_Profiling=null,n.unstable_UserBlockingPriority=2,n.unstable_cancelCallback=function(F){F.callback=null},n.unstable_forceFrameRate=function(F){0>F||125<F?console.error("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"):Ie=0<F?Math.floor(1e3/F):5},n.unstable_getCurrentPriorityLevel=function(){return N},n.unstable_next=function(F){switch(N){case 1:case 2:case 3:var j=3;break;default:j=N}var Z=N;N=j;try{return F()}finally{N=Z}},n.unstable_requestPaint=function(){U=!0},n.unstable_runWithPriority=function(F,j){switch(F){case 1:case 2:case 3:case 4:case 5:break;default:F=3}var Z=N;N=F;try{return j()}finally{N=Z}},n.unstable_scheduleCallback=function(F,j,Z){var Oe=n.unstable_now();switch(typeof Z=="object"&&Z!==null?(Z=Z.delay,Z=typeof Z=="number"&&0<Z?Oe+Z:Oe):Z=Oe,F){case 1:var Ae=-1;break;case 2:Ae=250;break;case 5:Ae=1073741823;break;case 4:Ae=1e4;break;default:Ae=5e3}return Ae=Z+Ae,F={id:M++,callback:j,priorityLevel:F,startTime:Z,expirationTime:Ae,sortIndex:-1},Z>Oe?(F.sortIndex=Z,s(b,F),c(y)===null&&F===c(b)&&(H?(B(X),X=-1):H=!0,kt(ne,Z-Oe))):(F.sortIndex=Ae,s(y,F),k||x||(k=!0,ge||(ge=!0,Ne()))),F},n.unstable_shouldYield=K,n.unstable_wrapCallback=function(F){var j=N;return function(){var Z=N;N=j;try{return F.apply(this,arguments)}finally{N=Z}}}})(lc)),lc}var Dp;function Zg(){return Dp||(Dp=1,sc.exports=Kg()),sc.exports}var cc={exports:{}},Ze={};var kp;function Xg(){if(kp)return Ze;kp=1;var n=vc();function s(y){var b="https://react.dev/errors/"+y;if(1<arguments.length){b+="?args[]="+encodeURIComponent(arguments[1]);for(var M=2;M<arguments.length;M++)b+="&args[]="+encodeURIComponent(arguments[M])}return"Minified React error #"+y+"; visit "+b+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}function c(){}var l={d:{f:c,r:function(){throw Error(s(522))},D:c,C:c,L:c,m:c,X:c,S:c,M:c},p:0,findDOMNode:null},p=Symbol.for("react.portal");function d(y,b,M){var z=3<arguments.length&&arguments[3]!==void 0?arguments[3]:null;return{$$typeof:p,key:z==null?null:""+z,children:y,containerInfo:b,implementation:M}}var f=n.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;function m(y,b){if(y==="font")return"";if(typeof b=="string")return b==="use-credentials"?b:""}return Ze.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE=l,Ze.createPortal=function(y,b){var M=2<arguments.length&&arguments[2]!==void 0?arguments[2]:null;if(!b||b.nodeType!==1&&b.nodeType!==9&&b.nodeType!==11)throw Error(s(299));return d(y,b,null,M)},Ze.flushSync=function(y){var b=f.T,M=l.p;try{if(f.T=null,l.p=2,y)return y()}finally{f.T=b,l.p=M,l.d.f()}},Ze.preconnect=function(y,b){typeof y=="string"&&(b?(b=b.crossOrigin,b=typeof b=="string"?b==="use-credentials"?b:"":void 0):b=null,l.d.C(y,b))},Ze.prefetchDNS=function(y){typeof y=="string"&&l.d.D(y)},Ze.preinit=function(y,b){if(typeof y=="string"&&b&&typeof b.as=="string"){var M=b.as,z=m(M,b.crossOrigin),N=typeof b.integrity=="string"?b.integrity:void 0,x=typeof b.fetchPriority=="string"?b.fetchPriority:void 0;M==="style"?l.d.S(y,typeof b.precedence=="string"?b.precedence:void 0,{crossOrigin:z,integrity:N,fetchPriority:x}):M==="script"&&l.d.X(y,{crossOrigin:z,integrity:N,fetchPriority:x,nonce:typeof b.nonce=="string"?b.nonce:void 0})}},Ze.preinitModule=function(y,b){if(typeof y=="string")if(typeof b=="object"&&b!==null){if(b.as==null||b.as==="script"){var M=m(b.as,b.crossOrigin);l.d.M(y,{crossOrigin:M,integrity:typeof b.integrity=="string"?b.integrity:void 0,nonce:typeof b.nonce=="string"?b.nonce:void 0})}}else b==null&&l.d.M(y)},Ze.preload=function(y,b){if(typeof y=="string"&&typeof b=="object"&&b!==null&&typeof b.as=="string"){var M=b.as,z=m(M,b.crossOrigin);l.d.L(y,M,{crossOrigin:z,integrity:typeof b.integrity=="string"?b.integrity:void 0,nonce:typeof b.nonce=="string"?b.nonce:void 0,type:typeof b.type=="string"?b.type:void 0,fetchPriority:typeof b.fetchPriority=="string"?b.fetchPriority:void 0,referrerPolicy:typeof b.referrerPolicy=="string"?b.referrerPolicy:void 0,imageSrcSet:typeof b.imageSrcSet=="string"?b.imageSrcSet:void 0,imageSizes:typeof b.imageSizes=="string"?b.imageSizes:void 0,media:typeof b.media=="string"?b.media:void 0})}},Ze.preloadModule=function(y,b){if(typeof y=="string")if(b){var M=m(b.as,b.crossOrigin);l.d.m(y,{as:typeof b.as=="string"&&b.as!=="script"?b.as:void 0,crossOrigin:M,integrity:typeof b.integrity=="string"?b.integrity:void 0})}else l.d.m(y)},Ze.requestFormReset=function(y){l.d.r(y)},Ze.unstable_batchedUpdates=function(y,b){return y(b)},Ze.useFormState=function(y,b,M){return f.H.useFormState(y,b,M)},Ze.useFormStatus=function(){return f.H.useHostTransitionStatus()},Ze.version="19.2.8",Ze}var Hp;function Qg(){if(Hp)return cc.exports;Hp=1;function n(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>"u"||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!="function"))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(n)}catch(s){console.error(s)}}return n(),cc.exports=Xg(),cc.exports}var Mp;function Jg(){if(Mp)return Wa;Mp=1;var n=Zg(),s=vc(),c=Qg();function l(e){var t="https://react.dev/errors/"+e;if(1<arguments.length){t+="?args[]="+encodeURIComponent(arguments[1]);for(var i=2;i<arguments.length;i++)t+="&args[]="+encodeURIComponent(arguments[i])}return"Minified React error #"+e+"; visit "+t+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}function p(e){return!(!e||e.nodeType!==1&&e.nodeType!==9&&e.nodeType!==11)}function d(e){var t=e,i=e;if(e.alternate)for(;t.return;)t=t.return;else{e=t;do t=e,(t.flags&4098)!==0&&(i=t.return),e=t.return;while(e)}return t.tag===3?i:null}function f(e){if(e.tag===13){var t=e.memoizedState;if(t===null&&(e=e.alternate,e!==null&&(t=e.memoizedState)),t!==null)return t.dehydrated}return null}function m(e){if(e.tag===31){var t=e.memoizedState;if(t===null&&(e=e.alternate,e!==null&&(t=e.memoizedState)),t!==null)return t.dehydrated}return null}function y(e){if(d(e)!==e)throw Error(l(188))}function b(e){var t=e.alternate;if(!t){if(t=d(e),t===null)throw Error(l(188));return t!==e?null:e}for(var i=e,a=t;;){var o=i.return;if(o===null)break;var r=o.alternate;if(r===null){if(a=o.return,a!==null){i=a;continue}break}if(o.child===r.child){for(r=o.child;r;){if(r===i)return y(o),e;if(r===a)return y(o),t;r=r.sibling}throw Error(l(188))}if(i.return!==a.return)i=o,a=r;else{for(var u=!1,h=o.child;h;){if(h===i){u=!0,i=o,a=r;break}if(h===a){u=!0,a=o,i=r;break}h=h.sibling}if(!u){for(h=r.child;h;){if(h===i){u=!0,i=r,a=o;break}if(h===a){u=!0,a=r,i=o;break}h=h.sibling}if(!u)throw Error(l(189))}}if(i.alternate!==a)throw Error(l(190))}if(i.tag!==3)throw Error(l(188));return i.stateNode.current===i?e:t}function M(e){var t=e.tag;if(t===5||t===26||t===27||t===6)return e;for(e=e.child;e!==null;){if(t=M(e),t!==null)return t;e=e.sibling}return null}var z=Object.assign,N=Symbol.for("react.element"),x=Symbol.for("react.transitional.element"),k=Symbol.for("react.portal"),H=Symbol.for("react.fragment"),U=Symbol.for("react.strict_mode"),de=Symbol.for("react.profiler"),B=Symbol.for("react.consumer"),J=Symbol.for("react.context"),se=Symbol.for("react.forward_ref"),ne=Symbol.for("react.suspense"),ge=Symbol.for("react.suspense_list"),X=Symbol.for("react.memo"),Ie=Symbol.for("react.lazy"),Y=Symbol.for("react.activity"),K=Symbol.for("react.memo_cache_sentinel"),he=Symbol.iterator;function Ne(e){return e===null||typeof e!="object"?null:(e=he&&e[he]||e["@@iterator"],typeof e=="function"?e:null)}var Et=Symbol.for("react.client.reference");function Dt(e){if(e==null)return null;if(typeof e=="function")return e.$$typeof===Et?null:e.displayName||e.name||null;if(typeof e=="string")return e;switch(e){case H:return"Fragment";case de:return"Profiler";case U:return"StrictMode";case ne:return"Suspense";case ge:return"SuspenseList";case Y:return"Activity"}if(typeof e=="object")switch(e.$$typeof){case k:return"Portal";case J:return e.displayName||"Context";case B:return(e._context.displayName||"Context")+".Consumer";case se:var t=e.render;return e=e.displayName,e||(e=t.displayName||t.name||"",e=e!==""?"ForwardRef("+e+")":"ForwardRef"),e;case X:return t=e.displayName||null,t!==null?t:Dt(e.type)||"Memo";case Ie:t=e._payload,e=e._init;try{return Dt(e(t))}catch{}}return null}var kt=Array.isArray,F=s.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,j=c.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,Z={pending:!1,data:null,method:null,action:null},Oe=[],Ae=-1;function O(e){return{current:e}}function D(e){0>Ae||(e.current=Oe[Ae],Oe[Ae]=null,Ae--)}function P(e,t){Ae++,Oe[Ae]=e.current,e.current=t}var W=O(null),ee=O(null),ae=O(null),be=O(null);function Je(e,t){switch(P(ae,t),P(ee,e),P(W,null),t.nodeType){case 9:case 11:e=(e=t.documentElement)&&(e=e.namespaceURI)?Xh(e):0;break;default:if(e=t.tagName,t=t.namespaceURI)t=Xh(t),e=Qh(t,e);else switch(e){case"svg":e=1;break;case"math":e=2;break;default:e=0}}D(W),P(W,e)}function ke(){D(W),D(ee),D(ae)}function Zi(e){e.memoizedState!==null&&P(be,e);var t=W.current,i=Qh(t,e.type);t!==i&&(P(ee,e),P(W,i))}function ao(e){ee.current===e&&(D(W),D(ee)),be.current===e&&(D(be),ja._currentValue=Z)}var Pr,Nc;function jn(e){if(Pr===void 0)try{throw Error()}catch(i){var t=i.stack.trim().match(/\n( *(at )?)/);Pr=t&&t[1]||"",Nc=-1<i.stack.indexOf(`
+    at`)?" (<anonymous>)":-1<i.stack.indexOf("@")?"@unknown:0:0":""}return`
+`+Pr+e+Nc}var Gr=!1;function Br(e,t){if(!e||Gr)return"";Gr=!0;var i=Error.prepareStackTrace;Error.prepareStackTrace=void 0;try{var a={DetermineComponentFrameRoot:function(){try{if(t){var C=function(){throw Error()};if(Object.defineProperty(C.prototype,"props",{set:function(){throw Error()}}),typeof Reflect=="object"&&Reflect.construct){try{Reflect.construct(C,[])}catch(R){var A=R}Reflect.construct(e,[],C)}else{try{C.call()}catch(R){A=R}e.call(C.prototype)}}else{try{throw Error()}catch(R){A=R}(C=e())&&typeof C.catch=="function"&&C.catch(function(){})}}catch(R){if(R&&A&&typeof R.stack=="string")return[R.stack,A.stack]}return[null,null]}};a.DetermineComponentFrameRoot.displayName="DetermineComponentFrameRoot";var o=Object.getOwnPropertyDescriptor(a.DetermineComponentFrameRoot,"name");o&&o.configurable&&Object.defineProperty(a.DetermineComponentFrameRoot,"name",{value:"DetermineComponentFrameRoot"});var r=a.DetermineComponentFrameRoot(),u=r[0],h=r[1];if(u&&h){var g=u.split(`
+`),w=h.split(`
+`);for(o=a=0;a<g.length&&!g[a].includes("DetermineComponentFrameRoot");)a++;for(;o<w.length&&!w[o].includes("DetermineComponentFrameRoot");)o++;if(a===g.length||o===w.length)for(a=g.length-1,o=w.length-1;1<=a&&0<=o&&g[a]!==w[o];)o--;for(;1<=a&&0<=o;a--,o--)if(g[a]!==w[o]){if(a!==1||o!==1)do if(a--,o--,0>o||g[a]!==w[o]){var I=`
+`+g[a].replace(" at new "," at ");return e.displayName&&I.includes("<anonymous>")&&(I=I.replace("<anonymous>",e.displayName)),I}while(1<=a&&0<=o);break}}}finally{Gr=!1,Error.prepareStackTrace=i}return(i=e?e.displayName||e.name:"")?jn(i):""}function vf(e,t){switch(e.tag){case 26:case 27:case 5:return jn(e.type);case 16:return jn("Lazy");case 13:return e.child!==t&&t!==null?jn("Suspense Fallback"):jn("Suspense");case 19:return jn("SuspenseList");case 0:case 15:return Br(e.type,!1);case 11:return Br(e.type.render,!1);case 1:return Br(e.type,!0);case 31:return jn("Activity");default:return""}}function Ic(e){try{var t="",i=null;do t+=vf(e,i),i=e,e=e.return;while(e);return t}catch(a){return`
+Error generating stack: `+a.message+`
+`+a.stack}}var Yr=Object.prototype.hasOwnProperty,Wr=n.unstable_scheduleCallback,$r=n.unstable_cancelCallback,wf=n.unstable_shouldYield,Af=n.unstable_requestPaint,lt=n.unstable_now,Rf=n.unstable_getCurrentPriorityLevel,Fc=n.unstable_ImmediatePriority,xc=n.unstable_UserBlockingPriority,oo=n.unstable_NormalPriority,Nf=n.unstable_LowPriority,Lc=n.unstable_IdlePriority,If=n.log,Ff=n.unstable_setDisableYieldValue,Xi=null,ct=null;function pn(e){if(typeof If=="function"&&Ff(e),ct&&typeof ct.setStrictMode=="function")try{ct.setStrictMode(Xi,e)}catch{}}var ut=Math.clz32?Math.clz32:Cf,xf=Math.log,Lf=Math.LN2;function Cf(e){return e>>>=0,e===0?32:31-(xf(e)/Lf|0)|0}var ro=256,so=262144,lo=4194304;function Pn(e){var t=e&42;if(t!==0)return t;switch(e&-e){case 1:return 1;case 2:return 2;case 4:return 4;case 8:return 8;case 16:return 16;case 32:return 32;case 64:return 64;case 128:return 128;case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:return e&261888;case 262144:case 524288:case 1048576:case 2097152:return e&3932160;case 4194304:case 8388608:case 16777216:case 33554432:return e&62914560;case 67108864:return 67108864;case 134217728:return 134217728;case 268435456:return 268435456;case 536870912:return 536870912;case 1073741824:return 0;default:return e}}function co(e,t,i){var a=e.pendingLanes;if(a===0)return 0;var o=0,r=e.suspendedLanes,u=e.pingedLanes;e=e.warmLanes;var h=a&134217727;return h!==0?(a=h&~r,a!==0?o=Pn(a):(u&=h,u!==0?o=Pn(u):i||(i=h&~e,i!==0&&(o=Pn(i))))):(h=a&~r,h!==0?o=Pn(h):u!==0?o=Pn(u):i||(i=a&~e,i!==0&&(o=Pn(i)))),o===0?0:t!==0&&t!==o&&(t&r)===0&&(r=o&-o,i=t&-t,r>=i||r===32&&(i&4194048)!==0)?t:o}function Qi(e,t){return(e.pendingLanes&~(e.suspendedLanes&~e.pingedLanes)&t)===0}function Df(e,t){switch(e){case 1:case 2:case 4:case 8:case 64:return t+250;case 16:case 32:case 128:case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:case 262144:case 524288:case 1048576:case 2097152:return t+5e3;case 4194304:case 8388608:case 16777216:case 33554432:return-1;case 67108864:case 134217728:case 268435456:case 536870912:case 1073741824:return-1;default:return-1}}function Cc(){var e=lo;return lo<<=1,(lo&62914560)===0&&(lo=4194304),e}function _r(e){for(var t=[],i=0;31>i;i++)t.push(e);return t}function Ji(e,t){e.pendingLanes|=t,t!==268435456&&(e.suspendedLanes=0,e.pingedLanes=0,e.warmLanes=0)}function kf(e,t,i,a,o,r){var u=e.pendingLanes;e.pendingLanes=i,e.suspendedLanes=0,e.pingedLanes=0,e.warmLanes=0,e.expiredLanes&=i,e.entangledLanes&=i,e.errorRecoveryDisabledLanes&=i,e.shellSuspendCounter=0;var h=e.entanglements,g=e.expirationTimes,w=e.hiddenUpdates;for(i=u&~i;0<i;){var I=31-ut(i),C=1<<I;h[I]=0,g[I]=-1;var A=w[I];if(A!==null)for(w[I]=null,I=0;I<A.length;I++){var R=A[I];R!==null&&(R.lane&=-536870913)}i&=~C}a!==0&&Dc(e,a,0),r!==0&&o===0&&e.tag!==0&&(e.suspendedLanes|=r&~(u&~t))}function Dc(e,t,i){e.pendingLanes|=t,e.suspendedLanes&=~t;var a=31-ut(t);e.entangledLanes|=t,e.entanglements[a]=e.entanglements[a]|1073741824|i&261930}function kc(e,t){var i=e.entangledLanes|=t;for(e=e.entanglements;i;){var a=31-ut(i),o=1<<a;o&t|e[a]&t&&(e[a]|=t),i&=~o}}function Hc(e,t){var i=t&-t;return i=(i&42)!==0?1:qr(i),(i&(e.suspendedLanes|t))!==0?0:i}function qr(e){switch(e){case 2:e=1;break;case 8:e=4;break;case 32:e=16;break;case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:case 262144:case 524288:case 1048576:case 2097152:case 4194304:case 8388608:case 16777216:case 33554432:e=128;break;case 268435456:e=134217728;break;default:e=0}return e}function Vr(e){return e&=-e,2<e?8<e?(e&134217727)!==0?32:268435456:8:2}function Mc(){var e=j.p;return e!==0?e:(e=window.event,e===void 0?32:Op(e.type))}function zc(e,t){var i=j.p;try{return j.p=e,t()}finally{j.p=i}}var fn=Math.random().toString(36).slice(2),$e="__reactFiber$"+fn,tt="__reactProps$"+fn,oi="__reactContainer$"+fn,Kr="__reactEvents$"+fn,Hf="__reactListeners$"+fn,Mf="__reactHandles$"+fn,Uc="__reactResources$"+fn,ea="__reactMarker$"+fn;function Zr(e){delete e[$e],delete e[tt],delete e[Kr],delete e[Hf],delete e[Mf]}function ri(e){var t=e[$e];if(t)return t;for(var i=e.parentNode;i;){if(t=i[oi]||i[$e]){if(i=t.alternate,t.child!==null||i!==null&&i.child!==null)for(e=op(e);e!==null;){if(i=e[$e])return i;e=op(e)}return t}e=i,i=e.parentNode}return null}function si(e){if(e=e[$e]||e[oi]){var t=e.tag;if(t===5||t===6||t===13||t===31||t===26||t===27||t===3)return e}return null}function ta(e){var t=e.tag;if(t===5||t===26||t===27||t===6)return e.stateNode;throw Error(l(33))}function li(e){var t=e[Uc];return t||(t=e[Uc]={hoistableStyles:new Map,hoistableScripts:new Map}),t}function Be(e){e[ea]=!0}var jc=new Set,Pc={};function Gn(e,t){ci(e,t),ci(e+"Capture",t)}function ci(e,t){for(Pc[e]=t,e=0;e<t.length;e++)jc.add(t[e])}var zf=RegExp("^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"),Gc={},Bc={};function Uf(e){return Yr.call(Bc,e)?!0:Yr.call(Gc,e)?!1:zf.test(e)?Bc[e]=!0:(Gc[e]=!0,!1)}function uo(e,t,i){if(Uf(t))if(i===null)e.removeAttribute(t);else{switch(typeof i){case"undefined":case"function":case"symbol":e.removeAttribute(t);return;case"boolean":var a=t.toLowerCase().slice(0,5);if(a!=="data-"&&a!=="aria-"){e.removeAttribute(t);return}}e.setAttribute(t,""+i)}}function ho(e,t,i){if(i===null)e.removeAttribute(t);else{switch(typeof i){case"undefined":case"function":case"symbol":case"boolean":e.removeAttribute(t);return}e.setAttribute(t,""+i)}}function $t(e,t,i,a){if(a===null)e.removeAttribute(i);else{switch(typeof a){case"undefined":case"function":case"symbol":case"boolean":e.removeAttribute(i);return}e.setAttributeNS(t,i,""+a)}}function Ot(e){switch(typeof e){case"bigint":case"boolean":case"number":case"string":case"undefined":return e;case"object":return e;default:return""}}function Yc(e){var t=e.type;return(e=e.nodeName)&&e.toLowerCase()==="input"&&(t==="checkbox"||t==="radio")}function jf(e,t,i){var a=Object.getOwnPropertyDescriptor(e.constructor.prototype,t);if(!e.hasOwnProperty(t)&&typeof a<"u"&&typeof a.get=="function"&&typeof a.set=="function"){var o=a.get,r=a.set;return Object.defineProperty(e,t,{configurable:!0,get:function(){return o.call(this)},set:function(u){i=""+u,r.call(this,u)}}),Object.defineProperty(e,t,{enumerable:a.enumerable}),{getValue:function(){return i},setValue:function(u){i=""+u},stopTracking:function(){e._valueTracker=null,delete e[t]}}}}function Xr(e){if(!e._valueTracker){var t=Yc(e)?"checked":"value";e._valueTracker=jf(e,t,""+e[t])}}function Wc(e){if(!e)return!1;var t=e._valueTracker;if(!t)return!0;var i=t.getValue(),a="";return e&&(a=Yc(e)?e.checked?"true":"false":e.value),e=a,e!==i?(t.setValue(e),!0):!1}function po(e){if(e=e||(typeof document<"u"?document:void 0),typeof e>"u")return null;try{return e.activeElement||e.body}catch{return e.body}}var Pf=/[\n"\\]/g;function St(e){return e.replace(Pf,function(t){return"\\"+t.charCodeAt(0).toString(16)+" "})}function Qr(e,t,i,a,o,r,u,h){e.name="",u!=null&&typeof u!="function"&&typeof u!="symbol"&&typeof u!="boolean"?e.type=u:e.removeAttribute("type"),t!=null?u==="number"?(t===0&&e.value===""||e.value!=t)&&(e.value=""+Ot(t)):e.value!==""+Ot(t)&&(e.value=""+Ot(t)):u!=="submit"&&u!=="reset"||e.removeAttribute("value"),t!=null?Jr(e,u,Ot(t)):i!=null?Jr(e,u,Ot(i)):a!=null&&e.removeAttribute("value"),o==null&&r!=null&&(e.defaultChecked=!!r),o!=null&&(e.checked=o&&typeof o!="function"&&typeof o!="symbol"),h!=null&&typeof h!="function"&&typeof h!="symbol"&&typeof h!="boolean"?e.name=""+Ot(h):e.removeAttribute("name")}function $c(e,t,i,a,o,r,u,h){if(r!=null&&typeof r!="function"&&typeof r!="symbol"&&typeof r!="boolean"&&(e.type=r),t!=null||i!=null){if(!(r!=="submit"&&r!=="reset"||t!=null)){Xr(e);return}i=i!=null?""+Ot(i):"",t=t!=null?""+Ot(t):i,h||t===e.value||(e.value=t),e.defaultValue=t}a=a??o,a=typeof a!="function"&&typeof a!="symbol"&&!!a,e.checked=h?e.checked:!!a,e.defaultChecked=!!a,u!=null&&typeof u!="function"&&typeof u!="symbol"&&typeof u!="boolean"&&(e.name=u),Xr(e)}function Jr(e,t,i){t==="number"&&po(e.ownerDocument)===e||e.defaultValue===""+i||(e.defaultValue=""+i)}function ui(e,t,i,a){if(e=e.options,t){t={};for(var o=0;o<i.length;o++)t["$"+i[o]]=!0;for(i=0;i<e.length;i++)o=t.hasOwnProperty("$"+e[i].value),e[i].selected!==o&&(e[i].selected=o),o&&a&&(e[i].defaultSelected=!0)}else{for(i=""+Ot(i),t=null,o=0;o<e.length;o++){if(e[o].value===i){e[o].selected=!0,a&&(e[o].defaultSelected=!0);return}t!==null||e[o].disabled||(t=e[o])}t!==null&&(t.selected=!0)}}function _c(e,t,i){if(t!=null&&(t=""+Ot(t),t!==e.value&&(e.value=t),i==null)){e.defaultValue!==t&&(e.defaultValue=t);return}e.defaultValue=i!=null?""+Ot(i):""}function qc(e,t,i,a){if(t==null){if(a!=null){if(i!=null)throw Error(l(92));if(kt(a)){if(1<a.length)throw Error(l(93));a=a[0]}i=a}i==null&&(i=""),t=i}i=Ot(t),e.defaultValue=i,a=e.textContent,a===i&&a!==""&&a!==null&&(e.value=a),Xr(e)}function di(e,t){if(t){var i=e.firstChild;if(i&&i===e.lastChild&&i.nodeType===3){i.nodeValue=t;return}}e.textContent=t}var Gf=new Set("animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(" "));function Vc(e,t,i){var a=t.indexOf("--")===0;i==null||typeof i=="boolean"||i===""?a?e.setProperty(t,""):t==="float"?e.cssFloat="":e[t]="":a?e.setProperty(t,i):typeof i!="number"||i===0||Gf.has(t)?t==="float"?e.cssFloat=i:e[t]=(""+i).trim():e[t]=i+"px"}function Kc(e,t,i){if(t!=null&&typeof t!="object")throw Error(l(62));if(e=e.style,i!=null){for(var a in i)!i.hasOwnProperty(a)||t!=null&&t.hasOwnProperty(a)||(a.indexOf("--")===0?e.setProperty(a,""):a==="float"?e.cssFloat="":e[a]="");for(var o in t)a=t[o],t.hasOwnProperty(o)&&i[o]!==a&&Vc(e,o,a)}else for(var r in t)t.hasOwnProperty(r)&&Vc(e,r,t[r])}function es(e){if(e.indexOf("-")===-1)return!1;switch(e){case"annotation-xml":case"color-profile":case"font-face":case"font-face-src":case"font-face-uri":case"font-face-format":case"font-face-name":case"missing-glyph":return!1;default:return!0}}var Bf=new Map([["acceptCharset","accept-charset"],["htmlFor","for"],["httpEquiv","http-equiv"],["crossOrigin","crossorigin"],["accentHeight","accent-height"],["alignmentBaseline","alignment-baseline"],["arabicForm","arabic-form"],["baselineShift","baseline-shift"],["capHeight","cap-height"],["clipPath","clip-path"],["clipRule","clip-rule"],["colorInterpolation","color-interpolation"],["colorInterpolationFilters","color-interpolation-filters"],["colorProfile","color-profile"],["colorRendering","color-rendering"],["dominantBaseline","dominant-baseline"],["enableBackground","enable-background"],["fillOpacity","fill-opacity"],["fillRule","fill-rule"],["floodColor","flood-color"],["floodOpacity","flood-opacity"],["fontFamily","font-family"],["fontSize","font-size"],["fontSizeAdjust","font-size-adjust"],["fontStretch","font-stretch"],["fontStyle","font-style"],["fontVariant","font-variant"],["fontWeight","font-weight"],["glyphName","glyph-name"],["glyphOrientationHorizontal","glyph-orientation-horizontal"],["glyphOrientationVertical","glyph-orientation-vertical"],["horizAdvX","horiz-adv-x"],["horizOriginX","horiz-origin-x"],["imageRendering","image-rendering"],["letterSpacing","letter-spacing"],["lightingColor","lighting-color"],["markerEnd","marker-end"],["markerMid","marker-mid"],["markerStart","marker-start"],["overlinePosition","overline-position"],["overlineThickness","overline-thickness"],["paintOrder","paint-order"],["panose-1","panose-1"],["pointerEvents","pointer-events"],["renderingIntent","rendering-intent"],["shapeRendering","shape-rendering"],["stopColor","stop-color"],["stopOpacity","stop-opacity"],["strikethroughPosition","strikethrough-position"],["strikethroughThickness","strikethrough-thickness"],["strokeDasharray","stroke-dasharray"],["strokeDashoffset","stroke-dashoffset"],["strokeLinecap","stroke-linecap"],["strokeLinejoin","stroke-linejoin"],["strokeMiterlimit","stroke-miterlimit"],["strokeOpacity","stroke-opacity"],["strokeWidth","stroke-width"],["textAnchor","text-anchor"],["textDecoration","text-decoration"],["textRendering","text-rendering"],["transformOrigin","transform-origin"],["underlinePosition","underline-position"],["underlineThickness","underline-thickness"],["unicodeBidi","unicode-bidi"],["unicodeRange","unicode-range"],["unitsPerEm","units-per-em"],["vAlphabetic","v-alphabetic"],["vHanging","v-hanging"],["vIdeographic","v-ideographic"],["vMathematical","v-mathematical"],["vectorEffect","vector-effect"],["vertAdvY","vert-adv-y"],["vertOriginX","vert-origin-x"],["vertOriginY","vert-origin-y"],["wordSpacing","word-spacing"],["writingMode","writing-mode"],["xmlnsXlink","xmlns:xlink"],["xHeight","x-height"]]),Yf=/^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;function fo(e){return Yf.test(""+e)?"javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')":e}function _t(){}var ts=null;function ns(e){return e=e.target||e.srcElement||window,e.correspondingUseElement&&(e=e.correspondingUseElement),e.nodeType===3?e.parentNode:e}var hi=null,pi=null;function Zc(e){var t=si(e);if(t&&(e=t.stateNode)){var i=e[tt]||null;e:switch(e=t.stateNode,t.type){case"input":if(Qr(e,i.value,i.defaultValue,i.defaultValue,i.checked,i.defaultChecked,i.type,i.name),t=i.name,i.type==="radio"&&t!=null){for(i=e;i.parentNode;)i=i.parentNode;for(i=i.querySelectorAll('input[name="'+St(""+t)+'"][type="radio"]'),t=0;t<i.length;t++){var a=i[t];if(a!==e&&a.form===e.form){var o=a[tt]||null;if(!o)throw Error(l(90));Qr(a,o.value,o.defaultValue,o.defaultValue,o.checked,o.defaultChecked,o.type,o.name)}}for(t=0;t<i.length;t++)a=i[t],a.form===e.form&&Wc(a)}break e;case"textarea":_c(e,i.value,i.defaultValue);break e;case"select":t=i.value,t!=null&&ui(e,!!i.multiple,t,!1)}}}var is=!1;function Xc(e,t,i){if(is)return e(t,i);is=!0;try{var a=e(t);return a}finally{if(is=!1,(hi!==null||pi!==null)&&(tr(),hi&&(t=hi,e=pi,pi=hi=null,Zc(t),e)))for(t=0;t<e.length;t++)Zc(e[t])}}function na(e,t){var i=e.stateNode;if(i===null)return null;var a=i[tt]||null;if(a===null)return null;i=a[t];e:switch(t){case"onClick":case"onClickCapture":case"onDoubleClick":case"onDoubleClickCapture":case"onMouseDown":case"onMouseDownCapture":case"onMouseMove":case"onMouseMoveCapture":case"onMouseUp":case"onMouseUpCapture":case"onMouseEnter":(a=!a.disabled)||(e=e.type,a=!(e==="button"||e==="input"||e==="select"||e==="textarea")),e=!a;break e;default:e=!1}if(e)return null;if(i&&typeof i!="function")throw Error(l(231,t,typeof i));return i}var qt=!(typeof window>"u"||typeof window.document>"u"||typeof window.document.createElement>"u"),as=!1;if(qt)try{var ia={};Object.defineProperty(ia,"passive",{get:function(){as=!0}}),window.addEventListener("test",ia,ia),window.removeEventListener("test",ia,ia)}catch{as=!1}var mn=null,os=null,mo=null;function Qc(){if(mo)return mo;var e,t=os,i=t.length,a,o="value"in mn?mn.value:mn.textContent,r=o.length;for(e=0;e<i&&t[e]===o[e];e++);var u=i-e;for(a=1;a<=u&&t[i-a]===o[r-a];a++);return mo=o.slice(e,1<a?1-a:void 0)}function go(e){var t=e.keyCode;return"charCode"in e?(e=e.charCode,e===0&&t===13&&(e=13)):e=t,e===10&&(e=13),32<=e||e===13?e:0}function yo(){return!0}function Jc(){return!1}function nt(e){function t(i,a,o,r,u){this._reactName=i,this._targetInst=o,this.type=a,this.nativeEvent=r,this.target=u,this.currentTarget=null;for(var h in e)e.hasOwnProperty(h)&&(i=e[h],this[h]=i?i(r):r[h]);return this.isDefaultPrevented=(r.defaultPrevented!=null?r.defaultPrevented:r.returnValue===!1)?yo:Jc,this.isPropagationStopped=Jc,this}return z(t.prototype,{preventDefault:function(){this.defaultPrevented=!0;var i=this.nativeEvent;i&&(i.preventDefault?i.preventDefault():typeof i.returnValue!="unknown"&&(i.returnValue=!1),this.isDefaultPrevented=yo)},stopPropagation:function(){var i=this.nativeEvent;i&&(i.stopPropagation?i.stopPropagation():typeof i.cancelBubble!="unknown"&&(i.cancelBubble=!0),this.isPropagationStopped=yo)},persist:function(){},isPersistent:yo}),t}var Bn={eventPhase:0,bubbles:0,cancelable:0,timeStamp:function(e){return e.timeStamp||Date.now()},defaultPrevented:0,isTrusted:0},bo=nt(Bn),aa=z({},Bn,{view:0,detail:0}),Wf=nt(aa),rs,ss,oa,To=z({},aa,{screenX:0,screenY:0,clientX:0,clientY:0,pageX:0,pageY:0,ctrlKey:0,shiftKey:0,altKey:0,metaKey:0,getModifierState:cs,button:0,buttons:0,relatedTarget:function(e){return e.relatedTarget===void 0?e.fromElement===e.srcElement?e.toElement:e.fromElement:e.relatedTarget},movementX:function(e){return"movementX"in e?e.movementX:(e!==oa&&(oa&&e.type==="mousemove"?(rs=e.screenX-oa.screenX,ss=e.screenY-oa.screenY):ss=rs=0,oa=e),rs)},movementY:function(e){return"movementY"in e?e.movementY:ss}}),eu=nt(To),$f=z({},To,{dataTransfer:0}),_f=nt($f),qf=z({},aa,{relatedTarget:0}),ls=nt(qf),Vf=z({},Bn,{animationName:0,elapsedTime:0,pseudoElement:0}),Kf=nt(Vf),Zf=z({},Bn,{clipboardData:function(e){return"clipboardData"in e?e.clipboardData:window.clipboardData}}),Xf=nt(Zf),Qf=z({},Bn,{data:0}),tu=nt(Qf),Jf={Esc:"Escape",Spacebar:" ",Left:"ArrowLeft",Up:"ArrowUp",Right:"ArrowRight",Down:"ArrowDown",Del:"Delete",Win:"OS",Menu:"ContextMenu",Apps:"ContextMenu",Scroll:"ScrollLock",MozPrintableKey:"Unidentified"},em={8:"Backspace",9:"Tab",12:"Clear",13:"Enter",16:"Shift",17:"Control",18:"Alt",19:"Pause",20:"CapsLock",27:"Escape",32:" ",33:"PageUp",34:"PageDown",35:"End",36:"Home",37:"ArrowLeft",38:"ArrowUp",39:"ArrowRight",40:"ArrowDown",45:"Insert",46:"Delete",112:"F1",113:"F2",114:"F3",115:"F4",116:"F5",117:"F6",118:"F7",119:"F8",120:"F9",121:"F10",122:"F11",123:"F12",144:"NumLock",145:"ScrollLock",224:"Meta"},tm={Alt:"altKey",Control:"ctrlKey",Meta:"metaKey",Shift:"shiftKey"};function nm(e){var t=this.nativeEvent;return t.getModifierState?t.getModifierState(e):(e=tm[e])?!!t[e]:!1}function cs(){return nm}var im=z({},aa,{key:function(e){if(e.key){var t=Jf[e.key]||e.key;if(t!=="Unidentified")return t}return e.type==="keypress"?(e=go(e),e===13?"Enter":String.fromCharCode(e)):e.type==="keydown"||e.type==="keyup"?em[e.keyCode]||"Unidentified":""},code:0,location:0,ctrlKey:0,shiftKey:0,altKey:0,metaKey:0,repeat:0,locale:0,getModifierState:cs,charCode:function(e){return e.type==="keypress"?go(e):0},keyCode:function(e){return e.type==="keydown"||e.type==="keyup"?e.keyCode:0},which:function(e){return e.type==="keypress"?go(e):e.type==="keydown"||e.type==="keyup"?e.keyCode:0}}),am=nt(im),om=z({},To,{pointerId:0,width:0,height:0,pressure:0,tangentialPressure:0,tiltX:0,tiltY:0,twist:0,pointerType:0,isPrimary:0}),nu=nt(om),rm=z({},aa,{touches:0,targetTouches:0,changedTouches:0,altKey:0,metaKey:0,ctrlKey:0,shiftKey:0,getModifierState:cs}),sm=nt(rm),lm=z({},Bn,{propertyName:0,elapsedTime:0,pseudoElement:0}),cm=nt(lm),um=z({},To,{deltaX:function(e){return"deltaX"in e?e.deltaX:"wheelDeltaX"in e?-e.wheelDeltaX:0},deltaY:function(e){return"deltaY"in e?e.deltaY:"wheelDeltaY"in e?-e.wheelDeltaY:"wheelDelta"in e?-e.wheelDelta:0},deltaZ:0,deltaMode:0}),dm=nt(um),hm=z({},Bn,{newState:0,oldState:0}),pm=nt(hm),fm=[9,13,27,32],us=qt&&"CompositionEvent"in window,ra=null;qt&&"documentMode"in document&&(ra=document.documentMode);var mm=qt&&"TextEvent"in window&&!ra,iu=qt&&(!us||ra&&8<ra&&11>=ra),au=" ",ou=!1;function ru(e,t){switch(e){case"keyup":return fm.indexOf(t.keyCode)!==-1;case"keydown":return t.keyCode!==229;case"keypress":case"mousedown":case"focusout":return!0;default:return!1}}function su(e){return e=e.detail,typeof e=="object"&&"data"in e?e.data:null}var fi=!1;function gm(e,t){switch(e){case"compositionend":return su(t);case"keypress":return t.which!==32?null:(ou=!0,au);case"textInput":return e=t.data,e===au&&ou?null:e;default:return null}}function ym(e,t){if(fi)return e==="compositionend"||!us&&ru(e,t)?(e=Qc(),mo=os=mn=null,fi=!1,e):null;switch(e){case"paste":return null;case"keypress":if(!(t.ctrlKey||t.altKey||t.metaKey)||t.ctrlKey&&t.altKey){if(t.char&&1<t.char.length)return t.char;if(t.which)return String.fromCharCode(t.which)}return null;case"compositionend":return iu&&t.locale!=="ko"?null:t.data;default:return null}}var bm={color:!0,date:!0,datetime:!0,"datetime-local":!0,email:!0,month:!0,number:!0,password:!0,range:!0,search:!0,tel:!0,text:!0,time:!0,url:!0,week:!0};function lu(e){var t=e&&e.nodeName&&e.nodeName.toLowerCase();return t==="input"?!!bm[e.type]:t==="textarea"}function cu(e,t,i,a){hi?pi?pi.push(a):pi=[a]:hi=a,t=lr(t,"onChange"),0<t.length&&(i=new bo("onChange","change",null,i,a),e.push({event:i,listeners:t}))}var sa=null,la=null;function Tm(e){$h(e,0)}function Eo(e){var t=ta(e);if(Wc(t))return e}function uu(e,t){if(e==="change")return t}var du=!1;if(qt){var ds;if(qt){var hs="oninput"in document;if(!hs){var hu=document.createElement("div");hu.setAttribute("oninput","return;"),hs=typeof hu.oninput=="function"}ds=hs}else ds=!1;du=ds&&(!document.documentMode||9<document.documentMode)}function pu(){sa&&(sa.detachEvent("onpropertychange",fu),la=sa=null)}function fu(e){if(e.propertyName==="value"&&Eo(la)){var t=[];cu(t,la,e,ns(e)),Xc(Tm,t)}}function Em(e,t,i){e==="focusin"?(pu(),sa=t,la=i,sa.attachEvent("onpropertychange",fu)):e==="focusout"&&pu()}function Om(e){if(e==="selectionchange"||e==="keyup"||e==="keydown")return Eo(la)}function Sm(e,t){if(e==="click")return Eo(t)}function vm(e,t){if(e==="input"||e==="change")return Eo(t)}function wm(e,t){return e===t&&(e!==0||1/e===1/t)||e!==e&&t!==t}var dt=typeof Object.is=="function"?Object.is:wm;function ca(e,t){if(dt(e,t))return!0;if(typeof e!="object"||e===null||typeof t!="object"||t===null)return!1;var i=Object.keys(e),a=Object.keys(t);if(i.length!==a.length)return!1;for(a=0;a<i.length;a++){var o=i[a];if(!Yr.call(t,o)||!dt(e[o],t[o]))return!1}return!0}function mu(e){for(;e&&e.firstChild;)e=e.firstChild;return e}function gu(e,t){var i=mu(e);e=0;for(var a;i;){if(i.nodeType===3){if(a=e+i.textContent.length,e<=t&&a>=t)return{node:i,offset:t-e};e=a}e:{for(;i;){if(i.nextSibling){i=i.nextSibling;break e}i=i.parentNode}i=void 0}i=mu(i)}}function yu(e,t){return e&&t?e===t?!0:e&&e.nodeType===3?!1:t&&t.nodeType===3?yu(e,t.parentNode):"contains"in e?e.contains(t):e.compareDocumentPosition?!!(e.compareDocumentPosition(t)&16):!1:!1}function bu(e){e=e!=null&&e.ownerDocument!=null&&e.ownerDocument.defaultView!=null?e.ownerDocument.defaultView:window;for(var t=po(e.document);t instanceof e.HTMLIFrameElement;){try{var i=typeof t.contentWindow.location.href=="string"}catch{i=!1}if(i)e=t.contentWindow;else break;t=po(e.document)}return t}function ps(e){var t=e&&e.nodeName&&e.nodeName.toLowerCase();return t&&(t==="input"&&(e.type==="text"||e.type==="search"||e.type==="tel"||e.type==="url"||e.type==="password")||t==="textarea"||e.contentEditable==="true")}var Am=qt&&"documentMode"in document&&11>=document.documentMode,mi=null,fs=null,ua=null,ms=!1;function Tu(e,t,i){var a=i.window===i?i.document:i.nodeType===9?i:i.ownerDocument;ms||mi==null||mi!==po(a)||(a=mi,"selectionStart"in a&&ps(a)?a={start:a.selectionStart,end:a.selectionEnd}:(a=(a.ownerDocument&&a.ownerDocument.defaultView||window).getSelection(),a={anchorNode:a.anchorNode,anchorOffset:a.anchorOffset,focusNode:a.focusNode,focusOffset:a.focusOffset}),ua&&ca(ua,a)||(ua=a,a=lr(fs,"onSelect"),0<a.length&&(t=new bo("onSelect","select",null,t,i),e.push({event:t,listeners:a}),t.target=mi)))}function Yn(e,t){var i={};return i[e.toLowerCase()]=t.toLowerCase(),i["Webkit"+e]="webkit"+t,i["Moz"+e]="moz"+t,i}var gi={animationend:Yn("Animation","AnimationEnd"),animationiteration:Yn("Animation","AnimationIteration"),animationstart:Yn("Animation","AnimationStart"),transitionrun:Yn("Transition","TransitionRun"),transitionstart:Yn("Transition","TransitionStart"),transitioncancel:Yn("Transition","TransitionCancel"),transitionend:Yn("Transition","TransitionEnd")},gs={},Eu={};qt&&(Eu=document.createElement("div").style,"AnimationEvent"in window||(delete gi.animationend.animation,delete gi.animationiteration.animation,delete gi.animationstart.animation),"TransitionEvent"in window||delete gi.transitionend.transition);function Wn(e){if(gs[e])return gs[e];if(!gi[e])return e;var t=gi[e],i;for(i in t)if(t.hasOwnProperty(i)&&i in Eu)return gs[e]=t[i];return e}var Ou=Wn("animationend"),Su=Wn("animationiteration"),vu=Wn("animationstart"),Rm=Wn("transitionrun"),Nm=Wn("transitionstart"),Im=Wn("transitioncancel"),wu=Wn("transitionend"),Au=new Map,ys="abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(" ");ys.push("scrollEnd");function Ht(e,t){Au.set(e,t),Gn(t,[e])}var Oo=typeof reportError=="function"?reportError:function(e){if(typeof window=="object"&&typeof window.ErrorEvent=="function"){var t=new window.ErrorEvent("error",{bubbles:!0,cancelable:!0,message:typeof e=="object"&&e!==null&&typeof e.message=="string"?String(e.message):String(e),error:e});if(!window.dispatchEvent(t))return}else if(typeof process=="object"&&typeof process.emit=="function"){process.emit("uncaughtException",e);return}console.error(e)},vt=[],yi=0,bs=0;function So(){for(var e=yi,t=bs=yi=0;t<e;){var i=vt[t];vt[t++]=null;var a=vt[t];vt[t++]=null;var o=vt[t];vt[t++]=null;var r=vt[t];if(vt[t++]=null,a!==null&&o!==null){var u=a.pending;u===null?o.next=o:(o.next=u.next,u.next=o),a.pending=o}r!==0&&Ru(i,o,r)}}function vo(e,t,i,a){vt[yi++]=e,vt[yi++]=t,vt[yi++]=i,vt[yi++]=a,bs|=a,e.lanes|=a,e=e.alternate,e!==null&&(e.lanes|=a)}function Ts(e,t,i,a){return vo(e,t,i,a),wo(e)}function $n(e,t){return vo(e,null,null,t),wo(e)}function Ru(e,t,i){e.lanes|=i;var a=e.alternate;a!==null&&(a.lanes|=i);for(var o=!1,r=e.return;r!==null;)r.childLanes|=i,a=r.alternate,a!==null&&(a.childLanes|=i),r.tag===22&&(e=r.stateNode,e===null||e._visibility&1||(o=!0)),e=r,r=r.return;return e.tag===3?(r=e.stateNode,o&&t!==null&&(o=31-ut(i),e=r.hiddenUpdates,a=e[o],a===null?e[o]=[t]:a.push(t),t.lane=i|536870912),r):null}function wo(e){if(50<Ca)throw Ca=0,Il=null,Error(l(185));for(var t=e.return;t!==null;)e=t,t=e.return;return e.tag===3?e.stateNode:null}var bi={};function Fm(e,t,i,a){this.tag=e,this.key=i,this.sibling=this.child=this.return=this.stateNode=this.type=this.elementType=null,this.index=0,this.refCleanup=this.ref=null,this.pendingProps=t,this.dependencies=this.memoizedState=this.updateQueue=this.memoizedProps=null,this.mode=a,this.subtreeFlags=this.flags=0,this.deletions=null,this.childLanes=this.lanes=0,this.alternate=null}function ht(e,t,i,a){return new Fm(e,t,i,a)}function Es(e){return e=e.prototype,!(!e||!e.isReactComponent)}function Vt(e,t){var i=e.alternate;return i===null?(i=ht(e.tag,t,e.key,e.mode),i.elementType=e.elementType,i.type=e.type,i.stateNode=e.stateNode,i.alternate=e,e.alternate=i):(i.pendingProps=t,i.type=e.type,i.flags=0,i.subtreeFlags=0,i.deletions=null),i.flags=e.flags&65011712,i.childLanes=e.childLanes,i.lanes=e.lanes,i.child=e.child,i.memoizedProps=e.memoizedProps,i.memoizedState=e.memoizedState,i.updateQueue=e.updateQueue,t=e.dependencies,i.dependencies=t===null?null:{lanes:t.lanes,firstContext:t.firstContext},i.sibling=e.sibling,i.index=e.index,i.ref=e.ref,i.refCleanup=e.refCleanup,i}function Nu(e,t){e.flags&=65011714;var i=e.alternate;return i===null?(e.childLanes=0,e.lanes=t,e.child=null,e.subtreeFlags=0,e.memoizedProps=null,e.memoizedState=null,e.updateQueue=null,e.dependencies=null,e.stateNode=null):(e.childLanes=i.childLanes,e.lanes=i.lanes,e.child=i.child,e.subtreeFlags=0,e.deletions=null,e.memoizedProps=i.memoizedProps,e.memoizedState=i.memoizedState,e.updateQueue=i.updateQueue,e.type=i.type,t=i.dependencies,e.dependencies=t===null?null:{lanes:t.lanes,firstContext:t.firstContext}),e}function Ao(e,t,i,a,o,r){var u=0;if(a=e,typeof e=="function")Es(e)&&(u=1);else if(typeof e=="string")u=kg(e,i,W.current)?26:e==="html"||e==="head"||e==="body"?27:5;else e:switch(e){case Y:return e=ht(31,i,t,o),e.elementType=Y,e.lanes=r,e;case H:return _n(i.children,o,r,t);case U:u=8,o|=24;break;case de:return e=ht(12,i,t,o|2),e.elementType=de,e.lanes=r,e;case ne:return e=ht(13,i,t,o),e.elementType=ne,e.lanes=r,e;case ge:return e=ht(19,i,t,o),e.elementType=ge,e.lanes=r,e;default:if(typeof e=="object"&&e!==null)switch(e.$$typeof){case J:u=10;break e;case B:u=9;break e;case se:u=11;break e;case X:u=14;break e;case Ie:u=16,a=null;break e}u=29,i=Error(l(130,e===null?"null":typeof e,"")),a=null}return t=ht(u,i,t,o),t.elementType=e,t.type=a,t.lanes=r,t}function _n(e,t,i,a){return e=ht(7,e,a,t),e.lanes=i,e}function Os(e,t,i){return e=ht(6,e,null,t),e.lanes=i,e}function Iu(e){var t=ht(18,null,null,0);return t.stateNode=e,t}function Ss(e,t,i){return t=ht(4,e.children!==null?e.children:[],e.key,t),t.lanes=i,t.stateNode={containerInfo:e.containerInfo,pendingChildren:null,implementation:e.implementation},t}var Fu=new WeakMap;function wt(e,t){if(typeof e=="object"&&e!==null){var i=Fu.get(e);return i!==void 0?i:(t={value:e,source:t,stack:Ic(t)},Fu.set(e,t),t)}return{value:e,source:t,stack:Ic(t)}}var Ti=[],Ei=0,Ro=null,da=0,At=[],Rt=0,gn=null,Pt=1,Gt="";function Kt(e,t){Ti[Ei++]=da,Ti[Ei++]=Ro,Ro=e,da=t}function xu(e,t,i){At[Rt++]=Pt,At[Rt++]=Gt,At[Rt++]=gn,gn=e;var a=Pt;e=Gt;var o=32-ut(a)-1;a&=~(1<<o),i+=1;var r=32-ut(t)+o;if(30<r){var u=o-o%5;r=(a&(1<<u)-1).toString(32),a>>=u,o-=u,Pt=1<<32-ut(t)+o|i<<o|a,Gt=r+e}else Pt=1<<r|i<<o|a,Gt=e}function vs(e){e.return!==null&&(Kt(e,1),xu(e,1,0))}function ws(e){for(;e===Ro;)Ro=Ti[--Ei],Ti[Ei]=null,da=Ti[--Ei],Ti[Ei]=null;for(;e===gn;)gn=At[--Rt],At[Rt]=null,Gt=At[--Rt],At[Rt]=null,Pt=At[--Rt],At[Rt]=null}function Lu(e,t){At[Rt++]=Pt,At[Rt++]=Gt,At[Rt++]=gn,Pt=t.id,Gt=t.overflow,gn=e}var _e=null,Fe=null,ue=!1,yn=null,Nt=!1,As=Error(l(519));function bn(e){var t=Error(l(418,1<arguments.length&&arguments[1]!==void 0&&arguments[1]?"text":"HTML",""));throw ha(wt(t,e)),As}function Cu(e){var t=e.stateNode,i=e.type,a=e.memoizedProps;switch(t[$e]=e,t[tt]=a,i){case"dialog":re("cancel",t),re("close",t);break;case"iframe":case"object":case"embed":re("load",t);break;case"video":case"audio":for(i=0;i<ka.length;i++)re(ka[i],t);break;case"source":re("error",t);break;case"img":case"image":case"link":re("error",t),re("load",t);break;case"details":re("toggle",t);break;case"input":re("invalid",t),$c(t,a.value,a.defaultValue,a.checked,a.defaultChecked,a.type,a.name,!0);break;case"select":re("invalid",t);break;case"textarea":re("invalid",t),qc(t,a.value,a.defaultValue,a.children)}i=a.children,typeof i!="string"&&typeof i!="number"&&typeof i!="bigint"||t.textContent===""+i||a.suppressHydrationWarning===!0||Kh(t.textContent,i)?(a.popover!=null&&(re("beforetoggle",t),re("toggle",t)),a.onScroll!=null&&re("scroll",t),a.onScrollEnd!=null&&re("scrollend",t),a.onClick!=null&&(t.onclick=_t),t=!0):t=!1,t||bn(e,!0)}function Du(e){for(_e=e.return;_e;)switch(_e.tag){case 5:case 31:case 13:Nt=!1;return;case 27:case 3:Nt=!0;return;default:_e=_e.return}}function Oi(e){if(e!==_e)return!1;if(!ue)return Du(e),ue=!0,!1;var t=e.tag,i;if((i=t!==3&&t!==27)&&((i=t===5)&&(i=e.type,i=!(i!=="form"&&i!=="button")||Yl(e.type,e.memoizedProps)),i=!i),i&&Fe&&bn(e),Du(e),t===13){if(e=e.memoizedState,e=e!==null?e.dehydrated:null,!e)throw Error(l(317));Fe=ap(e)}else if(t===31){if(e=e.memoizedState,e=e!==null?e.dehydrated:null,!e)throw Error(l(317));Fe=ap(e)}else t===27?(t=Fe,Cn(e.type)?(e=Vl,Vl=null,Fe=e):Fe=t):Fe=_e?Ft(e.stateNode.nextSibling):null;return!0}function qn(){Fe=_e=null,ue=!1}function Rs(){var e=yn;return e!==null&&(rt===null?rt=e:rt.push.apply(rt,e),yn=null),e}function ha(e){yn===null?yn=[e]:yn.push(e)}var Ns=O(null),Vn=null,Zt=null;function Tn(e,t,i){P(Ns,t._currentValue),t._currentValue=i}function Xt(e){e._currentValue=Ns.current,D(Ns)}function Is(e,t,i){for(;e!==null;){var a=e.alternate;if((e.childLanes&t)!==t?(e.childLanes|=t,a!==null&&(a.childLanes|=t)):a!==null&&(a.childLanes&t)!==t&&(a.childLanes|=t),e===i)break;e=e.return}}function Fs(e,t,i,a){var o=e.child;for(o!==null&&(o.return=e);o!==null;){var r=o.dependencies;if(r!==null){var u=o.child;r=r.firstContext;e:for(;r!==null;){var h=r;r=o;for(var g=0;g<t.length;g++)if(h.context===t[g]){r.lanes|=i,h=r.alternate,h!==null&&(h.lanes|=i),Is(r.return,i,e),a||(u=null);break e}r=h.next}}else if(o.tag===18){if(u=o.return,u===null)throw Error(l(341));u.lanes|=i,r=u.alternate,r!==null&&(r.lanes|=i),Is(u,i,e),u=null}else u=o.child;if(u!==null)u.return=o;else for(u=o;u!==null;){if(u===e){u=null;break}if(o=u.sibling,o!==null){o.return=u.return,u=o;break}u=u.return}o=u}}function Si(e,t,i,a){e=null;for(var o=t,r=!1;o!==null;){if(!r){if((o.flags&524288)!==0)r=!0;else if((o.flags&262144)!==0)break}if(o.tag===10){var u=o.alternate;if(u===null)throw Error(l(387));if(u=u.memoizedProps,u!==null){var h=o.type;dt(o.pendingProps.value,u.value)||(e!==null?e.push(h):e=[h])}}else if(o===be.current){if(u=o.alternate,u===null)throw Error(l(387));u.memoizedState.memoizedState!==o.memoizedState.memoizedState&&(e!==null?e.push(ja):e=[ja])}o=o.return}e!==null&&Fs(t,e,i,a),t.flags|=262144}function No(e){for(e=e.firstContext;e!==null;){if(!dt(e.context._currentValue,e.memoizedValue))return!0;e=e.next}return!1}function Kn(e){Vn=e,Zt=null,e=e.dependencies,e!==null&&(e.firstContext=null)}function qe(e){return ku(Vn,e)}function Io(e,t){return Vn===null&&Kn(e),ku(e,t)}function ku(e,t){var i=t._currentValue;if(t={context:t,memoizedValue:i,next:null},Zt===null){if(e===null)throw Error(l(308));Zt=t,e.dependencies={lanes:0,firstContext:t},e.flags|=524288}else Zt=Zt.next=t;return i}var xm=typeof AbortController<"u"?AbortController:function(){var e=[],t=this.signal={aborted:!1,addEventListener:function(i,a){e.push(a)}};this.abort=function(){t.aborted=!0,e.forEach(function(i){return i()})}},Lm=n.unstable_scheduleCallback,Cm=n.unstable_NormalPriority,ze={$$typeof:J,Consumer:null,Provider:null,_currentValue:null,_currentValue2:null,_threadCount:0};function xs(){return{controller:new xm,data:new Map,refCount:0}}function pa(e){e.refCount--,e.refCount===0&&Lm(Cm,function(){e.controller.abort()})}var fa=null,Ls=0,vi=0,wi=null;function Dm(e,t){if(fa===null){var i=fa=[];Ls=0,vi=kl(),wi={status:"pending",value:void 0,then:function(a){i.push(a)}}}return Ls++,t.then(Hu,Hu),t}function Hu(){if(--Ls===0&&fa!==null){wi!==null&&(wi.status="fulfilled");var e=fa;fa=null,vi=0,wi=null;for(var t=0;t<e.length;t++)(0,e[t])()}}function km(e,t){var i=[],a={status:"pending",value:null,reason:null,then:function(o){i.push(o)}};return e.then(function(){a.status="fulfilled",a.value=t;for(var o=0;o<i.length;o++)(0,i[o])(t)},function(o){for(a.status="rejected",a.reason=o,o=0;o<i.length;o++)(0,i[o])(void 0)}),a}var Mu=F.S;F.S=function(e,t){Th=lt(),typeof t=="object"&&t!==null&&typeof t.then=="function"&&Dm(e,t),Mu!==null&&Mu(e,t)};var Zn=O(null);function Cs(){var e=Zn.current;return e!==null?e:Re.pooledCache}function Fo(e,t){t===null?P(Zn,Zn.current):P(Zn,t.pool)}function zu(){var e=Cs();return e===null?null:{parent:ze._currentValue,pool:e}}var Ai=Error(l(460)),Ds=Error(l(474)),xo=Error(l(542)),Lo={then:function(){}};function Uu(e){return e=e.status,e==="fulfilled"||e==="rejected"}function ju(e,t,i){switch(i=e[i],i===void 0?e.push(t):i!==t&&(t.then(_t,_t),t=i),t.status){case"fulfilled":return t.value;case"rejected":throw e=t.reason,Gu(e),e;default:if(typeof t.status=="string")t.then(_t,_t);else{if(e=Re,e!==null&&100<e.shellSuspendCounter)throw Error(l(482));e=t,e.status="pending",e.then(function(a){if(t.status==="pending"){var o=t;o.status="fulfilled",o.value=a}},function(a){if(t.status==="pending"){var o=t;o.status="rejected",o.reason=a}})}switch(t.status){case"fulfilled":return t.value;case"rejected":throw e=t.reason,Gu(e),e}throw Qn=t,Ai}}function Xn(e){try{var t=e._init;return t(e._payload)}catch(i){throw i!==null&&typeof i=="object"&&typeof i.then=="function"?(Qn=i,Ai):i}}var Qn=null;function Pu(){if(Qn===null)throw Error(l(459));var e=Qn;return Qn=null,e}function Gu(e){if(e===Ai||e===xo)throw Error(l(483))}var Ri=null,ma=0;function Co(e){var t=ma;return ma+=1,Ri===null&&(Ri=[]),ju(Ri,e,t)}function ga(e,t){t=t.props.ref,e.ref=t!==void 0?t:null}function Do(e,t){throw t.$$typeof===N?Error(l(525)):(e=Object.prototype.toString.call(t),Error(l(31,e==="[object Object]"?"object with keys {"+Object.keys(t).join(", ")+"}":e)))}function Bu(e){function t(S,E){if(e){var v=S.deletions;v===null?(S.deletions=[E],S.flags|=16):v.push(E)}}function i(S,E){if(!e)return null;for(;E!==null;)t(S,E),E=E.sibling;return null}function a(S){for(var E=new Map;S!==null;)S.key!==null?E.set(S.key,S):E.set(S.index,S),S=S.sibling;return E}function o(S,E){return S=Vt(S,E),S.index=0,S.sibling=null,S}function r(S,E,v){return S.index=v,e?(v=S.alternate,v!==null?(v=v.index,v<E?(S.flags|=67108866,E):v):(S.flags|=67108866,E)):(S.flags|=1048576,E)}function u(S){return e&&S.alternate===null&&(S.flags|=67108866),S}function h(S,E,v,L){return E===null||E.tag!==6?(E=Os(v,S.mode,L),E.return=S,E):(E=o(E,v),E.return=S,E)}function g(S,E,v,L){var q=v.type;return q===H?I(S,E,v.props.children,L,v.key):E!==null&&(E.elementType===q||typeof q=="object"&&q!==null&&q.$$typeof===Ie&&Xn(q)===E.type)?(E=o(E,v.props),ga(E,v),E.return=S,E):(E=Ao(v.type,v.key,v.props,null,S.mode,L),ga(E,v),E.return=S,E)}function w(S,E,v,L){return E===null||E.tag!==4||E.stateNode.containerInfo!==v.containerInfo||E.stateNode.implementation!==v.implementation?(E=Ss(v,S.mode,L),E.return=S,E):(E=o(E,v.children||[]),E.return=S,E)}function I(S,E,v,L,q){return E===null||E.tag!==7?(E=_n(v,S.mode,L,q),E.return=S,E):(E=o(E,v),E.return=S,E)}function C(S,E,v){if(typeof E=="string"&&E!==""||typeof E=="number"||typeof E=="bigint")return E=Os(""+E,S.mode,v),E.return=S,E;if(typeof E=="object"&&E!==null){switch(E.$$typeof){case x:return v=Ao(E.type,E.key,E.props,null,S.mode,v),ga(v,E),v.return=S,v;case k:return E=Ss(E,S.mode,v),E.return=S,E;case Ie:return E=Xn(E),C(S,E,v)}if(kt(E)||Ne(E))return E=_n(E,S.mode,v,null),E.return=S,E;if(typeof E.then=="function")return C(S,Co(E),v);if(E.$$typeof===J)return C(S,Io(S,E),v);Do(S,E)}return null}function A(S,E,v,L){var q=E!==null?E.key:null;if(typeof v=="string"&&v!==""||typeof v=="number"||typeof v=="bigint")return q!==null?null:h(S,E,""+v,L);if(typeof v=="object"&&v!==null){switch(v.$$typeof){case x:return v.key===q?g(S,E,v,L):null;case k:return v.key===q?w(S,E,v,L):null;case Ie:return v=Xn(v),A(S,E,v,L)}if(kt(v)||Ne(v))return q!==null?null:I(S,E,v,L,null);if(typeof v.then=="function")return A(S,E,Co(v),L);if(v.$$typeof===J)return A(S,E,Io(S,v),L);Do(S,v)}return null}function R(S,E,v,L,q){if(typeof L=="string"&&L!==""||typeof L=="number"||typeof L=="bigint")return S=S.get(v)||null,h(E,S,""+L,q);if(typeof L=="object"&&L!==null){switch(L.$$typeof){case x:return S=S.get(L.key===null?v:L.key)||null,g(E,S,L,q);case k:return S=S.get(L.key===null?v:L.key)||null,w(E,S,L,q);case Ie:return L=Xn(L),R(S,E,v,L,q)}if(kt(L)||Ne(L))return S=S.get(v)||null,I(E,S,L,q,null);if(typeof L.then=="function")return R(S,E,v,Co(L),q);if(L.$$typeof===J)return R(S,E,v,Io(E,L),q);Do(E,L)}return null}function G(S,E,v,L){for(var q=null,fe=null,$=E,ie=E=0,ce=null;$!==null&&ie<v.length;ie++){$.index>ie?(ce=$,$=null):ce=$.sibling;var me=A(S,$,v[ie],L);if(me===null){$===null&&($=ce);break}e&&$&&me.alternate===null&&t(S,$),E=r(me,E,ie),fe===null?q=me:fe.sibling=me,fe=me,$=ce}if(ie===v.length)return i(S,$),ue&&Kt(S,ie),q;if($===null){for(;ie<v.length;ie++)$=C(S,v[ie],L),$!==null&&(E=r($,E,ie),fe===null?q=$:fe.sibling=$,fe=$);return ue&&Kt(S,ie),q}for($=a($);ie<v.length;ie++)ce=R($,S,ie,v[ie],L),ce!==null&&(e&&ce.alternate!==null&&$.delete(ce.key===null?ie:ce.key),E=r(ce,E,ie),fe===null?q=ce:fe.sibling=ce,fe=ce);return e&&$.forEach(function(zn){return t(S,zn)}),ue&&Kt(S,ie),q}function V(S,E,v,L){if(v==null)throw Error(l(151));for(var q=null,fe=null,$=E,ie=E=0,ce=null,me=v.next();$!==null&&!me.done;ie++,me=v.next()){$.index>ie?(ce=$,$=null):ce=$.sibling;var zn=A(S,$,me.value,L);if(zn===null){$===null&&($=ce);break}e&&$&&zn.alternate===null&&t(S,$),E=r(zn,E,ie),fe===null?q=zn:fe.sibling=zn,fe=zn,$=ce}if(me.done)return i(S,$),ue&&Kt(S,ie),q;if($===null){for(;!me.done;ie++,me=v.next())me=C(S,me.value,L),me!==null&&(E=r(me,E,ie),fe===null?q=me:fe.sibling=me,fe=me);return ue&&Kt(S,ie),q}for($=a($);!me.done;ie++,me=v.next())me=R($,S,ie,me.value,L),me!==null&&(e&&me.alternate!==null&&$.delete(me.key===null?ie:me.key),E=r(me,E,ie),fe===null?q=me:fe.sibling=me,fe=me);return e&&$.forEach(function($g){return t(S,$g)}),ue&&Kt(S,ie),q}function we(S,E,v,L){if(typeof v=="object"&&v!==null&&v.type===H&&v.key===null&&(v=v.props.children),typeof v=="object"&&v!==null){switch(v.$$typeof){case x:e:{for(var q=v.key;E!==null;){if(E.key===q){if(q=v.type,q===H){if(E.tag===7){i(S,E.sibling),L=o(E,v.props.children),L.return=S,S=L;break e}}else if(E.elementType===q||typeof q=="object"&&q!==null&&q.$$typeof===Ie&&Xn(q)===E.type){i(S,E.sibling),L=o(E,v.props),ga(L,v),L.return=S,S=L;break e}i(S,E);break}else t(S,E);E=E.sibling}v.type===H?(L=_n(v.props.children,S.mode,L,v.key),L.return=S,S=L):(L=Ao(v.type,v.key,v.props,null,S.mode,L),ga(L,v),L.return=S,S=L)}return u(S);case k:e:{for(q=v.key;E!==null;){if(E.key===q)if(E.tag===4&&E.stateNode.containerInfo===v.containerInfo&&E.stateNode.implementation===v.implementation){i(S,E.sibling),L=o(E,v.children||[]),L.return=S,S=L;break e}else{i(S,E);break}else t(S,E);E=E.sibling}L=Ss(v,S.mode,L),L.return=S,S=L}return u(S);case Ie:return v=Xn(v),we(S,E,v,L)}if(kt(v))return G(S,E,v,L);if(Ne(v)){if(q=Ne(v),typeof q!="function")throw Error(l(150));return v=q.call(v),V(S,E,v,L)}if(typeof v.then=="function")return we(S,E,Co(v),L);if(v.$$typeof===J)return we(S,E,Io(S,v),L);Do(S,v)}return typeof v=="string"&&v!==""||typeof v=="number"||typeof v=="bigint"?(v=""+v,E!==null&&E.tag===6?(i(S,E.sibling),L=o(E,v),L.return=S,S=L):(i(S,E),L=Os(v,S.mode,L),L.return=S,S=L),u(S)):i(S,E)}return function(S,E,v,L){try{ma=0;var q=we(S,E,v,L);return Ri=null,q}catch($){if($===Ai||$===xo)throw $;var fe=ht(29,$,null,S.mode);return fe.lanes=L,fe.return=S,fe}}}var Jn=Bu(!0),Yu=Bu(!1),En=!1;function ks(e){e.updateQueue={baseState:e.memoizedState,firstBaseUpdate:null,lastBaseUpdate:null,shared:{pending:null,lanes:0,hiddenCallbacks:null},callbacks:null}}function Hs(e,t){e=e.updateQueue,t.updateQueue===e&&(t.updateQueue={baseState:e.baseState,firstBaseUpdate:e.firstBaseUpdate,lastBaseUpdate:e.lastBaseUpdate,shared:e.shared,callbacks:null})}function On(e){return{lane:e,tag:0,payload:null,callback:null,next:null}}function Sn(e,t,i){var a=e.updateQueue;if(a===null)return null;if(a=a.shared,(ye&2)!==0){var o=a.pending;return o===null?t.next=t:(t.next=o.next,o.next=t),a.pending=t,t=wo(e),Ru(e,null,i),t}return vo(e,a,t,i),wo(e)}function ya(e,t,i){if(t=t.updateQueue,t!==null&&(t=t.shared,(i&4194048)!==0)){var a=t.lanes;a&=e.pendingLanes,i|=a,t.lanes=i,kc(e,i)}}function Ms(e,t){var i=e.updateQueue,a=e.alternate;if(a!==null&&(a=a.updateQueue,i===a)){var o=null,r=null;if(i=i.firstBaseUpdate,i!==null){do{var u={lane:i.lane,tag:i.tag,payload:i.payload,callback:null,next:null};r===null?o=r=u:r=r.next=u,i=i.next}while(i!==null);r===null?o=r=t:r=r.next=t}else o=r=t;i={baseState:a.baseState,firstBaseUpdate:o,lastBaseUpdate:r,shared:a.shared,callbacks:a.callbacks},e.updateQueue=i;return}e=i.lastBaseUpdate,e===null?i.firstBaseUpdate=t:e.next=t,i.lastBaseUpdate=t}var zs=!1;function ba(){if(zs){var e=wi;if(e!==null)throw e}}function Ta(e,t,i,a){zs=!1;var o=e.updateQueue;En=!1;var r=o.firstBaseUpdate,u=o.lastBaseUpdate,h=o.shared.pending;if(h!==null){o.shared.pending=null;var g=h,w=g.next;g.next=null,u===null?r=w:u.next=w,u=g;var I=e.alternate;I!==null&&(I=I.updateQueue,h=I.lastBaseUpdate,h!==u&&(h===null?I.firstBaseUpdate=w:h.next=w,I.lastBaseUpdate=g))}if(r!==null){var C=o.baseState;u=0,I=w=g=null,h=r;do{var A=h.lane&-536870913,R=A!==h.lane;if(R?(le&A)===A:(a&A)===A){A!==0&&A===vi&&(zs=!0),I!==null&&(I=I.next={lane:0,tag:h.tag,payload:h.payload,callback:null,next:null});e:{var G=e,V=h;A=t;var we=i;switch(V.tag){case 1:if(G=V.payload,typeof G=="function"){C=G.call(we,C,A);break e}C=G;break e;case 3:G.flags=G.flags&-65537|128;case 0:if(G=V.payload,A=typeof G=="function"?G.call(we,C,A):G,A==null)break e;C=z({},C,A);break e;case 2:En=!0}}A=h.callback,A!==null&&(e.flags|=64,R&&(e.flags|=8192),R=o.callbacks,R===null?o.callbacks=[A]:R.push(A))}else R={lane:A,tag:h.tag,payload:h.payload,callback:h.callback,next:null},I===null?(w=I=R,g=C):I=I.next=R,u|=A;if(h=h.next,h===null){if(h=o.shared.pending,h===null)break;R=h,h=R.next,R.next=null,o.lastBaseUpdate=R,o.shared.pending=null}}while(!0);I===null&&(g=C),o.baseState=g,o.firstBaseUpdate=w,o.lastBaseUpdate=I,r===null&&(o.shared.lanes=0),Nn|=u,e.lanes=u,e.memoizedState=C}}function Wu(e,t){if(typeof e!="function")throw Error(l(191,e));e.call(t)}function $u(e,t){var i=e.callbacks;if(i!==null)for(e.callbacks=null,e=0;e<i.length;e++)Wu(i[e],t)}var Ni=O(null),ko=O(0);function _u(e,t){e=sn,P(ko,e),P(Ni,t),sn=e|t.baseLanes}function Us(){P(ko,sn),P(Ni,Ni.current)}function js(){sn=ko.current,D(Ni),D(ko)}var pt=O(null),It=null;function vn(e){var t=e.alternate;P(He,He.current&1),P(pt,e),It===null&&(t===null||Ni.current!==null||t.memoizedState!==null)&&(It=e)}function Ps(e){P(He,He.current),P(pt,e),It===null&&(It=e)}function qu(e){e.tag===22?(P(He,He.current),P(pt,e),It===null&&(It=e)):wn()}function wn(){P(He,He.current),P(pt,pt.current)}function ft(e){D(pt),It===e&&(It=null),D(He)}var He=O(0);function Ho(e){for(var t=e;t!==null;){if(t.tag===13){var i=t.memoizedState;if(i!==null&&(i=i.dehydrated,i===null||_l(i)||ql(i)))return t}else if(t.tag===19&&(t.memoizedProps.revealOrder==="forwards"||t.memoizedProps.revealOrder==="backwards"||t.memoizedProps.revealOrder==="unstable_legacy-backwards"||t.memoizedProps.revealOrder==="together")){if((t.flags&128)!==0)return t}else if(t.child!==null){t.child.return=t,t=t.child;continue}if(t===e)break;for(;t.sibling===null;){if(t.return===null||t.return===e)return null;t=t.return}t.sibling.return=t.return,t=t.sibling}return null}var Qt=0,te=null,Se=null,Ue=null,Mo=!1,Ii=!1,ei=!1,zo=0,Ea=0,Fi=null,Hm=0;function Ce(){throw Error(l(321))}function Gs(e,t){if(t===null)return!1;for(var i=0;i<t.length&&i<e.length;i++)if(!dt(e[i],t[i]))return!1;return!0}function Bs(e,t,i,a,o,r){return Qt=r,te=t,t.memoizedState=null,t.updateQueue=null,t.lanes=0,F.H=e===null||e.memoizedState===null?xd:il,ei=!1,r=i(a,o),ei=!1,Ii&&(r=Ku(t,i,a,o)),Vu(e),r}function Vu(e){F.H=va;var t=Se!==null&&Se.next!==null;if(Qt=0,Ue=Se=te=null,Mo=!1,Ea=0,Fi=null,t)throw Error(l(300));e===null||je||(e=e.dependencies,e!==null&&No(e)&&(je=!0))}function Ku(e,t,i,a){te=e;var o=0;do{if(Ii&&(Fi=null),Ea=0,Ii=!1,25<=o)throw Error(l(301));if(o+=1,Ue=Se=null,e.updateQueue!=null){var r=e.updateQueue;r.lastEffect=null,r.events=null,r.stores=null,r.memoCache!=null&&(r.memoCache.index=0)}F.H=Ld,r=t(i,a)}while(Ii);return r}function Mm(){var e=F.H,t=e.useState()[0];return t=typeof t.then=="function"?Oa(t):t,e=e.useState()[0],(Se!==null?Se.memoizedState:null)!==e&&(te.flags|=1024),t}function Ys(){var e=zo!==0;return zo=0,e}function Ws(e,t,i){t.updateQueue=e.updateQueue,t.flags&=-2053,e.lanes&=~i}function $s(e){if(Mo){for(e=e.memoizedState;e!==null;){var t=e.queue;t!==null&&(t.pending=null),e=e.next}Mo=!1}Qt=0,Ue=Se=te=null,Ii=!1,Ea=zo=0,Fi=null}function et(){var e={memoizedState:null,baseState:null,baseQueue:null,queue:null,next:null};return Ue===null?te.memoizedState=Ue=e:Ue=Ue.next=e,Ue}function Me(){if(Se===null){var e=te.alternate;e=e!==null?e.memoizedState:null}else e=Se.next;var t=Ue===null?te.memoizedState:Ue.next;if(t!==null)Ue=t,Se=e;else{if(e===null)throw te.alternate===null?Error(l(467)):Error(l(310));Se=e,e={memoizedState:Se.memoizedState,baseState:Se.baseState,baseQueue:Se.baseQueue,queue:Se.queue,next:null},Ue===null?te.memoizedState=Ue=e:Ue=Ue.next=e}return Ue}function Uo(){return{lastEffect:null,events:null,stores:null,memoCache:null}}function Oa(e){var t=Ea;return Ea+=1,Fi===null&&(Fi=[]),e=ju(Fi,e,t),t=te,(Ue===null?t.memoizedState:Ue.next)===null&&(t=t.alternate,F.H=t===null||t.memoizedState===null?xd:il),e}function jo(e){if(e!==null&&typeof e=="object"){if(typeof e.then=="function")return Oa(e);if(e.$$typeof===J)return qe(e)}throw Error(l(438,String(e)))}function _s(e){var t=null,i=te.updateQueue;if(i!==null&&(t=i.memoCache),t==null){var a=te.alternate;a!==null&&(a=a.updateQueue,a!==null&&(a=a.memoCache,a!=null&&(t={data:a.data.map(function(o){return o.slice()}),index:0})))}if(t==null&&(t={data:[],index:0}),i===null&&(i=Uo(),te.updateQueue=i),i.memoCache=t,i=t.data[t.index],i===void 0)for(i=t.data[t.index]=Array(e),a=0;a<e;a++)i[a]=K;return t.index++,i}function Jt(e,t){return typeof t=="function"?t(e):t}function Po(e){var t=Me();return qs(t,Se,e)}function qs(e,t,i){var a=e.queue;if(a===null)throw Error(l(311));a.lastRenderedReducer=i;var o=e.baseQueue,r=a.pending;if(r!==null){if(o!==null){var u=o.next;o.next=r.next,r.next=u}t.baseQueue=o=r,a.pending=null}if(r=e.baseState,o===null)e.memoizedState=r;else{t=o.next;var h=u=null,g=null,w=t,I=!1;do{var C=w.lane&-536870913;if(C!==w.lane?(le&C)===C:(Qt&C)===C){var A=w.revertLane;if(A===0)g!==null&&(g=g.next={lane:0,revertLane:0,gesture:null,action:w.action,hasEagerState:w.hasEagerState,eagerState:w.eagerState,next:null}),C===vi&&(I=!0);else if((Qt&A)===A){w=w.next,A===vi&&(I=!0);continue}else C={lane:0,revertLane:w.revertLane,gesture:null,action:w.action,hasEagerState:w.hasEagerState,eagerState:w.eagerState,next:null},g===null?(h=g=C,u=r):g=g.next=C,te.lanes|=A,Nn|=A;C=w.action,ei&&i(r,C),r=w.hasEagerState?w.eagerState:i(r,C)}else A={lane:C,revertLane:w.revertLane,gesture:w.gesture,action:w.action,hasEagerState:w.hasEagerState,eagerState:w.eagerState,next:null},g===null?(h=g=A,u=r):g=g.next=A,te.lanes|=C,Nn|=C;w=w.next}while(w!==null&&w!==t);if(g===null?u=r:g.next=h,!dt(r,e.memoizedState)&&(je=!0,I&&(i=wi,i!==null)))throw i;e.memoizedState=r,e.baseState=u,e.baseQueue=g,a.lastRenderedState=r}return o===null&&(a.lanes=0),[e.memoizedState,a.dispatch]}function Vs(e){var t=Me(),i=t.queue;if(i===null)throw Error(l(311));i.lastRenderedReducer=e;var a=i.dispatch,o=i.pending,r=t.memoizedState;if(o!==null){i.pending=null;var u=o=o.next;do r=e(r,u.action),u=u.next;while(u!==o);dt(r,t.memoizedState)||(je=!0),t.memoizedState=r,t.baseQueue===null&&(t.baseState=r),i.lastRenderedState=r}return[r,a]}function Zu(e,t,i){var a=te,o=Me(),r=ue;if(r){if(i===void 0)throw Error(l(407));i=i()}else i=t();var u=!dt((Se||o).memoizedState,i);if(u&&(o.memoizedState=i,je=!0),o=o.queue,Xs(Ju.bind(null,a,o,e),[e]),o.getSnapshot!==t||u||Ue!==null&&Ue.memoizedState.tag&1){if(a.flags|=2048,xi(9,{destroy:void 0},Qu.bind(null,a,o,i,t),null),Re===null)throw Error(l(349));r||(Qt&127)!==0||Xu(a,t,i)}return i}function Xu(e,t,i){e.flags|=16384,e={getSnapshot:t,value:i},t=te.updateQueue,t===null?(t=Uo(),te.updateQueue=t,t.stores=[e]):(i=t.stores,i===null?t.stores=[e]:i.push(e))}function Qu(e,t,i,a){t.value=i,t.getSnapshot=a,ed(t)&&td(e)}function Ju(e,t,i){return i(function(){ed(t)&&td(e)})}function ed(e){var t=e.getSnapshot;e=e.value;try{var i=t();return!dt(e,i)}catch{return!0}}function td(e){var t=$n(e,2);t!==null&&st(t,e,2)}function Ks(e){var t=et();if(typeof e=="function"){var i=e;if(e=i(),ei){pn(!0);try{i()}finally{pn(!1)}}}return t.memoizedState=t.baseState=e,t.queue={pending:null,lanes:0,dispatch:null,lastRenderedReducer:Jt,lastRenderedState:e},t}function nd(e,t,i,a){return e.baseState=i,qs(e,Se,typeof a=="function"?a:Jt)}function zm(e,t,i,a,o){if(Yo(e))throw Error(l(485));if(e=t.action,e!==null){var r={payload:o,action:e,next:null,isTransition:!0,status:"pending",value:null,reason:null,listeners:[],then:function(u){r.listeners.push(u)}};F.T!==null?i(!0):r.isTransition=!1,a(r),i=t.pending,i===null?(r.next=t.pending=r,id(t,r)):(r.next=i.next,t.pending=i.next=r)}}function id(e,t){var i=t.action,a=t.payload,o=e.state;if(t.isTransition){var r=F.T,u={};F.T=u;try{var h=i(o,a),g=F.S;g!==null&&g(u,h),ad(e,t,h)}catch(w){Zs(e,t,w)}finally{r!==null&&u.types!==null&&(r.types=u.types),F.T=r}}else try{r=i(o,a),ad(e,t,r)}catch(w){Zs(e,t,w)}}function ad(e,t,i){i!==null&&typeof i=="object"&&typeof i.then=="function"?i.then(function(a){od(e,t,a)},function(a){return Zs(e,t,a)}):od(e,t,i)}function od(e,t,i){t.status="fulfilled",t.value=i,rd(t),e.state=i,t=e.pending,t!==null&&(i=t.next,i===t?e.pending=null:(i=i.next,t.next=i,id(e,i)))}function Zs(e,t,i){var a=e.pending;if(e.pending=null,a!==null){a=a.next;do t.status="rejected",t.reason=i,rd(t),t=t.next;while(t!==a)}e.action=null}function rd(e){e=e.listeners;for(var t=0;t<e.length;t++)(0,e[t])()}function sd(e,t){return t}function ld(e,t){if(ue){var i=Re.formState;if(i!==null){e:{var a=te;if(ue){if(Fe){t:{for(var o=Fe,r=Nt;o.nodeType!==8;){if(!r){o=null;break t}if(o=Ft(o.nextSibling),o===null){o=null;break t}}r=o.data,o=r==="F!"||r==="F"?o:null}if(o){Fe=Ft(o.nextSibling),a=o.data==="F!";break e}}bn(a)}a=!1}a&&(t=i[0])}}return i=et(),i.memoizedState=i.baseState=t,a={pending:null,lanes:0,dispatch:null,lastRenderedReducer:sd,lastRenderedState:t},i.queue=a,i=Nd.bind(null,te,a),a.dispatch=i,a=Ks(!1),r=nl.bind(null,te,!1,a.queue),a=et(),o={state:t,dispatch:null,action:e,pending:null},a.queue=o,i=zm.bind(null,te,o,r,i),o.dispatch=i,a.memoizedState=e,[t,i,!1]}function cd(e){var t=Me();return ud(t,Se,e)}function ud(e,t,i){if(t=qs(e,t,sd)[0],e=Po(Jt)[0],typeof t=="object"&&t!==null&&typeof t.then=="function")try{var a=Oa(t)}catch(u){throw u===Ai?xo:u}else a=t;t=Me();var o=t.queue,r=o.dispatch;return i!==t.memoizedState&&(te.flags|=2048,xi(9,{destroy:void 0},Um.bind(null,o,i),null)),[a,r,e]}function Um(e,t){e.action=t}function dd(e){var t=Me(),i=Se;if(i!==null)return ud(t,i,e);Me(),t=t.memoizedState,i=Me();var a=i.queue.dispatch;return i.memoizedState=e,[t,a,!1]}function xi(e,t,i,a){return e={tag:e,create:i,deps:a,inst:t,next:null},t=te.updateQueue,t===null&&(t=Uo(),te.updateQueue=t),i=t.lastEffect,i===null?t.lastEffect=e.next=e:(a=i.next,i.next=e,e.next=a,t.lastEffect=e),e}function hd(){return Me().memoizedState}function Go(e,t,i,a){var o=et();te.flags|=e,o.memoizedState=xi(1|t,{destroy:void 0},i,a===void 0?null:a)}function Bo(e,t,i,a){var o=Me();a=a===void 0?null:a;var r=o.memoizedState.inst;Se!==null&&a!==null&&Gs(a,Se.memoizedState.deps)?o.memoizedState=xi(t,r,i,a):(te.flags|=e,o.memoizedState=xi(1|t,r,i,a))}function pd(e,t){Go(8390656,8,e,t)}function Xs(e,t){Bo(2048,8,e,t)}function jm(e){te.flags|=4;var t=te.updateQueue;if(t===null)t=Uo(),te.updateQueue=t,t.events=[e];else{var i=t.events;i===null?t.events=[e]:i.push(e)}}function fd(e){var t=Me().memoizedState;return jm({ref:t,nextImpl:e}),function(){if((ye&2)!==0)throw Error(l(440));return t.impl.apply(void 0,arguments)}}function md(e,t){return Bo(4,2,e,t)}function gd(e,t){return Bo(4,4,e,t)}function yd(e,t){if(typeof t=="function"){e=e();var i=t(e);return function(){typeof i=="function"?i():t(null)}}if(t!=null)return e=e(),t.current=e,function(){t.current=null}}function bd(e,t,i){i=i!=null?i.concat([e]):null,Bo(4,4,yd.bind(null,t,e),i)}function Qs(){}function Td(e,t){var i=Me();t=t===void 0?null:t;var a=i.memoizedState;return t!==null&&Gs(t,a[1])?a[0]:(i.memoizedState=[e,t],e)}function Ed(e,t){var i=Me();t=t===void 0?null:t;var a=i.memoizedState;if(t!==null&&Gs(t,a[1]))return a[0];if(a=e(),ei){pn(!0);try{e()}finally{pn(!1)}}return i.memoizedState=[a,t],a}function Js(e,t,i){return i===void 0||(Qt&1073741824)!==0&&(le&261930)===0?e.memoizedState=t:(e.memoizedState=i,e=Oh(),te.lanes|=e,Nn|=e,i)}function Od(e,t,i,a){return dt(i,t)?i:Ni.current!==null?(e=Js(e,i,a),dt(e,t)||(je=!0),e):(Qt&42)===0||(Qt&1073741824)!==0&&(le&261930)===0?(je=!0,e.memoizedState=i):(e=Oh(),te.lanes|=e,Nn|=e,t)}function Sd(e,t,i,a,o){var r=j.p;j.p=r!==0&&8>r?r:8;var u=F.T,h={};F.T=h,nl(e,!1,t,i);try{var g=o(),w=F.S;if(w!==null&&w(h,g),g!==null&&typeof g=="object"&&typeof g.then=="function"){var I=km(g,a);Sa(e,t,I,yt(e))}else Sa(e,t,a,yt(e))}catch(C){Sa(e,t,{then:function(){},status:"rejected",reason:C},yt())}finally{j.p=r,u!==null&&h.types!==null&&(u.types=h.types),F.T=u}}function Pm(){}function el(e,t,i,a){if(e.tag!==5)throw Error(l(476));var o=vd(e).queue;Sd(e,o,t,Z,i===null?Pm:function(){return wd(e),i(a)})}function vd(e){var t=e.memoizedState;if(t!==null)return t;t={memoizedState:Z,baseState:Z,baseQueue:null,queue:{pending:null,lanes:0,dispatch:null,lastRenderedReducer:Jt,lastRenderedState:Z},next:null};var i={};return t.next={memoizedState:i,baseState:i,baseQueue:null,queue:{pending:null,lanes:0,dispatch:null,lastRenderedReducer:Jt,lastRenderedState:i},next:null},e.memoizedState=t,e=e.alternate,e!==null&&(e.memoizedState=t),t}function wd(e){var t=vd(e);t.next===null&&(t=e.alternate.memoizedState),Sa(e,t.next.queue,{},yt())}function tl(){return qe(ja)}function Ad(){return Me().memoizedState}function Rd(){return Me().memoizedState}function Gm(e){for(var t=e.return;t!==null;){switch(t.tag){case 24:case 3:var i=yt();e=On(i);var a=Sn(t,e,i);a!==null&&(st(a,t,i),ya(a,t,i)),t={cache:xs()},e.payload=t;return}t=t.return}}function Bm(e,t,i){var a=yt();i={lane:a,revertLane:0,gesture:null,action:i,hasEagerState:!1,eagerState:null,next:null},Yo(e)?Id(t,i):(i=Ts(e,t,i,a),i!==null&&(st(i,e,a),Fd(i,t,a)))}function Nd(e,t,i){var a=yt();Sa(e,t,i,a)}function Sa(e,t,i,a){var o={lane:a,revertLane:0,gesture:null,action:i,hasEagerState:!1,eagerState:null,next:null};if(Yo(e))Id(t,o);else{var r=e.alternate;if(e.lanes===0&&(r===null||r.lanes===0)&&(r=t.lastRenderedReducer,r!==null))try{var u=t.lastRenderedState,h=r(u,i);if(o.hasEagerState=!0,o.eagerState=h,dt(h,u))return vo(e,t,o,0),Re===null&&So(),!1}catch{}if(i=Ts(e,t,o,a),i!==null)return st(i,e,a),Fd(i,t,a),!0}return!1}function nl(e,t,i,a){if(a={lane:2,revertLane:kl(),gesture:null,action:a,hasEagerState:!1,eagerState:null,next:null},Yo(e)){if(t)throw Error(l(479))}else t=Ts(e,i,a,2),t!==null&&st(t,e,2)}function Yo(e){var t=e.alternate;return e===te||t!==null&&t===te}function Id(e,t){Ii=Mo=!0;var i=e.pending;i===null?t.next=t:(t.next=i.next,i.next=t),e.pending=t}function Fd(e,t,i){if((i&4194048)!==0){var a=t.lanes;a&=e.pendingLanes,i|=a,t.lanes=i,kc(e,i)}}var va={readContext:qe,use:jo,useCallback:Ce,useContext:Ce,useEffect:Ce,useImperativeHandle:Ce,useLayoutEffect:Ce,useInsertionEffect:Ce,useMemo:Ce,useReducer:Ce,useRef:Ce,useState:Ce,useDebugValue:Ce,useDeferredValue:Ce,useTransition:Ce,useSyncExternalStore:Ce,useId:Ce,useHostTransitionStatus:Ce,useFormState:Ce,useActionState:Ce,useOptimistic:Ce,useMemoCache:Ce,useCacheRefresh:Ce};va.useEffectEvent=Ce;var xd={readContext:qe,use:jo,useCallback:function(e,t){return et().memoizedState=[e,t===void 0?null:t],e},useContext:qe,useEffect:pd,useImperativeHandle:function(e,t,i){i=i!=null?i.concat([e]):null,Go(4194308,4,yd.bind(null,t,e),i)},useLayoutEffect:function(e,t){return Go(4194308,4,e,t)},useInsertionEffect:function(e,t){Go(4,2,e,t)},useMemo:function(e,t){var i=et();t=t===void 0?null:t;var a=e();if(ei){pn(!0);try{e()}finally{pn(!1)}}return i.memoizedState=[a,t],a},useReducer:function(e,t,i){var a=et();if(i!==void 0){var o=i(t);if(ei){pn(!0);try{i(t)}finally{pn(!1)}}}else o=t;return a.memoizedState=a.baseState=o,e={pending:null,lanes:0,dispatch:null,lastRenderedReducer:e,lastRenderedState:o},a.queue=e,e=e.dispatch=Bm.bind(null,te,e),[a.memoizedState,e]},useRef:function(e){var t=et();return e={current:e},t.memoizedState=e},useState:function(e){e=Ks(e);var t=e.queue,i=Nd.bind(null,te,t);return t.dispatch=i,[e.memoizedState,i]},useDebugValue:Qs,useDeferredValue:function(e,t){var i=et();return Js(i,e,t)},useTransition:function(){var e=Ks(!1);return e=Sd.bind(null,te,e.queue,!0,!1),et().memoizedState=e,[!1,e]},useSyncExternalStore:function(e,t,i){var a=te,o=et();if(ue){if(i===void 0)throw Error(l(407));i=i()}else{if(i=t(),Re===null)throw Error(l(349));(le&127)!==0||Xu(a,t,i)}o.memoizedState=i;var r={value:i,getSnapshot:t};return o.queue=r,pd(Ju.bind(null,a,r,e),[e]),a.flags|=2048,xi(9,{destroy:void 0},Qu.bind(null,a,r,i,t),null),i},useId:function(){var e=et(),t=Re.identifierPrefix;if(ue){var i=Gt,a=Pt;i=(a&~(1<<32-ut(a)-1)).toString(32)+i,t="_"+t+"R_"+i,i=zo++,0<i&&(t+="H"+i.toString(32)),t+="_"}else i=Hm++,t="_"+t+"r_"+i.toString(32)+"_";return e.memoizedState=t},useHostTransitionStatus:tl,useFormState:ld,useActionState:ld,useOptimistic:function(e){var t=et();t.memoizedState=t.baseState=e;var i={pending:null,lanes:0,dispatch:null,lastRenderedReducer:null,lastRenderedState:null};return t.queue=i,t=nl.bind(null,te,!0,i),i.dispatch=t,[e,t]},useMemoCache:_s,useCacheRefresh:function(){return et().memoizedState=Gm.bind(null,te)},useEffectEvent:function(e){var t=et(),i={impl:e};return t.memoizedState=i,function(){if((ye&2)!==0)throw Error(l(440));return i.impl.apply(void 0,arguments)}}},il={readContext:qe,use:jo,useCallback:Td,useContext:qe,useEffect:Xs,useImperativeHandle:bd,useInsertionEffect:md,useLayoutEffect:gd,useMemo:Ed,useReducer:Po,useRef:hd,useState:function(){return Po(Jt)},useDebugValue:Qs,useDeferredValue:function(e,t){var i=Me();return Od(i,Se.memoizedState,e,t)},useTransition:function(){var e=Po(Jt)[0],t=Me().memoizedState;return[typeof e=="boolean"?e:Oa(e),t]},useSyncExternalStore:Zu,useId:Ad,useHostTransitionStatus:tl,useFormState:cd,useActionState:cd,useOptimistic:function(e,t){var i=Me();return nd(i,Se,e,t)},useMemoCache:_s,useCacheRefresh:Rd};il.useEffectEvent=fd;var Ld={readContext:qe,use:jo,useCallback:Td,useContext:qe,useEffect:Xs,useImperativeHandle:bd,useInsertionEffect:md,useLayoutEffect:gd,useMemo:Ed,useReducer:Vs,useRef:hd,useState:function(){return Vs(Jt)},useDebugValue:Qs,useDeferredValue:function(e,t){var i=Me();return Se===null?Js(i,e,t):Od(i,Se.memoizedState,e,t)},useTransition:function(){var e=Vs(Jt)[0],t=Me().memoizedState;return[typeof e=="boolean"?e:Oa(e),t]},useSyncExternalStore:Zu,useId:Ad,useHostTransitionStatus:tl,useFormState:dd,useActionState:dd,useOptimistic:function(e,t){var i=Me();return Se!==null?nd(i,Se,e,t):(i.baseState=e,[e,i.queue.dispatch])},useMemoCache:_s,useCacheRefresh:Rd};Ld.useEffectEvent=fd;function al(e,t,i,a){t=e.memoizedState,i=i(a,t),i=i==null?t:z({},t,i),e.memoizedState=i,e.lanes===0&&(e.updateQueue.baseState=i)}var ol={enqueueSetState:function(e,t,i){e=e._reactInternals;var a=yt(),o=On(a);o.payload=t,i!=null&&(o.callback=i),t=Sn(e,o,a),t!==null&&(st(t,e,a),ya(t,e,a))},enqueueReplaceState:function(e,t,i){e=e._reactInternals;var a=yt(),o=On(a);o.tag=1,o.payload=t,i!=null&&(o.callback=i),t=Sn(e,o,a),t!==null&&(st(t,e,a),ya(t,e,a))},enqueueForceUpdate:function(e,t){e=e._reactInternals;var i=yt(),a=On(i);a.tag=2,t!=null&&(a.callback=t),t=Sn(e,a,i),t!==null&&(st(t,e,i),ya(t,e,i))}};function Cd(e,t,i,a,o,r,u){return e=e.stateNode,typeof e.shouldComponentUpdate=="function"?e.shouldComponentUpdate(a,r,u):t.prototype&&t.prototype.isPureReactComponent?!ca(i,a)||!ca(o,r):!0}function Dd(e,t,i,a){e=t.state,typeof t.componentWillReceiveProps=="function"&&t.componentWillReceiveProps(i,a),typeof t.UNSAFE_componentWillReceiveProps=="function"&&t.UNSAFE_componentWillReceiveProps(i,a),t.state!==e&&ol.enqueueReplaceState(t,t.state,null)}function ti(e,t){var i=t;if("ref"in t){i={};for(var a in t)a!=="ref"&&(i[a]=t[a])}if(e=e.defaultProps){i===t&&(i=z({},i));for(var o in e)i[o]===void 0&&(i[o]=e[o])}return i}function kd(e){Oo(e)}function Hd(e){console.error(e)}function Md(e){Oo(e)}function Wo(e,t){try{var i=e.onUncaughtError;i(t.value,{componentStack:t.stack})}catch(a){setTimeout(function(){throw a})}}function zd(e,t,i){try{var a=e.onCaughtError;a(i.value,{componentStack:i.stack,errorBoundary:t.tag===1?t.stateNode:null})}catch(o){setTimeout(function(){throw o})}}function rl(e,t,i){return i=On(i),i.tag=3,i.payload={element:null},i.callback=function(){Wo(e,t)},i}function Ud(e){return e=On(e),e.tag=3,e}function jd(e,t,i,a){var o=i.type.getDerivedStateFromError;if(typeof o=="function"){var r=a.value;e.payload=function(){return o(r)},e.callback=function(){zd(t,i,a)}}var u=i.stateNode;u!==null&&typeof u.componentDidCatch=="function"&&(e.callback=function(){zd(t,i,a),typeof o!="function"&&(In===null?In=new Set([this]):In.add(this));var h=a.stack;this.componentDidCatch(a.value,{componentStack:h!==null?h:""})})}function Ym(e,t,i,a,o){if(i.flags|=32768,a!==null&&typeof a=="object"&&typeof a.then=="function"){if(t=i.alternate,t!==null&&Si(t,i,o,!0),i=pt.current,i!==null){switch(i.tag){case 31:case 13:return It===null?nr():i.alternate===null&&De===0&&(De=3),i.flags&=-257,i.flags|=65536,i.lanes=o,a===Lo?i.flags|=16384:(t=i.updateQueue,t===null?i.updateQueue=new Set([a]):t.add(a),Ll(e,a,o)),!1;case 22:return i.flags|=65536,a===Lo?i.flags|=16384:(t=i.updateQueue,t===null?(t={transitions:null,markerInstances:null,retryQueue:new Set([a])},i.updateQueue=t):(i=t.retryQueue,i===null?t.retryQueue=new Set([a]):i.add(a)),Ll(e,a,o)),!1}throw Error(l(435,i.tag))}return Ll(e,a,o),nr(),!1}if(ue)return t=pt.current,t!==null?((t.flags&65536)===0&&(t.flags|=256),t.flags|=65536,t.lanes=o,a!==As&&(e=Error(l(422),{cause:a}),ha(wt(e,i)))):(a!==As&&(t=Error(l(423),{cause:a}),ha(wt(t,i))),e=e.current.alternate,e.flags|=65536,o&=-o,e.lanes|=o,a=wt(a,i),o=rl(e.stateNode,a,o),Ms(e,o),De!==4&&(De=2)),!1;var r=Error(l(520),{cause:a});if(r=wt(r,i),La===null?La=[r]:La.push(r),De!==4&&(De=2),t===null)return!0;a=wt(a,i),i=t;do{switch(i.tag){case 3:return i.flags|=65536,e=o&-o,i.lanes|=e,e=rl(i.stateNode,a,e),Ms(i,e),!1;case 1:if(t=i.type,r=i.stateNode,(i.flags&128)===0&&(typeof t.getDerivedStateFromError=="function"||r!==null&&typeof r.componentDidCatch=="function"&&(In===null||!In.has(r))))return i.flags|=65536,o&=-o,i.lanes|=o,o=Ud(o),jd(o,e,i,a),Ms(i,o),!1}i=i.return}while(i!==null);return!1}var sl=Error(l(461)),je=!1;function Ve(e,t,i,a){t.child=e===null?Yu(t,null,i,a):Jn(t,e.child,i,a)}function Pd(e,t,i,a,o){i=i.render;var r=t.ref;if("ref"in a){var u={};for(var h in a)h!=="ref"&&(u[h]=a[h])}else u=a;return Kn(t),a=Bs(e,t,i,u,r,o),h=Ys(),e!==null&&!je?(Ws(e,t,o),en(e,t,o)):(ue&&h&&vs(t),t.flags|=1,Ve(e,t,a,o),t.child)}function Gd(e,t,i,a,o){if(e===null){var r=i.type;return typeof r=="function"&&!Es(r)&&r.defaultProps===void 0&&i.compare===null?(t.tag=15,t.type=r,Bd(e,t,r,a,o)):(e=Ao(i.type,null,a,t,t.mode,o),e.ref=t.ref,e.return=t,t.child=e)}if(r=e.child,!ml(e,o)){var u=r.memoizedProps;if(i=i.compare,i=i!==null?i:ca,i(u,a)&&e.ref===t.ref)return en(e,t,o)}return t.flags|=1,e=Vt(r,a),e.ref=t.ref,e.return=t,t.child=e}function Bd(e,t,i,a,o){if(e!==null){var r=e.memoizedProps;if(ca(r,a)&&e.ref===t.ref)if(je=!1,t.pendingProps=a=r,ml(e,o))(e.flags&131072)!==0&&(je=!0);else return t.lanes=e.lanes,en(e,t,o)}return ll(e,t,i,a,o)}function Yd(e,t,i,a){var o=a.children,r=e!==null?e.memoizedState:null;if(e===null&&t.stateNode===null&&(t.stateNode={_visibility:1,_pendingMarkers:null,_retryCache:null,_transitions:null}),a.mode==="hidden"){if((t.flags&128)!==0){if(r=r!==null?r.baseLanes|i:i,e!==null){for(a=t.child=e.child,o=0;a!==null;)o=o|a.lanes|a.childLanes,a=a.sibling;a=o&~r}else a=0,t.child=null;return Wd(e,t,r,i,a)}if((i&536870912)!==0)t.memoizedState={baseLanes:0,cachePool:null},e!==null&&Fo(t,r!==null?r.cachePool:null),r!==null?_u(t,r):Us(),qu(t);else return a=t.lanes=536870912,Wd(e,t,r!==null?r.baseLanes|i:i,i,a)}else r!==null?(Fo(t,r.cachePool),_u(t,r),wn(),t.memoizedState=null):(e!==null&&Fo(t,null),Us(),wn());return Ve(e,t,o,i),t.child}function wa(e,t){return e!==null&&e.tag===22||t.stateNode!==null||(t.stateNode={_visibility:1,_pendingMarkers:null,_retryCache:null,_transitions:null}),t.sibling}function Wd(e,t,i,a,o){var r=Cs();return r=r===null?null:{parent:ze._currentValue,pool:r},t.memoizedState={baseLanes:i,cachePool:r},e!==null&&Fo(t,null),Us(),qu(t),e!==null&&Si(e,t,a,!0),t.childLanes=o,null}function $o(e,t){return t=qo({mode:t.mode,children:t.children},e.mode),t.ref=e.ref,e.child=t,t.return=e,t}function $d(e,t,i){return Jn(t,e.child,null,i),e=$o(t,t.pendingProps),e.flags|=2,ft(t),t.memoizedState=null,e}function Wm(e,t,i){var a=t.pendingProps,o=(t.flags&128)!==0;if(t.flags&=-129,e===null){if(ue){if(a.mode==="hidden")return e=$o(t,a),t.lanes=536870912,wa(null,e);if(Ps(t),(e=Fe)?(e=ip(e,Nt),e=e!==null&&e.data==="&"?e:null,e!==null&&(t.memoizedState={dehydrated:e,treeContext:gn!==null?{id:Pt,overflow:Gt}:null,retryLane:536870912,hydrationErrors:null},i=Iu(e),i.return=t,t.child=i,_e=t,Fe=null)):e=null,e===null)throw bn(t);return t.lanes=536870912,null}return $o(t,a)}var r=e.memoizedState;if(r!==null){var u=r.dehydrated;if(Ps(t),o)if(t.flags&256)t.flags&=-257,t=$d(e,t,i);else if(t.memoizedState!==null)t.child=e.child,t.flags|=128,t=null;else throw Error(l(558));else if(je||Si(e,t,i,!1),o=(i&e.childLanes)!==0,je||o){if(a=Re,a!==null&&(u=Hc(a,i),u!==0&&u!==r.retryLane))throw r.retryLane=u,$n(e,u),st(a,e,u),sl;nr(),t=$d(e,t,i)}else e=r.treeContext,Fe=Ft(u.nextSibling),_e=t,ue=!0,yn=null,Nt=!1,e!==null&&Lu(t,e),t=$o(t,a),t.flags|=4096;return t}return e=Vt(e.child,{mode:a.mode,children:a.children}),e.ref=t.ref,t.child=e,e.return=t,e}function _o(e,t){var i=t.ref;if(i===null)e!==null&&e.ref!==null&&(t.flags|=4194816);else{if(typeof i!="function"&&typeof i!="object")throw Error(l(284));(e===null||e.ref!==i)&&(t.flags|=4194816)}}function ll(e,t,i,a,o){return Kn(t),i=Bs(e,t,i,a,void 0,o),a=Ys(),e!==null&&!je?(Ws(e,t,o),en(e,t,o)):(ue&&a&&vs(t),t.flags|=1,Ve(e,t,i,o),t.child)}function _d(e,t,i,a,o,r){return Kn(t),t.updateQueue=null,i=Ku(t,a,i,o),Vu(e),a=Ys(),e!==null&&!je?(Ws(e,t,r),en(e,t,r)):(ue&&a&&vs(t),t.flags|=1,Ve(e,t,i,r),t.child)}function qd(e,t,i,a,o){if(Kn(t),t.stateNode===null){var r=bi,u=i.contextType;typeof u=="object"&&u!==null&&(r=qe(u)),r=new i(a,r),t.memoizedState=r.state!==null&&r.state!==void 0?r.state:null,r.updater=ol,t.stateNode=r,r._reactInternals=t,r=t.stateNode,r.props=a,r.state=t.memoizedState,r.refs={},ks(t),u=i.contextType,r.context=typeof u=="object"&&u!==null?qe(u):bi,r.state=t.memoizedState,u=i.getDerivedStateFromProps,typeof u=="function"&&(al(t,i,u,a),r.state=t.memoizedState),typeof i.getDerivedStateFromProps=="function"||typeof r.getSnapshotBeforeUpdate=="function"||typeof r.UNSAFE_componentWillMount!="function"&&typeof r.componentWillMount!="function"||(u=r.state,typeof r.componentWillMount=="function"&&r.componentWillMount(),typeof r.UNSAFE_componentWillMount=="function"&&r.UNSAFE_componentWillMount(),u!==r.state&&ol.enqueueReplaceState(r,r.state,null),Ta(t,a,r,o),ba(),r.state=t.memoizedState),typeof r.componentDidMount=="function"&&(t.flags|=4194308),a=!0}else if(e===null){r=t.stateNode;var h=t.memoizedProps,g=ti(i,h);r.props=g;var w=r.context,I=i.contextType;u=bi,typeof I=="object"&&I!==null&&(u=qe(I));var C=i.getDerivedStateFromProps;I=typeof C=="function"||typeof r.getSnapshotBeforeUpdate=="function",h=t.pendingProps!==h,I||typeof r.UNSAFE_componentWillReceiveProps!="function"&&typeof r.componentWillReceiveProps!="function"||(h||w!==u)&&Dd(t,r,a,u),En=!1;var A=t.memoizedState;r.state=A,Ta(t,a,r,o),ba(),w=t.memoizedState,h||A!==w||En?(typeof C=="function"&&(al(t,i,C,a),w=t.memoizedState),(g=En||Cd(t,i,g,a,A,w,u))?(I||typeof r.UNSAFE_componentWillMount!="function"&&typeof r.componentWillMount!="function"||(typeof r.componentWillMount=="function"&&r.componentWillMount(),typeof r.UNSAFE_componentWillMount=="function"&&r.UNSAFE_componentWillMount()),typeof r.componentDidMount=="function"&&(t.flags|=4194308)):(typeof r.componentDidMount=="function"&&(t.flags|=4194308),t.memoizedProps=a,t.memoizedState=w),r.props=a,r.state=w,r.context=u,a=g):(typeof r.componentDidMount=="function"&&(t.flags|=4194308),a=!1)}else{r=t.stateNode,Hs(e,t),u=t.memoizedProps,I=ti(i,u),r.props=I,C=t.pendingProps,A=r.context,w=i.contextType,g=bi,typeof w=="object"&&w!==null&&(g=qe(w)),h=i.getDerivedStateFromProps,(w=typeof h=="function"||typeof r.getSnapshotBeforeUpdate=="function")||typeof r.UNSAFE_componentWillReceiveProps!="function"&&typeof r.componentWillReceiveProps!="function"||(u!==C||A!==g)&&Dd(t,r,a,g),En=!1,A=t.memoizedState,r.state=A,Ta(t,a,r,o),ba();var R=t.memoizedState;u!==C||A!==R||En||e!==null&&e.dependencies!==null&&No(e.dependencies)?(typeof h=="function"&&(al(t,i,h,a),R=t.memoizedState),(I=En||Cd(t,i,I,a,A,R,g)||e!==null&&e.dependencies!==null&&No(e.dependencies))?(w||typeof r.UNSAFE_componentWillUpdate!="function"&&typeof r.componentWillUpdate!="function"||(typeof r.componentWillUpdate=="function"&&r.componentWillUpdate(a,R,g),typeof r.UNSAFE_componentWillUpdate=="function"&&r.UNSAFE_componentWillUpdate(a,R,g)),typeof r.componentDidUpdate=="function"&&(t.flags|=4),typeof r.getSnapshotBeforeUpdate=="function"&&(t.flags|=1024)):(typeof r.componentDidUpdate!="function"||u===e.memoizedProps&&A===e.memoizedState||(t.flags|=4),typeof r.getSnapshotBeforeUpdate!="function"||u===e.memoizedProps&&A===e.memoizedState||(t.flags|=1024),t.memoizedProps=a,t.memoizedState=R),r.props=a,r.state=R,r.context=g,a=I):(typeof r.componentDidUpdate!="function"||u===e.memoizedProps&&A===e.memoizedState||(t.flags|=4),typeof r.getSnapshotBeforeUpdate!="function"||u===e.memoizedProps&&A===e.memoizedState||(t.flags|=1024),a=!1)}return r=a,_o(e,t),a=(t.flags&128)!==0,r||a?(r=t.stateNode,i=a&&typeof i.getDerivedStateFromError!="function"?null:r.render(),t.flags|=1,e!==null&&a?(t.child=Jn(t,e.child,null,o),t.child=Jn(t,null,i,o)):Ve(e,t,i,o),t.memoizedState=r.state,e=t.child):e=en(e,t,o),e}function Vd(e,t,i,a){return qn(),t.flags|=256,Ve(e,t,i,a),t.child}var cl={dehydrated:null,treeContext:null,retryLane:0,hydrationErrors:null};function ul(e){return{baseLanes:e,cachePool:zu()}}function dl(e,t,i){return e=e!==null?e.childLanes&~i:0,t&&(e|=gt),e}function Kd(e,t,i){var a=t.pendingProps,o=!1,r=(t.flags&128)!==0,u;if((u=r)||(u=e!==null&&e.memoizedState===null?!1:(He.current&2)!==0),u&&(o=!0,t.flags&=-129),u=(t.flags&32)!==0,t.flags&=-33,e===null){if(ue){if(o?vn(t):wn(),(e=Fe)?(e=ip(e,Nt),e=e!==null&&e.data!=="&"?e:null,e!==null&&(t.memoizedState={dehydrated:e,treeContext:gn!==null?{id:Pt,overflow:Gt}:null,retryLane:536870912,hydrationErrors:null},i=Iu(e),i.return=t,t.child=i,_e=t,Fe=null)):e=null,e===null)throw bn(t);return ql(e)?t.lanes=32:t.lanes=536870912,null}var h=a.children;return a=a.fallback,o?(wn(),o=t.mode,h=qo({mode:"hidden",children:h},o),a=_n(a,o,i,null),h.return=t,a.return=t,h.sibling=a,t.child=h,a=t.child,a.memoizedState=ul(i),a.childLanes=dl(e,u,i),t.memoizedState=cl,wa(null,a)):(vn(t),hl(t,h))}var g=e.memoizedState;if(g!==null&&(h=g.dehydrated,h!==null)){if(r)t.flags&256?(vn(t),t.flags&=-257,t=pl(e,t,i)):t.memoizedState!==null?(wn(),t.child=e.child,t.flags|=128,t=null):(wn(),h=a.fallback,o=t.mode,a=qo({mode:"visible",children:a.children},o),h=_n(h,o,i,null),h.flags|=2,a.return=t,h.return=t,a.sibling=h,t.child=a,Jn(t,e.child,null,i),a=t.child,a.memoizedState=ul(i),a.childLanes=dl(e,u,i),t.memoizedState=cl,t=wa(null,a));else if(vn(t),ql(h)){if(u=h.nextSibling&&h.nextSibling.dataset,u)var w=u.dgst;u=w,a=Error(l(419)),a.stack="",a.digest=u,ha({value:a,source:null,stack:null}),t=pl(e,t,i)}else if(je||Si(e,t,i,!1),u=(i&e.childLanes)!==0,je||u){if(u=Re,u!==null&&(a=Hc(u,i),a!==0&&a!==g.retryLane))throw g.retryLane=a,$n(e,a),st(u,e,a),sl;_l(h)||nr(),t=pl(e,t,i)}else _l(h)?(t.flags|=192,t.child=e.child,t=null):(e=g.treeContext,Fe=Ft(h.nextSibling),_e=t,ue=!0,yn=null,Nt=!1,e!==null&&Lu(t,e),t=hl(t,a.children),t.flags|=4096);return t}return o?(wn(),h=a.fallback,o=t.mode,g=e.child,w=g.sibling,a=Vt(g,{mode:"hidden",children:a.children}),a.subtreeFlags=g.subtreeFlags&65011712,w!==null?h=Vt(w,h):(h=_n(h,o,i,null),h.flags|=2),h.return=t,a.return=t,a.sibling=h,t.child=a,wa(null,a),a=t.child,h=e.child.memoizedState,h===null?h=ul(i):(o=h.cachePool,o!==null?(g=ze._currentValue,o=o.parent!==g?{parent:g,pool:g}:o):o=zu(),h={baseLanes:h.baseLanes|i,cachePool:o}),a.memoizedState=h,a.childLanes=dl(e,u,i),t.memoizedState=cl,wa(e.child,a)):(vn(t),i=e.child,e=i.sibling,i=Vt(i,{mode:"visible",children:a.children}),i.return=t,i.sibling=null,e!==null&&(u=t.deletions,u===null?(t.deletions=[e],t.flags|=16):u.push(e)),t.child=i,t.memoizedState=null,i)}function hl(e,t){return t=qo({mode:"visible",children:t},e.mode),t.return=e,e.child=t}function qo(e,t){return e=ht(22,e,null,t),e.lanes=0,e}function pl(e,t,i){return Jn(t,e.child,null,i),e=hl(t,t.pendingProps.children),e.flags|=2,t.memoizedState=null,e}function Zd(e,t,i){e.lanes|=t;var a=e.alternate;a!==null&&(a.lanes|=t),Is(e.return,t,i)}function fl(e,t,i,a,o,r){var u=e.memoizedState;u===null?e.memoizedState={isBackwards:t,rendering:null,renderingStartTime:0,last:a,tail:i,tailMode:o,treeForkCount:r}:(u.isBackwards=t,u.rendering=null,u.renderingStartTime=0,u.last=a,u.tail=i,u.tailMode=o,u.treeForkCount=r)}function Xd(e,t,i){var a=t.pendingProps,o=a.revealOrder,r=a.tail;a=a.children;var u=He.current,h=(u&2)!==0;if(h?(u=u&1|2,t.flags|=128):u&=1,P(He,u),Ve(e,t,a,i),a=ue?da:0,!h&&e!==null&&(e.flags&128)!==0)e:for(e=t.child;e!==null;){if(e.tag===13)e.memoizedState!==null&&Zd(e,i,t);else if(e.tag===19)Zd(e,i,t);else if(e.child!==null){e.child.return=e,e=e.child;continue}if(e===t)break e;for(;e.sibling===null;){if(e.return===null||e.return===t)break e;e=e.return}e.sibling.return=e.return,e=e.sibling}switch(o){case"forwards":for(i=t.child,o=null;i!==null;)e=i.alternate,e!==null&&Ho(e)===null&&(o=i),i=i.sibling;i=o,i===null?(o=t.child,t.child=null):(o=i.sibling,i.sibling=null),fl(t,!1,o,i,r,a);break;case"backwards":case"unstable_legacy-backwards":for(i=null,o=t.child,t.child=null;o!==null;){if(e=o.alternate,e!==null&&Ho(e)===null){t.child=o;break}e=o.sibling,o.sibling=i,i=o,o=e}fl(t,!0,i,null,r,a);break;case"together":fl(t,!1,null,null,void 0,a);break;default:t.memoizedState=null}return t.child}function en(e,t,i){if(e!==null&&(t.dependencies=e.dependencies),Nn|=t.lanes,(i&t.childLanes)===0)if(e!==null){if(Si(e,t,i,!1),(i&t.childLanes)===0)return null}else return null;if(e!==null&&t.child!==e.child)throw Error(l(153));if(t.child!==null){for(e=t.child,i=Vt(e,e.pendingProps),t.child=i,i.return=t;e.sibling!==null;)e=e.sibling,i=i.sibling=Vt(e,e.pendingProps),i.return=t;i.sibling=null}return t.child}function ml(e,t){return(e.lanes&t)!==0?!0:(e=e.dependencies,!!(e!==null&&No(e)))}function $m(e,t,i){switch(t.tag){case 3:Je(t,t.stateNode.containerInfo),Tn(t,ze,e.memoizedState.cache),qn();break;case 27:case 5:Zi(t);break;case 4:Je(t,t.stateNode.containerInfo);break;case 10:Tn(t,t.type,t.memoizedProps.value);break;case 31:if(t.memoizedState!==null)return t.flags|=128,Ps(t),null;break;case 13:var a=t.memoizedState;if(a!==null)return a.dehydrated!==null?(vn(t),t.flags|=128,null):(i&t.child.childLanes)!==0?Kd(e,t,i):(vn(t),e=en(e,t,i),e!==null?e.sibling:null);vn(t);break;case 19:var o=(e.flags&128)!==0;if(a=(i&t.childLanes)!==0,a||(Si(e,t,i,!1),a=(i&t.childLanes)!==0),o){if(a)return Xd(e,t,i);t.flags|=128}if(o=t.memoizedState,o!==null&&(o.rendering=null,o.tail=null,o.lastEffect=null),P(He,He.current),a)break;return null;case 22:return t.lanes=0,Yd(e,t,i,t.pendingProps);case 24:Tn(t,ze,e.memoizedState.cache)}return en(e,t,i)}function Qd(e,t,i){if(e!==null)if(e.memoizedProps!==t.pendingProps)je=!0;else{if(!ml(e,i)&&(t.flags&128)===0)return je=!1,$m(e,t,i);je=(e.flags&131072)!==0}else je=!1,ue&&(t.flags&1048576)!==0&&xu(t,da,t.index);switch(t.lanes=0,t.tag){case 16:e:{var a=t.pendingProps;if(e=Xn(t.elementType),t.type=e,typeof e=="function")Es(e)?(a=ti(e,a),t.tag=1,t=qd(null,t,e,a,i)):(t.tag=0,t=ll(null,t,e,a,i));else{if(e!=null){var o=e.$$typeof;if(o===se){t.tag=11,t=Pd(null,t,e,a,i);break e}else if(o===X){t.tag=14,t=Gd(null,t,e,a,i);break e}}throw t=Dt(e)||e,Error(l(306,t,""))}}return t;case 0:return ll(e,t,t.type,t.pendingProps,i);case 1:return a=t.type,o=ti(a,t.pendingProps),qd(e,t,a,o,i);case 3:e:{if(Je(t,t.stateNode.containerInfo),e===null)throw Error(l(387));a=t.pendingProps;var r=t.memoizedState;o=r.element,Hs(e,t),Ta(t,a,null,i);var u=t.memoizedState;if(a=u.cache,Tn(t,ze,a),a!==r.cache&&Fs(t,[ze],i,!0),ba(),a=u.element,r.isDehydrated)if(r={element:a,isDehydrated:!1,cache:u.cache},t.updateQueue.baseState=r,t.memoizedState=r,t.flags&256){t=Vd(e,t,a,i);break e}else if(a!==o){o=wt(Error(l(424)),t),ha(o),t=Vd(e,t,a,i);break e}else for(e=t.stateNode.containerInfo,e.nodeType===9?e=e.body:e=e.nodeName==="HTML"?e.ownerDocument.body:e,Fe=Ft(e.firstChild),_e=t,ue=!0,yn=null,Nt=!0,i=Yu(t,null,a,i),t.child=i;i;)i.flags=i.flags&-3|4096,i=i.sibling;else{if(qn(),a===o){t=en(e,t,i);break e}Ve(e,t,a,i)}t=t.child}return t;case 26:return _o(e,t),e===null?(i=cp(t.type,null,t.pendingProps,null))?t.memoizedState=i:ue||(i=t.type,e=t.pendingProps,a=cr(ae.current).createElement(i),a[$e]=t,a[tt]=e,Ke(a,i,e),Be(a),t.stateNode=a):t.memoizedState=cp(t.type,e.memoizedProps,t.pendingProps,e.memoizedState),null;case 27:return Zi(t),e===null&&ue&&(a=t.stateNode=rp(t.type,t.pendingProps,ae.current),_e=t,Nt=!0,o=Fe,Cn(t.type)?(Vl=o,Fe=Ft(a.firstChild)):Fe=o),Ve(e,t,t.pendingProps.children,i),_o(e,t),e===null&&(t.flags|=4194304),t.child;case 5:return e===null&&ue&&((o=a=Fe)&&(a=Og(a,t.type,t.pendingProps,Nt),a!==null?(t.stateNode=a,_e=t,Fe=Ft(a.firstChild),Nt=!1,o=!0):o=!1),o||bn(t)),Zi(t),o=t.type,r=t.pendingProps,u=e!==null?e.memoizedProps:null,a=r.children,Yl(o,r)?a=null:u!==null&&Yl(o,u)&&(t.flags|=32),t.memoizedState!==null&&(o=Bs(e,t,Mm,null,null,i),ja._currentValue=o),_o(e,t),Ve(e,t,a,i),t.child;case 6:return e===null&&ue&&((e=i=Fe)&&(i=Sg(i,t.pendingProps,Nt),i!==null?(t.stateNode=i,_e=t,Fe=null,e=!0):e=!1),e||bn(t)),null;case 13:return Kd(e,t,i);case 4:return Je(t,t.stateNode.containerInfo),a=t.pendingProps,e===null?t.child=Jn(t,null,a,i):Ve(e,t,a,i),t.child;case 11:return Pd(e,t,t.type,t.pendingProps,i);case 7:return Ve(e,t,t.pendingProps,i),t.child;case 8:return Ve(e,t,t.pendingProps.children,i),t.child;case 12:return Ve(e,t,t.pendingProps.children,i),t.child;case 10:return a=t.pendingProps,Tn(t,t.type,a.value),Ve(e,t,a.children,i),t.child;case 9:return o=t.type._context,a=t.pendingProps.children,Kn(t),o=qe(o),a=a(o),t.flags|=1,Ve(e,t,a,i),t.child;case 14:return Gd(e,t,t.type,t.pendingProps,i);case 15:return Bd(e,t,t.type,t.pendingProps,i);case 19:return Xd(e,t,i);case 31:return Wm(e,t,i);case 22:return Yd(e,t,i,t.pendingProps);case 24:return Kn(t),a=qe(ze),e===null?(o=Cs(),o===null&&(o=Re,r=xs(),o.pooledCache=r,r.refCount++,r!==null&&(o.pooledCacheLanes|=i),o=r),t.memoizedState={parent:a,cache:o},ks(t),Tn(t,ze,o)):((e.lanes&i)!==0&&(Hs(e,t),Ta(t,null,null,i),ba()),o=e.memoizedState,r=t.memoizedState,o.parent!==a?(o={parent:a,cache:a},t.memoizedState=o,t.lanes===0&&(t.memoizedState=t.updateQueue.baseState=o),Tn(t,ze,a)):(a=r.cache,Tn(t,ze,a),a!==o.cache&&Fs(t,[ze],i,!0))),Ve(e,t,t.pendingProps.children,i),t.child;case 29:throw t.pendingProps}throw Error(l(156,t.tag))}function tn(e){e.flags|=4}function gl(e,t,i,a,o){if((t=(e.mode&32)!==0)&&(t=!1),t){if(e.flags|=16777216,(o&335544128)===o)if(e.stateNode.complete)e.flags|=8192;else if(Ah())e.flags|=8192;else throw Qn=Lo,Ds}else e.flags&=-16777217}function Jd(e,t){if(t.type!=="stylesheet"||(t.state.loading&4)!==0)e.flags&=-16777217;else if(e.flags|=16777216,!fp(t))if(Ah())e.flags|=8192;else throw Qn=Lo,Ds}function Vo(e,t){t!==null&&(e.flags|=4),e.flags&16384&&(t=e.tag!==22?Cc():536870912,e.lanes|=t,ki|=t)}function Aa(e,t){if(!ue)switch(e.tailMode){case"hidden":t=e.tail;for(var i=null;t!==null;)t.alternate!==null&&(i=t),t=t.sibling;i===null?e.tail=null:i.sibling=null;break;case"collapsed":i=e.tail;for(var a=null;i!==null;)i.alternate!==null&&(a=i),i=i.sibling;a===null?t||e.tail===null?e.tail=null:e.tail.sibling=null:a.sibling=null}}function xe(e){var t=e.alternate!==null&&e.alternate.child===e.child,i=0,a=0;if(t)for(var o=e.child;o!==null;)i|=o.lanes|o.childLanes,a|=o.subtreeFlags&65011712,a|=o.flags&65011712,o.return=e,o=o.sibling;else for(o=e.child;o!==null;)i|=o.lanes|o.childLanes,a|=o.subtreeFlags,a|=o.flags,o.return=e,o=o.sibling;return e.subtreeFlags|=a,e.childLanes=i,t}function _m(e,t,i){var a=t.pendingProps;switch(ws(t),t.tag){case 16:case 15:case 0:case 11:case 7:case 8:case 12:case 9:case 14:return xe(t),null;case 1:return xe(t),null;case 3:return i=t.stateNode,a=null,e!==null&&(a=e.memoizedState.cache),t.memoizedState.cache!==a&&(t.flags|=2048),Xt(ze),ke(),i.pendingContext&&(i.context=i.pendingContext,i.pendingContext=null),(e===null||e.child===null)&&(Oi(t)?tn(t):e===null||e.memoizedState.isDehydrated&&(t.flags&256)===0||(t.flags|=1024,Rs())),xe(t),null;case 26:var o=t.type,r=t.memoizedState;return e===null?(tn(t),r!==null?(xe(t),Jd(t,r)):(xe(t),gl(t,o,null,a,i))):r?r!==e.memoizedState?(tn(t),xe(t),Jd(t,r)):(xe(t),t.flags&=-16777217):(e=e.memoizedProps,e!==a&&tn(t),xe(t),gl(t,o,e,a,i)),null;case 27:if(ao(t),i=ae.current,o=t.type,e!==null&&t.stateNode!=null)e.memoizedProps!==a&&tn(t);else{if(!a){if(t.stateNode===null)throw Error(l(166));return xe(t),null}e=W.current,Oi(t)?Cu(t):(e=rp(o,a,i),t.stateNode=e,tn(t))}return xe(t),null;case 5:if(ao(t),o=t.type,e!==null&&t.stateNode!=null)e.memoizedProps!==a&&tn(t);else{if(!a){if(t.stateNode===null)throw Error(l(166));return xe(t),null}if(r=W.current,Oi(t))Cu(t);else{var u=cr(ae.current);switch(r){case 1:r=u.createElementNS("http://www.w3.org/2000/svg",o);break;case 2:r=u.createElementNS("http://www.w3.org/1998/Math/MathML",o);break;default:switch(o){case"svg":r=u.createElementNS("http://www.w3.org/2000/svg",o);break;case"math":r=u.createElementNS("http://www.w3.org/1998/Math/MathML",o);break;case"script":r=u.createElement("div"),r.innerHTML="<script><\/script>",r=r.removeChild(r.firstChild);break;case"select":r=typeof a.is=="string"?u.createElement("select",{is:a.is}):u.createElement("select"),a.multiple?r.multiple=!0:a.size&&(r.size=a.size);break;default:r=typeof a.is=="string"?u.createElement(o,{is:a.is}):u.createElement(o)}}r[$e]=t,r[tt]=a;e:for(u=t.child;u!==null;){if(u.tag===5||u.tag===6)r.appendChild(u.stateNode);else if(u.tag!==4&&u.tag!==27&&u.child!==null){u.child.return=u,u=u.child;continue}if(u===t)break e;for(;u.sibling===null;){if(u.return===null||u.return===t)break e;u=u.return}u.sibling.return=u.return,u=u.sibling}t.stateNode=r;e:switch(Ke(r,o,a),o){case"button":case"input":case"select":case"textarea":a=!!a.autoFocus;break e;case"img":a=!0;break e;default:a=!1}a&&tn(t)}}return xe(t),gl(t,t.type,e===null?null:e.memoizedProps,t.pendingProps,i),null;case 6:if(e&&t.stateNode!=null)e.memoizedProps!==a&&tn(t);else{if(typeof a!="string"&&t.stateNode===null)throw Error(l(166));if(e=ae.current,Oi(t)){if(e=t.stateNode,i=t.memoizedProps,a=null,o=_e,o!==null)switch(o.tag){case 27:case 5:a=o.memoizedProps}e[$e]=t,e=!!(e.nodeValue===i||a!==null&&a.suppressHydrationWarning===!0||Kh(e.nodeValue,i)),e||bn(t,!0)}else e=cr(e).createTextNode(a),e[$e]=t,t.stateNode=e}return xe(t),null;case 31:if(i=t.memoizedState,e===null||e.memoizedState!==null){if(a=Oi(t),i!==null){if(e===null){if(!a)throw Error(l(318));if(e=t.memoizedState,e=e!==null?e.dehydrated:null,!e)throw Error(l(557));e[$e]=t}else qn(),(t.flags&128)===0&&(t.memoizedState=null),t.flags|=4;xe(t),e=!1}else i=Rs(),e!==null&&e.memoizedState!==null&&(e.memoizedState.hydrationErrors=i),e=!0;if(!e)return t.flags&256?(ft(t),t):(ft(t),null);if((t.flags&128)!==0)throw Error(l(558))}return xe(t),null;case 13:if(a=t.memoizedState,e===null||e.memoizedState!==null&&e.memoizedState.dehydrated!==null){if(o=Oi(t),a!==null&&a.dehydrated!==null){if(e===null){if(!o)throw Error(l(318));if(o=t.memoizedState,o=o!==null?o.dehydrated:null,!o)throw Error(l(317));o[$e]=t}else qn(),(t.flags&128)===0&&(t.memoizedState=null),t.flags|=4;xe(t),o=!1}else o=Rs(),e!==null&&e.memoizedState!==null&&(e.memoizedState.hydrationErrors=o),o=!0;if(!o)return t.flags&256?(ft(t),t):(ft(t),null)}return ft(t),(t.flags&128)!==0?(t.lanes=i,t):(i=a!==null,e=e!==null&&e.memoizedState!==null,i&&(a=t.child,o=null,a.alternate!==null&&a.alternate.memoizedState!==null&&a.alternate.memoizedState.cachePool!==null&&(o=a.alternate.memoizedState.cachePool.pool),r=null,a.memoizedState!==null&&a.memoizedState.cachePool!==null&&(r=a.memoizedState.cachePool.pool),r!==o&&(a.flags|=2048)),i!==e&&i&&(t.child.flags|=8192),Vo(t,t.updateQueue),xe(t),null);case 4:return ke(),e===null&&Ul(t.stateNode.containerInfo),xe(t),null;case 10:return Xt(t.type),xe(t),null;case 19:if(D(He),a=t.memoizedState,a===null)return xe(t),null;if(o=(t.flags&128)!==0,r=a.rendering,r===null)if(o)Aa(a,!1);else{if(De!==0||e!==null&&(e.flags&128)!==0)for(e=t.child;e!==null;){if(r=Ho(e),r!==null){for(t.flags|=128,Aa(a,!1),e=r.updateQueue,t.updateQueue=e,Vo(t,e),t.subtreeFlags=0,e=i,i=t.child;i!==null;)Nu(i,e),i=i.sibling;return P(He,He.current&1|2),ue&&Kt(t,a.treeForkCount),t.child}e=e.sibling}a.tail!==null&&lt()>Jo&&(t.flags|=128,o=!0,Aa(a,!1),t.lanes=4194304)}else{if(!o)if(e=Ho(r),e!==null){if(t.flags|=128,o=!0,e=e.updateQueue,t.updateQueue=e,Vo(t,e),Aa(a,!0),a.tail===null&&a.tailMode==="hidden"&&!r.alternate&&!ue)return xe(t),null}else 2*lt()-a.renderingStartTime>Jo&&i!==536870912&&(t.flags|=128,o=!0,Aa(a,!1),t.lanes=4194304);a.isBackwards?(r.sibling=t.child,t.child=r):(e=a.last,e!==null?e.sibling=r:t.child=r,a.last=r)}return a.tail!==null?(e=a.tail,a.rendering=e,a.tail=e.sibling,a.renderingStartTime=lt(),e.sibling=null,i=He.current,P(He,o?i&1|2:i&1),ue&&Kt(t,a.treeForkCount),e):(xe(t),null);case 22:case 23:return ft(t),js(),a=t.memoizedState!==null,e!==null?e.memoizedState!==null!==a&&(t.flags|=8192):a&&(t.flags|=8192),a?(i&536870912)!==0&&(t.flags&128)===0&&(xe(t),t.subtreeFlags&6&&(t.flags|=8192)):xe(t),i=t.updateQueue,i!==null&&Vo(t,i.retryQueue),i=null,e!==null&&e.memoizedState!==null&&e.memoizedState.cachePool!==null&&(i=e.memoizedState.cachePool.pool),a=null,t.memoizedState!==null&&t.memoizedState.cachePool!==null&&(a=t.memoizedState.cachePool.pool),a!==i&&(t.flags|=2048),e!==null&&D(Zn),null;case 24:return i=null,e!==null&&(i=e.memoizedState.cache),t.memoizedState.cache!==i&&(t.flags|=2048),Xt(ze),xe(t),null;case 25:return null;case 30:return null}throw Error(l(156,t.tag))}function qm(e,t){switch(ws(t),t.tag){case 1:return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 3:return Xt(ze),ke(),e=t.flags,(e&65536)!==0&&(e&128)===0?(t.flags=e&-65537|128,t):null;case 26:case 27:case 5:return ao(t),null;case 31:if(t.memoizedState!==null){if(ft(t),t.alternate===null)throw Error(l(340));qn()}return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 13:if(ft(t),e=t.memoizedState,e!==null&&e.dehydrated!==null){if(t.alternate===null)throw Error(l(340));qn()}return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 19:return D(He),null;case 4:return ke(),null;case 10:return Xt(t.type),null;case 22:case 23:return ft(t),js(),e!==null&&D(Zn),e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 24:return Xt(ze),null;case 25:return null;default:return null}}function eh(e,t){switch(ws(t),t.tag){case 3:Xt(ze),ke();break;case 26:case 27:case 5:ao(t);break;case 4:ke();break;case 31:t.memoizedState!==null&&ft(t);break;case 13:ft(t);break;case 19:D(He);break;case 10:Xt(t.type);break;case 22:case 23:ft(t),js(),e!==null&&D(Zn);break;case 24:Xt(ze)}}function Ra(e,t){try{var i=t.updateQueue,a=i!==null?i.lastEffect:null;if(a!==null){var o=a.next;i=o;do{if((i.tag&e)===e){a=void 0;var r=i.create,u=i.inst;a=r(),u.destroy=a}i=i.next}while(i!==o)}}catch(h){Ee(t,t.return,h)}}function An(e,t,i){try{var a=t.updateQueue,o=a!==null?a.lastEffect:null;if(o!==null){var r=o.next;a=r;do{if((a.tag&e)===e){var u=a.inst,h=u.destroy;if(h!==void 0){u.destroy=void 0,o=t;var g=i,w=h;try{w()}catch(I){Ee(o,g,I)}}}a=a.next}while(a!==r)}}catch(I){Ee(t,t.return,I)}}function th(e){var t=e.updateQueue;if(t!==null){var i=e.stateNode;try{$u(t,i)}catch(a){Ee(e,e.return,a)}}}function nh(e,t,i){i.props=ti(e.type,e.memoizedProps),i.state=e.memoizedState;try{i.componentWillUnmount()}catch(a){Ee(e,t,a)}}function Na(e,t){try{var i=e.ref;if(i!==null){switch(e.tag){case 26:case 27:case 5:var a=e.stateNode;break;case 30:a=e.stateNode;break;default:a=e.stateNode}typeof i=="function"?e.refCleanup=i(a):i.current=a}}catch(o){Ee(e,t,o)}}function Bt(e,t){var i=e.ref,a=e.refCleanup;if(i!==null)if(typeof a=="function")try{a()}catch(o){Ee(e,t,o)}finally{e.refCleanup=null,e=e.alternate,e!=null&&(e.refCleanup=null)}else if(typeof i=="function")try{i(null)}catch(o){Ee(e,t,o)}else i.current=null}function ih(e){var t=e.type,i=e.memoizedProps,a=e.stateNode;try{e:switch(t){case"button":case"input":case"select":case"textarea":i.autoFocus&&a.focus();break e;case"img":i.src?a.src=i.src:i.srcSet&&(a.srcset=i.srcSet)}}catch(o){Ee(e,e.return,o)}}function yl(e,t,i){try{var a=e.stateNode;mg(a,e.type,i,t),a[tt]=t}catch(o){Ee(e,e.return,o)}}function ah(e){return e.tag===5||e.tag===3||e.tag===26||e.tag===27&&Cn(e.type)||e.tag===4}function bl(e){e:for(;;){for(;e.sibling===null;){if(e.return===null||ah(e.return))return null;e=e.return}for(e.sibling.return=e.return,e=e.sibling;e.tag!==5&&e.tag!==6&&e.tag!==18;){if(e.tag===27&&Cn(e.type)||e.flags&2||e.child===null||e.tag===4)continue e;e.child.return=e,e=e.child}if(!(e.flags&2))return e.stateNode}}function Tl(e,t,i){var a=e.tag;if(a===5||a===6)e=e.stateNode,t?(i.nodeType===9?i.body:i.nodeName==="HTML"?i.ownerDocument.body:i).insertBefore(e,t):(t=i.nodeType===9?i.body:i.nodeName==="HTML"?i.ownerDocument.body:i,t.appendChild(e),i=i._reactRootContainer,i!=null||t.onclick!==null||(t.onclick=_t));else if(a!==4&&(a===27&&Cn(e.type)&&(i=e.stateNode,t=null),e=e.child,e!==null))for(Tl(e,t,i),e=e.sibling;e!==null;)Tl(e,t,i),e=e.sibling}function Ko(e,t,i){var a=e.tag;if(a===5||a===6)e=e.stateNode,t?i.insertBefore(e,t):i.appendChild(e);else if(a!==4&&(a===27&&Cn(e.type)&&(i=e.stateNode),e=e.child,e!==null))for(Ko(e,t,i),e=e.sibling;e!==null;)Ko(e,t,i),e=e.sibling}function oh(e){var t=e.stateNode,i=e.memoizedProps;try{for(var a=e.type,o=t.attributes;o.length;)t.removeAttributeNode(o[0]);Ke(t,a,i),t[$e]=e,t[tt]=i}catch(r){Ee(e,e.return,r)}}var nn=!1,Pe=!1,El=!1,rh=typeof WeakSet=="function"?WeakSet:Set,Ye=null;function Vm(e,t){if(e=e.containerInfo,Gl=gr,e=bu(e),ps(e)){if("selectionStart"in e)var i={start:e.selectionStart,end:e.selectionEnd};else e:{i=(i=e.ownerDocument)&&i.defaultView||window;var a=i.getSelection&&i.getSelection();if(a&&a.rangeCount!==0){i=a.anchorNode;var o=a.anchorOffset,r=a.focusNode;a=a.focusOffset;try{i.nodeType,r.nodeType}catch{i=null;break e}var u=0,h=-1,g=-1,w=0,I=0,C=e,A=null;t:for(;;){for(var R;C!==i||o!==0&&C.nodeType!==3||(h=u+o),C!==r||a!==0&&C.nodeType!==3||(g=u+a),C.nodeType===3&&(u+=C.nodeValue.length),(R=C.firstChild)!==null;)A=C,C=R;for(;;){if(C===e)break t;if(A===i&&++w===o&&(h=u),A===r&&++I===a&&(g=u),(R=C.nextSibling)!==null)break;C=A,A=C.parentNode}C=R}i=h===-1||g===-1?null:{start:h,end:g}}else i=null}i=i||{start:0,end:0}}else i=null;for(Bl={focusedElem:e,selectionRange:i},gr=!1,Ye=t;Ye!==null;)if(t=Ye,e=t.child,(t.subtreeFlags&1028)!==0&&e!==null)e.return=t,Ye=e;else for(;Ye!==null;){switch(t=Ye,r=t.alternate,e=t.flags,t.tag){case 0:if((e&4)!==0&&(e=t.updateQueue,e=e!==null?e.events:null,e!==null))for(i=0;i<e.length;i++)o=e[i],o.ref.impl=o.nextImpl;break;case 11:case 15:break;case 1:if((e&1024)!==0&&r!==null){e=void 0,i=t,o=r.memoizedProps,r=r.memoizedState,a=i.stateNode;try{var G=ti(i.type,o);e=a.getSnapshotBeforeUpdate(G,r),a.__reactInternalSnapshotBeforeUpdate=e}catch(V){Ee(i,i.return,V)}}break;case 3:if((e&1024)!==0){if(e=t.stateNode.containerInfo,i=e.nodeType,i===9)$l(e);else if(i===1)switch(e.nodeName){case"HEAD":case"HTML":case"BODY":$l(e);break;default:e.textContent=""}}break;case 5:case 26:case 27:case 6:case 4:case 17:break;default:if((e&1024)!==0)throw Error(l(163))}if(e=t.sibling,e!==null){e.return=t.return,Ye=e;break}Ye=t.return}}function sh(e,t,i){var a=i.flags;switch(i.tag){case 0:case 11:case 15:on(e,i),a&4&&Ra(5,i);break;case 1:if(on(e,i),a&4)if(e=i.stateNode,t===null)try{e.componentDidMount()}catch(u){Ee(i,i.return,u)}else{var o=ti(i.type,t.memoizedProps);t=t.memoizedState;try{e.componentDidUpdate(o,t,e.__reactInternalSnapshotBeforeUpdate)}catch(u){Ee(i,i.return,u)}}a&64&&th(i),a&512&&Na(i,i.return);break;case 3:if(on(e,i),a&64&&(e=i.updateQueue,e!==null)){if(t=null,i.child!==null)switch(i.child.tag){case 27:case 5:t=i.child.stateNode;break;case 1:t=i.child.stateNode}try{$u(e,t)}catch(u){Ee(i,i.return,u)}}break;case 27:t===null&&a&4&&oh(i);case 26:case 5:on(e,i),t===null&&a&4&&ih(i),a&512&&Na(i,i.return);break;case 12:on(e,i);break;case 31:on(e,i),a&4&&uh(e,i);break;case 13:on(e,i),a&4&&dh(e,i),a&64&&(e=i.memoizedState,e!==null&&(e=e.dehydrated,e!==null&&(i=ig.bind(null,i),vg(e,i))));break;case 22:if(a=i.memoizedState!==null||nn,!a){t=t!==null&&t.memoizedState!==null||Pe,o=nn;var r=Pe;nn=a,(Pe=t)&&!r?rn(e,i,(i.subtreeFlags&8772)!==0):on(e,i),nn=o,Pe=r}break;case 30:break;default:on(e,i)}}function lh(e){var t=e.alternate;t!==null&&(e.alternate=null,lh(t)),e.child=null,e.deletions=null,e.sibling=null,e.tag===5&&(t=e.stateNode,t!==null&&Zr(t)),e.stateNode=null,e.return=null,e.dependencies=null,e.memoizedProps=null,e.memoizedState=null,e.pendingProps=null,e.stateNode=null,e.updateQueue=null}var Le=null,it=!1;function an(e,t,i){for(i=i.child;i!==null;)ch(e,t,i),i=i.sibling}function ch(e,t,i){if(ct&&typeof ct.onCommitFiberUnmount=="function")try{ct.onCommitFiberUnmount(Xi,i)}catch{}switch(i.tag){case 26:Pe||Bt(i,t),an(e,t,i),i.memoizedState?i.memoizedState.count--:i.stateNode&&(i=i.stateNode,i.parentNode.removeChild(i));break;case 27:Pe||Bt(i,t);var a=Le,o=it;Cn(i.type)&&(Le=i.stateNode,it=!1),an(e,t,i),Ma(i.stateNode),Le=a,it=o;break;case 5:Pe||Bt(i,t);case 6:if(a=Le,o=it,Le=null,an(e,t,i),Le=a,it=o,Le!==null)if(it)try{(Le.nodeType===9?Le.body:Le.nodeName==="HTML"?Le.ownerDocument.body:Le).removeChild(i.stateNode)}catch(r){Ee(i,t,r)}else try{Le.removeChild(i.stateNode)}catch(r){Ee(i,t,r)}break;case 18:Le!==null&&(it?(e=Le,tp(e.nodeType===9?e.body:e.nodeName==="HTML"?e.ownerDocument.body:e,i.stateNode),Bi(e)):tp(Le,i.stateNode));break;case 4:a=Le,o=it,Le=i.stateNode.containerInfo,it=!0,an(e,t,i),Le=a,it=o;break;case 0:case 11:case 14:case 15:An(2,i,t),Pe||An(4,i,t),an(e,t,i);break;case 1:Pe||(Bt(i,t),a=i.stateNode,typeof a.componentWillUnmount=="function"&&nh(i,t,a)),an(e,t,i);break;case 21:an(e,t,i);break;case 22:Pe=(a=Pe)||i.memoizedState!==null,an(e,t,i),Pe=a;break;default:an(e,t,i)}}function uh(e,t){if(t.memoizedState===null&&(e=t.alternate,e!==null&&(e=e.memoizedState,e!==null))){e=e.dehydrated;try{Bi(e)}catch(i){Ee(t,t.return,i)}}}function dh(e,t){if(t.memoizedState===null&&(e=t.alternate,e!==null&&(e=e.memoizedState,e!==null&&(e=e.dehydrated,e!==null))))try{Bi(e)}catch(i){Ee(t,t.return,i)}}function Km(e){switch(e.tag){case 31:case 13:case 19:var t=e.stateNode;return t===null&&(t=e.stateNode=new rh),t;case 22:return e=e.stateNode,t=e._retryCache,t===null&&(t=e._retryCache=new rh),t;default:throw Error(l(435,e.tag))}}function Zo(e,t){var i=Km(e);t.forEach(function(a){if(!i.has(a)){i.add(a);var o=ag.bind(null,e,a);a.then(o,o)}})}function at(e,t){var i=t.deletions;if(i!==null)for(var a=0;a<i.length;a++){var o=i[a],r=e,u=t,h=u;e:for(;h!==null;){switch(h.tag){case 27:if(Cn(h.type)){Le=h.stateNode,it=!1;break e}break;case 5:Le=h.stateNode,it=!1;break e;case 3:case 4:Le=h.stateNode.containerInfo,it=!0;break e}h=h.return}if(Le===null)throw Error(l(160));ch(r,u,o),Le=null,it=!1,r=o.alternate,r!==null&&(r.return=null),o.return=null}if(t.subtreeFlags&13886)for(t=t.child;t!==null;)hh(t,e),t=t.sibling}var Mt=null;function hh(e,t){var i=e.alternate,a=e.flags;switch(e.tag){case 0:case 11:case 14:case 15:at(t,e),ot(e),a&4&&(An(3,e,e.return),Ra(3,e),An(5,e,e.return));break;case 1:at(t,e),ot(e),a&512&&(Pe||i===null||Bt(i,i.return)),a&64&&nn&&(e=e.updateQueue,e!==null&&(a=e.callbacks,a!==null&&(i=e.shared.hiddenCallbacks,e.shared.hiddenCallbacks=i===null?a:i.concat(a))));break;case 26:var o=Mt;if(at(t,e),ot(e),a&512&&(Pe||i===null||Bt(i,i.return)),a&4){var r=i!==null?i.memoizedState:null;if(a=e.memoizedState,i===null)if(a===null)if(e.stateNode===null){e:{a=e.type,i=e.memoizedProps,o=o.ownerDocument||o;t:switch(a){case"title":r=o.getElementsByTagName("title")[0],(!r||r[ea]||r[$e]||r.namespaceURI==="http://www.w3.org/2000/svg"||r.hasAttribute("itemprop"))&&(r=o.createElement(a),o.head.insertBefore(r,o.querySelector("head > title"))),Ke(r,a,i),r[$e]=e,Be(r),a=r;break e;case"link":var u=hp("link","href",o).get(a+(i.href||""));if(u){for(var h=0;h<u.length;h++)if(r=u[h],r.getAttribute("href")===(i.href==null||i.href===""?null:i.href)&&r.getAttribute("rel")===(i.rel==null?null:i.rel)&&r.getAttribute("title")===(i.title==null?null:i.title)&&r.getAttribute("crossorigin")===(i.crossOrigin==null?null:i.crossOrigin)){u.splice(h,1);break t}}r=o.createElement(a),Ke(r,a,i),o.head.appendChild(r);break;case"meta":if(u=hp("meta","content",o).get(a+(i.content||""))){for(h=0;h<u.length;h++)if(r=u[h],r.getAttribute("content")===(i.content==null?null:""+i.content)&&r.getAttribute("name")===(i.name==null?null:i.name)&&r.getAttribute("property")===(i.property==null?null:i.property)&&r.getAttribute("http-equiv")===(i.httpEquiv==null?null:i.httpEquiv)&&r.getAttribute("charset")===(i.charSet==null?null:i.charSet)){u.splice(h,1);break t}}r=o.createElement(a),Ke(r,a,i),o.head.appendChild(r);break;default:throw Error(l(468,a))}r[$e]=e,Be(r),a=r}e.stateNode=a}else pp(o,e.type,e.stateNode);else e.stateNode=dp(o,a,e.memoizedProps);else r!==a?(r===null?i.stateNode!==null&&(i=i.stateNode,i.parentNode.removeChild(i)):r.count--,a===null?pp(o,e.type,e.stateNode):dp(o,a,e.memoizedProps)):a===null&&e.stateNode!==null&&yl(e,e.memoizedProps,i.memoizedProps)}break;case 27:at(t,e),ot(e),a&512&&(Pe||i===null||Bt(i,i.return)),i!==null&&a&4&&yl(e,e.memoizedProps,i.memoizedProps);break;case 5:if(at(t,e),ot(e),a&512&&(Pe||i===null||Bt(i,i.return)),e.flags&32){o=e.stateNode;try{di(o,"")}catch(G){Ee(e,e.return,G)}}a&4&&e.stateNode!=null&&(o=e.memoizedProps,yl(e,o,i!==null?i.memoizedProps:o)),a&1024&&(El=!0);break;case 6:if(at(t,e),ot(e),a&4){if(e.stateNode===null)throw Error(l(162));a=e.memoizedProps,i=e.stateNode;try{i.nodeValue=a}catch(G){Ee(e,e.return,G)}}break;case 3:if(hr=null,o=Mt,Mt=ur(t.containerInfo),at(t,e),Mt=o,ot(e),a&4&&i!==null&&i.memoizedState.isDehydrated)try{Bi(t.containerInfo)}catch(G){Ee(e,e.return,G)}El&&(El=!1,ph(e));break;case 4:a=Mt,Mt=ur(e.stateNode.containerInfo),at(t,e),ot(e),Mt=a;break;case 12:at(t,e),ot(e);break;case 31:at(t,e),ot(e),a&4&&(a=e.updateQueue,a!==null&&(e.updateQueue=null,Zo(e,a)));break;case 13:at(t,e),ot(e),e.child.flags&8192&&e.memoizedState!==null!=(i!==null&&i.memoizedState!==null)&&(Qo=lt()),a&4&&(a=e.updateQueue,a!==null&&(e.updateQueue=null,Zo(e,a)));break;case 22:o=e.memoizedState!==null;var g=i!==null&&i.memoizedState!==null,w=nn,I=Pe;if(nn=w||o,Pe=I||g,at(t,e),Pe=I,nn=w,ot(e),a&8192)e:for(t=e.stateNode,t._visibility=o?t._visibility&-2:t._visibility|1,o&&(i===null||g||nn||Pe||ni(e)),i=null,t=e;;){if(t.tag===5||t.tag===26){if(i===null){g=i=t;try{if(r=g.stateNode,o)u=r.style,typeof u.setProperty=="function"?u.setProperty("display","none","important"):u.display="none";else{h=g.stateNode;var C=g.memoizedProps.style,A=C!=null&&C.hasOwnProperty("display")?C.display:null;h.style.display=A==null||typeof A=="boolean"?"":(""+A).trim()}}catch(G){Ee(g,g.return,G)}}}else if(t.tag===6){if(i===null){g=t;try{g.stateNode.nodeValue=o?"":g.memoizedProps}catch(G){Ee(g,g.return,G)}}}else if(t.tag===18){if(i===null){g=t;try{var R=g.stateNode;o?np(R,!0):np(g.stateNode,!1)}catch(G){Ee(g,g.return,G)}}}else if((t.tag!==22&&t.tag!==23||t.memoizedState===null||t===e)&&t.child!==null){t.child.return=t,t=t.child;continue}if(t===e)break e;for(;t.sibling===null;){if(t.return===null||t.return===e)break e;i===t&&(i=null),t=t.return}i===t&&(i=null),t.sibling.return=t.return,t=t.sibling}a&4&&(a=e.updateQueue,a!==null&&(i=a.retryQueue,i!==null&&(a.retryQueue=null,Zo(e,i))));break;case 19:at(t,e),ot(e),a&4&&(a=e.updateQueue,a!==null&&(e.updateQueue=null,Zo(e,a)));break;case 30:break;case 21:break;default:at(t,e),ot(e)}}function ot(e){var t=e.flags;if(t&2){try{for(var i,a=e.return;a!==null;){if(ah(a)){i=a;break}a=a.return}if(i==null)throw Error(l(160));switch(i.tag){case 27:var o=i.stateNode,r=bl(e);Ko(e,r,o);break;case 5:var u=i.stateNode;i.flags&32&&(di(u,""),i.flags&=-33);var h=bl(e);Ko(e,h,u);break;case 3:case 4:var g=i.stateNode.containerInfo,w=bl(e);Tl(e,w,g);break;default:throw Error(l(161))}}catch(I){Ee(e,e.return,I)}e.flags&=-3}t&4096&&(e.flags&=-4097)}function ph(e){if(e.subtreeFlags&1024)for(e=e.child;e!==null;){var t=e;ph(t),t.tag===5&&t.flags&1024&&t.stateNode.reset(),e=e.sibling}}function on(e,t){if(t.subtreeFlags&8772)for(t=t.child;t!==null;)sh(e,t.alternate,t),t=t.sibling}function ni(e){for(e=e.child;e!==null;){var t=e;switch(t.tag){case 0:case 11:case 14:case 15:An(4,t,t.return),ni(t);break;case 1:Bt(t,t.return);var i=t.stateNode;typeof i.componentWillUnmount=="function"&&nh(t,t.return,i),ni(t);break;case 27:Ma(t.stateNode);case 26:case 5:Bt(t,t.return),ni(t);break;case 22:t.memoizedState===null&&ni(t);break;case 30:ni(t);break;default:ni(t)}e=e.sibling}}function rn(e,t,i){for(i=i&&(t.subtreeFlags&8772)!==0,t=t.child;t!==null;){var a=t.alternate,o=e,r=t,u=r.flags;switch(r.tag){case 0:case 11:case 15:rn(o,r,i),Ra(4,r);break;case 1:if(rn(o,r,i),a=r,o=a.stateNode,typeof o.componentDidMount=="function")try{o.componentDidMount()}catch(w){Ee(a,a.return,w)}if(a=r,o=a.updateQueue,o!==null){var h=a.stateNode;try{var g=o.shared.hiddenCallbacks;if(g!==null)for(o.shared.hiddenCallbacks=null,o=0;o<g.length;o++)Wu(g[o],h)}catch(w){Ee(a,a.return,w)}}i&&u&64&&th(r),Na(r,r.return);break;case 27:oh(r);case 26:case 5:rn(o,r,i),i&&a===null&&u&4&&ih(r),Na(r,r.return);break;case 12:rn(o,r,i);break;case 31:rn(o,r,i),i&&u&4&&uh(o,r);break;case 13:rn(o,r,i),i&&u&4&&dh(o,r);break;case 22:r.memoizedState===null&&rn(o,r,i),Na(r,r.return);break;case 30:break;default:rn(o,r,i)}t=t.sibling}}function Ol(e,t){var i=null;e!==null&&e.memoizedState!==null&&e.memoizedState.cachePool!==null&&(i=e.memoizedState.cachePool.pool),e=null,t.memoizedState!==null&&t.memoizedState.cachePool!==null&&(e=t.memoizedState.cachePool.pool),e!==i&&(e!=null&&e.refCount++,i!=null&&pa(i))}function Sl(e,t){e=null,t.alternate!==null&&(e=t.alternate.memoizedState.cache),t=t.memoizedState.cache,t!==e&&(t.refCount++,e!=null&&pa(e))}function zt(e,t,i,a){if(t.subtreeFlags&10256)for(t=t.child;t!==null;)fh(e,t,i,a),t=t.sibling}function fh(e,t,i,a){var o=t.flags;switch(t.tag){case 0:case 11:case 15:zt(e,t,i,a),o&2048&&Ra(9,t);break;case 1:zt(e,t,i,a);break;case 3:zt(e,t,i,a),o&2048&&(e=null,t.alternate!==null&&(e=t.alternate.memoizedState.cache),t=t.memoizedState.cache,t!==e&&(t.refCount++,e!=null&&pa(e)));break;case 12:if(o&2048){zt(e,t,i,a),e=t.stateNode;try{var r=t.memoizedProps,u=r.id,h=r.onPostCommit;typeof h=="function"&&h(u,t.alternate===null?"mount":"update",e.passiveEffectDuration,-0)}catch(g){Ee(t,t.return,g)}}else zt(e,t,i,a);break;case 31:zt(e,t,i,a);break;case 13:zt(e,t,i,a);break;case 23:break;case 22:r=t.stateNode,u=t.alternate,t.memoizedState!==null?r._visibility&2?zt(e,t,i,a):Ia(e,t):r._visibility&2?zt(e,t,i,a):(r._visibility|=2,Li(e,t,i,a,(t.subtreeFlags&10256)!==0||!1)),o&2048&&Ol(u,t);break;case 24:zt(e,t,i,a),o&2048&&Sl(t.alternate,t);break;default:zt(e,t,i,a)}}function Li(e,t,i,a,o){for(o=o&&((t.subtreeFlags&10256)!==0||!1),t=t.child;t!==null;){var r=e,u=t,h=i,g=a,w=u.flags;switch(u.tag){case 0:case 11:case 15:Li(r,u,h,g,o),Ra(8,u);break;case 23:break;case 22:var I=u.stateNode;u.memoizedState!==null?I._visibility&2?Li(r,u,h,g,o):Ia(r,u):(I._visibility|=2,Li(r,u,h,g,o)),o&&w&2048&&Ol(u.alternate,u);break;case 24:Li(r,u,h,g,o),o&&w&2048&&Sl(u.alternate,u);break;default:Li(r,u,h,g,o)}t=t.sibling}}function Ia(e,t){if(t.subtreeFlags&10256)for(t=t.child;t!==null;){var i=e,a=t,o=a.flags;switch(a.tag){case 22:Ia(i,a),o&2048&&Ol(a.alternate,a);break;case 24:Ia(i,a),o&2048&&Sl(a.alternate,a);break;default:Ia(i,a)}t=t.sibling}}var Fa=8192;function Ci(e,t,i){if(e.subtreeFlags&Fa)for(e=e.child;e!==null;)mh(e,t,i),e=e.sibling}function mh(e,t,i){switch(e.tag){case 26:Ci(e,t,i),e.flags&Fa&&e.memoizedState!==null&&Hg(i,Mt,e.memoizedState,e.memoizedProps);break;case 5:Ci(e,t,i);break;case 3:case 4:var a=Mt;Mt=ur(e.stateNode.containerInfo),Ci(e,t,i),Mt=a;break;case 22:e.memoizedState===null&&(a=e.alternate,a!==null&&a.memoizedState!==null?(a=Fa,Fa=16777216,Ci(e,t,i),Fa=a):Ci(e,t,i));break;default:Ci(e,t,i)}}function gh(e){var t=e.alternate;if(t!==null&&(e=t.child,e!==null)){t.child=null;do t=e.sibling,e.sibling=null,e=t;while(e!==null)}}function xa(e){var t=e.deletions;if((e.flags&16)!==0){if(t!==null)for(var i=0;i<t.length;i++){var a=t[i];Ye=a,bh(a,e)}gh(e)}if(e.subtreeFlags&10256)for(e=e.child;e!==null;)yh(e),e=e.sibling}function yh(e){switch(e.tag){case 0:case 11:case 15:xa(e),e.flags&2048&&An(9,e,e.return);break;case 3:xa(e);break;case 12:xa(e);break;case 22:var t=e.stateNode;e.memoizedState!==null&&t._visibility&2&&(e.return===null||e.return.tag!==13)?(t._visibility&=-3,Xo(e)):xa(e);break;default:xa(e)}}function Xo(e){var t=e.deletions;if((e.flags&16)!==0){if(t!==null)for(var i=0;i<t.length;i++){var a=t[i];Ye=a,bh(a,e)}gh(e)}for(e=e.child;e!==null;){switch(t=e,t.tag){case 0:case 11:case 15:An(8,t,t.return),Xo(t);break;case 22:i=t.stateNode,i._visibility&2&&(i._visibility&=-3,Xo(t));break;default:Xo(t)}e=e.sibling}}function bh(e,t){for(;Ye!==null;){var i=Ye;switch(i.tag){case 0:case 11:case 15:An(8,i,t);break;case 23:case 22:if(i.memoizedState!==null&&i.memoizedState.cachePool!==null){var a=i.memoizedState.cachePool.pool;a!=null&&a.refCount++}break;case 24:pa(i.memoizedState.cache)}if(a=i.child,a!==null)a.return=i,Ye=a;else e:for(i=e;Ye!==null;){a=Ye;var o=a.sibling,r=a.return;if(lh(a),a===i){Ye=null;break e}if(o!==null){o.return=r,Ye=o;break e}Ye=r}}}var Zm={getCacheForType:function(e){var t=qe(ze),i=t.data.get(e);return i===void 0&&(i=e(),t.data.set(e,i)),i},cacheSignal:function(){return qe(ze).controller.signal}},Xm=typeof WeakMap=="function"?WeakMap:Map,ye=0,Re=null,oe=null,le=0,Te=0,mt=null,Rn=!1,Di=!1,vl=!1,sn=0,De=0,Nn=0,ii=0,wl=0,gt=0,ki=0,La=null,rt=null,Al=!1,Qo=0,Th=0,Jo=1/0,er=null,In=null,Ge=0,Fn=null,Hi=null,ln=0,Rl=0,Nl=null,Eh=null,Ca=0,Il=null;function yt(){return(ye&2)!==0&&le!==0?le&-le:F.T!==null?kl():Mc()}function Oh(){if(gt===0)if((le&536870912)===0||ue){var e=so;so<<=1,(so&3932160)===0&&(so=262144),gt=e}else gt=536870912;return e=pt.current,e!==null&&(e.flags|=32),gt}function st(e,t,i){(e===Re&&(Te===2||Te===9)||e.cancelPendingCommit!==null)&&(Mi(e,0),xn(e,le,gt,!1)),Ji(e,i),((ye&2)===0||e!==Re)&&(e===Re&&((ye&2)===0&&(ii|=i),De===4&&xn(e,le,gt,!1)),Yt(e))}function Sh(e,t,i){if((ye&6)!==0)throw Error(l(327));var a=!i&&(t&127)===0&&(t&e.expiredLanes)===0||Qi(e,t),o=a?eg(e,t):xl(e,t,!0),r=a;do{if(o===0){Di&&!a&&xn(e,t,0,!1);break}else{if(i=e.current.alternate,r&&!Qm(i)){o=xl(e,t,!1),r=!1;continue}if(o===2){if(r=t,e.errorRecoveryDisabledLanes&r)var u=0;else u=e.pendingLanes&-536870913,u=u!==0?u:u&536870912?536870912:0;if(u!==0){t=u;e:{var h=e;o=La;var g=h.current.memoizedState.isDehydrated;if(g&&(Mi(h,u).flags|=256),u=xl(h,u,!1),u!==2){if(vl&&!g){h.errorRecoveryDisabledLanes|=r,ii|=r,o=4;break e}r=rt,rt=o,r!==null&&(rt===null?rt=r:rt.push.apply(rt,r))}o=u}if(r=!1,o!==2)continue}}if(o===1){Mi(e,0),xn(e,t,0,!0);break}e:{switch(a=e,r=o,r){case 0:case 1:throw Error(l(345));case 4:if((t&4194048)!==t)break;case 6:xn(a,t,gt,!Rn);break e;case 2:rt=null;break;case 3:case 5:break;default:throw Error(l(329))}if((t&62914560)===t&&(o=Qo+300-lt(),10<o)){if(xn(a,t,gt,!Rn),co(a,0,!0)!==0)break e;ln=t,a.timeoutHandle=Jh(vh.bind(null,a,i,rt,er,Al,t,gt,ii,ki,Rn,r,"Throttled",-0,0),o);break e}vh(a,i,rt,er,Al,t,gt,ii,ki,Rn,r,null,-0,0)}}break}while(!0);Yt(e)}function vh(e,t,i,a,o,r,u,h,g,w,I,C,A,R){if(e.timeoutHandle=-1,C=t.subtreeFlags,C&8192||(C&16785408)===16785408){C={stylesheets:null,count:0,imgCount:0,imgBytes:0,suspenseyImages:[],waitingForImages:!0,waitingForViewTransition:!1,unsuspend:_t},mh(t,r,C);var G=(r&62914560)===r?Qo-lt():(r&4194048)===r?Th-lt():0;if(G=Mg(C,G),G!==null){ln=r,e.cancelPendingCommit=G(Lh.bind(null,e,t,r,i,a,o,u,h,g,I,C,null,A,R)),xn(e,r,u,!w);return}}Lh(e,t,r,i,a,o,u,h,g)}function Qm(e){for(var t=e;;){var i=t.tag;if((i===0||i===11||i===15)&&t.flags&16384&&(i=t.updateQueue,i!==null&&(i=i.stores,i!==null)))for(var a=0;a<i.length;a++){var o=i[a],r=o.getSnapshot;o=o.value;try{if(!dt(r(),o))return!1}catch{return!1}}if(i=t.child,t.subtreeFlags&16384&&i!==null)i.return=t,t=i;else{if(t===e)break;for(;t.sibling===null;){if(t.return===null||t.return===e)return!0;t=t.return}t.sibling.return=t.return,t=t.sibling}}return!0}function xn(e,t,i,a){t&=~wl,t&=~ii,e.suspendedLanes|=t,e.pingedLanes&=~t,a&&(e.warmLanes|=t),a=e.expirationTimes;for(var o=t;0<o;){var r=31-ut(o),u=1<<r;a[r]=-1,o&=~u}i!==0&&Dc(e,i,t)}function tr(){return(ye&6)===0?(Da(0),!1):!0}function Fl(){if(oe!==null){if(Te===0)var e=oe.return;else e=oe,Zt=Vn=null,$s(e),Ri=null,ma=0,e=oe;for(;e!==null;)eh(e.alternate,e),e=e.return;oe=null}}function Mi(e,t){var i=e.timeoutHandle;i!==-1&&(e.timeoutHandle=-1,bg(i)),i=e.cancelPendingCommit,i!==null&&(e.cancelPendingCommit=null,i()),ln=0,Fl(),Re=e,oe=i=Vt(e.current,null),le=t,Te=0,mt=null,Rn=!1,Di=Qi(e,t),vl=!1,ki=gt=wl=ii=Nn=De=0,rt=La=null,Al=!1,(t&8)!==0&&(t|=t&32);var a=e.entangledLanes;if(a!==0)for(e=e.entanglements,a&=t;0<a;){var o=31-ut(a),r=1<<o;t|=e[o],a&=~r}return sn=t,So(),i}function wh(e,t){te=null,F.H=va,t===Ai||t===xo?(t=Pu(),Te=3):t===Ds?(t=Pu(),Te=4):Te=t===sl?8:t!==null&&typeof t=="object"&&typeof t.then=="function"?6:1,mt=t,oe===null&&(De=1,Wo(e,wt(t,e.current)))}function Ah(){var e=pt.current;return e===null?!0:(le&4194048)===le?It===null:(le&62914560)===le||(le&536870912)!==0?e===It:!1}function Rh(){var e=F.H;return F.H=va,e===null?va:e}function Nh(){var e=F.A;return F.A=Zm,e}function nr(){De=4,Rn||(le&4194048)!==le&&pt.current!==null||(Di=!0),(Nn&134217727)===0&&(ii&134217727)===0||Re===null||xn(Re,le,gt,!1)}function xl(e,t,i){var a=ye;ye|=2;var o=Rh(),r=Nh();(Re!==e||le!==t)&&(er=null,Mi(e,t)),t=!1;var u=De;e:do try{if(Te!==0&&oe!==null){var h=oe,g=mt;switch(Te){case 8:Fl(),u=6;break e;case 3:case 2:case 9:case 6:pt.current===null&&(t=!0);var w=Te;if(Te=0,mt=null,zi(e,h,g,w),i&&Di){u=0;break e}break;default:w=Te,Te=0,mt=null,zi(e,h,g,w)}}Jm(),u=De;break}catch(I){wh(e,I)}while(!0);return t&&e.shellSuspendCounter++,Zt=Vn=null,ye=a,F.H=o,F.A=r,oe===null&&(Re=null,le=0,So()),u}function Jm(){for(;oe!==null;)Ih(oe)}function eg(e,t){var i=ye;ye|=2;var a=Rh(),o=Nh();Re!==e||le!==t?(er=null,Jo=lt()+500,Mi(e,t)):Di=Qi(e,t);e:do try{if(Te!==0&&oe!==null){t=oe;var r=mt;t:switch(Te){case 1:Te=0,mt=null,zi(e,t,r,1);break;case 2:case 9:if(Uu(r)){Te=0,mt=null,Fh(t);break}t=function(){Te!==2&&Te!==9||Re!==e||(Te=7),Yt(e)},r.then(t,t);break e;case 3:Te=7;break e;case 4:Te=5;break e;case 7:Uu(r)?(Te=0,mt=null,Fh(t)):(Te=0,mt=null,zi(e,t,r,7));break;case 5:var u=null;switch(oe.tag){case 26:u=oe.memoizedState;case 5:case 27:var h=oe;if(u?fp(u):h.stateNode.complete){Te=0,mt=null;var g=h.sibling;if(g!==null)oe=g;else{var w=h.return;w!==null?(oe=w,ir(w)):oe=null}break t}}Te=0,mt=null,zi(e,t,r,5);break;case 6:Te=0,mt=null,zi(e,t,r,6);break;case 8:Fl(),De=6;break e;default:throw Error(l(462))}}tg();break}catch(I){wh(e,I)}while(!0);return Zt=Vn=null,F.H=a,F.A=o,ye=i,oe!==null?0:(Re=null,le=0,So(),De)}function tg(){for(;oe!==null&&!wf();)Ih(oe)}function Ih(e){var t=Qd(e.alternate,e,sn);e.memoizedProps=e.pendingProps,t===null?ir(e):oe=t}function Fh(e){var t=e,i=t.alternate;switch(t.tag){case 15:case 0:t=_d(i,t,t.pendingProps,t.type,void 0,le);break;case 11:t=_d(i,t,t.pendingProps,t.type.render,t.ref,le);break;case 5:$s(t);default:eh(i,t),t=oe=Nu(t,sn),t=Qd(i,t,sn)}e.memoizedProps=e.pendingProps,t===null?ir(e):oe=t}function zi(e,t,i,a){Zt=Vn=null,$s(t),Ri=null,ma=0;var o=t.return;try{if(Ym(e,o,t,i,le)){De=1,Wo(e,wt(i,e.current)),oe=null;return}}catch(r){if(o!==null)throw oe=o,r;De=1,Wo(e,wt(i,e.current)),oe=null;return}t.flags&32768?(ue||a===1?e=!0:Di||(le&536870912)!==0?e=!1:(Rn=e=!0,(a===2||a===9||a===3||a===6)&&(a=pt.current,a!==null&&a.tag===13&&(a.flags|=16384))),xh(t,e)):ir(t)}function ir(e){var t=e;do{if((t.flags&32768)!==0){xh(t,Rn);return}e=t.return;var i=_m(t.alternate,t,sn);if(i!==null){oe=i;return}if(t=t.sibling,t!==null){oe=t;return}oe=t=e}while(t!==null);De===0&&(De=5)}function xh(e,t){do{var i=qm(e.alternate,e);if(i!==null){i.flags&=32767,oe=i;return}if(i=e.return,i!==null&&(i.flags|=32768,i.subtreeFlags=0,i.deletions=null),!t&&(e=e.sibling,e!==null)){oe=e;return}oe=e=i}while(e!==null);De=6,oe=null}function Lh(e,t,i,a,o,r,u,h,g){e.cancelPendingCommit=null;do ar();while(Ge!==0);if((ye&6)!==0)throw Error(l(327));if(t!==null){if(t===e.current)throw Error(l(177));if(r=t.lanes|t.childLanes,r|=bs,kf(e,i,r,u,h,g),e===Re&&(oe=Re=null,le=0),Hi=t,Fn=e,ln=i,Rl=r,Nl=o,Eh=a,(t.subtreeFlags&10256)!==0||(t.flags&10256)!==0?(e.callbackNode=null,e.callbackPriority=0,og(oo,function(){return Mh(),null})):(e.callbackNode=null,e.callbackPriority=0),a=(t.flags&13878)!==0,(t.subtreeFlags&13878)!==0||a){a=F.T,F.T=null,o=j.p,j.p=2,u=ye,ye|=4;try{Vm(e,t,i)}finally{ye=u,j.p=o,F.T=a}}Ge=1,Ch(),Dh(),kh()}}function Ch(){if(Ge===1){Ge=0;var e=Fn,t=Hi,i=(t.flags&13878)!==0;if((t.subtreeFlags&13878)!==0||i){i=F.T,F.T=null;var a=j.p;j.p=2;var o=ye;ye|=4;try{hh(t,e);var r=Bl,u=bu(e.containerInfo),h=r.focusedElem,g=r.selectionRange;if(u!==h&&h&&h.ownerDocument&&yu(h.ownerDocument.documentElement,h)){if(g!==null&&ps(h)){var w=g.start,I=g.end;if(I===void 0&&(I=w),"selectionStart"in h)h.selectionStart=w,h.selectionEnd=Math.min(I,h.value.length);else{var C=h.ownerDocument||document,A=C&&C.defaultView||window;if(A.getSelection){var R=A.getSelection(),G=h.textContent.length,V=Math.min(g.start,G),we=g.end===void 0?V:Math.min(g.end,G);!R.extend&&V>we&&(u=we,we=V,V=u);var S=gu(h,V),E=gu(h,we);if(S&&E&&(R.rangeCount!==1||R.anchorNode!==S.node||R.anchorOffset!==S.offset||R.focusNode!==E.node||R.focusOffset!==E.offset)){var v=C.createRange();v.setStart(S.node,S.offset),R.removeAllRanges(),V>we?(R.addRange(v),R.extend(E.node,E.offset)):(v.setEnd(E.node,E.offset),R.addRange(v))}}}}for(C=[],R=h;R=R.parentNode;)R.nodeType===1&&C.push({element:R,left:R.scrollLeft,top:R.scrollTop});for(typeof h.focus=="function"&&h.focus(),h=0;h<C.length;h++){var L=C[h];L.element.scrollLeft=L.left,L.element.scrollTop=L.top}}gr=!!Gl,Bl=Gl=null}finally{ye=o,j.p=a,F.T=i}}e.current=t,Ge=2}}function Dh(){if(Ge===2){Ge=0;var e=Fn,t=Hi,i=(t.flags&8772)!==0;if((t.subtreeFlags&8772)!==0||i){i=F.T,F.T=null;var a=j.p;j.p=2;var o=ye;ye|=4;try{sh(e,t.alternate,t)}finally{ye=o,j.p=a,F.T=i}}Ge=3}}function kh(){if(Ge===4||Ge===3){Ge=0,Af();var e=Fn,t=Hi,i=ln,a=Eh;(t.subtreeFlags&10256)!==0||(t.flags&10256)!==0?Ge=5:(Ge=0,Hi=Fn=null,Hh(e,e.pendingLanes));var o=e.pendingLanes;if(o===0&&(In=null),Vr(i),t=t.stateNode,ct&&typeof ct.onCommitFiberRoot=="function")try{ct.onCommitFiberRoot(Xi,t,void 0,(t.current.flags&128)===128)}catch{}if(a!==null){t=F.T,o=j.p,j.p=2,F.T=null;try{for(var r=e.onRecoverableError,u=0;u<a.length;u++){var h=a[u];r(h.value,{componentStack:h.stack})}}finally{F.T=t,j.p=o}}(ln&3)!==0&&ar(),Yt(e),o=e.pendingLanes,(i&261930)!==0&&(o&42)!==0?e===Il?Ca++:(Ca=0,Il=e):Ca=0,Da(0)}}function Hh(e,t){(e.pooledCacheLanes&=t)===0&&(t=e.pooledCache,t!=null&&(e.pooledCache=null,pa(t)))}function ar(){return Ch(),Dh(),kh(),Mh()}function Mh(){if(Ge!==5)return!1;var e=Fn,t=Rl;Rl=0;var i=Vr(ln),a=F.T,o=j.p;try{j.p=32>i?32:i,F.T=null,i=Nl,Nl=null;var r=Fn,u=ln;if(Ge=0,Hi=Fn=null,ln=0,(ye&6)!==0)throw Error(l(331));var h=ye;if(ye|=4,yh(r.current),fh(r,r.current,u,i),ye=h,Da(0,!1),ct&&typeof ct.onPostCommitFiberRoot=="function")try{ct.onPostCommitFiberRoot(Xi,r)}catch{}return!0}finally{j.p=o,F.T=a,Hh(e,t)}}function zh(e,t,i){t=wt(i,t),t=rl(e.stateNode,t,2),e=Sn(e,t,2),e!==null&&(Ji(e,2),Yt(e))}function Ee(e,t,i){if(e.tag===3)zh(e,e,i);else for(;t!==null;){if(t.tag===3){zh(t,e,i);break}else if(t.tag===1){var a=t.stateNode;if(typeof t.type.getDerivedStateFromError=="function"||typeof a.componentDidCatch=="function"&&(In===null||!In.has(a))){e=wt(i,e),i=Ud(2),a=Sn(t,i,2),a!==null&&(jd(i,a,t,e),Ji(a,2),Yt(a));break}}t=t.return}}function Ll(e,t,i){var a=e.pingCache;if(a===null){a=e.pingCache=new Xm;var o=new Set;a.set(t,o)}else o=a.get(t),o===void 0&&(o=new Set,a.set(t,o));o.has(i)||(vl=!0,o.add(i),e=ng.bind(null,e,t,i),t.then(e,e))}function ng(e,t,i){var a=e.pingCache;a!==null&&a.delete(t),e.pingedLanes|=e.suspendedLanes&i,e.warmLanes&=~i,Re===e&&(le&i)===i&&(De===4||De===3&&(le&62914560)===le&&300>lt()-Qo?(ye&2)===0&&Mi(e,0):wl|=i,ki===le&&(ki=0)),Yt(e)}function Uh(e,t){t===0&&(t=Cc()),e=$n(e,t),e!==null&&(Ji(e,t),Yt(e))}function ig(e){var t=e.memoizedState,i=0;t!==null&&(i=t.retryLane),Uh(e,i)}function ag(e,t){var i=0;switch(e.tag){case 31:case 13:var a=e.stateNode,o=e.memoizedState;o!==null&&(i=o.retryLane);break;case 19:a=e.stateNode;break;case 22:a=e.stateNode._retryCache;break;default:throw Error(l(314))}a!==null&&a.delete(t),Uh(e,i)}function og(e,t){return Wr(e,t)}var or=null,Ui=null,Cl=!1,rr=!1,Dl=!1,Ln=0;function Yt(e){e!==Ui&&e.next===null&&(Ui===null?or=Ui=e:Ui=Ui.next=e),rr=!0,Cl||(Cl=!0,sg())}function Da(e,t){if(!Dl&&rr){Dl=!0;do for(var i=!1,a=or;a!==null;){if(e!==0){var o=a.pendingLanes;if(o===0)var r=0;else{var u=a.suspendedLanes,h=a.pingedLanes;r=(1<<31-ut(42|e)+1)-1,r&=o&~(u&~h),r=r&201326741?r&201326741|1:r?r|2:0}r!==0&&(i=!0,Bh(a,r))}else r=le,r=co(a,a===Re?r:0,a.cancelPendingCommit!==null||a.timeoutHandle!==-1),(r&3)===0||Qi(a,r)||(i=!0,Bh(a,r));a=a.next}while(i);Dl=!1}}function rg(){jh()}function jh(){rr=Cl=!1;var e=0;Ln!==0&&yg()&&(e=Ln);for(var t=lt(),i=null,a=or;a!==null;){var o=a.next,r=Ph(a,t);r===0?(a.next=null,i===null?or=o:i.next=o,o===null&&(Ui=i)):(i=a,(e!==0||(r&3)!==0)&&(rr=!0)),a=o}Ge!==0&&Ge!==5||Da(e),Ln!==0&&(Ln=0)}function Ph(e,t){for(var i=e.suspendedLanes,a=e.pingedLanes,o=e.expirationTimes,r=e.pendingLanes&-62914561;0<r;){var u=31-ut(r),h=1<<u,g=o[u];g===-1?((h&i)===0||(h&a)!==0)&&(o[u]=Df(h,t)):g<=t&&(e.expiredLanes|=h),r&=~h}if(t=Re,i=le,i=co(e,e===t?i:0,e.cancelPendingCommit!==null||e.timeoutHandle!==-1),a=e.callbackNode,i===0||e===t&&(Te===2||Te===9)||e.cancelPendingCommit!==null)return a!==null&&a!==null&&$r(a),e.callbackNode=null,e.callbackPriority=0;if((i&3)===0||Qi(e,i)){if(t=i&-i,t===e.callbackPriority)return t;switch(a!==null&&$r(a),Vr(i)){case 2:case 8:i=xc;break;case 32:i=oo;break;case 268435456:i=Lc;break;default:i=oo}return a=Gh.bind(null,e),i=Wr(i,a),e.callbackPriority=t,e.callbackNode=i,t}return a!==null&&a!==null&&$r(a),e.callbackPriority=2,e.callbackNode=null,2}function Gh(e,t){if(Ge!==0&&Ge!==5)return e.callbackNode=null,e.callbackPriority=0,null;var i=e.callbackNode;if(ar()&&e.callbackNode!==i)return null;var a=le;return a=co(e,e===Re?a:0,e.cancelPendingCommit!==null||e.timeoutHandle!==-1),a===0?null:(Sh(e,a,t),Ph(e,lt()),e.callbackNode!=null&&e.callbackNode===i?Gh.bind(null,e):null)}function Bh(e,t){if(ar())return null;Sh(e,t,!0)}function sg(){Tg(function(){(ye&6)!==0?Wr(Fc,rg):jh()})}function kl(){if(Ln===0){var e=vi;e===0&&(e=ro,ro<<=1,(ro&261888)===0&&(ro=256)),Ln=e}return Ln}function Yh(e){return e==null||typeof e=="symbol"||typeof e=="boolean"?null:typeof e=="function"?e:fo(""+e)}function Wh(e,t){var i=t.ownerDocument.createElement("input");return i.name=t.name,i.value=t.value,e.id&&i.setAttribute("form",e.id),t.parentNode.insertBefore(i,t),e=new FormData(e),i.parentNode.removeChild(i),e}function lg(e,t,i,a,o){if(t==="submit"&&i&&i.stateNode===o){var r=Yh((o[tt]||null).action),u=a.submitter;u&&(t=(t=u[tt]||null)?Yh(t.formAction):u.getAttribute("formAction"),t!==null&&(r=t,u=null));var h=new bo("action","action",null,a,o);e.push({event:h,listeners:[{instance:null,listener:function(){if(a.defaultPrevented){if(Ln!==0){var g=u?Wh(o,u):new FormData(o);el(i,{pending:!0,data:g,method:o.method,action:r},null,g)}}else typeof r=="function"&&(h.preventDefault(),g=u?Wh(o,u):new FormData(o),el(i,{pending:!0,data:g,method:o.method,action:r},r,g))},currentTarget:o}]})}}for(var Hl=0;Hl<ys.length;Hl++){var Ml=ys[Hl],cg=Ml.toLowerCase(),ug=Ml[0].toUpperCase()+Ml.slice(1);Ht(cg,"on"+ug)}Ht(Ou,"onAnimationEnd"),Ht(Su,"onAnimationIteration"),Ht(vu,"onAnimationStart"),Ht("dblclick","onDoubleClick"),Ht("focusin","onFocus"),Ht("focusout","onBlur"),Ht(Rm,"onTransitionRun"),Ht(Nm,"onTransitionStart"),Ht(Im,"onTransitionCancel"),Ht(wu,"onTransitionEnd"),ci("onMouseEnter",["mouseout","mouseover"]),ci("onMouseLeave",["mouseout","mouseover"]),ci("onPointerEnter",["pointerout","pointerover"]),ci("onPointerLeave",["pointerout","pointerover"]),Gn("onChange","change click focusin focusout input keydown keyup selectionchange".split(" ")),Gn("onSelect","focusout contextmenu dragend focusin keydown keyup mousedown mouseup selectionchange".split(" ")),Gn("onBeforeInput",["compositionend","keypress","textInput","paste"]),Gn("onCompositionEnd","compositionend focusout keydown keypress keyup mousedown".split(" ")),Gn("onCompositionStart","compositionstart focusout keydown keypress keyup mousedown".split(" ")),Gn("onCompositionUpdate","compositionupdate focusout keydown keypress keyup mousedown".split(" "));var ka="abort canplay canplaythrough durationchange emptied encrypted ended error loadeddata loadedmetadata loadstart pause play playing progress ratechange resize seeked seeking stalled suspend timeupdate volumechange waiting".split(" "),dg=new Set("beforetoggle cancel close invalid load scroll scrollend toggle".split(" ").concat(ka));function $h(e,t){t=(t&4)!==0;for(var i=0;i<e.length;i++){var a=e[i],o=a.event;a=a.listeners;e:{var r=void 0;if(t)for(var u=a.length-1;0<=u;u--){var h=a[u],g=h.instance,w=h.currentTarget;if(h=h.listener,g!==r&&o.isPropagationStopped())break e;r=h,o.currentTarget=w;try{r(o)}catch(I){Oo(I)}o.currentTarget=null,r=g}else for(u=0;u<a.length;u++){if(h=a[u],g=h.instance,w=h.currentTarget,h=h.listener,g!==r&&o.isPropagationStopped())break e;r=h,o.currentTarget=w;try{r(o)}catch(I){Oo(I)}o.currentTarget=null,r=g}}}}function re(e,t){var i=t[Kr];i===void 0&&(i=t[Kr]=new Set);var a=e+"__bubble";i.has(a)||(_h(t,e,2,!1),i.add(a))}function zl(e,t,i){var a=0;t&&(a|=4),_h(i,e,a,t)}var sr="_reactListening"+Math.random().toString(36).slice(2);function Ul(e){if(!e[sr]){e[sr]=!0,jc.forEach(function(i){i!=="selectionchange"&&(dg.has(i)||zl(i,!1,e),zl(i,!0,e))});var t=e.nodeType===9?e:e.ownerDocument;t===null||t[sr]||(t[sr]=!0,zl("selectionchange",!1,t))}}function _h(e,t,i,a){switch(Op(t)){case 2:var o=jg;break;case 8:o=Pg;break;default:o=Jl}i=o.bind(null,t,i,e),o=void 0,!as||t!=="touchstart"&&t!=="touchmove"&&t!=="wheel"||(o=!0),a?o!==void 0?e.addEventListener(t,i,{capture:!0,passive:o}):e.addEventListener(t,i,!0):o!==void 0?e.addEventListener(t,i,{passive:o}):e.addEventListener(t,i,!1)}function jl(e,t,i,a,o){var r=a;if((t&1)===0&&(t&2)===0&&a!==null)e:for(;;){if(a===null)return;var u=a.tag;if(u===3||u===4){var h=a.stateNode.containerInfo;if(h===o)break;if(u===4)for(u=a.return;u!==null;){var g=u.tag;if((g===3||g===4)&&u.stateNode.containerInfo===o)return;u=u.return}for(;h!==null;){if(u=ri(h),u===null)return;if(g=u.tag,g===5||g===6||g===26||g===27){a=r=u;continue e}h=h.parentNode}}a=a.return}Xc(function(){var w=r,I=ns(i),C=[];e:{var A=Au.get(e);if(A!==void 0){var R=bo,G=e;switch(e){case"keypress":if(go(i)===0)break e;case"keydown":case"keyup":R=am;break;case"focusin":G="focus",R=ls;break;case"focusout":G="blur",R=ls;break;case"beforeblur":case"afterblur":R=ls;break;case"click":if(i.button===2)break e;case"auxclick":case"dblclick":case"mousedown":case"mousemove":case"mouseup":case"mouseout":case"mouseover":case"contextmenu":R=eu;break;case"drag":case"dragend":case"dragenter":case"dragexit":case"dragleave":case"dragover":case"dragstart":case"drop":R=_f;break;case"touchcancel":case"touchend":case"touchmove":case"touchstart":R=sm;break;case Ou:case Su:case vu:R=Kf;break;case wu:R=cm;break;case"scroll":case"scrollend":R=Wf;break;case"wheel":R=dm;break;case"copy":case"cut":case"paste":R=Xf;break;case"gotpointercapture":case"lostpointercapture":case"pointercancel":case"pointerdown":case"pointermove":case"pointerout":case"pointerover":case"pointerup":R=nu;break;case"toggle":case"beforetoggle":R=pm}var V=(t&4)!==0,we=!V&&(e==="scroll"||e==="scrollend"),S=V?A!==null?A+"Capture":null:A;V=[];for(var E=w,v;E!==null;){var L=E;if(v=L.stateNode,L=L.tag,L!==5&&L!==26&&L!==27||v===null||S===null||(L=na(E,S),L!=null&&V.push(Ha(E,L,v))),we)break;E=E.return}0<V.length&&(A=new R(A,G,null,i,I),C.push({event:A,listeners:V}))}}if((t&7)===0){e:{if(A=e==="mouseover"||e==="pointerover",R=e==="mouseout"||e==="pointerout",A&&i!==ts&&(G=i.relatedTarget||i.fromElement)&&(ri(G)||G[oi]))break e;if((R||A)&&(A=I.window===I?I:(A=I.ownerDocument)?A.defaultView||A.parentWindow:window,R?(G=i.relatedTarget||i.toElement,R=w,G=G?ri(G):null,G!==null&&(we=d(G),V=G.tag,G!==we||V!==5&&V!==27&&V!==6)&&(G=null)):(R=null,G=w),R!==G)){if(V=eu,L="onMouseLeave",S="onMouseEnter",E="mouse",(e==="pointerout"||e==="pointerover")&&(V=nu,L="onPointerLeave",S="onPointerEnter",E="pointer"),we=R==null?A:ta(R),v=G==null?A:ta(G),A=new V(L,E+"leave",R,i,I),A.target=we,A.relatedTarget=v,L=null,ri(I)===w&&(V=new V(S,E+"enter",G,i,I),V.target=v,V.relatedTarget=we,L=V),we=L,R&&G)t:{for(V=hg,S=R,E=G,v=0,L=S;L;L=V(L))v++;L=0;for(var q=E;q;q=V(q))L++;for(;0<v-L;)S=V(S),v--;for(;0<L-v;)E=V(E),L--;for(;v--;){if(S===E||E!==null&&S===E.alternate){V=S;break t}S=V(S),E=V(E)}V=null}else V=null;R!==null&&qh(C,A,R,V,!1),G!==null&&we!==null&&qh(C,we,G,V,!0)}}e:{if(A=w?ta(w):window,R=A.nodeName&&A.nodeName.toLowerCase(),R==="select"||R==="input"&&A.type==="file")var fe=uu;else if(lu(A))if(du)fe=vm;else{fe=Om;var $=Em}else R=A.nodeName,!R||R.toLowerCase()!=="input"||A.type!=="checkbox"&&A.type!=="radio"?w&&es(w.elementType)&&(fe=uu):fe=Sm;if(fe&&(fe=fe(e,w))){cu(C,fe,i,I);break e}$&&$(e,A,w),e==="focusout"&&w&&A.type==="number"&&w.memoizedProps.value!=null&&Jr(A,"number",A.value)}switch($=w?ta(w):window,e){case"focusin":(lu($)||$.contentEditable==="true")&&(mi=$,fs=w,ua=null);break;case"focusout":ua=fs=mi=null;break;case"mousedown":ms=!0;break;case"contextmenu":case"mouseup":case"dragend":ms=!1,Tu(C,i,I);break;case"selectionchange":if(Am)break;case"keydown":case"keyup":Tu(C,i,I)}var ie;if(us)e:{switch(e){case"compositionstart":var ce="onCompositionStart";break e;case"compositionend":ce="onCompositionEnd";break e;case"compositionupdate":ce="onCompositionUpdate";break e}ce=void 0}else fi?ru(e,i)&&(ce="onCompositionEnd"):e==="keydown"&&i.keyCode===229&&(ce="onCompositionStart");ce&&(iu&&i.locale!=="ko"&&(fi||ce!=="onCompositionStart"?ce==="onCompositionEnd"&&fi&&(ie=Qc()):(mn=I,os="value"in mn?mn.value:mn.textContent,fi=!0)),$=lr(w,ce),0<$.length&&(ce=new tu(ce,e,null,i,I),C.push({event:ce,listeners:$}),ie?ce.data=ie:(ie=su(i),ie!==null&&(ce.data=ie)))),(ie=mm?gm(e,i):ym(e,i))&&(ce=lr(w,"onBeforeInput"),0<ce.length&&($=new tu("onBeforeInput","beforeinput",null,i,I),C.push({event:$,listeners:ce}),$.data=ie)),lg(C,e,w,i,I)}$h(C,t)})}function Ha(e,t,i){return{instance:e,listener:t,currentTarget:i}}function lr(e,t){for(var i=t+"Capture",a=[];e!==null;){var o=e,r=o.stateNode;if(o=o.tag,o!==5&&o!==26&&o!==27||r===null||(o=na(e,i),o!=null&&a.unshift(Ha(e,o,r)),o=na(e,t),o!=null&&a.push(Ha(e,o,r))),e.tag===3)return a;e=e.return}return[]}function hg(e){if(e===null)return null;do e=e.return;while(e&&e.tag!==5&&e.tag!==27);return e||null}function qh(e,t,i,a,o){for(var r=t._reactName,u=[];i!==null&&i!==a;){var h=i,g=h.alternate,w=h.stateNode;if(h=h.tag,g!==null&&g===a)break;h!==5&&h!==26&&h!==27||w===null||(g=w,o?(w=na(i,r),w!=null&&u.unshift(Ha(i,w,g))):o||(w=na(i,r),w!=null&&u.push(Ha(i,w,g)))),i=i.return}u.length!==0&&e.push({event:t,listeners:u})}var pg=/\r\n?/g,fg=/\u0000|\uFFFD/g;function Vh(e){return(typeof e=="string"?e:""+e).replace(pg,`
+`).replace(fg,"")}function Kh(e,t){return t=Vh(t),Vh(e)===t}function ve(e,t,i,a,o,r){switch(i){case"children":typeof a=="string"?t==="body"||t==="textarea"&&a===""||di(e,a):(typeof a=="number"||typeof a=="bigint")&&t!=="body"&&di(e,""+a);break;case"className":ho(e,"class",a);break;case"tabIndex":ho(e,"tabindex",a);break;case"dir":case"role":case"viewBox":case"width":case"height":ho(e,i,a);break;case"style":Kc(e,a,r);break;case"data":if(t!=="object"){ho(e,"data",a);break}case"src":case"href":if(a===""&&(t!=="a"||i!=="href")){e.removeAttribute(i);break}if(a==null||typeof a=="function"||typeof a=="symbol"||typeof a=="boolean"){e.removeAttribute(i);break}a=fo(""+a),e.setAttribute(i,a);break;case"action":case"formAction":if(typeof a=="function"){e.setAttribute(i,"javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')");break}else typeof r=="function"&&(i==="formAction"?(t!=="input"&&ve(e,t,"name",o.name,o,null),ve(e,t,"formEncType",o.formEncType,o,null),ve(e,t,"formMethod",o.formMethod,o,null),ve(e,t,"formTarget",o.formTarget,o,null)):(ve(e,t,"encType",o.encType,o,null),ve(e,t,"method",o.method,o,null),ve(e,t,"target",o.target,o,null)));if(a==null||typeof a=="symbol"||typeof a=="boolean"){e.removeAttribute(i);break}a=fo(""+a),e.setAttribute(i,a);break;case"onClick":a!=null&&(e.onclick=_t);break;case"onScroll":a!=null&&re("scroll",e);break;case"onScrollEnd":a!=null&&re("scrollend",e);break;case"dangerouslySetInnerHTML":if(a!=null){if(typeof a!="object"||!("__html"in a))throw Error(l(61));if(i=a.__html,i!=null){if(o.children!=null)throw Error(l(60));e.innerHTML=i}}break;case"multiple":e.multiple=a&&typeof a!="function"&&typeof a!="symbol";break;case"muted":e.muted=a&&typeof a!="function"&&typeof a!="symbol";break;case"suppressContentEditableWarning":case"suppressHydrationWarning":case"defaultValue":case"defaultChecked":case"innerHTML":case"ref":break;case"autoFocus":break;case"xlinkHref":if(a==null||typeof a=="function"||typeof a=="boolean"||typeof a=="symbol"){e.removeAttribute("xlink:href");break}i=fo(""+a),e.setAttributeNS("http://www.w3.org/1999/xlink","xlink:href",i);break;case"contentEditable":case"spellCheck":case"draggable":case"value":case"autoReverse":case"externalResourcesRequired":case"focusable":case"preserveAlpha":a!=null&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(i,""+a):e.removeAttribute(i);break;case"inert":case"allowFullScreen":case"async":case"autoPlay":case"controls":case"default":case"defer":case"disabled":case"disablePictureInPicture":case"disableRemotePlayback":case"formNoValidate":case"hidden":case"loop":case"noModule":case"noValidate":case"open":case"playsInline":case"readOnly":case"required":case"reversed":case"scoped":case"seamless":case"itemScope":a&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(i,""):e.removeAttribute(i);break;case"capture":case"download":a===!0?e.setAttribute(i,""):a!==!1&&a!=null&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(i,a):e.removeAttribute(i);break;case"cols":case"rows":case"size":case"span":a!=null&&typeof a!="function"&&typeof a!="symbol"&&!isNaN(a)&&1<=a?e.setAttribute(i,a):e.removeAttribute(i);break;case"rowSpan":case"start":a==null||typeof a=="function"||typeof a=="symbol"||isNaN(a)?e.removeAttribute(i):e.setAttribute(i,a);break;case"popover":re("beforetoggle",e),re("toggle",e),uo(e,"popover",a);break;case"xlinkActuate":$t(e,"http://www.w3.org/1999/xlink","xlink:actuate",a);break;case"xlinkArcrole":$t(e,"http://www.w3.org/1999/xlink","xlink:arcrole",a);break;case"xlinkRole":$t(e,"http://www.w3.org/1999/xlink","xlink:role",a);break;case"xlinkShow":$t(e,"http://www.w3.org/1999/xlink","xlink:show",a);break;case"xlinkTitle":$t(e,"http://www.w3.org/1999/xlink","xlink:title",a);break;case"xlinkType":$t(e,"http://www.w3.org/1999/xlink","xlink:type",a);break;case"xmlBase":$t(e,"http://www.w3.org/XML/1998/namespace","xml:base",a);break;case"xmlLang":$t(e,"http://www.w3.org/XML/1998/namespace","xml:lang",a);break;case"xmlSpace":$t(e,"http://www.w3.org/XML/1998/namespace","xml:space",a);break;case"is":uo(e,"is",a);break;case"innerText":case"textContent":break;default:(!(2<i.length)||i[0]!=="o"&&i[0]!=="O"||i[1]!=="n"&&i[1]!=="N")&&(i=Bf.get(i)||i,uo(e,i,a))}}function Pl(e,t,i,a,o,r){switch(i){case"style":Kc(e,a,r);break;case"dangerouslySetInnerHTML":if(a!=null){if(typeof a!="object"||!("__html"in a))throw Error(l(61));if(i=a.__html,i!=null){if(o.children!=null)throw Error(l(60));e.innerHTML=i}}break;case"children":typeof a=="string"?di(e,a):(typeof a=="number"||typeof a=="bigint")&&di(e,""+a);break;case"onScroll":a!=null&&re("scroll",e);break;case"onScrollEnd":a!=null&&re("scrollend",e);break;case"onClick":a!=null&&(e.onclick=_t);break;case"suppressContentEditableWarning":case"suppressHydrationWarning":case"innerHTML":case"ref":break;case"innerText":case"textContent":break;default:if(!Pc.hasOwnProperty(i))e:{if(i[0]==="o"&&i[1]==="n"&&(o=i.endsWith("Capture"),t=i.slice(2,o?i.length-7:void 0),r=e[tt]||null,r=r!=null?r[i]:null,typeof r=="function"&&e.removeEventListener(t,r,o),typeof a=="function")){typeof r!="function"&&r!==null&&(i in e?e[i]=null:e.hasAttribute(i)&&e.removeAttribute(i)),e.addEventListener(t,a,o);break e}i in e?e[i]=a:a===!0?e.setAttribute(i,""):uo(e,i,a)}}}function Ke(e,t,i){switch(t){case"div":case"span":case"svg":case"path":case"a":case"g":case"p":case"li":break;case"img":re("error",e),re("load",e);var a=!1,o=!1,r;for(r in i)if(i.hasOwnProperty(r)){var u=i[r];if(u!=null)switch(r){case"src":a=!0;break;case"srcSet":o=!0;break;case"children":case"dangerouslySetInnerHTML":throw Error(l(137,t));default:ve(e,t,r,u,i,null)}}o&&ve(e,t,"srcSet",i.srcSet,i,null),a&&ve(e,t,"src",i.src,i,null);return;case"input":re("invalid",e);var h=r=u=o=null,g=null,w=null;for(a in i)if(i.hasOwnProperty(a)){var I=i[a];if(I!=null)switch(a){case"name":o=I;break;case"type":u=I;break;case"checked":g=I;break;case"defaultChecked":w=I;break;case"value":r=I;break;case"defaultValue":h=I;break;case"children":case"dangerouslySetInnerHTML":if(I!=null)throw Error(l(137,t));break;default:ve(e,t,a,I,i,null)}}$c(e,r,h,g,w,u,o,!1);return;case"select":re("invalid",e),a=u=r=null;for(o in i)if(i.hasOwnProperty(o)&&(h=i[o],h!=null))switch(o){case"value":r=h;break;case"defaultValue":u=h;break;case"multiple":a=h;default:ve(e,t,o,h,i,null)}t=r,i=u,e.multiple=!!a,t!=null?ui(e,!!a,t,!1):i!=null&&ui(e,!!a,i,!0);return;case"textarea":re("invalid",e),r=o=a=null;for(u in i)if(i.hasOwnProperty(u)&&(h=i[u],h!=null))switch(u){case"value":a=h;break;case"defaultValue":o=h;break;case"children":r=h;break;case"dangerouslySetInnerHTML":if(h!=null)throw Error(l(91));break;default:ve(e,t,u,h,i,null)}qc(e,a,o,r);return;case"option":for(g in i)i.hasOwnProperty(g)&&(a=i[g],a!=null)&&(g==="selected"?e.selected=a&&typeof a!="function"&&typeof a!="symbol":ve(e,t,g,a,i,null));return;case"dialog":re("beforetoggle",e),re("toggle",e),re("cancel",e),re("close",e);break;case"iframe":case"object":re("load",e);break;case"video":case"audio":for(a=0;a<ka.length;a++)re(ka[a],e);break;case"image":re("error",e),re("load",e);break;case"details":re("toggle",e);break;case"embed":case"source":case"link":re("error",e),re("load",e);case"area":case"base":case"br":case"col":case"hr":case"keygen":case"meta":case"param":case"track":case"wbr":case"menuitem":for(w in i)if(i.hasOwnProperty(w)&&(a=i[w],a!=null))switch(w){case"children":case"dangerouslySetInnerHTML":throw Error(l(137,t));default:ve(e,t,w,a,i,null)}return;default:if(es(t)){for(I in i)i.hasOwnProperty(I)&&(a=i[I],a!==void 0&&Pl(e,t,I,a,i,void 0));return}}for(h in i)i.hasOwnProperty(h)&&(a=i[h],a!=null&&ve(e,t,h,a,i,null))}function mg(e,t,i,a){switch(t){case"div":case"span":case"svg":case"path":case"a":case"g":case"p":case"li":break;case"input":var o=null,r=null,u=null,h=null,g=null,w=null,I=null;for(R in i){var C=i[R];if(i.hasOwnProperty(R)&&C!=null)switch(R){case"checked":break;case"value":break;case"defaultValue":g=C;default:a.hasOwnProperty(R)||ve(e,t,R,null,a,C)}}for(var A in a){var R=a[A];if(C=i[A],a.hasOwnProperty(A)&&(R!=null||C!=null))switch(A){case"type":r=R;break;case"name":o=R;break;case"checked":w=R;break;case"defaultChecked":I=R;break;case"value":u=R;break;case"defaultValue":h=R;break;case"children":case"dangerouslySetInnerHTML":if(R!=null)throw Error(l(137,t));break;default:R!==C&&ve(e,t,A,R,a,C)}}Qr(e,u,h,g,w,I,r,o);return;case"select":R=u=h=A=null;for(r in i)if(g=i[r],i.hasOwnProperty(r)&&g!=null)switch(r){case"value":break;case"multiple":R=g;default:a.hasOwnProperty(r)||ve(e,t,r,null,a,g)}for(o in a)if(r=a[o],g=i[o],a.hasOwnProperty(o)&&(r!=null||g!=null))switch(o){case"value":A=r;break;case"defaultValue":h=r;break;case"multiple":u=r;default:r!==g&&ve(e,t,o,r,a,g)}t=h,i=u,a=R,A!=null?ui(e,!!i,A,!1):!!a!=!!i&&(t!=null?ui(e,!!i,t,!0):ui(e,!!i,i?[]:"",!1));return;case"textarea":R=A=null;for(h in i)if(o=i[h],i.hasOwnProperty(h)&&o!=null&&!a.hasOwnProperty(h))switch(h){case"value":break;case"children":break;default:ve(e,t,h,null,a,o)}for(u in a)if(o=a[u],r=i[u],a.hasOwnProperty(u)&&(o!=null||r!=null))switch(u){case"value":A=o;break;case"defaultValue":R=o;break;case"children":break;case"dangerouslySetInnerHTML":if(o!=null)throw Error(l(91));break;default:o!==r&&ve(e,t,u,o,a,r)}_c(e,A,R);return;case"option":for(var G in i)A=i[G],i.hasOwnProperty(G)&&A!=null&&!a.hasOwnProperty(G)&&(G==="selected"?e.selected=!1:ve(e,t,G,null,a,A));for(g in a)A=a[g],R=i[g],a.hasOwnProperty(g)&&A!==R&&(A!=null||R!=null)&&(g==="selected"?e.selected=A&&typeof A!="function"&&typeof A!="symbol":ve(e,t,g,A,a,R));return;case"img":case"link":case"area":case"base":case"br":case"col":case"embed":case"hr":case"keygen":case"meta":case"param":case"source":case"track":case"wbr":case"menuitem":for(var V in i)A=i[V],i.hasOwnProperty(V)&&A!=null&&!a.hasOwnProperty(V)&&ve(e,t,V,null,a,A);for(w in a)if(A=a[w],R=i[w],a.hasOwnProperty(w)&&A!==R&&(A!=null||R!=null))switch(w){case"children":case"dangerouslySetInnerHTML":if(A!=null)throw Error(l(137,t));break;default:ve(e,t,w,A,a,R)}return;default:if(es(t)){for(var we in i)A=i[we],i.hasOwnProperty(we)&&A!==void 0&&!a.hasOwnProperty(we)&&Pl(e,t,we,void 0,a,A);for(I in a)A=a[I],R=i[I],!a.hasOwnProperty(I)||A===R||A===void 0&&R===void 0||Pl(e,t,I,A,a,R);return}}for(var S in i)A=i[S],i.hasOwnProperty(S)&&A!=null&&!a.hasOwnProperty(S)&&ve(e,t,S,null,a,A);for(C in a)A=a[C],R=i[C],!a.hasOwnProperty(C)||A===R||A==null&&R==null||ve(e,t,C,A,a,R)}function Zh(e){switch(e){case"css":case"script":case"font":case"img":case"image":case"input":case"link":return!0;default:return!1}}function gg(){if(typeof performance.getEntriesByType=="function"){for(var e=0,t=0,i=performance.getEntriesByType("resource"),a=0;a<i.length;a++){var o=i[a],r=o.transferSize,u=o.initiatorType,h=o.duration;if(r&&h&&Zh(u)){for(u=0,h=o.responseEnd,a+=1;a<i.length;a++){var g=i[a],w=g.startTime;if(w>h)break;var I=g.transferSize,C=g.initiatorType;I&&Zh(C)&&(g=g.responseEnd,u+=I*(g<h?1:(h-w)/(g-w)))}if(--a,t+=8*(r+u)/(o.duration/1e3),e++,10<e)break}}if(0<e)return t/e/1e6}return navigator.connection&&(e=navigator.connection.downlink,typeof e=="number")?e:5}var Gl=null,Bl=null;function cr(e){return e.nodeType===9?e:e.ownerDocument}function Xh(e){switch(e){case"http://www.w3.org/2000/svg":return 1;case"http://www.w3.org/1998/Math/MathML":return 2;default:return 0}}function Qh(e,t){if(e===0)switch(t){case"svg":return 1;case"math":return 2;default:return 0}return e===1&&t==="foreignObject"?0:e}function Yl(e,t){return e==="textarea"||e==="noscript"||typeof t.children=="string"||typeof t.children=="number"||typeof t.children=="bigint"||typeof t.dangerouslySetInnerHTML=="object"&&t.dangerouslySetInnerHTML!==null&&t.dangerouslySetInnerHTML.__html!=null}var Wl=null;function yg(){var e=window.event;return e&&e.type==="popstate"?e===Wl?!1:(Wl=e,!0):(Wl=null,!1)}var Jh=typeof setTimeout=="function"?setTimeout:void 0,bg=typeof clearTimeout=="function"?clearTimeout:void 0,ep=typeof Promise=="function"?Promise:void 0,Tg=typeof queueMicrotask=="function"?queueMicrotask:typeof ep<"u"?function(e){return ep.resolve(null).then(e).catch(Eg)}:Jh;function Eg(e){setTimeout(function(){throw e})}function Cn(e){return e==="head"}function tp(e,t){var i=t,a=0;do{var o=i.nextSibling;if(e.removeChild(i),o&&o.nodeType===8)if(i=o.data,i==="/$"||i==="/&"){if(a===0){e.removeChild(o),Bi(t);return}a--}else if(i==="$"||i==="$?"||i==="$~"||i==="$!"||i==="&")a++;else if(i==="html")Ma(e.ownerDocument.documentElement);else if(i==="head"){i=e.ownerDocument.head,Ma(i);for(var r=i.firstChild;r;){var u=r.nextSibling,h=r.nodeName;r[ea]||h==="SCRIPT"||h==="STYLE"||h==="LINK"&&r.rel.toLowerCase()==="stylesheet"||i.removeChild(r),r=u}}else i==="body"&&Ma(e.ownerDocument.body);i=o}while(i);Bi(t)}function np(e,t){var i=e;e=0;do{var a=i.nextSibling;if(i.nodeType===1?t?(i._stashedDisplay=i.style.display,i.style.display="none"):(i.style.display=i._stashedDisplay||"",i.getAttribute("style")===""&&i.removeAttribute("style")):i.nodeType===3&&(t?(i._stashedText=i.nodeValue,i.nodeValue=""):i.nodeValue=i._stashedText||""),a&&a.nodeType===8)if(i=a.data,i==="/$"){if(e===0)break;e--}else i!=="$"&&i!=="$?"&&i!=="$~"&&i!=="$!"||e++;i=a}while(i)}function $l(e){var t=e.firstChild;for(t&&t.nodeType===10&&(t=t.nextSibling);t;){var i=t;switch(t=t.nextSibling,i.nodeName){case"HTML":case"HEAD":case"BODY":$l(i),Zr(i);continue;case"SCRIPT":case"STYLE":continue;case"LINK":if(i.rel.toLowerCase()==="stylesheet")continue}e.removeChild(i)}}function Og(e,t,i,a){for(;e.nodeType===1;){var o=i;if(e.nodeName.toLowerCase()!==t.toLowerCase()){if(!a&&(e.nodeName!=="INPUT"||e.type!=="hidden"))break}else if(a){if(!e[ea])switch(t){case"meta":if(!e.hasAttribute("itemprop"))break;return e;case"link":if(r=e.getAttribute("rel"),r==="stylesheet"&&e.hasAttribute("data-precedence"))break;if(r!==o.rel||e.getAttribute("href")!==(o.href==null||o.href===""?null:o.href)||e.getAttribute("crossorigin")!==(o.crossOrigin==null?null:o.crossOrigin)||e.getAttribute("title")!==(o.title==null?null:o.title))break;return e;case"style":if(e.hasAttribute("data-precedence"))break;return e;case"script":if(r=e.getAttribute("src"),(r!==(o.src==null?null:o.src)||e.getAttribute("type")!==(o.type==null?null:o.type)||e.getAttribute("crossorigin")!==(o.crossOrigin==null?null:o.crossOrigin))&&r&&e.hasAttribute("async")&&!e.hasAttribute("itemprop"))break;return e;default:return e}}else if(t==="input"&&e.type==="hidden"){var r=o.name==null?null:""+o.name;if(o.type==="hidden"&&e.getAttribute("name")===r)return e}else return e;if(e=Ft(e.nextSibling),e===null)break}return null}function Sg(e,t,i){if(t==="")return null;for(;e.nodeType!==3;)if((e.nodeType!==1||e.nodeName!=="INPUT"||e.type!=="hidden")&&!i||(e=Ft(e.nextSibling),e===null))return null;return e}function ip(e,t){for(;e.nodeType!==8;)if((e.nodeType!==1||e.nodeName!=="INPUT"||e.type!=="hidden")&&!t||(e=Ft(e.nextSibling),e===null))return null;return e}function _l(e){return e.data==="$?"||e.data==="$~"}function ql(e){return e.data==="$!"||e.data==="$?"&&e.ownerDocument.readyState!=="loading"}function vg(e,t){var i=e.ownerDocument;if(e.data==="$~")e._reactRetry=t;else if(e.data!=="$?"||i.readyState!=="loading")t();else{var a=function(){t(),i.removeEventListener("DOMContentLoaded",a)};i.addEventListener("DOMContentLoaded",a),e._reactRetry=a}}function Ft(e){for(;e!=null;e=e.nextSibling){var t=e.nodeType;if(t===1||t===3)break;if(t===8){if(t=e.data,t==="$"||t==="$!"||t==="$?"||t==="$~"||t==="&"||t==="F!"||t==="F")break;if(t==="/$"||t==="/&")return null}}return e}var Vl=null;function ap(e){e=e.nextSibling;for(var t=0;e;){if(e.nodeType===8){var i=e.data;if(i==="/$"||i==="/&"){if(t===0)return Ft(e.nextSibling);t--}else i!=="$"&&i!=="$!"&&i!=="$?"&&i!=="$~"&&i!=="&"||t++}e=e.nextSibling}return null}function op(e){e=e.previousSibling;for(var t=0;e;){if(e.nodeType===8){var i=e.data;if(i==="$"||i==="$!"||i==="$?"||i==="$~"||i==="&"){if(t===0)return e;t--}else i!=="/$"&&i!=="/&"||t++}e=e.previousSibling}return null}function rp(e,t,i){switch(t=cr(i),e){case"html":if(e=t.documentElement,!e)throw Error(l(452));return e;case"head":if(e=t.head,!e)throw Error(l(453));return e;case"body":if(e=t.body,!e)throw Error(l(454));return e;default:throw Error(l(451))}}function Ma(e){for(var t=e.attributes;t.length;)e.removeAttributeNode(t[0]);Zr(e)}var xt=new Map,sp=new Set;function ur(e){return typeof e.getRootNode=="function"?e.getRootNode():e.nodeType===9?e:e.ownerDocument}var cn=j.d;j.d={f:wg,r:Ag,D:Rg,C:Ng,L:Ig,m:Fg,X:Lg,S:xg,M:Cg};function wg(){var e=cn.f(),t=tr();return e||t}function Ag(e){var t=si(e);t!==null&&t.tag===5&&t.type==="form"?wd(t):cn.r(e)}var ji=typeof document>"u"?null:document;function lp(e,t,i){var a=ji;if(a&&typeof t=="string"&&t){var o=St(t);o='link[rel="'+e+'"][href="'+o+'"]',typeof i=="string"&&(o+='[crossorigin="'+i+'"]'),sp.has(o)||(sp.add(o),e={rel:e,crossOrigin:i,href:t},a.querySelector(o)===null&&(t=a.createElement("link"),Ke(t,"link",e),Be(t),a.head.appendChild(t)))}}function Rg(e){cn.D(e),lp("dns-prefetch",e,null)}function Ng(e,t){cn.C(e,t),lp("preconnect",e,t)}function Ig(e,t,i){cn.L(e,t,i);var a=ji;if(a&&e&&t){var o='link[rel="preload"][as="'+St(t)+'"]';t==="image"&&i&&i.imageSrcSet?(o+='[imagesrcset="'+St(i.imageSrcSet)+'"]',typeof i.imageSizes=="string"&&(o+='[imagesizes="'+St(i.imageSizes)+'"]')):o+='[href="'+St(e)+'"]';var r=o;switch(t){case"style":r=Pi(e);break;case"script":r=Gi(e)}xt.has(r)||(e=z({rel:"preload",href:t==="image"&&i&&i.imageSrcSet?void 0:e,as:t},i),xt.set(r,e),a.querySelector(o)!==null||t==="style"&&a.querySelector(za(r))||t==="script"&&a.querySelector(Ua(r))||(t=a.createElement("link"),Ke(t,"link",e),Be(t),a.head.appendChild(t)))}}function Fg(e,t){cn.m(e,t);var i=ji;if(i&&e){var a=t&&typeof t.as=="string"?t.as:"script",o='link[rel="modulepreload"][as="'+St(a)+'"][href="'+St(e)+'"]',r=o;switch(a){case"audioworklet":case"paintworklet":case"serviceworker":case"sharedworker":case"worker":case"script":r=Gi(e)}if(!xt.has(r)&&(e=z({rel:"modulepreload",href:e},t),xt.set(r,e),i.querySelector(o)===null)){switch(a){case"audioworklet":case"paintworklet":case"serviceworker":case"sharedworker":case"worker":case"script":if(i.querySelector(Ua(r)))return}a=i.createElement("link"),Ke(a,"link",e),Be(a),i.head.appendChild(a)}}}function xg(e,t,i){cn.S(e,t,i);var a=ji;if(a&&e){var o=li(a).hoistableStyles,r=Pi(e);t=t||"default";var u=o.get(r);if(!u){var h={loading:0,preload:null};if(u=a.querySelector(za(r)))h.loading=5;else{e=z({rel:"stylesheet",href:e,"data-precedence":t},i),(i=xt.get(r))&&Kl(e,i);var g=u=a.createElement("link");Be(g),Ke(g,"link",e),g._p=new Promise(function(w,I){g.onload=w,g.onerror=I}),g.addEventListener("load",function(){h.loading|=1}),g.addEventListener("error",function(){h.loading|=2}),h.loading|=4,dr(u,t,a)}u={type:"stylesheet",instance:u,count:1,state:h},o.set(r,u)}}}function Lg(e,t){cn.X(e,t);var i=ji;if(i&&e){var a=li(i).hoistableScripts,o=Gi(e),r=a.get(o);r||(r=i.querySelector(Ua(o)),r||(e=z({src:e,async:!0},t),(t=xt.get(o))&&Zl(e,t),r=i.createElement("script"),Be(r),Ke(r,"link",e),i.head.appendChild(r)),r={type:"script",instance:r,count:1,state:null},a.set(o,r))}}function Cg(e,t){cn.M(e,t);var i=ji;if(i&&e){var a=li(i).hoistableScripts,o=Gi(e),r=a.get(o);r||(r=i.querySelector(Ua(o)),r||(e=z({src:e,async:!0,type:"module"},t),(t=xt.get(o))&&Zl(e,t),r=i.createElement("script"),Be(r),Ke(r,"link",e),i.head.appendChild(r)),r={type:"script",instance:r,count:1,state:null},a.set(o,r))}}function cp(e,t,i,a){var o=(o=ae.current)?ur(o):null;if(!o)throw Error(l(446));switch(e){case"meta":case"title":return null;case"style":return typeof i.precedence=="string"&&typeof i.href=="string"?(t=Pi(i.href),i=li(o).hoistableStyles,a=i.get(t),a||(a={type:"style",instance:null,count:0,state:null},i.set(t,a)),a):{type:"void",instance:null,count:0,state:null};case"link":if(i.rel==="stylesheet"&&typeof i.href=="string"&&typeof i.precedence=="string"){e=Pi(i.href);var r=li(o).hoistableStyles,u=r.get(e);if(u||(o=o.ownerDocument||o,u={type:"stylesheet",instance:null,count:0,state:{loading:0,preload:null}},r.set(e,u),(r=o.querySelector(za(e)))&&!r._p&&(u.instance=r,u.state.loading=5),xt.has(e)||(i={rel:"preload",as:"style",href:i.href,crossOrigin:i.crossOrigin,integrity:i.integrity,media:i.media,hrefLang:i.hrefLang,referrerPolicy:i.referrerPolicy},xt.set(e,i),r||Dg(o,e,i,u.state))),t&&a===null)throw Error(l(528,""));return u}if(t&&a!==null)throw Error(l(529,""));return null;case"script":return t=i.async,i=i.src,typeof i=="string"&&t&&typeof t!="function"&&typeof t!="symbol"?(t=Gi(i),i=li(o).hoistableScripts,a=i.get(t),a||(a={type:"script",instance:null,count:0,state:null},i.set(t,a)),a):{type:"void",instance:null,count:0,state:null};default:throw Error(l(444,e))}}function Pi(e){return'href="'+St(e)+'"'}function za(e){return'link[rel="stylesheet"]['+e+"]"}function up(e){return z({},e,{"data-precedence":e.precedence,precedence:null})}function Dg(e,t,i,a){e.querySelector('link[rel="preload"][as="style"]['+t+"]")?a.loading=1:(t=e.createElement("link"),a.preload=t,t.addEventListener("load",function(){return a.loading|=1}),t.addEventListener("error",function(){return a.loading|=2}),Ke(t,"link",i),Be(t),e.head.appendChild(t))}function Gi(e){return'[src="'+St(e)+'"]'}function Ua(e){return"script[async]"+e}function dp(e,t,i){if(t.count++,t.instance===null)switch(t.type){case"style":var a=e.querySelector('style[data-href~="'+St(i.href)+'"]');if(a)return t.instance=a,Be(a),a;var o=z({},i,{"data-href":i.href,"data-precedence":i.precedence,href:null,precedence:null});return a=(e.ownerDocument||e).createElement("style"),Be(a),Ke(a,"style",o),dr(a,i.precedence,e),t.instance=a;case"stylesheet":o=Pi(i.href);var r=e.querySelector(za(o));if(r)return t.state.loading|=4,t.instance=r,Be(r),r;a=up(i),(o=xt.get(o))&&Kl(a,o),r=(e.ownerDocument||e).createElement("link"),Be(r);var u=r;return u._p=new Promise(function(h,g){u.onload=h,u.onerror=g}),Ke(r,"link",a),t.state.loading|=4,dr(r,i.precedence,e),t.instance=r;case"script":return r=Gi(i.src),(o=e.querySelector(Ua(r)))?(t.instance=o,Be(o),o):(a=i,(o=xt.get(r))&&(a=z({},i),Zl(a,o)),e=e.ownerDocument||e,o=e.createElement("script"),Be(o),Ke(o,"link",a),e.head.appendChild(o),t.instance=o);case"void":return null;default:throw Error(l(443,t.type))}else t.type==="stylesheet"&&(t.state.loading&4)===0&&(a=t.instance,t.state.loading|=4,dr(a,i.precedence,e));return t.instance}function dr(e,t,i){for(var a=i.querySelectorAll('link[rel="stylesheet"][data-precedence],style[data-precedence]'),o=a.length?a[a.length-1]:null,r=o,u=0;u<a.length;u++){var h=a[u];if(h.dataset.precedence===t)r=h;else if(r!==o)break}r?r.parentNode.insertBefore(e,r.nextSibling):(t=i.nodeType===9?i.head:i,t.insertBefore(e,t.firstChild))}function Kl(e,t){e.crossOrigin==null&&(e.crossOrigin=t.crossOrigin),e.referrerPolicy==null&&(e.referrerPolicy=t.referrerPolicy),e.title==null&&(e.title=t.title)}function Zl(e,t){e.crossOrigin==null&&(e.crossOrigin=t.crossOrigin),e.referrerPolicy==null&&(e.referrerPolicy=t.referrerPolicy),e.integrity==null&&(e.integrity=t.integrity)}var hr=null;function hp(e,t,i){if(hr===null){var a=new Map,o=hr=new Map;o.set(i,a)}else o=hr,a=o.get(i),a||(a=new Map,o.set(i,a));if(a.has(e))return a;for(a.set(e,null),i=i.getElementsByTagName(e),o=0;o<i.length;o++){var r=i[o];if(!(r[ea]||r[$e]||e==="link"&&r.getAttribute("rel")==="stylesheet")&&r.namespaceURI!=="http://www.w3.org/2000/svg"){var u=r.getAttribute(t)||"";u=e+u;var h=a.get(u);h?h.push(r):a.set(u,[r])}}return a}function pp(e,t,i){e=e.ownerDocument||e,e.head.insertBefore(i,t==="title"?e.querySelector("head > title"):null)}function kg(e,t,i){if(i===1||t.itemProp!=null)return!1;switch(e){case"meta":case"title":return!0;case"style":if(typeof t.precedence!="string"||typeof t.href!="string"||t.href==="")break;return!0;case"link":if(typeof t.rel!="string"||typeof t.href!="string"||t.href===""||t.onLoad||t.onError)break;return t.rel==="stylesheet"?(e=t.disabled,typeof t.precedence=="string"&&e==null):!0;case"script":if(t.async&&typeof t.async!="function"&&typeof t.async!="symbol"&&!t.onLoad&&!t.onError&&t.src&&typeof t.src=="string")return!0}return!1}function fp(e){return!(e.type==="stylesheet"&&(e.state.loading&3)===0)}function Hg(e,t,i,a){if(i.type==="stylesheet"&&(typeof a.media!="string"||matchMedia(a.media).matches!==!1)&&(i.state.loading&4)===0){if(i.instance===null){var o=Pi(a.href),r=t.querySelector(za(o));if(r){t=r._p,t!==null&&typeof t=="object"&&typeof t.then=="function"&&(e.count++,e=pr.bind(e),t.then(e,e)),i.state.loading|=4,i.instance=r,Be(r);return}r=t.ownerDocument||t,a=up(a),(o=xt.get(o))&&Kl(a,o),r=r.createElement("link"),Be(r);var u=r;u._p=new Promise(function(h,g){u.onload=h,u.onerror=g}),Ke(r,"link",a),i.instance=r}e.stylesheets===null&&(e.stylesheets=new Map),e.stylesheets.set(i,t),(t=i.state.preload)&&(i.state.loading&3)===0&&(e.count++,i=pr.bind(e),t.addEventListener("load",i),t.addEventListener("error",i))}}var Xl=0;function Mg(e,t){return e.stylesheets&&e.count===0&&mr(e,e.stylesheets),0<e.count||0<e.imgCount?function(i){var a=setTimeout(function(){if(e.stylesheets&&mr(e,e.stylesheets),e.unsuspend){var r=e.unsuspend;e.unsuspend=null,r()}},6e4+t);0<e.imgBytes&&Xl===0&&(Xl=62500*gg());var o=setTimeout(function(){if(e.waitingForImages=!1,e.count===0&&(e.stylesheets&&mr(e,e.stylesheets),e.unsuspend)){var r=e.unsuspend;e.unsuspend=null,r()}},(e.imgBytes>Xl?50:800)+t);return e.unsuspend=i,function(){e.unsuspend=null,clearTimeout(a),clearTimeout(o)}}:null}function pr(){if(this.count--,this.count===0&&(this.imgCount===0||!this.waitingForImages)){if(this.stylesheets)mr(this,this.stylesheets);else if(this.unsuspend){var e=this.unsuspend;this.unsuspend=null,e()}}}var fr=null;function mr(e,t){e.stylesheets=null,e.unsuspend!==null&&(e.count++,fr=new Map,t.forEach(zg,e),fr=null,pr.call(e))}function zg(e,t){if(!(t.state.loading&4)){var i=fr.get(e);if(i)var a=i.get(null);else{i=new Map,fr.set(e,i);for(var o=e.querySelectorAll("link[data-precedence],style[data-precedence]"),r=0;r<o.length;r++){var u=o[r];(u.nodeName==="LINK"||u.getAttribute("media")!=="not all")&&(i.set(u.dataset.precedence,u),a=u)}a&&i.set(null,a)}o=t.instance,u=o.getAttribute("data-precedence"),r=i.get(u)||a,r===a&&i.set(null,o),i.set(u,o),this.count++,a=pr.bind(this),o.addEventListener("load",a),o.addEventListener("error",a),r?r.parentNode.insertBefore(o,r.nextSibling):(e=e.nodeType===9?e.head:e,e.insertBefore(o,e.firstChild)),t.state.loading|=4}}var ja={$$typeof:J,Provider:null,Consumer:null,_currentValue:Z,_currentValue2:Z,_threadCount:0};function Ug(e,t,i,a,o,r,u,h,g){this.tag=1,this.containerInfo=e,this.pingCache=this.current=this.pendingChildren=null,this.timeoutHandle=-1,this.callbackNode=this.next=this.pendingContext=this.context=this.cancelPendingCommit=null,this.callbackPriority=0,this.expirationTimes=_r(-1),this.entangledLanes=this.shellSuspendCounter=this.errorRecoveryDisabledLanes=this.expiredLanes=this.warmLanes=this.pingedLanes=this.suspendedLanes=this.pendingLanes=0,this.entanglements=_r(0),this.hiddenUpdates=_r(null),this.identifierPrefix=a,this.onUncaughtError=o,this.onCaughtError=r,this.onRecoverableError=u,this.pooledCache=null,this.pooledCacheLanes=0,this.formState=g,this.incompleteTransitions=new Map}function mp(e,t,i,a,o,r,u,h,g,w,I,C){return e=new Ug(e,t,i,u,g,w,I,C,h),t=1,r===!0&&(t|=24),r=ht(3,null,null,t),e.current=r,r.stateNode=e,t=xs(),t.refCount++,e.pooledCache=t,t.refCount++,r.memoizedState={element:a,isDehydrated:i,cache:t},ks(r),e}function gp(e){return e?(e=bi,e):bi}function yp(e,t,i,a,o,r){o=gp(o),a.context===null?a.context=o:a.pendingContext=o,a=On(t),a.payload={element:i},r=r===void 0?null:r,r!==null&&(a.callback=r),i=Sn(e,a,t),i!==null&&(st(i,e,t),ya(i,e,t))}function bp(e,t){if(e=e.memoizedState,e!==null&&e.dehydrated!==null){var i=e.retryLane;e.retryLane=i!==0&&i<t?i:t}}function Ql(e,t){bp(e,t),(e=e.alternate)&&bp(e,t)}function Tp(e){if(e.tag===13||e.tag===31){var t=$n(e,67108864);t!==null&&st(t,e,67108864),Ql(e,67108864)}}function Ep(e){if(e.tag===13||e.tag===31){var t=yt();t=qr(t);var i=$n(e,t);i!==null&&st(i,e,t),Ql(e,t)}}var gr=!0;function jg(e,t,i,a){var o=F.T;F.T=null;var r=j.p;try{j.p=2,Jl(e,t,i,a)}finally{j.p=r,F.T=o}}function Pg(e,t,i,a){var o=F.T;F.T=null;var r=j.p;try{j.p=8,Jl(e,t,i,a)}finally{j.p=r,F.T=o}}function Jl(e,t,i,a){if(gr){var o=ec(a);if(o===null)jl(e,t,a,yr,i),Sp(e,a);else if(Bg(o,e,t,i,a))a.stopPropagation();else if(Sp(e,a),t&4&&-1<Gg.indexOf(e)){for(;o!==null;){var r=si(o);if(r!==null)switch(r.tag){case 3:if(r=r.stateNode,r.current.memoizedState.isDehydrated){var u=Pn(r.pendingLanes);if(u!==0){var h=r;for(h.pendingLanes|=2,h.entangledLanes|=2;u;){var g=1<<31-ut(u);h.entanglements[1]|=g,u&=~g}Yt(r),(ye&6)===0&&(Jo=lt()+500,Da(0))}}break;case 31:case 13:h=$n(r,2),h!==null&&st(h,r,2),tr(),Ql(r,2)}if(r=ec(a),r===null&&jl(e,t,a,yr,i),r===o)break;o=r}o!==null&&a.stopPropagation()}else jl(e,t,a,null,i)}}function ec(e){return e=ns(e),tc(e)}var yr=null;function tc(e){if(yr=null,e=ri(e),e!==null){var t=d(e);if(t===null)e=null;else{var i=t.tag;if(i===13){if(e=f(t),e!==null)return e;e=null}else if(i===31){if(e=m(t),e!==null)return e;e=null}else if(i===3){if(t.stateNode.current.memoizedState.isDehydrated)return t.tag===3?t.stateNode.containerInfo:null;e=null}else t!==e&&(e=null)}}return yr=e,null}function Op(e){switch(e){case"beforetoggle":case"cancel":case"click":case"close":case"contextmenu":case"copy":case"cut":case"auxclick":case"dblclick":case"dragend":case"dragstart":case"drop":case"focusin":case"focusout":case"input":case"invalid":case"keydown":case"keypress":case"keyup":case"mousedown":case"mouseup":case"paste":case"pause":case"play":case"pointercancel":case"pointerdown":case"pointerup":case"ratechange":case"reset":case"resize":case"seeked":case"submit":case"toggle":case"touchcancel":case"touchend":case"touchstart":case"volumechange":case"change":case"selectionchange":case"textInput":case"compositionstart":case"compositionend":case"compositionupdate":case"beforeblur":case"afterblur":case"beforeinput":case"blur":case"fullscreenchange":case"focus":case"hashchange":case"popstate":case"select":case"selectstart":return 2;case"drag":case"dragenter":case"dragexit":case"dragleave":case"dragover":case"mousemove":case"mouseout":case"mouseover":case"pointermove":case"pointerout":case"pointerover":case"scroll":case"touchmove":case"wheel":case"mouseenter":case"mouseleave":case"pointerenter":case"pointerleave":return 8;case"message":switch(Rf()){case Fc:return 2;case xc:return 8;case oo:case Nf:return 32;case Lc:return 268435456;default:return 32}default:return 32}}var nc=!1,Dn=null,kn=null,Hn=null,Pa=new Map,Ga=new Map,Mn=[],Gg="mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(" ");function Sp(e,t){switch(e){case"focusin":case"focusout":Dn=null;break;case"dragenter":case"dragleave":kn=null;break;case"mouseover":case"mouseout":Hn=null;break;case"pointerover":case"pointerout":Pa.delete(t.pointerId);break;case"gotpointercapture":case"lostpointercapture":Ga.delete(t.pointerId)}}function Ba(e,t,i,a,o,r){return e===null||e.nativeEvent!==r?(e={blockedOn:t,domEventName:i,eventSystemFlags:a,nativeEvent:r,targetContainers:[o]},t!==null&&(t=si(t),t!==null&&Tp(t)),e):(e.eventSystemFlags|=a,t=e.targetContainers,o!==null&&t.indexOf(o)===-1&&t.push(o),e)}function Bg(e,t,i,a,o){switch(t){case"focusin":return Dn=Ba(Dn,e,t,i,a,o),!0;case"dragenter":return kn=Ba(kn,e,t,i,a,o),!0;case"mouseover":return Hn=Ba(Hn,e,t,i,a,o),!0;case"pointerover":var r=o.pointerId;return Pa.set(r,Ba(Pa.get(r)||null,e,t,i,a,o)),!0;case"gotpointercapture":return r=o.pointerId,Ga.set(r,Ba(Ga.get(r)||null,e,t,i,a,o)),!0}return!1}function vp(e){var t=ri(e.target);if(t!==null){var i=d(t);if(i!==null){if(t=i.tag,t===13){if(t=f(i),t!==null){e.blockedOn=t,zc(e.priority,function(){Ep(i)});return}}else if(t===31){if(t=m(i),t!==null){e.blockedOn=t,zc(e.priority,function(){Ep(i)});return}}else if(t===3&&i.stateNode.current.memoizedState.isDehydrated){e.blockedOn=i.tag===3?i.stateNode.containerInfo:null;return}}}e.blockedOn=null}function br(e){if(e.blockedOn!==null)return!1;for(var t=e.targetContainers;0<t.length;){var i=ec(e.nativeEvent);if(i===null){i=e.nativeEvent;var a=new i.constructor(i.type,i);ts=a,i.target.dispatchEvent(a),ts=null}else return t=si(i),t!==null&&Tp(t),e.blockedOn=i,!1;t.shift()}return!0}function wp(e,t,i){br(e)&&i.delete(t)}function Yg(){nc=!1,Dn!==null&&br(Dn)&&(Dn=null),kn!==null&&br(kn)&&(kn=null),Hn!==null&&br(Hn)&&(Hn=null),Pa.forEach(wp),Ga.forEach(wp)}function Tr(e,t){e.blockedOn===t&&(e.blockedOn=null,nc||(nc=!0,n.unstable_scheduleCallback(n.unstable_NormalPriority,Yg)))}var Er=null;function Ap(e){Er!==e&&(Er=e,n.unstable_scheduleCallback(n.unstable_NormalPriority,function(){Er===e&&(Er=null);for(var t=0;t<e.length;t+=3){var i=e[t],a=e[t+1],o=e[t+2];if(typeof a!="function"){if(tc(a||i)===null)continue;break}var r=si(i);r!==null&&(e.splice(t,3),t-=3,el(r,{pending:!0,data:o,method:i.method,action:a},a,o))}}))}function Bi(e){function t(g){return Tr(g,e)}Dn!==null&&Tr(Dn,e),kn!==null&&Tr(kn,e),Hn!==null&&Tr(Hn,e),Pa.forEach(t),Ga.forEach(t);for(var i=0;i<Mn.length;i++){var a=Mn[i];a.blockedOn===e&&(a.blockedOn=null)}for(;0<Mn.length&&(i=Mn[0],i.blockedOn===null);)vp(i),i.blockedOn===null&&Mn.shift();if(i=(e.ownerDocument||e).$$reactFormReplay,i!=null)for(a=0;a<i.length;a+=3){var o=i[a],r=i[a+1],u=o[tt]||null;if(typeof r=="function")u||Ap(i);else if(u){var h=null;if(r&&r.hasAttribute("formAction")){if(o=r,u=r[tt]||null)h=u.formAction;else if(tc(o)!==null)continue}else h=u.action;typeof h=="function"?i[a+1]=h:(i.splice(a,3),a-=3),Ap(i)}}}function Rp(){function e(r){r.canIntercept&&r.info==="react-transition"&&r.intercept({handler:function(){return new Promise(function(u){return o=u})},focusReset:"manual",scroll:"manual"})}function t(){o!==null&&(o(),o=null),a||setTimeout(i,20)}function i(){if(!a&&!navigation.transition){var r=navigation.currentEntry;r&&r.url!=null&&navigation.navigate(r.url,{state:r.getState(),info:"react-transition",history:"replace"})}}if(typeof navigation=="object"){var a=!1,o=null;return navigation.addEventListener("navigate",e),navigation.addEventListener("navigatesuccess",t),navigation.addEventListener("navigateerror",t),setTimeout(i,100),function(){a=!0,navigation.removeEventListener("navigate",e),navigation.removeEventListener("navigatesuccess",t),navigation.removeEventListener("navigateerror",t),o!==null&&(o(),o=null)}}}function ic(e){this._internalRoot=e}Or.prototype.render=ic.prototype.render=function(e){var t=this._internalRoot;if(t===null)throw Error(l(409));var i=t.current,a=yt();yp(i,a,e,t,null,null)},Or.prototype.unmount=ic.prototype.unmount=function(){var e=this._internalRoot;if(e!==null){this._internalRoot=null;var t=e.containerInfo;yp(e.current,2,null,e,null,null),tr(),t[oi]=null}};function Or(e){this._internalRoot=e}Or.prototype.unstable_scheduleHydration=function(e){if(e){var t=Mc();e={blockedOn:null,target:e,priority:t};for(var i=0;i<Mn.length&&t!==0&&t<Mn[i].priority;i++);Mn.splice(i,0,e),i===0&&vp(e)}};var Np=s.version;if(Np!=="19.2.8")throw Error(l(527,Np,"19.2.8"));j.findDOMNode=function(e){var t=e._reactInternals;if(t===void 0)throw typeof e.render=="function"?Error(l(188)):(e=Object.keys(e).join(","),Error(l(268,e)));return e=b(t),e=e!==null?M(e):null,e=e===null?null:e.stateNode,e};var Wg={bundleType:0,version:"19.2.8",rendererPackageName:"react-dom",currentDispatcherRef:F,reconcilerVersion:"19.2.8"};if(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<"u"){var Sr=__REACT_DEVTOOLS_GLOBAL_HOOK__;if(!Sr.isDisabled&&Sr.supportsFiber)try{Xi=Sr.inject(Wg),ct=Sr}catch{}}return Wa.createRoot=function(e,t){if(!p(e))throw Error(l(299));var i=!1,a="",o=kd,r=Hd,u=Md;return t!=null&&(t.unstable_strictMode===!0&&(i=!0),t.identifierPrefix!==void 0&&(a=t.identifierPrefix),t.onUncaughtError!==void 0&&(o=t.onUncaughtError),t.onCaughtError!==void 0&&(r=t.onCaughtError),t.onRecoverableError!==void 0&&(u=t.onRecoverableError)),t=mp(e,1,!1,null,null,i,a,null,o,r,u,Rp),e[oi]=t.current,Ul(e),new ic(t)},Wa.hydrateRoot=function(e,t,i){if(!p(e))throw Error(l(299));var a=!1,o="",r=kd,u=Hd,h=Md,g=null;return i!=null&&(i.unstable_strictMode===!0&&(a=!0),i.identifierPrefix!==void 0&&(o=i.identifierPrefix),i.onUncaughtError!==void 0&&(r=i.onUncaughtError),i.onCaughtError!==void 0&&(u=i.onCaughtError),i.onRecoverableError!==void 0&&(h=i.onRecoverableError),i.formState!==void 0&&(g=i.formState)),t=mp(e,1,!0,t,i??null,a,o,g,r,u,h,Rp),t.context=gp(null),i=t.current,a=yt(),a=qr(a),o=On(a),o.callback=null,Sn(i,o,a),i=a,t.current.lanes=i,Ji(t,i),Yt(t),e[oi]=t.current,Ul(e),new Or(t)},Wa.version="19.2.8",Wa}var zp;function ey(){if(zp)return rc.exports;zp=1;function n(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>"u"||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!="function"))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(n)}catch(s){console.error(s)}}return n(),rc.exports=Jg(),rc.exports}var ty=ey();const ny="modulepreload",iy=function(n){return"/"+n},Up={},ai=function(s,c,l){let p=Promise.resolve();if(c&&c.length>0){let f=function(b){return Promise.all(b.map(M=>Promise.resolve(M).then(z=>({status:"fulfilled",value:z}),z=>({status:"rejected",reason:z}))))};document.getElementsByTagName("link");const m=document.querySelector("meta[property=csp-nonce]"),y=m?.nonce||m?.getAttribute("nonce");p=f(c.map(b=>{if(b=iy(b),b in Up)return;Up[b]=!0;const M=b.endsWith(".css"),z=M?'[rel="stylesheet"]':"";if(document.querySelector(`link[href="${b}"]${z}`))return;const N=document.createElement("link");if(N.rel=M?"stylesheet":ny,M||(N.as="script"),N.crossOrigin="",N.href=b,y&&N.setAttribute("nonce",y),document.head.appendChild(N),M)return new Promise((x,k)=>{N.addEventListener("load",x),N.addEventListener("error",()=>k(Error(`Unable to preload CSS for ${b}`)))})}))}function d(f){const m=new Event("vite:preloadError",{cancelable:!0});if(m.payload=f,window.dispatchEvent(m),!m.defaultPrevented)throw f}return p.then(f=>{for(const m of f||[])m.status==="rejected"&&d(m.reason);return s().catch(d)})},ay=Object.freeze([["qr-reader","qrReader"],["image-optimize","imageOptimize"],["image-editor","imageEditor","image"],["audio-trim","audioTrim","audio"],["document-convert","documentConvert"]]);function oy(n){return ay.map(([s,c,l])=>({id:s,editor:l,name:n(`catalog.${c}`),description:n(`catalog.${c}Description`),category:"studio",categoryName:n("catalog.studioCategory")}))}function bt(n){return Object.freeze(n.trim().split(/\s+/))}const ry=Object.freeze({text:bt(`
+    base64-encode base64-decode base32-encode base32-decode url-encode url-decode html-encode html-decode hex-encode hex-decode binary-encode binary-decode unicode-escape unicode-unescape rot13 morse-encode morse-decode html-to-text text-to-nato hash-identify atbash encoding-detect caesar-cipher hex-to-rgb-batch text-to-phonetic vigenere ascii-table text-dedupe text-sort-lines number-lines unicode-styled soundex word-wrap-smart nato-alphabet pig-latin readability-score text-diff-inline acronym-gen text-sentence-ops text-center markdown-toc text-extract-quotes text-summarize text-char-frequency text-find-replace lorem-words haiku-checker spongecase text-anagram-finder text-password-phrase word-cloud-text morse-advanced text-braille phonetic-alphabet text-reverse-cipher
+  `),qr:bt("text-to-qr qr-to-text"),image:bt("image-to-base64 base64-to-image file-to-base64"),hash:bt("sha1 sha256 sha384 sha512 sha224 all-hashes"),crypto:bt("file-sha256 file-sha512 random-password random-hex random-base64 random-uuid-bulk text-hash-all checksum-all hash-compare hmac-gen xor-cipher crc32-calc adler32-calc"),data:bt(`
+    json-prettify json-minify json-escape json-unescape csv-to-json tsv-to-json json-to-tsv env-to-json json-to-markdown-table markdown-table-to-json ini-to-json json-to-ini ndjson-to-json json-to-ndjson properties-to-json json-to-properties json-merge csv-stats json-pick csv-transpose jsonl-to-json csv-sort json-group-by json-count tsv-csv-convert json-to-sql csv-to-html json-to-csv-advanced csv-filter data-url-converter yaml-to-env csv-stats-summary json-to-zod msgpack-preview graphql-schema json-to-prisma protobuf-gen markdown-to-json json-normalize avro-schema har-to-curl openapi-gen
+  `),web:bt(`
+    text-diff xml-to-json regex-tester css-minify html-minify js-minify js-prettify url-parser cron-parser json-to-querystring querystring-to-json json-to-yaml yaml-to-json json-to-xml html-prettify css-prettify toml-to-json json-validate html-to-jsx json-to-toml svg-optimize css-vars-extract tailwind-to-css json-sort-keys htaccess-gen markdown-table-format word-frequency reading-time user-agent-parse json-to-csv csv-to-json-array markdown-link-extract html-entity-ref json-to-env endian-swap json-to-graphql unicode-lookup text-encoding-view json-to-python json-to-php json-to-typescript sql-format sql-minify json-path csv-to-html-table html-to-markdown base64url-encode base64url-decode backslash-escape backslash-unescape punycode-encode punycode-decode number-words markdown-to-html json-schema-validate epoch-batch semver-compare url-parse url-builder data-uri ipv6-expand ipv6-compress md-table-to-csv csv-to-md-table curl-builder curl-to-fetch text-dedup line-sort line-number xml-format xml-minify column-align text-wrap placeholder-image css-unit slug-gen case-detect json-diff css-gradient css-shadow dotenv-validate emoji-lookup text-to-emoji regex-escape regex-unescape timezone-convert unix-perm docker-run-gen gitignore-gen json-to-go json-to-rust md-link-check text-pad html-table-to-csv json-to-kotlin json-to-java json-schema-gen duration-format sql-insert-to-json text-reverse-words string-multiply anagram-check json-to-csharp json-to-swift bit-calculator css-specificity uuid-validate css-animation-gen openapi-summary har-parse matrix-ops text-normalize unit-prefix http-headers-parse semver-parse json-pointer color-contrast-ratio text-inflect yaml-to-toml json-to-table git-log-parse sql-to-json-schema markdown-escape ip-range json-to-form-data css-to-js-obj ts-type-gen mime-lookup open-graph-meta http-status-lookup cors-headers cookie-parser csp-generator nginx-location-gen fetch-to-axios webpack-import-gen dockerfile-gen api-mock-gen regex-to-code env-validator http-header-gen sql-schema-gen json-diff-compare github-actions-gen robots-txt-gen schema-org-gen docker-compose-gen package-json-gen git-commit-lint
+  `),number:bt(`
+    dec-to-hex hex-to-dec dec-to-bin bin-to-dec dec-to-oct oct-to-dec dec-to-roman roman-to-dec number-base bytes-format scientific-notation fraction-decimal prime-check fibonacci gcd-lcm collatz integer-overflow number-sequence modular-arithmetic prime-factorization digit-ops fibonacci-gen ieee754 pascal-triangle binary-arithmetic statistics-calc roman-numeral-convert bitwise-ops matrix-2x2 unit-fraction quadratic-solver complex-number trig-calc log-calc prime-sieve mod-arith-advanced sequence-gen percentage-solver combinatorics number-properties base-arithmetic continued-fraction interest-calc number-curiosities
+  `),color:bt(`
+    color-convert color-palette color-contrast color-blindness color-shades color-gradient oklch-convert color-mix css-custom-props color-temperature color-tints-shades color-harmonies color-lighten-darken color-random color-extract css-to-color-vars color-wcag-audit color-to-tailwind color-from-image color-css-variables color-mix-calculator color-luminance
+  `),utility:bt(`
+    timestamp-to-date date-to-timestamp uuid-generate jwt-decode lorem-ipsum char-count case-convert reverse-text sort-lines dedupe-lines line-numbers shuffle-lines trim-lines remove-empty-lines wrap-lines extract-emails extract-urls extract-numbers slugify string-escape string-unescape number-format csv-to-markdown markdown-to-csv epoch-now list-to-json json-to-list ip-to-decimal decimal-to-ip markdown-preview epoch-convert placeholder-img css-units aspect-ratio docker-run-to-compose regex-replace base-convert jwt-create number-to-words date-diff text-frequency json-path-extract text-to-nato-table cidr-calc named-colors rot-n number-base-table lorem-sentences fake-data ip-info crontab-gen chmod-calc text-stats string-reverse nato-converter wcag-contrast json-flatten json-unflatten color-scheme unicode-inspector ascii-art typescript-gen http-status password-strength luhn-check num-stats morse-code css-clamp percentage-calc loan-calc bmi-calc password-entropy tls-cert-info xpath-tester color-mix-ratio timezone-list email-address-parse text-columns compound-interest isbn-validate age-calc tip-calc aspect-ratio-exact pace-calc ppi-calc levenshtein discount-calc grade-calc fuel-cost recipe-scale paint-calc mortgage-calc time-between loan-amortization calories-burned screen-size-calc water-intake wind-chill retirement-calc tax-bracket speed-distance-time ohms-law number-system-table body-fat-calc electricity-cost ideal-weight blood-pressure unit-price-compare inflation-calc heart-rate-zones running-pace savings-goal timezone-offset recipe-nutrition fuel-calc sleep-cycle dna-calc date-calculator event-countdown
+  `),imageFormat:bt(`
+    png-to-jpg jpg-to-png png-to-webp jpg-to-webp webp-to-png webp-to-jpg bmp-to-png any-to-png any-to-jpg any-to-webp image-resize image-compress svg-to-png image-rotate image-flip-h image-flip-v image-grayscale image-invert image-crop-square image-sepia image-brightness image-contrast
+  `),media:bt(`
+    video-to-audio video-to-wav audio-to-mp3 audio-to-wav audio-to-ogg video-to-mp4 video-to-webm video-to-gif audio-to-aac audio-to-flac video-to-audio-ogg audio-to-m4a video-trim audio-trim
+  `),pdf:bt(`
+    images-to-pdf merge-pdf pdf-page-count pdf-split pdf-extract-range text-to-pdf pdf-metadata pdf-rotate
+  `)}),sy=Object.freeze([Object.freeze({id:"all",name:"All"}),Object.freeze({id:"encode",name:"Encode / Decode"}),Object.freeze({id:"hash",name:"Hash"}),Object.freeze({id:"data",name:"Data"}),Object.freeze({id:"web",name:"Web"}),Object.freeze({id:"number",name:"Number"}),Object.freeze({id:"color",name:"Color"}),Object.freeze({id:"utility",name:"Utility"}),Object.freeze({id:"image",name:"Image"}),Object.freeze({id:"media",name:"Media"}),Object.freeze({id:"document",name:"Document"})]);function $a(n){const s=n.split(`
+`),c={};let l=null;for(const p of s){const d=p.trimEnd();if(!d||d.startsWith("#"))continue;const f=d.match(/^(\s*)- (.*)$/);if(f){l&&!Array.isArray(c[l])&&(c[l]=[]),l&&c[l].push(jp(f[2]));continue}const m=d.match(/^(\s*)([^:]+):\s*(.*)$/);if(m){const y=m[2].trim(),b=m[3].trim();l=y,b?c[y]=jp(b):c[y]={}}}return JSON.stringify(c,null,2)}function jp(n){return n==="true"||n==="True"?!0:n==="false"||n==="False"?!1:n==="null"||n==="Null"||n==="~"?null:/^-?\d+$/.test(n)?parseInt(n,10):/^-?\d+\.\d+$/.test(n)?parseFloat(n):n.startsWith('"')&&n.endsWith('"')||n.startsWith("'")&&n.endsWith("'")?n.slice(1,-1):n}function Wt(n,s){const c="  ".repeat(s);if(n===null)return"null";if(typeof n=="boolean"||typeof n=="number")return String(n);if(typeof n=="string")return n.includes(`
+`)||n.includes(":")||n.includes("#")?`"${n.replace(/"/g,'\\"')}"`:n;if(Array.isArray(n))return n.length===0?"[]":n.map(l=>{if(typeof l=="object"&&l!==null){const p=Wt(l,s+1),d=p.split(`
+`)[0],f=p.split(`
+`).slice(1).map(m=>c+"  "+m).join(`
+`);return`${c}- ${d}${f?`
+`+f:""}`}return`${c}- ${Wt(l,s+1)}`}).join(`
+`);if(typeof n=="object"){const l=Object.entries(n);return l.length===0?"{}":l.map(([p,d])=>typeof d=="object"&&d!==null?`${c}${p}:
+${Wt(d,s+1)}`:`${c}${p}: ${Wt(d,s+1)}`).join(`
+`)}return String(n)}function vr(n){const s={};let c=s;for(const l of n.split(`
+`)){const p=l.trim();if(!p||p.startsWith("#"))continue;const d=p.match(/^\[([^\]]+)\]$/);if(d){const m=d[1].split(".");c=s;for(const y of m)c[y]||(c[y]={}),c=c[y];continue}const f=p.match(/^([^=]+)=\s*(.+)$/);if(f){const m=f[1].trim();let y=f[2].trim();if(y==="true")c[m]=!0;else if(y==="false")c[m]=!1;else if(/^-?\d+$/.test(y))c[m]=parseInt(y);else if(/^-?\d+\.\d+$/.test(y))c[m]=parseFloat(y);else if(y.startsWith('"')&&y.endsWith('"')||y.startsWith("'")&&y.endsWith("'"))c[m]=y.slice(1,-1);else if(y.startsWith("[")&&y.endsWith("]"))try{c[m]=JSON.parse(y)}catch{c[m]=y}else c[m]=y}}return s}function Va(n){const s=String(n||"").trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);if(!s)return null;const c=s[1],l=c.length===3?c.split("").map(d=>d+d).join(""):c,p=parseInt(l,16);return{r:p>>16&255,g:p>>8&255,b:p&255}}function wr({r:n,g:s,b:c}){n/=255,s/=255,c/=255;const l=Math.max(n,s,c),p=Math.min(n,s,c),d=(l+p)/2;if(l===p)return{h:0,s:0,l:Math.round(d*100)};const f=l-p,m=d>.5?f/(2-l-p):f/(l+p);let y;return l===n?y=((s-c)/f+(s<c?6:0))/6:l===s?y=((c-n)/f+2)/6:y=((n-s)/f+4)/6,{h:Math.round(y*360),s:Math.round(m*100),l:Math.round(d*100)}}function Ka({h:n,s,l:c}){if(n/=360,s/=100,c/=100,s===0){const f=Math.round(c*255);return{r:f,g:f,b:f}}const l=(f,m,y)=>(y<0&&(y+=1),y>1&&(y-=1),y<1/6?f+(m-f)*6*y:y<1/2?m:y<2/3?f+(m-f)*(2/3-y)*6:f),p=c<.5?c*(1+s):c+s-c*s,d=2*c-p;return{r:Math.round(l(d,p,n+1/3)*255),g:Math.round(l(d,p,n)*255),b:Math.round(l(d,p,n-1/3)*255)}}function ly({r:n,g:s,b:c}){return"#"+[n,s,c].map(l=>l.toString(16).padStart(2,"0")).join("")}function Za(n){const s=String(n||"").trim(),c=s.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i)||s.match(/^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)$/i);if(!c)return null;const l={r:+c[1],g:+c[2],b:+c[3]};return[l.r,l.g,l.b].every(p=>p>=0&&p<=255)?l:null}function Xa(n){const s=String(n||"").trim(),c=s.match(/^hsl\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*\)$/i)||s.match(/^hsl\(\s*(\d+)\s+(\d+)\s*%\s+(\d+)\s*%\s*\)$/i);if(!c)return null;const l={h:+c[1],s:+c[2],l:+c[3]};return l.h<=360&&l.s<=100&&l.l<=100?l:null}function Ar({r:n,g:s,b:c}){n/=255,s/=255,c/=255;const l=Math.max(n,s,c),p=Math.min(n,s,c),d=l-p;let f=0;return d!==0&&(l===n?f=((s-c)/d+(s<c?6:0))/6:l===s?f=((c-n)/d+2)/6:f=((n-s)/d+4)/6),{h:Math.round(f*360),s:Math.round((l===0?0:d/l)*100),v:Math.round(l*100)}}function Qa({h:n,s,v:c}){n/=360,s/=100,c/=100;const l=Math.floor(n*6),p=n*6-l,d=c*(1-s),f=c*(1-p*s),m=c*(1-(1-p)*s);let y,b,M;switch(l%6){case 0:[y,b,M]=[c,m,d];break;case 1:[y,b,M]=[f,c,d];break;case 2:[y,b,M]=[d,c,m];break;case 3:[y,b,M]=[d,f,c];break;case 4:[y,b,M]=[m,d,c];break;default:[y,b,M]=[c,d,f]}return{r:Math.round(y*255),g:Math.round(b*255),b:Math.round(M*255)}}function Ja(n){const s=String(n||"").trim(),c=s.match(/^hsv\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*\)$/i)||s.match(/^hsv\(\s*(\d+)\s+(\d+)\s*%\s+(\d+)\s*%\s*\)$/i);if(!c)return null;const l={h:+c[1],s:+c[2],v:+c[3]};return l.h<=360&&l.s<=100&&l.v<=100?l:null}function Pp(n){return n&&[n.r,n.g,n.b].every(s=>Number.isInteger(s)&&s>=0&&s<=255)}function Gp(n,s){return n&&Number.isInteger(n.h)&&n.h>=0&&n.h<=360&&Number.isInteger(n.s)&&n.s>=0&&n.s<=100&&Number.isInteger(n[s])&&n[s]>=0&&n[s]<=100}function l0(n,s){const c=String(s||"").trim();let l=null;if(n==="color-hex")l=Va(c);else if(n==="color-rgb"){const p=Za(c);Pp(p)&&(l=p)}else if(n==="color-hsl"){const p=Xa(c);Gp(p,"l")&&(l=Ka(p))}else if(n==="color-hsv"){const p=Ja(c);Gp(p,"v")&&(l=Qa(p))}return Pp(l)?ly(l):null}const Ut=1024*1024,cy=5*Ut,uy=64*1024,c0="image/png,image/jpeg,.png,.jpg,.jpeg";function uc(n,s){return Object.freeze({lowMemory:Object.freeze(n),standard:Object.freeze(s)})}const jt=Object.freeze({pdf:uc({perFile:25*Ut,total:60*Ut,maxFiles:8},{perFile:100*Ut,total:250*Ut,maxFiles:20}),images:uc({perFile:25*Ut,total:100*Ut,maxFiles:12},{perFile:80*Ut,total:300*Ut,maxFiles:32}),media:uc({perFile:75*Ut,total:null,maxFiles:4},{perFile:250*Ut,total:null,maxFiles:8})}),Rr=Object.freeze({unsupported_type:Object.freeze({ok:!1,code:"unsupported_type",messageKey:"errors.unsupportedType"}),too_large:Object.freeze({ok:!1,code:"too_large",messageKey:"errors.tooLarge"}),resource_limit:Object.freeze({ok:!1,code:"resource_limit",messageKey:"errors.resourceLimit"})});function dy(n=globalThis){const s=Number(n?.deviceMemory??n?.navigator?.deviceMemory),c=Number(n?.viewportWidth??n?.innerWidth??n?.document?.documentElement?.clientWidth);return Number.isFinite(s)&&s<=4||Number.isFinite(c)&&c<768}function hy(n,s=globalThis){return n?dy(s)?n.lowMemory:n.standard:null}function py(n,s){if(!s||s==="*")return!0;const c=String(n.type||"").toLowerCase(),l=String(n.name||"").toLowerCase(),p=s.split(",").map(b=>b.trim().toLowerCase()).filter(Boolean),d=p.filter(b=>b.startsWith(".")),f=p.filter(b=>!b.startsWith(".")),m=d.some(b=>l.endsWith(b)),y=f.some(b=>b.endsWith("/*")?c.startsWith(b.slice(0,-1)):c===b);return d.length>0&&l.includes(".")&&!m||c&&f.length>0&&!y?!1:p.some(b=>{const M=b.trim().toLowerCase();return M?M.startsWith(".")?l.endsWith(M):M.endsWith("/*")?c.startsWith(M.slice(0,-1)):c===M:!1})}function fy(n){return n==="image/png"?"png":n==="image/jpeg"||n==="image/jpg"?"jpeg":null}function my(n){return n.endsWith(".png")?"png":n.endsWith(".jpg")||n.endsWith(".jpeg")?"jpeg":null}function gy(n,s){if(n?.limits!==jt.images)return!1;const c=String(s.type||"").toLowerCase(),l=String(s.name||"").toLowerCase(),p=fy(String(s.type||"").toLowerCase()),d=my(l),f=l.lastIndexOf("."),m=f>=0&&f<l.length-1;return c&&!p||m&&!d||!p&&!d?!0:!!(p&&d&&p!==d)}function u0(n,s,c=globalThis){const l=Array.from(s||[]);if(l.some(f=>gy(n,f)||!py(f,n?.acceptTypes)))return Rr.unsupported_type;const p=hy(n?.limits,c);if(!p)return{ok:!0};if(Number.isInteger(p.maxFiles)&&l.length>p.maxFiles)return Rr.resource_limit;if(l.some(f=>Number(f.size)>p.perFile))return Rr.too_large;const d=l.reduce((f,m)=>f+Number(m.size||0),0);return p.total!=null&&d>p.total?Rr.too_large:{ok:!0}}const Nr=Object.freeze({"text-5-mib":cy,"text-64-kib":uy});function We({formatId:n,from:s,to:c,compatibility:l,input:p,expected:d,additionalCases:f=[],inputLimitClass:m="text-5-mib",nameDe:y,nameEn:b,descriptionDe:M,descriptionEn:z}){if(!["compatible","incompatible-but-implemented"].includes(l))throw new Error(`Format evidence ${n} needs an explicit compatibility state.`);for(const N of f)if(!["compatible","incompatible-but-implemented"].includes(N.compatibility))throw new Error(`Additional format evidence ${n} needs an explicit compatibility state.`);return Object.freeze({evidenceId:`format:${n}`,subjectKind:"format",subjectId:n,formatId:n,executor:"format-exact",from:s,to:c,compatibility:l,input:p,expected:d,additionalCases:Object.freeze(f.map(N=>Object.freeze({...N}))),inputLimitClass:m,category:"format",tier:"advanced",runtimeClass:"main-thread",outputNaming:"inline-text",nameDe:y,nameEn:b,descriptionDe:M,descriptionEn:z})}const Ur=Object.freeze([We({formatId:"text",from:"text",to:"base64",compatibility:"compatible",input:"Folkkit",expected:"Rm9sa2tpdA==",nameDe:"Text",nameEn:"Text",descriptionDe:"Text lokal in ein belegtes Zielformat umwandeln.",descriptionEn:"Convert text locally to an evidenced target format."}),We({formatId:"base64",from:"base64",to:"text",compatibility:"compatible",input:"Rm9sa2tpdA==",expected:"Folkkit",nameDe:"Base64",nameEn:"Base64",descriptionDe:"Base64 lokal in Text decodieren.",descriptionEn:"Decode Base64 to text locally."}),We({formatId:"base58",from:"text",to:"base58",compatibility:"compatible",input:"Folkkit",expected:"3fp86L69TR",inputLimitClass:"text-64-kib",additionalCases:[{from:"base58",to:"text",compatibility:"compatible",input:"3fp86L69TR",expected:"Folkkit"}],nameDe:"Base58",nameEn:"Base58",descriptionDe:"Base58 bis 64 KiB lokal in Text decodieren.",descriptionEn:"Decode Base58 up to 64 KiB to text locally."}),We({formatId:"url",from:"url",to:"text",compatibility:"compatible",input:"Folkkit%20lokal",expected:"Folkkit lokal",nameDe:"URL-Codierung",nameEn:"URL encoding",descriptionDe:"Percent-codierten URL-Text lokal decodieren.",descriptionEn:"Decode percent-encoded URL text locally."}),We({formatId:"html-ent",from:"text",to:"html-ent",compatibility:"compatible",input:"<b>&",expected:"&lt;b&gt;&amp;",nameDe:"HTML-Entities",nameEn:"HTML entities",descriptionDe:"HTML-Sonderzeichen lokal als Entities codieren.",descriptionEn:"Encode HTML special characters as entities locally."}),We({formatId:"hex",from:"hex",to:"text",compatibility:"compatible",input:"46 6f 6c 6b 6b 69 74",expected:"Folkkit",nameDe:"Hexadezimal",nameEn:"Hexadecimal",descriptionDe:"Hexadezimalwerte lokal in Text decodieren.",descriptionEn:"Decode hexadecimal values to text locally."}),We({formatId:"binary",from:"binary",to:"text",compatibility:"compatible",input:"01000110 01101111 01101100 01101011 01101011 01101001 01110100",expected:"Folkkit",nameDe:"Binär",nameEn:"Binary",descriptionDe:"Binärwerte lokal in Text decodieren.",descriptionEn:"Decode binary values to text locally."}),We({formatId:"unicode",from:"unicode",to:"text",compatibility:"compatible",input:"\\u0046\\u006f\\u006c\\u006b\\u006b\\u0069\\u0074",expected:"Folkkit",nameDe:"Unicode-Escapes",nameEn:"Unicode escapes",descriptionDe:"Unicode-Escape-Sequenzen lokal in Text decodieren.",descriptionEn:"Decode Unicode escape sequences to text locally."}),We({formatId:"uppercase",from:"uppercase",to:"lowercase",compatibility:"compatible",input:"FOLKKIT",expected:"folkkit",nameDe:"GROSSBUCHSTABEN",nameEn:"UPPERCASE",descriptionDe:"Grossbuchstaben lokal in Kleinbuchstaben umwandeln.",descriptionEn:"Convert uppercase text to lowercase locally."}),We({formatId:"lowercase",from:"lowercase",to:"uppercase",compatibility:"compatible",input:"folkkit",expected:"FOLKKIT",nameDe:"kleinbuchstaben",nameEn:"lowercase",descriptionDe:"Kleinbuchstaben lokal in Grossbuchstaben umwandeln.",descriptionEn:"Convert lowercase text to uppercase locally."}),We({formatId:"json",from:"json",to:"json-min",compatibility:"compatible",input:'{"name": "Folkkit"}',expected:'{"name":"Folkkit"}',nameDe:"JSON",nameEn:"JSON",descriptionDe:"JSON lokal minimieren.",descriptionEn:"Minify JSON locally."}),We({formatId:"json-min",from:"json-min",to:"json",compatibility:"compatible",input:'{"name":"Folkkit"}',expected:`{
+  "name": "Folkkit"
+}`,nameDe:"Minimiertes JSON",nameEn:"Minified JSON",descriptionDe:"Minimiertes JSON lokal formatieren.",descriptionEn:"Format minified JSON locally."}),We({formatId:"decimal",from:"decimal",to:"numhex",compatibility:"compatible",input:"255",expected:"0xFF",nameDe:"Dezimal",nameEn:"Decimal",descriptionDe:"Eine Dezimalzahl lokal in Hexadezimal umwandeln.",descriptionEn:"Convert a decimal number to hexadecimal locally."}),We({formatId:"numhex",from:"numhex",to:"decimal",compatibility:"compatible",input:"0xFF",expected:"255",nameDe:"Hexadezimalzahl",nameEn:"Hexadecimal number",descriptionDe:"Eine Hexadezimalzahl lokal in Dezimal umwandeln.",descriptionEn:"Convert a hexadecimal number to decimal locally."}),We({formatId:"numbin",from:"numbin",to:"decimal",compatibility:"compatible",input:"0b1010",expected:"10",nameDe:"Binärzahl",nameEn:"Binary number",descriptionDe:"Eine Binärzahl lokal in Dezimal umwandeln.",descriptionEn:"Convert a binary number to decimal locally."}),We({formatId:"numoct",from:"numoct",to:"decimal",compatibility:"compatible",input:"0o10",expected:"8",nameDe:"Oktalzahl",nameEn:"Octal number",descriptionDe:"Eine Oktalzahl lokal in Dezimal umwandeln.",descriptionEn:"Convert an octal number to decimal locally."}),We({formatId:"color-hex",from:"color-hex",to:"color-rgb",compatibility:"compatible",input:"#ff0000",expected:"rgb(255, 0, 0)",nameDe:"Farbe HEX",nameEn:"Color HEX",descriptionDe:"Einen HEX-Farbwert lokal in RGB umwandeln.",descriptionEn:"Convert a HEX color value to RGB locally."}),We({formatId:"color-rgb",from:"color-rgb",to:"color-hex",compatibility:"compatible",input:"rgb(255, 0, 0)",expected:"#ff0000",nameDe:"Farbe RGB",nameEn:"Color RGB",descriptionDe:"Einen RGB-Farbwert lokal in HEX umwandeln.",descriptionEn:"Convert an RGB color value to HEX locally."})]);function Qe(n,s,c={}){return Object.freeze({evidenceId:`tool:${n}`,subjectKind:"tool",subjectId:n,executor:s,...c})}const yy=[["base64-encode","Folkkit","Rm9sa2tpdA=="],["base64-decode","Rm9sa2tpdA==","Folkkit"],["url-encode","Folkkit & lokal","Folkkit%20%26%20lokal"],["url-decode","Folkkit%20%26%20lokal","Folkkit & lokal"],["html-encode","<b>&</b>","&lt;b&gt;&amp;&lt;/b&gt;"],["html-decode","&lt;b&gt;&amp;&lt;/b&gt;","<b>&</b>"],["hex-encode","Hi","48 69"],["hex-decode","48 69","Hi"],["binary-encode","Hi","01001000 01101001"],["binary-decode","01001000 01101001","Hi"],["unicode-escape","Hi ✓","\\u0048\\u0069\\u0020\\u2713"],["unicode-unescape","\\u0048\\u0069","Hi"],["rot13","Folkkit","Sbyxxvg"],["atbash","Abc","Zyx"],["sha256","Folkkit","9b7c7fc175ad695c18d03e20295ea1b502cab00fc6ef3fb780c4ae512ff62275"],["json-prettify",'{"a":1}',`{
+  "a": 1
+}`],["json-minify",'{ "a": 1 }','{"a":1}'],["json-escape",`line
+break`,'"line\\nbreak"'],["csv-to-json",`name,age
+Ada,36`,`[
+  {
+    "name": "Ada",
+    "age": "36"
+  }
+]`],["dec-to-hex","255","0xFF"],["hex-to-dec","ff","255"],["dec-to-bin","10","0b1010"],["bin-to-dec","1010","10"],["dec-to-oct","8","0o10"],["oct-to-dec","10","8"],["color-convert","#ff0000",`HEX:  #ff0000
+RGB:  rgb(255, 0, 0)
+HSL:  hsl(0, 100%, 50%)`],["css-minify","body { color: red; }","body{color:red}"],["json-validate",'{"ok":true}',`Valid JSON
+
+Type: object
+Content: 1 keys
+Size: 11 chars
+Minified: 11 chars`],["base64url-encode","Folkkit","Rm9sa2tpdA"],["base64url-decode","Rm9sa2tpdA","Folkkit"],["slug-gen","Hello Folkkit!",`Hello Folkkit!
+  → hello-folkkit`],["char-count","one two",`Characters:  7
+Words:       2
+Lines:       1
+Bytes:       7`],["reverse-text","Folkkit","tikkloF"],["aspect-ratio","1920x1080",`Dimensions: 1920 x 1080
+Ratio:      16:9
+Decimal:    1.7778
+
+Nearest common: 16:9 (Widescreen / HD)
+
+-- Common sizes at this ratio --
+  853 x 480
+  1280 x 720
+  1920 x 1080
+  2560 x 1440
+  3840 x 2160`]],by=yy.map(([n,s,c])=>Qe(n,"tool-text-cases",{cases:Object.freeze([{input:s,expected:c,match:"exact"}])})),Ty=Qe("percentage-calc","tool-text-cases",{cases:Object.freeze([{input:"15% of 200",expected:"15% of 200 = 30",match:"exact"},{input:"15% von 200",expected:"15% von 200 = 30",match:"exact"}])}),Ey=[Qe("loan-calc","tool-text-cases",{cases:Object.freeze([{input:"1000 12% 1",expected:"Monthly payment:  $88.85",match:"contains"},{input:"1000 5% 0",expected:"(invalid values)",match:"exact"},{input:"1000 5% 101",expected:"(invalid values)",match:"exact"},{input:"1000000000001 5% 30",expected:"(invalid values)",match:"exact"},{input:"1000 101% 30",expected:"(invalid values)",match:"exact"},{input:"99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 5% 30",expected:"(invalid values)",match:"exact"}])}),Qe("bmi-calc","tool-text-cases",{cases:Object.freeze([{input:"70kg 175cm",expected:"BMI:      22.9",match:"contains"}])})],Oy=[Qe("text-to-qr","tool-qr-generate",{input:"Folkkit evidence",expectedFilename:"folkkit-qr.svg"}),Qe("merge-pdf","tool-pdf-behavior",{operation:"merge"}),Qe("pdf-page-count","tool-pdf-behavior",{operation:"page-count"}),Qe("pdf-split","tool-pdf-behavior",{operation:"split"}),Qe("pdf-extract-range","tool-pdf-behavior",{operation:"extract-range"}),Qe("text-to-pdf","tool-pdf-behavior",{operation:"text-to-pdf"}),Qe("pdf-metadata","tool-pdf-behavior",{operation:"metadata"}),Qe("pdf-rotate","tool-pdf-behavior",{operation:"rotate"})],Sy=[Qe("images-to-pdf","browser-e2e"),Qe("png-to-jpg","browser-e2e"),Qe("jpg-to-png","browser-e2e"),Qe("audio-to-mp3","browser-e2e")],vy=Object.freeze([...by,Ty,...Ey,...Oy,...Sy]);Object.freeze([...Ur,...vy]);const wy=Object.freeze(Ur.map(n=>n.formatId)),of=Object.freeze(Ur.flatMap(n=>[Object.freeze({evidenceId:n.evidenceId,from:n.from,to:n.to,compatibility:n.compatibility,implementationEvidenceId:n.evidenceId,inputLimitClass:n.inputLimitClass}),...n.additionalCases.map((s,c)=>Object.freeze({evidenceId:`${n.evidenceId}:${c+2}`,from:s.from,to:s.to,compatibility:s.compatibility,implementationEvidenceId:`${n.evidenceId}:${c+2}`,inputLimitClass:n.inputLimitClass}))])),Ay=new Set(of.map(n=>`${n.from}→${n.to}`));function Hr(n){return Ur.find(s=>s.formatId===n)||null}function rf(n,s){return typeof n=="string"&&typeof s=="string"&&Ay.has(`${n}→${s}`)}function Ry(n){return typeof n!="string"?[]:of.filter(s=>s.from===n).map(s=>s.to)}function d0(n,s){if(!rf(n,s))return null;const c=Hr(n),l=Hr(s),p=Nr[c?.inputLimitClass]||Nr["text-5-mib"],d=Nr[l?.inputLimitClass]||Nr["text-5-mib"];return Math.min(p,d)}const wc=[{id:"text",name:"Text",group:"Text",placeholder:"Type or paste text..."},{id:"base64",name:"Base64",group:"Text",placeholder:"SGVsbG8gV29ybGQ="},{id:"base32",name:"Base32",group:"Text",placeholder:"JBSWY3DPEBLW64TMMQ======"},{id:"base58",name:"Base58",group:"Text",placeholder:"StV1DL6CwTryKyV"},{id:"url",name:"URL Encoded",group:"Text",placeholder:"hello%20world"},{id:"html-ent",name:"HTML Entities",group:"Text",placeholder:"&lt;div&gt;hello&lt;/div&gt;"},{id:"hex",name:"Hex",group:"Text",placeholder:"48 65 6c 6c 6f"},{id:"binary",name:"Binary",group:"Text",placeholder:"01001000 01100101 01101100 01101100 01101111"},{id:"unicode",name:"Unicode Escaped",group:"Text",placeholder:"\\u0048\\u0065\\u006c\\u006c\\u006f"},{id:"morse",name:"Morse Code",group:"Text",placeholder:".... . .-.. .-.. ---"},{id:"nato",name:"NATO Phonetic",group:"Text",placeholder:"Alfa Bravo Charlie"},{id:"rot13",name:"ROT13",group:"Text",placeholder:"Uryyb Jbeyq"},{id:"reverse",name:"Reversed",group:"Text",placeholder:"dlroW olleH"},{id:"json-escaped",name:"JSON String",group:"Text",placeholder:'"Hello\\nWorld\\t\\"quoted\\"" '},{id:"uppercase",name:"UPPERCASE",group:"Case",placeholder:"HELLO WORLD"},{id:"lowercase",name:"lowercase",group:"Case",placeholder:"hello world"},{id:"titlecase",name:"Title Case",group:"Case",placeholder:"Hello World"},{id:"camelcase",name:"camelCase",group:"Case",placeholder:"helloWorld"},{id:"snakecase",name:"snake_case",group:"Case",placeholder:"hello_world"},{id:"kebabcase",name:"kebab-case",group:"Case",placeholder:"hello-world"},{id:"markdown",name:"Markdown",group:"Markup",placeholder:"# Hello **world**"},{id:"html-markup",name:"HTML",group:"Markup",placeholder:"<h1>Hello <strong>world</strong></h1>"},{id:"plain",name:"Plain Text",group:"Markup",placeholder:"Hello world"},{id:"json",name:"JSON",group:"Data",placeholder:'{"key": "value"}'},{id:"json-min",name:"JSON Minified",group:"Data",placeholder:'{"key":"value"}'},{id:"yaml",name:"YAML",group:"Data",placeholder:`key: value
+items:
+  - one
+  - two`},{id:"csv",name:"CSV",group:"Data",placeholder:`name,age
+Alice,30
+Bob,25`},{id:"tsv",name:"TSV",group:"Data",placeholder:`name	age
+Alice	30
+Bob	25`},{id:"xml",name:"XML",group:"Data",placeholder:"<root><item>hello</item></root>"},{id:"querystring",name:"Query String",group:"Data",placeholder:"key=value&foo=bar"},{id:"toml",name:"TOML",group:"Data",placeholder:`key = "value"
+[section]
+name = "test"`},{id:"timestamp",name:"Unix Timestamp",group:"Time",placeholder:"1700000000"},{id:"iso-date",name:"ISO 8601",group:"Time",placeholder:"2024-01-15T12:00:00Z"},{id:"human-date",name:"Human Date",group:"Time",placeholder:"Mon, 15 Jan 2024 12:00:00 GMT"},{id:"sha1",name:"SHA-1 Hash",group:"Hash"},{id:"sha256",name:"SHA-256 Hash",group:"Hash"},{id:"sha384",name:"SHA-384 Hash",group:"Hash"},{id:"sha512",name:"SHA-512 Hash",group:"Hash"},{id:"md5",name:"MD5 Hash",group:"Hash"},{id:"decimal",name:"Decimal",group:"Number",placeholder:"255"},{id:"numhex",name:"Hexadecimal",group:"Number",placeholder:"0xFF"},{id:"numbin",name:"Binary (Num)",group:"Number",placeholder:"0b11111111"},{id:"numoct",name:"Octal",group:"Number",placeholder:"0o377"},{id:"roman",name:"Roman Numeral",group:"Number",placeholder:"CCLV"},{id:"bits",name:"Bits",group:"Data Size",placeholder:"8388608"},{id:"bytes",name:"Bytes",group:"Data Size",placeholder:"1048576"},{id:"kilobytes",name:"Kilobytes",group:"Data Size",placeholder:"1024"},{id:"megabytes",name:"Megabytes",group:"Data Size",placeholder:"1"},{id:"gigabytes",name:"Gigabytes",group:"Data Size",placeholder:"0.5"},{id:"kib",name:"Kibibytes (KiB)",group:"Data Size",placeholder:"1000"},{id:"mib",name:"Mebibytes (MiB)",group:"Data Size",placeholder:"0.977"},{id:"gib",name:"Gibibytes (GiB)",group:"Data Size",placeholder:"0.00095"},{id:"celsius",name:"Celsius",group:"Temperature",placeholder:"100"},{id:"fahrenheit",name:"Fahrenheit",group:"Temperature",placeholder:"212"},{id:"kelvin",name:"Kelvin",group:"Temperature",placeholder:"373.15"},{id:"inches",name:"Inches",group:"Length",placeholder:"12"},{id:"cm",name:"Centimeters",group:"Length",placeholder:"30.48"},{id:"mm",name:"Millimeters",group:"Length",placeholder:"304.8"},{id:"feet",name:"Feet",group:"Length",placeholder:"1"},{id:"meters",name:"Meters",group:"Length",placeholder:"0.3048"},{id:"miles",name:"Miles",group:"Distance",placeholder:"1"},{id:"km",name:"Kilometers",group:"Distance",placeholder:"1.609"},{id:"yards",name:"Yards",group:"Distance",placeholder:"1760"},{id:"nautmiles",name:"Nautical Miles",group:"Distance",placeholder:"0.8684"},{id:"kg",name:"Kilograms",group:"Weight",placeholder:"1"},{id:"lb",name:"Pounds",group:"Weight",placeholder:"2.205"},{id:"oz",name:"Ounces",group:"Weight",placeholder:"35.274"},{id:"grams",name:"Grams",group:"Weight",placeholder:"1000"},{id:"ton-metric",name:"Tonnes (metric)",group:"Weight",placeholder:"0.001"},{id:"ton-short",name:"Short Tons (US)",group:"Weight",placeholder:"0.0011"},{id:"stone",name:"Stones",group:"Weight",placeholder:"0.1575"},{id:"mph",name:"Miles/hour",group:"Speed",placeholder:"60"},{id:"kmh",name:"km/hour",group:"Speed",placeholder:"96.56"},{id:"ms",name:"Meters/sec",group:"Speed",placeholder:"26.82"},{id:"knots",name:"Knots",group:"Speed",placeholder:"52.14"},{id:"sqft",name:"Square Feet",group:"Area",placeholder:"100"},{id:"sqm",name:"Square Meters",group:"Area",placeholder:"9.29"},{id:"acres",name:"Acres",group:"Area",placeholder:"1"},{id:"hectares",name:"Hectares",group:"Area",placeholder:"0.4047"},{id:"liters",name:"Liters",group:"Volume",placeholder:"1"},{id:"gallons",name:"Gallons (US)",group:"Volume",placeholder:"0.2642"},{id:"ml",name:"Milliliters",group:"Volume",placeholder:"1000"},{id:"floz",name:"Fluid Ounces",group:"Volume",placeholder:"33.814"},{id:"cups",name:"Cups",group:"Volume",placeholder:"4.227"},{id:"dur-seconds",name:"Seconds",group:"Duration",placeholder:"3600"},{id:"dur-minutes",name:"Minutes",group:"Duration",placeholder:"60"},{id:"dur-hours",name:"Hours",group:"Duration",placeholder:"1"},{id:"dur-days",name:"Days",group:"Duration",placeholder:"0.0417"},{id:"joules",name:"Joules",group:"Energy",placeholder:"1000"},{id:"calories",name:"Calories",group:"Energy",placeholder:"239.006"},{id:"kcal",name:"Kilocalories",group:"Energy",placeholder:"0.239"},{id:"kwh",name:"Kilowatt-hours",group:"Energy",placeholder:"0.000278"},{id:"btu",name:"BTU",group:"Energy",placeholder:"0.9478"},{id:"psi",name:"PSI",group:"Pressure",placeholder:"14.696"},{id:"bar",name:"Bar",group:"Pressure",placeholder:"1.01325"},{id:"atm",name:"Atmospheres",group:"Pressure",placeholder:"1"},{id:"pascal",name:"Pascals",group:"Pressure",placeholder:"101325"},{id:"mmhg",name:"mmHg",group:"Pressure",placeholder:"760"},{id:"degrees",name:"Degrees",group:"Angle",placeholder:"180"},{id:"radians",name:"Radians",group:"Angle",placeholder:"3.14159"},{id:"gradians",name:"Gradians",group:"Angle",placeholder:"200"},{id:"terabytes",name:"Terabytes",group:"Data Size",placeholder:"0.001"},{id:"petabytes",name:"Petabytes",group:"Data Size",placeholder:"0.000001"},{id:"hz",name:"Hertz",group:"Frequency",placeholder:"1000"},{id:"khz",name:"Kilohertz",group:"Frequency",placeholder:"1"},{id:"mhz",name:"Megahertz",group:"Frequency",placeholder:"0.001"},{id:"ghz",name:"Gigahertz",group:"Frequency",placeholder:"0.000001"},{id:"watts",name:"Watts",group:"Power",placeholder:"1000"},{id:"kilowatts",name:"Kilowatts",group:"Power",placeholder:"1"},{id:"horsepower",name:"Horsepower",group:"Power",placeholder:"1.341"},{id:"btuh",name:"BTU/hour",group:"Power",placeholder:"3412.14"},{id:"mpg",name:"Miles/gallon",group:"Fuel Economy",placeholder:"30"},{id:"kml",name:"km/Liter",group:"Fuel Economy",placeholder:"12.75"},{id:"l100km",name:"L/100km",group:"Fuel Economy",placeholder:"7.84"},{id:"bps",name:"Bits/sec",group:"Data Rate",placeholder:"1000000"},{id:"kbps",name:"Kbps",group:"Data Rate",placeholder:"1000"},{id:"mbps",name:"Mbps",group:"Data Rate",placeholder:"1"},{id:"gbps",name:"Gbps",group:"Data Rate",placeholder:"0.001"},{id:"tsp",name:"Teaspoons",group:"Cooking",placeholder:"3"},{id:"tbsp",name:"Tablespoons",group:"Cooking",placeholder:"1"},{id:"cup-cook",name:"Cups (US)",group:"Cooking",placeholder:"0.0625"},{id:"braille",name:"Braille",group:"Text",placeholder:"⠓⠑⠇⠇⠕"},{id:"piglatin",name:"Pig Latin",group:"Text",placeholder:"ellohay orldway"},{id:"leetspeak",name:"Leet Speak",group:"Text",placeholder:"h3ll0 w0rld"},{id:"base64url",name:"Base64 URL",group:"Text",placeholder:"SGVsbG8gV29ybGQ"},{id:"atbash",name:"Atbash",group:"Text",placeholder:"Svool Dliow"},{id:"rankine",name:"Rankine",group:"Temperature",placeholder:"671.67"},{id:"turns",name:"Turns",group:"Angle",placeholder:"0.5"},{id:"tbps",name:"Tbps",group:"Data Rate",placeholder:"0.000001"},{id:"color-hex",name:"Color HEX",group:"Color",placeholder:"#ff6b35"},{id:"color-rgb",name:"Color RGB",group:"Color",placeholder:"rgb(255, 107, 53)"},{id:"color-hsl",name:"Color HSL",group:"Color",placeholder:"hsl(16, 100%, 60%)"},{id:"color-hsv",name:"Color HSV",group:"Color",placeholder:"hsv(16, 79%, 100%)"},{id:"color-cmyk",name:"Color CMYK",group:"Color",placeholder:"cmyk(0%, 58%, 79%, 0%)"},{id:"pint-cook",name:"Pints (US)",group:"Cooking",placeholder:"0.03125"},{id:"qt-cook",name:"Quarts (US)",group:"Cooking",placeholder:"0.015625"},{id:"floz-cook",name:"Fluid Oz (US)",group:"Cooking",placeholder:"0.5"},{id:"dur-ms",name:"Milliseconds",group:"Duration",placeholder:"3600000"},{id:"dur-weeks",name:"Weeks",group:"Duration",placeholder:"0.006"},{id:"dur-us",name:"Microseconds",group:"Duration",placeholder:"3600000000"},{id:"dur-ns",name:"Nanoseconds",group:"Duration",placeholder:"3.6e12"},{id:"dur-months",name:"Months",group:"Duration",placeholder:"0.00137"},{id:"dur-years",name:"Years",group:"Duration",placeholder:"0.000114"},{id:"megajoules",name:"Megajoules",group:"Energy",placeholder:"0.001"},{id:"fps",name:"Feet/sec",group:"Speed",placeholder:"88"},{id:"mach",name:"Mach",group:"Speed",placeholder:"0.0767"},{id:"micrometers",name:"Micrometers",group:"Length",placeholder:"304800"},{id:"nanometers",name:"Nanometers",group:"Length",placeholder:"304800000"},{id:"light-year",name:"Light Years",group:"Distance",placeholder:"1"},{id:"au",name:"Astronomical Units",group:"Distance",placeholder:"63241"},{id:"gallon-us",name:"Gallons (US)",group:"Cooking",placeholder:"1"},{id:"milligrams",name:"Milligrams",group:"Weight",placeholder:"453592"},{id:"micrograms",name:"Micrograms",group:"Weight",placeholder:"453592000"},{id:"carats",name:"Carats",group:"Weight",placeholder:"5000"},{id:"btu-per-hr",name:"BTU/hour",group:"Power",placeholder:"3412"},{id:"calories-per-sec",name:"cal/sec",group:"Power",placeholder:"239"},{id:"rpm",name:"RPM",group:"Frequency",placeholder:"60"},{id:"radians-per-sec",name:"Radians/sec (ω)",group:"Frequency",placeholder:"6.2832"},{id:"troy-oz",name:"Troy Ounce",group:"Weight",placeholder:"32.15"},{id:"sqkm",name:"Square Kilometers",group:"Area",placeholder:"1"},{id:"sqmiles",name:"Square Miles",group:"Area",placeholder:"0.3861"},{id:"sqinches",name:"Square Inches",group:"Area",placeholder:"1550"},{id:"sqcm",name:"Square Centimeters",group:"Area",placeholder:"92.9"},{id:"kpa",name:"Kilopascals (kPa)",group:"Pressure",placeholder:"101.325"},{id:"hpa",name:"Hectopascals (hPa)",group:"Pressure",placeholder:"1013.25"},{id:"arcminutes",name:"Arcminutes",group:"Angle",placeholder:"10800"},{id:"arcseconds",name:"Arcseconds",group:"Angle",placeholder:"648000"},{id:"cubic-m",name:"Cubic Meters",group:"Volume",placeholder:"0.001"},{id:"cubic-ft",name:"Cubic Feet",group:"Volume",placeholder:"0.0353"},{id:"newtons",name:"Newtons",group:"Force",placeholder:"9.807"},{id:"pound-force",name:"Pound-force (lbf)",group:"Force",placeholder:"2.205"},{id:"kg-force",name:"Kilogram-force (kgf)",group:"Force",placeholder:"1"},{id:"dyne",name:"Dyne",group:"Force",placeholder:"980665"},{id:"kilonewtons",name:"Kilonewtons",group:"Force",placeholder:"0.009807"},{id:"lux",name:"Lux",group:"Illuminance",placeholder:"500"},{id:"foot-candle",name:"Foot-candle",group:"Illuminance",placeholder:"46.45"},{id:"millilux",name:"Millilux",group:"Illuminance",placeholder:"500000"},{id:"pt",name:"Points (pt)",group:"Typography",placeholder:"72"},{id:"pica",name:"Picas",group:"Typography",placeholder:"6"},{id:"px",name:"Pixels (96 DPI)",group:"Typography",placeholder:"96"},{id:"kgm3",name:"kg/m³",group:"Density",placeholder:"1000"},{id:"gcm3",name:"g/cm³",group:"Density",placeholder:"1"},{id:"lbft3",name:"lb/ft³",group:"Density",placeholder:"62.43"},{id:"lbgal",name:"lb/gal (US)",group:"Density",placeholder:"8.34"},{id:"ampere",name:"Amperes (A)",group:"Electric",placeholder:"1"},{id:"milliamp",name:"Milliamperes (mA)",group:"Electric",placeholder:"1000"},{id:"microamp",name:"Microamperes (μA)",group:"Electric",placeholder:"1000000"},{id:"kiloamp",name:"Kiloamperes (kA)",group:"Electric",placeholder:"0.001"},{id:"volt",name:"Volts (V)",group:"Voltage",placeholder:"120"},{id:"millivolt",name:"Millivolts (mV)",group:"Voltage",placeholder:"120000"},{id:"kilovolt",name:"Kilovolts (kV)",group:"Voltage",placeholder:"0.12"},{id:"microvolt",name:"Microvolts (μV)",group:"Voltage",placeholder:"120000000"},{id:"ohm",name:"Ohms (Ω)",group:"Resistance",placeholder:"1000"},{id:"kilohm",name:"Kilohms (kΩ)",group:"Resistance",placeholder:"1"},{id:"megohm",name:"Megohms (MΩ)",group:"Resistance",placeholder:"0.001"},{id:"milliohm",name:"Milliohms (mΩ)",group:"Resistance",placeholder:"1000000"},{id:"ms2",name:"m/s²",group:"Acceleration",placeholder:"9.81"},{id:"gforce",name:"g-force",group:"Acceleration",placeholder:"1"},{id:"fts2",name:"ft/s²",group:"Acceleration",placeholder:"32.17"},{id:"cms2",name:"cm/s² (Gal)",group:"Acceleration",placeholder:"981"},{id:"nm-torque",name:"Newton-meters (N·m)",group:"Torque",placeholder:"100"},{id:"lb-ft",name:"Pound-feet (lb·ft)",group:"Torque",placeholder:"73.76"},{id:"lb-in",name:"Pound-inches (lb·in)",group:"Torque",placeholder:"885.1"},{id:"kg-cm",name:"Kilogram-cm (kg·cm)",group:"Torque",placeholder:"1019.7"},{id:"newton",name:"Newtons (N)",group:"Force",placeholder:"9.81"},{id:"kilonewton",name:"Kilonewtons (kN)",group:"Force",placeholder:"0.00981"},{id:"kgforce",name:"Kilogram-force (kgf)",group:"Force",placeholder:"1"},{id:"footcandle",name:"Footcandle (fc)",group:"Illuminance",placeholder:"46.45"},{id:"phot",name:"Phot (ph)",group:"Illuminance",placeholder:"0.05"},{id:"nox",name:"Nox (nx)",group:"Illuminance",placeholder:"500000"},{id:"farad",name:"Farad (F)",group:"Capacitance",placeholder:"0.000001"},{id:"microfarad",name:"Microfarad (μF)",group:"Capacitance",placeholder:"1"},{id:"nanofarad",name:"Nanofarad (nF)",group:"Capacitance",placeholder:"1000"},{id:"picofarad",name:"Picofarad (pF)",group:"Capacitance",placeholder:"1000000"},{id:"terahertz",name:"Terahertz (THz)",group:"Frequency",placeholder:"0.001"},{id:"gigahertz",name:"Gigahertz (GHz)",group:"Frequency",placeholder:"1"},{id:"percent",name:"Percent (%)",group:"Number",placeholder:"75"},{id:"decimal-frac",name:"Decimal Fraction",group:"Number",placeholder:"0.75"},{id:"ppm",name:"Parts per Million (ppm)",group:"Number",placeholder:"750000"},{id:"ppb",name:"Parts per Billion (ppb)",group:"Number",placeholder:"750000000"},{id:"pt-type",name:"Point (pt)",group:"Typography",placeholder:"72"},{id:"screen-px",name:"Screen Pixel (96 DPI)",group:"Typography",placeholder:"96"},{id:"twip",name:"Twip (1/1440 in)",group:"Typography",placeholder:"1440"}],sf=new Set(wy),Ny=wc.filter(n=>sf.has(n.id));function Iy(n,s="de"){const c=wc.find(p=>p.id===n),l=Hr(n);return!c||!l?null:{...c,name:s==="en"?l.nameEn:l.nameDe}}function h0(n="de"){return Ny.map(s=>Iy(s.id,n))}async function _a(n,s){const c=new TextEncoder().encode(s),l=await crypto.subtle.digest(n,c);return Array.from(new Uint8Array(l)).map(p=>p.toString(16).padStart(2,"0")).join("")}const lf="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";function dc(n){const s=new TextEncoder().encode(n);let c=0n;for(const p of s)c=c*256n+BigInt(p);let l="";for(;c>0n;)l=lf[Number(c%58n)]+l,c/=58n;for(const p of s)if(p===0)l="1"+l;else break;return l||"1"}function hc(n){const s=n.trim();let c=0n;for(const m of s){const y=lf.indexOf(m);if(y<0)throw new Error("bad char");c=c*58n+BigInt(y)}const p=c.toString(16).padStart(2,"0").match(/.{2}/g).map(m=>parseInt(m,16));let d=0;for(const m of s)if(m==="1")d++;else break;const f=new Uint8Array([...Array(d).fill(0),...p]);return new TextDecoder().decode(f)}const cf={a:"⠁",b:"⠃",c:"⠉",d:"⠙",e:"⠑",f:"⠋",g:"⠛",h:"⠓",i:"⠊",j:"⠚",k:"⠅",l:"⠇",m:"⠍",n:"⠝",o:"⠕",p:"⠏",q:"⠟",r:"⠗",s:"⠎",t:"⠞",u:"⠥",v:"⠧",w:"⠺",x:"⠭",y:"⠽",z:"⠵",1:"⠼⠁",2:"⠼⠃",3:"⠼⠉",4:"⠼⠙",5:"⠼⠑",6:"⠼⠋",7:"⠼⠛",8:"⠼⠓",9:"⠼⠊",0:"⠼⠚"," ":" ",".":"⠲",",":"⠂","?":"⠦","!":"⠖",";":"⠆",":":"⠒","-":"⠤","'":"⠄",'"':"⠦","/":"⠌","(":"⠐⠣",")":"⠐⠜"},eo={};for(const[n,s]of Object.entries(cf))eo[s]||(eo[s]=n);function un(n){let s="";for(const c of n.toLowerCase())s+=cf[c]||c;return s}function qa(n){let s="",c=0;const l=Array.from(n);for(;c<l.length;){if(c+1<l.length){const d=l[c]+l[c+1];if(eo[d]){s+=eo[d],c+=2;continue}}const p=l[c];s+=eo[p]||p,c++}return s}function pc(n){return n.replace(/\b([a-zA-Z]+)\b/g,s=>{const c=s.toLowerCase(),l=s[0]===s[0].toUpperCase(),p="aeiou";let d;if(p.includes(c[0]))d=c+"yay";else{let f=0;for(;f<c.length&&!p.includes(c[f]);)f++;d=c.slice(f)+c.slice(0,f)+"ay"}return l?d.charAt(0).toUpperCase()+d.slice(1):d})}function fc(n){return n.replace(/\b([a-zA-Z]+)\b/g,s=>{const c=s.toLowerCase(),l=s[0]===s[0].toUpperCase();let p;if(c.endsWith("yay"))p=c.slice(0,-3);else if(c.endsWith("ay")){const d=c.slice(0,-2),f="aeiou";let m=d.length;for(let y=d.length-1;y>=0&&!f.includes(d[y]);y--)m=y;p=d.slice(m)+d.slice(0,m)}else p=c;return l?p.charAt(0).toUpperCase()+p.slice(1):p})}const yc={a:"4",e:"3",i:"1",o:"0",s:"5",t:"7",b:"8",g:"9",l:"|"},Ir=Object.fromEntries(Object.entries(yc).map(([n,s])=>[s,n]));function Bp(n){const s=new TextEncoder().encode(n);function c(z,N){let x=z[0],k=z[1],H=z[2],U=z[3];const de=(ne,ge,X,Ie,Y,K,he)=>(ne=l(l(ne,ge&X|~ge&Ie),l(Y,he)),l(ne<<K|ne>>>32-K,ge)),B=(ne,ge,X,Ie,Y,K,he)=>(ne=l(l(ne,ge&Ie|X&~Ie),l(Y,he)),l(ne<<K|ne>>>32-K,ge)),J=(ne,ge,X,Ie,Y,K,he)=>(ne=l(l(ne,ge^X^Ie),l(Y,he)),l(ne<<K|ne>>>32-K,ge)),se=(ne,ge,X,Ie,Y,K,he)=>(ne=l(l(ne,X^(ge|~Ie)),l(Y,he)),l(ne<<K|ne>>>32-K,ge));x=de(x,k,H,U,N[0],7,-680876936),U=de(U,x,k,H,N[1],12,-389564586),H=de(H,U,x,k,N[2],17,606105819),k=de(k,H,U,x,N[3],22,-1044525330),x=de(x,k,H,U,N[4],7,-176418897),U=de(U,x,k,H,N[5],12,1200080426),H=de(H,U,x,k,N[6],17,-1473231341),k=de(k,H,U,x,N[7],22,-45705983),x=de(x,k,H,U,N[8],7,1770035416),U=de(U,x,k,H,N[9],12,-1958414417),H=de(H,U,x,k,N[10],17,-42063),k=de(k,H,U,x,N[11],22,-1990404162),x=de(x,k,H,U,N[12],7,1804603682),U=de(U,x,k,H,N[13],12,-40341101),H=de(H,U,x,k,N[14],17,-1502002290),k=de(k,H,U,x,N[15],22,1236535329),x=B(x,k,H,U,N[1],5,-165796510),U=B(U,x,k,H,N[6],9,-1069501632),H=B(H,U,x,k,N[11],14,643717713),k=B(k,H,U,x,N[0],20,-373897302),x=B(x,k,H,U,N[5],5,-701558691),U=B(U,x,k,H,N[10],9,38016083),H=B(H,U,x,k,N[15],14,-660478335),k=B(k,H,U,x,N[4],20,-405537848),x=B(x,k,H,U,N[9],5,568446438),U=B(U,x,k,H,N[14],9,-1019803690),H=B(H,U,x,k,N[3],14,-187363961),k=B(k,H,U,x,N[8],20,1163531501),x=B(x,k,H,U,N[13],5,-1444681467),U=B(U,x,k,H,N[2],9,-51403784),H=B(H,U,x,k,N[7],14,1735328473),k=B(k,H,U,x,N[12],20,-1926607734),x=J(x,k,H,U,N[5],4,-378558),U=J(U,x,k,H,N[8],11,-2022574463),H=J(H,U,x,k,N[11],16,1839030562),k=J(k,H,U,x,N[14],23,-35309556),x=J(x,k,H,U,N[1],4,-1530992060),U=J(U,x,k,H,N[4],11,1272893353),H=J(H,U,x,k,N[7],16,-155497632),k=J(k,H,U,x,N[10],23,-1094730640),x=J(x,k,H,U,N[13],4,681279174),U=J(U,x,k,H,N[0],11,-358537222),H=J(H,U,x,k,N[3],16,-722521979),k=J(k,H,U,x,N[6],23,76029189),x=J(x,k,H,U,N[9],4,-640364487),U=J(U,x,k,H,N[12],11,-421815835),H=J(H,U,x,k,N[15],16,530742520),k=J(k,H,U,x,N[2],23,-995338651),x=se(x,k,H,U,N[0],6,-198630844),U=se(U,x,k,H,N[7],10,1126891415),H=se(H,U,x,k,N[14],15,-1416354905),k=se(k,H,U,x,N[5],21,-57434055),x=se(x,k,H,U,N[12],6,1700485571),U=se(U,x,k,H,N[3],10,-1894986606),H=se(H,U,x,k,N[10],15,-1051523),k=se(k,H,U,x,N[1],21,-2054922799),x=se(x,k,H,U,N[8],6,1873313359),U=se(U,x,k,H,N[15],10,-30611744),H=se(H,U,x,k,N[6],15,-1560198380),k=se(k,H,U,x,N[13],21,1309151649),x=se(x,k,H,U,N[4],6,-145523070),U=se(U,x,k,H,N[11],10,-1120210379),H=se(H,U,x,k,N[2],15,718787259),k=se(k,H,U,x,N[9],21,-343485551),z[0]=l(x,z[0]),z[1]=l(k,z[1]),z[2]=l(H,z[2]),z[3]=l(U,z[3])}function l(z,N){return z+N&4294967295}function p(z){const N=[];for(let x=0;x<64;x+=4)N[x>>2]=z[x]+(z[x+1]<<8)+(z[x+2]<<16)+(z[x+3]<<24);return N}const d=s.length;let f=[128],m=d+1;for(;m%64!==56;)f.push(0),m++;const y=[1732584193,-271733879,-1732584194,271733878],b=new Uint8Array(d+f.length+8);b.set(s),b.set(f,d);const M=d*8;b[b.length-8]=M&255,b[b.length-7]=M>>8&255,b[b.length-6]=M>>16&255,b[b.length-5]=M>>24&255;for(let z=0;z<b.length;z+=64)c(y,p(b.slice(z,z+64)));return y.map(z=>{let N="";for(let x=0;x<4;x++)N+=(z>>x*8&255).toString(16).padStart(2,"0");return N}).join("")}function Yp(n){const s=[[1e3,"M"],[900,"CM"],[500,"D"],[400,"CD"],[100,"C"],[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]];let c="";for(const[l,p]of s)for(;n>=l;)c+=p,n-=l;return c}function Wp(n){const s={I:1,V:5,X:10,L:50,C:100,D:500,M:1e3};let c=0;const l=n.trim().toUpperCase();for(let p=0;p<l.length;p++){const d=s[l[p]];if(!d)throw new Error("invalid roman numeral");const f=s[l[p+1]]||0;d<f?c-=d:c+=d}return c}function $p(n){const s=JSON.parse(n);return Wt(s,0)}const dn={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",0:"-----",1:".----",2:"..---",3:"...--",4:"....-",5:".....",6:"-....",7:"--...",8:"---..",9:"----."," ":"/"},Fr=Object.fromEntries(Object.entries(dn).map(([n,s])=>[s,n])),Yi={A:"Alfa",B:"Bravo",C:"Charlie",D:"Delta",E:"Echo",F:"Foxtrot",G:"Golf",H:"Hotel",I:"India",J:"Juliet",K:"Kilo",L:"Lima",M:"Mike",N:"November",O:"Oscar",P:"Papa",Q:"Quebec",R:"Romeo",S:"Sierra",T:"Tango",U:"Uniform",V:"Victor",W:"Whiskey",X:"X-ray",Y:"Yankee",Z:"Zulu"},uf={"text→base64":n=>btoa(unescape(encodeURIComponent(n))),"base64→text":n=>decodeURIComponent(escape(atob(n.trim()))),"text→base58":n=>dc(n),"base58→text":n=>hc(n),"text→base32":n=>{const s="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",c=new TextEncoder().encode(n);let l="";for(const d of c)l+=d.toString(2).padStart(8,"0");for(;l.length%5;)l+="0";let p="";for(let d=0;d<l.length;d+=5)p+=s[parseInt(l.slice(d,d+5),2)];for(;p.length%8;)p+="=";return p},"base32→text":n=>{const s="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",c=n.trim().replace(/=+$/,"").toUpperCase();let l="";for(const d of c){const f=s.indexOf(d);if(f<0)throw new Error("bad char");l+=f.toString(2).padStart(5,"0")}const p=[];for(let d=0;d+8<=l.length;d+=8)p.push(parseInt(l.slice(d,d+8),2));return new TextDecoder().decode(new Uint8Array(p))},"text→url":n=>encodeURIComponent(n),"url→text":n=>decodeURIComponent(n),"text→html-ent":n=>n.replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[s]),"html-ent→text":n=>{const s=document.createElement("textarea");return s.innerHTML=n,s.value},"text→hex":n=>Array.from(new TextEncoder().encode(n)).map(s=>s.toString(16).padStart(2,"0")).join(" "),"hex→text":n=>{const s=n.replace(/\s+/g,""),c=new Uint8Array(s.match(/.{2}/g).map(l=>parseInt(l,16)));return new TextDecoder().decode(c)},"text→binary":n=>Array.from(new TextEncoder().encode(n)).map(s=>s.toString(2).padStart(8,"0")).join(" "),"binary→text":n=>{const s=n.trim().split(/\s+/);return new TextDecoder().decode(new Uint8Array(s.map(c=>parseInt(c,2))))},"text→unicode":n=>Array.from(n).map(s=>{const c=s.codePointAt(0);return c>65535?`\\u{${c.toString(16)}}`:`\\u${c.toString(16).padStart(4,"0")}`}).join(""),"unicode→text":n=>n.replace(/\\u\{([0-9a-fA-F]+)\}|\\u([0-9a-fA-F]{4})/g,(s,c,l)=>String.fromCodePoint(parseInt(c||l,16))),"text→morse":n=>n.toUpperCase().split("").map(s=>dn[s]||s).join(" "),"morse→text":n=>n.trim().split(" ").map(s=>Fr[s]||s).join(""),"text→nato":n=>n.toUpperCase().split("").map(s=>s===" "?"/":Yi[s]||s).join(" "),"text→uppercase":n=>n.toUpperCase(),"text→lowercase":n=>n.toLowerCase(),"text→titlecase":n=>n.replace(/\b\w/g,s=>s.toUpperCase()),"text→camelcase":n=>n.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g,(s,c)=>c.toUpperCase()),"text→snakecase":n=>n.replace(/([a-z])([A-Z])/g,"$1_$2").replace(/[\s-]+/g,"_").toLowerCase(),"text→kebabcase":n=>n.replace(/([a-z])([A-Z])/g,"$1-$2").replace(/[\s_]+/g,"-").toLowerCase(),"uppercase→text":n=>n,"lowercase→text":n=>n,"titlecase→text":n=>n,"camelcase→text":n=>n.replace(/([A-Z])/g," $1").trim().toLowerCase(),"snakecase→text":n=>n.replace(/_/g," "),"kebabcase→text":n=>n.replace(/-/g," "),"uppercase→lowercase":n=>n.toLowerCase(),"lowercase→uppercase":n=>n.toUpperCase(),"text→rot13":n=>n.replace(/[a-zA-Z]/g,s=>{const c=s<="Z"?65:97;return String.fromCharCode((s.charCodeAt(0)-c+13)%26+c)}),"rot13→text":n=>n.replace(/[a-zA-Z]/g,s=>{const c=s<="Z"?65:97;return String.fromCharCode((s.charCodeAt(0)-c+13)%26+c)}),"text→braille":n=>un(n),"braille→text":n=>qa(n),"text→piglatin":n=>pc(n),"piglatin→text":n=>fc(n),"text→leetspeak":n=>Array.from(n).map(s=>yc[s.toLowerCase()]||s).join(""),"leetspeak→text":n=>Array.from(n).map(s=>Ir[s]||s).join(""),"text→base64url":n=>btoa(unescape(encodeURIComponent(n))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""),"base64url→text":n=>{const s=n.trim().replace(/-/g,"+").replace(/_/g,"/");return decodeURIComponent(escape(atob(s+"=".repeat((4-s.length%4)%4))))},"base64url→base64":n=>{const s=n.trim().replace(/-/g,"+").replace(/_/g,"/");return s+"=".repeat((4-s.length%4)%4)},"base64→base64url":n=>n.trim().replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""),"base64url→hex":n=>{const s=n.trim().replace(/-/g,"+").replace(/_/g,"/"),c=Uint8Array.from(atob(s+"=".repeat((4-s.length%4)%4)),l=>l.charCodeAt(0));return Array.from(c).map(l=>l.toString(16).padStart(2,"0")).join(" ")},"text→atbash":n=>n.replace(/[a-zA-Z]/g,s=>{const c=s<="Z"?65:97;return String.fromCharCode(c+25-(s.charCodeAt(0)-c))}),"atbash→text":n=>n.replace(/[a-zA-Z]/g,s=>{const c=s<="Z"?65:97;return String.fromCharCode(c+25-(s.charCodeAt(0)-c))}),"atbash→morse":n=>n.replace(/[a-zA-Z]/g,c=>{const l=c<="Z"?65:97;return String.fromCharCode(l+25-(c.charCodeAt(0)-l))}).toUpperCase().split("").map(c=>dn[c]||c).join(" "),"atbash→braille":n=>un(n.replace(/[a-zA-Z]/g,s=>{const c=s<="Z"?65:97;return String.fromCharCode(c+25-(s.charCodeAt(0)-c))})),"rot13→atbash":n=>n.replace(/[a-zA-Z]/g,c=>{const l=c<="Z"?65:97;return String.fromCharCode((c.charCodeAt(0)-l+13)%26+l)}).replace(/[a-zA-Z]/g,c=>{const l=c<="Z"?65:97;return String.fromCharCode(l+25-(c.charCodeAt(0)-l))}),"atbash→rot13":n=>n.replace(/[a-zA-Z]/g,c=>{const l=c<="Z"?65:97;return String.fromCharCode(l+25-(c.charCodeAt(0)-l))}).replace(/[a-zA-Z]/g,c=>{const l=c<="Z"?65:97;return String.fromCharCode((c.charCodeAt(0)-l+13)%26+l)}),"reverse→base64":n=>btoa(unescape(encodeURIComponent(n))),"reverse→morse":n=>n.toUpperCase().split("").map(s=>dn[s]||s).join(" "),"reverse→braille":n=>un(n),"morse→braille":n=>un(n.trim().split(" ").map(s=>Fr[s]||s).join("")),"braille→morse":n=>qa(n).toUpperCase().split("").map(s=>dn[s]||s).join(" "),"base64→braille":n=>un(decodeURIComponent(escape(atob(n.trim())))),"braille→base64":n=>btoa(unescape(encodeURIComponent(qa(n)))),"leetspeak→morse":n=>Array.from(n).map(c=>Ir[c]||c).join("").toUpperCase().split("").map(c=>dn[c]||c).join(" "),"leetspeak→braille":n=>un(Array.from(n).map(s=>Ir[s]||s).join("")),"piglatin→braille":n=>un(fc(n)),"braille→piglatin":n=>pc(qa(n)),"morse→binary":n=>{const s=n.trim().split(" ").map(c=>Fr[c]||c).join("");return Array.from(new TextEncoder().encode(s)).map(c=>c.toString(2).padStart(8,"0")).join(" ")},"binary→morse":n=>new TextDecoder().decode(new Uint8Array(n.trim().split(/\s+/).map(c=>parseInt(c,2)))).toUpperCase().split("").map(c=>dn[c]||c).join(" "),"rot13→morse":n=>n.replace(/[a-zA-Z]/g,s=>{const c=s<="Z"?65:97;return String.fromCharCode((s.charCodeAt(0)-c+13)%26+c)}).toUpperCase().split("").map(s=>dn[s]||s).join(" "),"rot13→braille":n=>un(n.replace(/[a-zA-Z]/g,s=>{const c=s<="Z"?65:97;return String.fromCharCode((s.charCodeAt(0)-c+13)%26+c)})),"morse→nato":n=>n.trim().split(" ").map(c=>Fr[c]||c).join("").toUpperCase().split("").map(c=>c===" "?"/":Yi[c]||c).join(" "),"nato→morse":n=>{const s=Object.fromEntries(Object.entries(Yi).map(([l,p])=>[p.toLowerCase(),l]));return n.split(/\s+/).map(l=>l==="/"?" ":s[l.toLowerCase()]||l).join("").toUpperCase().split("").map(l=>dn[l]||l).join(" ")},"braille→nato":n=>qa(n).toUpperCase().split("").map(c=>c===" "?"/":Yi[c]||c).join(" "),"nato→braille":n=>{const s=Object.fromEntries(Object.entries(Yi).map(([l,p])=>[p.toLowerCase(),l])),c=n.split(/\s+/).map(l=>l==="/"?" ":s[l.toLowerCase()]||l).join("");return un(c)},"reverse→leetspeak":n=>Array.from(n).map(s=>yc[s.toLowerCase()]||s).join(""),"leetspeak→reverse":n=>[...Array.from(n).map(s=>Ir[s]||s).join("")].reverse().join(""),"reverse→piglatin":n=>pc([...n].reverse().join("")),"piglatin→reverse":n=>[...fc(n)].reverse().join(""),"text→reverse":n=>[...n].reverse().join(""),"reverse→text":n=>[...n].reverse().join(""),"text→json-escaped":n=>JSON.stringify(n),"json-escaped→text":n=>JSON.parse(n.trim()),"markdown→html-markup":n=>{let s=n;return s=s.replace(/^### (.+)$/gm,"<h3>$1</h3>"),s=s.replace(/^## (.+)$/gm,"<h2>$1</h2>"),s=s.replace(/^# (.+)$/gm,"<h1>$1</h1>"),s=s.replace(/\*\*\*(.+?)\*\*\*/g,"<strong><em>$1</em></strong>"),s=s.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>"),s=s.replace(/\*(.+?)\*/g,"<em>$1</em>"),s=s.replace(/`(.+?)`/g,"<code>$1</code>"),s=s.replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2">$1</a>'),s},"html-markup→plain":n=>{const s=document.createElement("div");return s.innerHTML=n,s.textContent||""},"json→json-min":n=>JSON.stringify(JSON.parse(n)),"json-min→json":n=>JSON.stringify(JSON.parse(n),null,2),"json→csv":n=>{const s=JSON.parse(n);if(!Array.isArray(s)||!s.length)throw new Error("expected array");const c=Object.keys(s[0]),l=p=>{const d=String(p??"");return/[,"\n]/.test(d)?`"${d.replace(/"/g,'""')}"`:d};return[c.map(l).join(","),...s.map(p=>c.map(d=>l(p[d])).join(","))].join(`
+`)},"csv→json":n=>{const s=n.trim().split(`
+`),c=p=>{const d=[];let f="",m=!1;for(let y=0;y<p.length;y++){const b=p[y];m?b==='"'&&p[y+1]==='"'?(f+='"',y++):b==='"'?m=!1:f+=b:b==='"'?m=!0:b===","?(d.push(f),f=""):f+=b}return d.push(f),d},l=c(s[0]);return JSON.stringify(s.slice(1).map(p=>{const d=c(p),f={};return l.forEach((m,y)=>f[m]=d[y]??""),f}),null,2)},"csv→tsv":n=>{const s=c=>{const l=[];let p="",d=!1;for(let f=0;f<c.length;f++){const m=c[f];d?m==='"'&&c[f+1]==='"'?(p+='"',f++):m==='"'?d=!1:p+=m:m==='"'?d=!0:m===","?(l.push(p),p=""):p+=m}return l.push(p),l};return n.trim().split(`
+`).map(c=>s(c).join("	")).join(`
+`)},"tsv→csv":n=>{const s=c=>{const l=String(c??"");return/[,"\n]/.test(l)?`"${l.replace(/"/g,'""')}"`:l};return n.trim().split(`
+`).map(c=>c.split("	").map(s).join(",")).join(`
+`)},"json→tsv":n=>{const s=JSON.parse(n);if(!Array.isArray(s)||!s.length)throw new Error("expected array");const c=Object.keys(s[0]);return[c.join("	"),...s.map(l=>c.map(p=>String(l[p]??"").replace(/\t/g," ")).join("	"))].join(`
+`)},"tsv→json":n=>{const s=n.trim().split(`
+`),c=s[0].split("	");return JSON.stringify(s.slice(1).map(l=>{const p=l.split("	"),d={};return c.forEach((f,m)=>d[f]=p[m]??""),d}),null,2)},"tsv→yaml":n=>{const s=n.trim().split(`
+`),c=s[0].split("	"),l=s.slice(1).map(p=>{const d=p.split("	"),f={};return c.forEach((m,y)=>f[m]=d[y]??""),f});return Wt(l,0)},"tsv→xml":n=>{const s=n.trim().split(`
+`),c=s[0].split("	");return`<?xml version="1.0"?>
+<data>
+`+s.slice(1).map(p=>{const d=p.split("	");return`  <row>
+`+c.map((f,m)=>`    <${f}>${(d[m]||"").replace(/&/g,"&amp;").replace(/</g,"&lt;")}</${f}>`).join(`
+`)+`
+  </row>`}).join(`
+`)+`
+</data>`},"json→yaml":n=>$p(n),"yaml→json":n=>$a(n),"json→toml":n=>{const s=JSON.parse(n),c=[];function l(p,d){for(const[f,m]of Object.entries(p))if(m!==null&&typeof m=="object"&&!Array.isArray(m)){const y=d?`${d}.${f}`:f;c.push(`
+[${y}]`),l(m,y)}else{const y=typeof m=="string"?`"${m}"`:JSON.stringify(m);c.push(`${f} = ${y}`)}}return l(s,""),c.join(`
+`).trim()},"toml→json":n=>JSON.stringify(vr(n),null,2),"json→querystring":n=>{const s=JSON.parse(n),c=new URLSearchParams;for(const[l,p]of Object.entries(s))c.set(l,String(p));return c.toString()},"querystring→json":n=>{const s=new URLSearchParams(n.trim().replace(/^\?/,"")),c={};for(const[l,p]of s)c[l]=p;return JSON.stringify(c,null,2)},"yaml→csv":n=>{const s=$a(n),c=JSON.parse(s);if(!Array.isArray(c))throw new Error("need array");const l=Object.keys(c[0]),p=d=>{const f=String(d??"");return/[,"\n]/.test(f)?`"${f.replace(/"/g,'""')}"`:f};return[l.map(p).join(","),...c.map(d=>l.map(f=>p(d[f])).join(","))].join(`
+`)},"xml→json":n=>{const c=new DOMParser().parseFromString(n,"text/xml");if(c.querySelector("parsererror"))throw new Error("invalid XML");function l(p){const d={};if(p.attributes)for(const f of p.attributes)d["@"+f.name]=f.value;for(const f of p.childNodes)if(f.nodeType===3){const m=f.textContent.trim();if(m){if(!Object.keys(d).length)return m;d["#text"]=m}}else if(f.nodeType===1){const m=l(f);d[f.nodeName]?(Array.isArray(d[f.nodeName])||(d[f.nodeName]=[d[f.nodeName]]),d[f.nodeName].push(m)):d[f.nodeName]=m}return d}return JSON.stringify({[c.documentElement.nodeName]:l(c.documentElement)},null,2)},"text→sha1":n=>_a("SHA-1",n),"text→sha256":n=>_a("SHA-256",n),"text→sha384":n=>_a("SHA-384",n),"text→sha512":n=>_a("SHA-512",n),"text→md5":n=>Bp(n),"base64→sha256":async n=>{const s=decodeURIComponent(escape(atob(n.trim())));return _a("SHA-256",s)},"base64→md5":n=>{const s=decodeURIComponent(escape(atob(n.trim())));return Bp(s)},"timestamp→iso-date":n=>{const s=Number(n.trim()),c=s>1e12?s:s*1e3;return new Date(c).toISOString()},"timestamp→human-date":n=>{const s=Number(n.trim()),c=s>1e12?s:s*1e3;return new Date(c).toUTCString()},"iso-date→timestamp":n=>String(Math.floor(new Date(n.trim()).getTime()/1e3)),"iso-date→human-date":n=>new Date(n.trim()).toUTCString(),"human-date→timestamp":n=>String(Math.floor(new Date(n.trim()).getTime()/1e3)),"human-date→iso-date":n=>new Date(n.trim()).toISOString(),"text→timestamp":n=>{const s=new Date(n.trim());if(isNaN(s.getTime()))throw new Error("bad date");return String(Math.floor(s.getTime()/1e3))},"text→iso-date":n=>{const s=new Date(n.trim());if(isNaN(s.getTime()))throw new Error("bad date");return s.toISOString()},"decimal→numhex":n=>"0x"+parseInt(n.trim(),10).toString(16).toUpperCase(),"numhex→decimal":n=>String(parseInt(n.trim().replace(/^0x/i,""),16)),"decimal→numbin":n=>"0b"+parseInt(n.trim(),10).toString(2),"numbin→decimal":n=>String(parseInt(n.trim().replace(/^0b/i,""),2)),"decimal→numoct":n=>"0o"+parseInt(n.trim(),10).toString(8),"numoct→decimal":n=>String(parseInt(n.trim().replace(/^0o/i,""),8)),"numhex→numbin":n=>"0b"+parseInt(n.trim().replace(/^0x/i,""),16).toString(2),"numbin→numhex":n=>"0x"+parseInt(n.trim().replace(/^0b/i,""),2).toString(16).toUpperCase(),"decimal→roman":n=>{const s=parseInt(n.trim(),10);if(isNaN(s)||s<1||s>3999)throw new Error("1-3999 only");return Yp(s)},"roman→decimal":n=>String(Wp(n)),"numhex→roman":n=>{const s=parseInt(n.trim().replace(/^0x/i,""),16);return Yp(s)},"roman→numhex":n=>"0x"+Wp(n).toString(16).toUpperCase(),"base64→hex":n=>{const s=Uint8Array.from(atob(n.trim()),c=>c.charCodeAt(0));return Array.from(s).map(c=>c.toString(16).padStart(2,"0")).join(" ")},"hex→base64":n=>{const c=n.replace(/\s+/g,"").match(/.{2}/g).map(l=>parseInt(l,16));return btoa(String.fromCharCode(...c))},"base64→base32":n=>{const s=Uint8Array.from(atob(n.trim()),d=>d.charCodeAt(0)),c="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";let l="";for(const d of s)l+=d.toString(2).padStart(8,"0");for(;l.length%5;)l+="0";let p="";for(let d=0;d<l.length;d+=5)p+=c[parseInt(l.slice(d,d+5),2)];for(;p.length%8;)p+="=";return p},"base32→base64":n=>{const s="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",c=n.trim().replace(/=+$/,"").toUpperCase();let l="";for(const d of c){const f=s.indexOf(d);if(f<0)throw new Error("bad char");l+=f.toString(2).padStart(5,"0")}const p=[];for(let d=0;d+8<=l.length;d+=8)p.push(parseInt(l.slice(d,d+8),2));return btoa(String.fromCharCode(...p))},"base64→binary":n=>{const s=Uint8Array.from(atob(n.trim()),c=>c.charCodeAt(0));return Array.from(s).map(c=>c.toString(2).padStart(8,"0")).join(" ")},"binary→base64":n=>{const s=n.trim().split(/\s+/).map(c=>parseInt(c,2));return btoa(String.fromCharCode(...s))},"hex→binary":n=>n.replace(/\s+/g,"").match(/.{2}/g).map(c=>parseInt(c,16).toString(2).padStart(8,"0")).join(" "),"binary→hex":n=>n.trim().split(/\s+/).map(s=>parseInt(s,2).toString(16).padStart(2,"0")).join(" "),"url→base64":n=>btoa(unescape(encodeURIComponent(decodeURIComponent(n)))),"base64→url":n=>encodeURIComponent(decodeURIComponent(escape(atob(n.trim())))),"url→hex":n=>{const s=decodeURIComponent(n);return Array.from(new TextEncoder().encode(s)).map(c=>c.toString(16).padStart(2,"0")).join(" ")},"hex→url":n=>{const s=n.replace(/\s+/g,""),c=new Uint8Array(s.match(/.{2}/g).map(l=>parseInt(l,16)));return encodeURIComponent(new TextDecoder().decode(c))},"base32→hex":n=>{const s="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",c=n.trim().replace(/=+$/,"").toUpperCase();let l="";for(const d of c){const f=s.indexOf(d);if(f<0)throw new Error("bad char");l+=f.toString(2).padStart(5,"0")}const p=[];for(let d=0;d+8<=l.length;d+=8)p.push(parseInt(l.slice(d,d+8),2));return p.map(d=>d.toString(16).padStart(2,"0")).join(" ")},"hex→base32":n=>{const s="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",l=n.replace(/\s+/g,"").match(/.{2}/g).map(f=>parseInt(f,16));let p="";for(const f of l)p+=f.toString(2).padStart(8,"0");for(;p.length%5;)p+="0";let d="";for(let f=0;f<p.length;f+=5)d+=s[parseInt(p.slice(f,f+5),2)];for(;d.length%8;)d+="=";return d},"base58→base64":n=>btoa(unescape(encodeURIComponent(hc(n)))),"base64→base58":n=>dc(decodeURIComponent(escape(atob(n.trim())))),"base58→hex":n=>{const s=hc(n);return Array.from(new TextEncoder().encode(s)).map(c=>c.toString(16).padStart(2,"0")).join(" ")},"hex→base58":n=>{const s=n.replace(/\s+/g,""),c=new Uint8Array(s.match(/.{2}/g).map(l=>parseInt(l,16)));return dc(new TextDecoder().decode(c))},"json→xml":n=>{const s=JSON.parse(n);function c(p,d){if(p==null)return`<${d}/>`;if(Array.isArray(p))return p.map(f=>c(f,d)).join(`
+`);if(typeof p=="object"){const f=Object.entries(p).map(([m,y])=>c(y,m)).join(`
+  `);return`<${d}>
+  ${f}
+</${d}>`}return`<${d}>${String(p).replace(/&/g,"&amp;").replace(/</g,"&lt;")}</${d}>`}const l=Object.keys(s);return l.length===1?`<?xml version="1.0"?>
+`+c(s[l[0]],l[0]):`<?xml version="1.0"?>
+`+c(s,"root")},"xml→yaml":n=>{const c=new DOMParser().parseFromString(n,"text/xml");if(c.querySelector("parsererror"))throw new Error("invalid XML");function l(d){const f={};if(d.attributes)for(const m of d.attributes)f["@"+m.name]=m.value;for(const m of d.childNodes)if(m.nodeType===3){const y=m.textContent.trim();if(y){if(!Object.keys(f).length)return y;f["#text"]=y}}else if(m.nodeType===1){const y=l(m);f[m.nodeName]?(Array.isArray(f[m.nodeName])||(f[m.nodeName]=[f[m.nodeName]]),f[m.nodeName].push(y)):f[m.nodeName]=y}return f}const p={[c.documentElement.nodeName]:l(c.documentElement)};return Wt(p,0)},"csv→yaml":n=>{const s=n.trim().split(`
+`),c=d=>{const f=[];let m="",y=!1;for(let b=0;b<d.length;b++){const M=d[b];y?M==='"'&&d[b+1]==='"'?(m+='"',b++):M==='"'?y=!1:m+=M:M==='"'?y=!0:M===","?(f.push(m),m=""):m+=M}return f.push(m),f},l=c(s[0]),p=s.slice(1).map(d=>{const f=c(d),m={};return l.forEach((y,b)=>m[y]=f[b]??""),m});return Wt(p,0)},"toml→yaml":n=>Wt(vr(n),0),"yaml→toml":n=>{const s=$a(n),c=JSON.parse(s),l=[];function p(d,f){for(const[m,y]of Object.entries(d))if(y!==null&&typeof y=="object"&&!Array.isArray(y)){const b=f?`${f}.${m}`:m;l.push(`
+[${b}]`),p(y,b)}else{const b=typeof y=="string"?`"${y}"`:JSON.stringify(y);l.push(`${m} = ${b}`)}}return p(c,""),l.join(`
+`).trim()},"json-min→yaml":n=>$p(JSON.stringify(JSON.parse(n))),"yaml→json-min":n=>JSON.stringify(JSON.parse($a(n))),"json-min→csv":n=>{const s=JSON.parse(n);if(!Array.isArray(s)||!s.length)throw new Error("expected array");const c=Object.keys(s[0]),l=p=>{const d=String(p??"");return/[,"\n]/.test(d)?`"${d.replace(/"/g,'""')}"`:d};return[c.map(l).join(","),...s.map(p=>c.map(d=>l(p[d])).join(","))].join(`
+`)},"json-min→toml":n=>{const s=JSON.parse(n),c=[];function l(p,d){for(const[f,m]of Object.entries(p))if(m!==null&&typeof m=="object"&&!Array.isArray(m)){const y=d?`${d}.${f}`:f;c.push(`
+[${y}]`),l(m,y)}else{const y=typeof m=="string"?`"${m}"`:JSON.stringify(m);c.push(`${f} = ${y}`)}}return l(s,""),c.join(`
+`).trim()},"csv→toml":n=>{const s=n.trim().split(`
+`),c=d=>{const f=[];let m="",y=!1;for(let b=0;b<d.length;b++){const M=d[b];y?M==='"'&&d[b+1]==='"'?(m+='"',b++):M==='"'?y=!1:m+=M:M==='"'?y=!0:M===","?(f.push(m),m=""):m+=M}return f.push(m),f},l=c(s[0]);return s.slice(1).map(d=>{const f=c(d),m={};return l.forEach((y,b)=>m[y]=f[b]??""),m}).map(d=>{const f=`[[item]]
+`,m=Object.entries(d).map(([y,b])=>/^-?\d+$/.test(b)?`${y} = ${b}`:/^-?\d+\.\d+$/.test(b)?`${y} = ${b}`:b==="true"||b==="false"?`${y} = ${b}`:`${y} = "${b}"`).join(`
+`);return f+m}).join(`
+
+`)},"toml→csv":n=>{const s=vr(n),l=Object.values(s).find(f=>Array.isArray(f))||[s];if(!Array.isArray(l)||!l.length)throw new Error("no tabular data");const p=Object.keys(l[0]),d=f=>{const m=String(f??"");return/[,"\n]/.test(m)?`"${m.replace(/"/g,'""')}"`:m};return[p.map(d).join(","),...l.map(f=>p.map(m=>d(f[m])).join(","))].join(`
+`)},"querystring→yaml":n=>{const s=new URLSearchParams(n.trim().replace(/^\?/,"")),c={};for(const[l,p]of s)c[l]=p;return Wt(c,0)},"yaml→querystring":n=>{const s=$a(n),c=JSON.parse(s),l=new URLSearchParams;for(const[p,d]of Object.entries(c))l.set(p,String(d));return l.toString()},"querystring→toml":n=>{const s=new URLSearchParams(n.trim().replace(/^\?/,"")),c=[];for(const[l,p]of s)/^-?\d+$/.test(p)?c.push(`${l} = ${p}`):p==="true"||p==="false"?c.push(`${l} = ${p}`):c.push(`${l} = "${p}"`);return c.join(`
+`)},"nato→text":n=>{const s=Object.fromEntries(Object.entries(Yi).map(([c,l])=>[l.toLowerCase(),c]));return n.split(/\s+/).map(c=>c==="/"?" ":s[c.toLowerCase()]||c).join("")},"bytes→kilobytes":n=>(parseFloat(n.trim())/1024).toPrecision(6).replace(/\.?0+$/,""),"bytes→megabytes":n=>(parseFloat(n.trim())/(1024*1024)).toPrecision(6).replace(/\.?0+$/,""),"bytes→gigabytes":n=>(parseFloat(n.trim())/(1024*1024*1024)).toPrecision(6).replace(/\.?0+$/,""),"kilobytes→bytes":n=>String(Math.round(parseFloat(n.trim())*1024)),"kilobytes→megabytes":n=>(parseFloat(n.trim())/1024).toPrecision(6).replace(/\.?0+$/,""),"kilobytes→gigabytes":n=>(parseFloat(n.trim())/(1024*1024)).toPrecision(6).replace(/\.?0+$/,""),"megabytes→bytes":n=>String(Math.round(parseFloat(n.trim())*1024*1024)),"megabytes→kilobytes":n=>String(Math.round(parseFloat(n.trim())*1024)),"megabytes→gigabytes":n=>(parseFloat(n.trim())/1024).toPrecision(6).replace(/\.?0+$/,""),"gigabytes→bytes":n=>String(Math.round(parseFloat(n.trim())*1024*1024*1024)),"gigabytes→kilobytes":n=>String(Math.round(parseFloat(n.trim())*1024*1024)),"gigabytes→megabytes":n=>String(Math.round(parseFloat(n.trim())*1024)),"bits→bytes":n=>(parseFloat(n.trim())/8).toPrecision(6).replace(/\.?0+$/,""),"bytes→bits":n=>String(Math.round(parseFloat(n.trim())*8)),"bits→kilobytes":n=>(parseFloat(n.trim())/8/1024).toPrecision(6).replace(/\.?0+$/,""),"bits→megabytes":n=>(parseFloat(n.trim())/8/1048576).toPrecision(6).replace(/\.?0+$/,""),"kilobytes→bits":n=>String(Math.round(parseFloat(n.trim())*1024*8)),"megabytes→bits":n=>String(Math.round(parseFloat(n.trim())*1048576*8)),"bits→gigabytes":n=>(parseFloat(n.trim())/8/1073741824).toPrecision(6).replace(/\.?0+$/,""),"gigabytes→bits":n=>String(Math.round(parseFloat(n.trim())*1073741824*8)),"bits→terabytes":n=>(parseFloat(n.trim())/8/1099511627776).toPrecision(6).replace(/\.?0+$/,""),"terabytes→bits":n=>String(Math.round(parseFloat(n.trim())*1099511627776*8)),"bits→petabytes":n=>(parseFloat(n.trim())/8/0x4000000000000).toPrecision(6).replace(/\.?0+$/,""),"petabytes→bits":n=>String(Math.round(parseFloat(n.trim())*0x4000000000000*8)),"bits→kib":n=>(parseFloat(n.trim())/8/1024).toPrecision(6).replace(/\.?0+$/,""),"kib→bits":n=>String(Math.round(parseFloat(n.trim())*1024*8)),"bits→mib":n=>(parseFloat(n.trim())/8/1048576).toPrecision(6).replace(/\.?0+$/,""),"mib→bits":n=>String(Math.round(parseFloat(n.trim())*1048576*8)),"bits→gib":n=>(parseFloat(n.trim())/8/1073741824).toPrecision(6).replace(/\.?0+$/,""),"gib→bits":n=>String(Math.round(parseFloat(n.trim())*1073741824*8)),"bytes→kib":n=>(parseFloat(n.trim())/1024).toPrecision(6).replace(/\.?0+$/,""),"kib→bytes":n=>String(Math.round(parseFloat(n.trim())*1024)),"bytes→mib":n=>(parseFloat(n.trim())/1048576).toPrecision(6).replace(/\.?0+$/,""),"mib→bytes":n=>String(Math.round(parseFloat(n.trim())*1048576)),"bytes→gib":n=>(parseFloat(n.trim())/1073741824).toPrecision(6).replace(/\.?0+$/,""),"gib→bytes":n=>String(Math.round(parseFloat(n.trim())*1073741824)),"kib→mib":n=>(parseFloat(n.trim())/1024).toPrecision(6).replace(/\.?0+$/,""),"mib→kib":n=>String(Math.round(parseFloat(n.trim())*1024)),"kib→gib":n=>(parseFloat(n.trim())/1048576).toPrecision(6).replace(/\.?0+$/,""),"gib→kib":n=>String(Math.round(parseFloat(n.trim())*1048576)),"mib→gib":n=>(parseFloat(n.trim())/1024).toPrecision(6).replace(/\.?0+$/,""),"gib→mib":n=>String(Math.round(parseFloat(n.trim())*1024)),"kilobytes→kib":n=>(parseFloat(n.trim())*1e3/1024).toPrecision(6).replace(/\.?0+$/,""),"kib→kilobytes":n=>(parseFloat(n.trim())*1024/1e3).toPrecision(6).replace(/\.?0+$/,""),"megabytes→mib":n=>(parseFloat(n.trim())*1e6/1048576).toPrecision(6).replace(/\.?0+$/,""),"mib→megabytes":n=>(parseFloat(n.trim())*1048576/1e6).toPrecision(6).replace(/\.?0+$/,""),"gigabytes→gib":n=>(parseFloat(n.trim())*1e9/1073741824).toPrecision(6).replace(/\.?0+$/,""),"gib→gigabytes":n=>(parseFloat(n.trim())*1073741824/1e9).toPrecision(6).replace(/\.?0+$/,""),"celsius→fahrenheit":n=>(parseFloat(n.trim())*9/5+32).toFixed(2)+" °F","celsius→kelvin":n=>(parseFloat(n.trim())+273.15).toFixed(2)+" K","fahrenheit→celsius":n=>((parseFloat(n.trim())-32)*5/9).toFixed(2)+" °C","fahrenheit→kelvin":n=>((parseFloat(n.trim())-32)*5/9+273.15).toFixed(2)+" K","kelvin→celsius":n=>(parseFloat(n.trim())-273.15).toFixed(2)+" °C","kelvin→fahrenheit":n=>((parseFloat(n.trim())-273.15)*9/5+32).toFixed(2)+" °F","celsius→rankine":n=>((parseFloat(n.trim())+273.15)*1.8).toFixed(2)+" °R","rankine→celsius":n=>(parseFloat(n.trim())/1.8-273.15).toFixed(2)+" °C","fahrenheit→rankine":n=>(parseFloat(n.trim())+459.67).toFixed(2)+" °R","rankine→fahrenheit":n=>(parseFloat(n.trim())-459.67).toFixed(2)+" °F","kelvin→rankine":n=>(parseFloat(n.trim())*1.8).toFixed(2)+" °R","rankine→kelvin":n=>(parseFloat(n.trim())/1.8).toFixed(4)+" K","numoct→numhex":n=>"0x"+parseInt(n.trim().replace(/^0o/i,""),8).toString(16).toUpperCase(),"numhex→numoct":n=>"0o"+parseInt(n.trim().replace(/^0x/i,""),16).toString(8),"numoct→numbin":n=>"0b"+parseInt(n.trim().replace(/^0o/i,""),8).toString(2),"numbin→numoct":n=>"0o"+parseInt(n.trim().replace(/^0b/i,""),2).toString(8),"markdown→plain":n=>{let s=n;return s=s.replace(/^#{1,6}\s+/gm,""),s=s.replace(/\*\*\*(.+?)\*\*\*/g,"$1"),s=s.replace(/\*\*(.+?)\*\*/g,"$1"),s=s.replace(/\*(.+?)\*/g,"$1"),s=s.replace(/~~(.+?)~~/g,"$1"),s=s.replace(/`(.+?)`/g,"$1"),s=s.replace(/\[(.+?)\]\(.+?\)/g,"$1"),s=s.replace(/!\[.*?\]\(.+?\)/g,""),s=s.replace(/^>\s?/gm,""),s=s.replace(/^[-*+]\s/gm,""),s=s.replace(/^\d+\.\s/gm,""),s=s.replace(/^---+$/gm,""),s.trim()},"json-min→querystring":n=>{const s=JSON.parse(n),c=new URLSearchParams;for(const[l,p]of Object.entries(s))c.set(l,String(p));return c.toString()},"querystring→json-min":n=>{const s=new URLSearchParams(n.trim().replace(/^\?/,"")),c={};for(const[l,p]of s)c[l]=p;return JSON.stringify(c)},"inches→cm":n=>(parseFloat(n)*2.54).toFixed(4).replace(/\.?0+$/,""),"cm→inches":n=>(parseFloat(n)/2.54).toFixed(4).replace(/\.?0+$/,""),"inches→mm":n=>(parseFloat(n)*25.4).toFixed(2).replace(/\.?0+$/,""),"mm→inches":n=>(parseFloat(n)/25.4).toFixed(4).replace(/\.?0+$/,""),"inches→feet":n=>(parseFloat(n)/12).toFixed(4).replace(/\.?0+$/,""),"feet→inches":n=>(parseFloat(n)*12).toFixed(2).replace(/\.?0+$/,""),"inches→meters":n=>(parseFloat(n)*.0254).toFixed(4).replace(/\.?0+$/,""),"meters→inches":n=>(parseFloat(n)/.0254).toFixed(2).replace(/\.?0+$/,""),"cm→mm":n=>(parseFloat(n)*10).toFixed(2).replace(/\.?0+$/,""),"mm→cm":n=>(parseFloat(n)/10).toFixed(4).replace(/\.?0+$/,""),"cm→meters":n=>(parseFloat(n)/100).toFixed(4).replace(/\.?0+$/,""),"meters→cm":n=>(parseFloat(n)*100).toFixed(2).replace(/\.?0+$/,""),"cm→feet":n=>(parseFloat(n)/30.48).toFixed(4).replace(/\.?0+$/,""),"feet→cm":n=>(parseFloat(n)*30.48).toFixed(2).replace(/\.?0+$/,""),"mm→meters":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"meters→mm":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"feet→meters":n=>(parseFloat(n)*.3048).toFixed(4).replace(/\.?0+$/,""),"meters→feet":n=>(parseFloat(n)/.3048).toFixed(4).replace(/\.?0+$/,""),"mm→feet":n=>(parseFloat(n)/304.8).toFixed(4).replace(/\.?0+$/,""),"feet→mm":n=>(parseFloat(n)*304.8).toFixed(2).replace(/\.?0+$/,""),"kg→lb":n=>(parseFloat(n)*2.20462).toFixed(4).replace(/\.?0+$/,""),"lb→kg":n=>(parseFloat(n)/2.20462).toFixed(4).replace(/\.?0+$/,""),"kg→oz":n=>(parseFloat(n)*35.274).toFixed(2).replace(/\.?0+$/,""),"oz→kg":n=>(parseFloat(n)/35.274).toFixed(4).replace(/\.?0+$/,""),"kg→grams":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"grams→kg":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"lb→oz":n=>(parseFloat(n)*16).toFixed(2).replace(/\.?0+$/,""),"oz→lb":n=>(parseFloat(n)/16).toFixed(4).replace(/\.?0+$/,""),"lb→grams":n=>(parseFloat(n)*453.592).toFixed(2).replace(/\.?0+$/,""),"grams→lb":n=>(parseFloat(n)/453.592).toFixed(4).replace(/\.?0+$/,""),"oz→grams":n=>(parseFloat(n)*28.3495).toFixed(2).replace(/\.?0+$/,""),"grams→oz":n=>(parseFloat(n)/28.3495).toFixed(4).replace(/\.?0+$/,""),"kg→ton-metric":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"ton-metric→kg":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"kg→ton-short":n=>(parseFloat(n)/907.185).toFixed(6).replace(/\.?0+$/,""),"ton-short→kg":n=>(parseFloat(n)*907.185).toFixed(2).replace(/\.?0+$/,""),"kg→stone":n=>(parseFloat(n)/6.35029).toFixed(4).replace(/\.?0+$/,""),"stone→kg":n=>(parseFloat(n)*6.35029).toFixed(4).replace(/\.?0+$/,""),"lb→stone":n=>(parseFloat(n)/14).toFixed(4).replace(/\.?0+$/,""),"stone→lb":n=>(parseFloat(n)*14).toFixed(2).replace(/\.?0+$/,""),"ton-metric→lb":n=>(parseFloat(n)*2204.62).toFixed(2).replace(/\.?0+$/,""),"lb→ton-metric":n=>(parseFloat(n)/2204.62).toFixed(6).replace(/\.?0+$/,""),"ton-metric→ton-short":n=>(parseFloat(n)*1.10231).toFixed(4).replace(/\.?0+$/,""),"ton-short→ton-metric":n=>(parseFloat(n)/1.10231).toFixed(4).replace(/\.?0+$/,""),"ton-short→lb":n=>(parseFloat(n)*2e3).toFixed(2).replace(/\.?0+$/,""),"lb→ton-short":n=>(parseFloat(n)/2e3).toFixed(6).replace(/\.?0+$/,""),"miles→km":n=>(parseFloat(n)*1.60934).toFixed(4).replace(/\.?0+$/,""),"km→miles":n=>(parseFloat(n)/1.60934).toFixed(4).replace(/\.?0+$/,""),"miles→yards":n=>(parseFloat(n)*1760).toFixed(2).replace(/\.?0+$/,""),"yards→miles":n=>(parseFloat(n)/1760).toFixed(6).replace(/\.?0+$/,""),"miles→meters":n=>(parseFloat(n)*1609.34).toFixed(2).replace(/\.?0+$/,""),"meters→miles":n=>(parseFloat(n)/1609.34).toFixed(6).replace(/\.?0+$/,""),"miles→nautmiles":n=>(parseFloat(n)*.868976).toFixed(4).replace(/\.?0+$/,""),"nautmiles→miles":n=>(parseFloat(n)/.868976).toFixed(4).replace(/\.?0+$/,""),"km→yards":n=>(parseFloat(n)*1093.61).toFixed(2).replace(/\.?0+$/,""),"yards→km":n=>(parseFloat(n)/1093.61).toFixed(6).replace(/\.?0+$/,""),"km→meters":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"meters→km":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"km→nautmiles":n=>(parseFloat(n)*.539957).toFixed(4).replace(/\.?0+$/,""),"nautmiles→km":n=>(parseFloat(n)/.539957).toFixed(4).replace(/\.?0+$/,""),"yards→meters":n=>(parseFloat(n)*.9144).toFixed(4).replace(/\.?0+$/,""),"meters→yards":n=>(parseFloat(n)/.9144).toFixed(4).replace(/\.?0+$/,""),"yards→feet":n=>(parseFloat(n)*3).toFixed(2).replace(/\.?0+$/,""),"feet→yards":n=>(parseFloat(n)/3).toFixed(4).replace(/\.?0+$/,""),"nautmiles→meters":n=>(parseFloat(n)*1852).toFixed(2).replace(/\.?0+$/,""),"meters→nautmiles":n=>(parseFloat(n)/1852).toFixed(6).replace(/\.?0+$/,""),"mph→kmh":n=>(parseFloat(n)*1.60934).toFixed(4).replace(/\.?0+$/,""),"kmh→mph":n=>(parseFloat(n)/1.60934).toFixed(4).replace(/\.?0+$/,""),"mph→ms":n=>(parseFloat(n)*.44704).toFixed(4).replace(/\.?0+$/,""),"ms→mph":n=>(parseFloat(n)/.44704).toFixed(4).replace(/\.?0+$/,""),"mph→knots":n=>(parseFloat(n)*.868976).toFixed(4).replace(/\.?0+$/,""),"knots→mph":n=>(parseFloat(n)/.868976).toFixed(4).replace(/\.?0+$/,""),"kmh→ms":n=>(parseFloat(n)/3.6).toFixed(4).replace(/\.?0+$/,""),"ms→kmh":n=>(parseFloat(n)*3.6).toFixed(4).replace(/\.?0+$/,""),"kmh→knots":n=>(parseFloat(n)*.539957).toFixed(4).replace(/\.?0+$/,""),"knots→kmh":n=>(parseFloat(n)/.539957).toFixed(4).replace(/\.?0+$/,""),"ms→knots":n=>(parseFloat(n)*1.94384).toFixed(4).replace(/\.?0+$/,""),"knots→ms":n=>(parseFloat(n)/1.94384).toFixed(4).replace(/\.?0+$/,""),"fps→mph":n=>(parseFloat(n)*.681818).toFixed(4).replace(/\.?0+$/,""),"mph→fps":n=>(parseFloat(n)*1.46667).toFixed(4).replace(/\.?0+$/,""),"fps→ms":n=>(parseFloat(n)*.3048).toFixed(4).replace(/\.?0+$/,""),"ms→fps":n=>(parseFloat(n)/.3048).toFixed(4).replace(/\.?0+$/,""),"fps→kmh":n=>(parseFloat(n)*1.09728).toFixed(4).replace(/\.?0+$/,""),"kmh→fps":n=>(parseFloat(n)/1.09728).toFixed(4).replace(/\.?0+$/,""),"fps→knots":n=>(parseFloat(n)*.592484).toFixed(4).replace(/\.?0+$/,""),"knots→fps":n=>(parseFloat(n)/.592484).toFixed(4).replace(/\.?0+$/,""),"mach→ms":n=>(parseFloat(n)*343).toFixed(2).replace(/\.?0+$/,""),"ms→mach":n=>(parseFloat(n)/343).toFixed(6).replace(/\.?0+$/,""),"mach→mph":n=>(parseFloat(n)*767.269).toFixed(2).replace(/\.?0+$/,""),"mph→mach":n=>(parseFloat(n)/767.269).toFixed(6).replace(/\.?0+$/,""),"mach→kmh":n=>(parseFloat(n)*1235.52).toFixed(2).replace(/\.?0+$/,""),"kmh→mach":n=>(parseFloat(n)/1235.52).toFixed(6).replace(/\.?0+$/,""),"mach→knots":n=>(parseFloat(n)*667.607).toFixed(2).replace(/\.?0+$/,""),"knots→mach":n=>(parseFloat(n)/667.607).toFixed(6).replace(/\.?0+$/,""),"mach→fps":n=>(parseFloat(n)*1125.33).toFixed(2).replace(/\.?0+$/,""),"fps→mach":n=>(parseFloat(n)/1125.33).toFixed(6).replace(/\.?0+$/,""),"sqft→sqm":n=>(parseFloat(n)*.092903).toFixed(4).replace(/\.?0+$/,""),"sqm→sqft":n=>(parseFloat(n)/.092903).toFixed(4).replace(/\.?0+$/,""),"sqft→acres":n=>(parseFloat(n)/43560).toFixed(6).replace(/\.?0+$/,""),"acres→sqft":n=>(parseFloat(n)*43560).toFixed(2).replace(/\.?0+$/,""),"sqft→hectares":n=>(parseFloat(n)/107639).toFixed(6).replace(/\.?0+$/,""),"hectares→sqft":n=>(parseFloat(n)*107639).toFixed(2).replace(/\.?0+$/,""),"sqm→acres":n=>(parseFloat(n)/4046.86).toFixed(6).replace(/\.?0+$/,""),"acres→sqm":n=>(parseFloat(n)*4046.86).toFixed(2).replace(/\.?0+$/,""),"sqm→hectares":n=>(parseFloat(n)/1e4).toFixed(6).replace(/\.?0+$/,""),"hectares→sqm":n=>(parseFloat(n)*1e4).toFixed(2).replace(/\.?0+$/,""),"acres→hectares":n=>(parseFloat(n)*.404686).toFixed(6).replace(/\.?0+$/,""),"hectares→acres":n=>(parseFloat(n)/.404686).toFixed(4).replace(/\.?0+$/,""),"liters→gallons":n=>(parseFloat(n)*.264172).toFixed(4).replace(/\.?0+$/,""),"gallons→liters":n=>(parseFloat(n)/.264172).toFixed(4).replace(/\.?0+$/,""),"liters→ml":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"ml→liters":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"liters→floz":n=>(parseFloat(n)*33.814).toFixed(4).replace(/\.?0+$/,""),"floz→liters":n=>(parseFloat(n)/33.814).toFixed(4).replace(/\.?0+$/,""),"liters→cups":n=>(parseFloat(n)*4.22675).toFixed(4).replace(/\.?0+$/,""),"cups→liters":n=>(parseFloat(n)/4.22675).toFixed(4).replace(/\.?0+$/,""),"gallons→ml":n=>(parseFloat(n)*3785.41).toFixed(2).replace(/\.?0+$/,""),"ml→gallons":n=>(parseFloat(n)/3785.41).toFixed(6).replace(/\.?0+$/,""),"gallons→floz":n=>(parseFloat(n)*128).toFixed(2).replace(/\.?0+$/,""),"floz→gallons":n=>(parseFloat(n)/128).toFixed(4).replace(/\.?0+$/,""),"gallons→cups":n=>(parseFloat(n)*16).toFixed(2).replace(/\.?0+$/,""),"cups→gallons":n=>(parseFloat(n)/16).toFixed(4).replace(/\.?0+$/,""),"ml→floz":n=>(parseFloat(n)*.033814).toFixed(4).replace(/\.?0+$/,""),"floz→ml":n=>(parseFloat(n)/.033814).toFixed(2).replace(/\.?0+$/,""),"ml→cups":n=>(parseFloat(n)*.00422675).toFixed(4).replace(/\.?0+$/,""),"cups→ml":n=>(parseFloat(n)/.00422675).toFixed(2).replace(/\.?0+$/,""),"floz→cups":n=>(parseFloat(n)/8).toFixed(4).replace(/\.?0+$/,""),"cups→floz":n=>(parseFloat(n)*8).toFixed(2).replace(/\.?0+$/,""),"dur-seconds→dur-minutes":n=>(parseFloat(n)/60).toFixed(4).replace(/\.?0+$/,""),"dur-minutes→dur-seconds":n=>(parseFloat(n)*60).toFixed(2).replace(/\.?0+$/,""),"dur-seconds→dur-hours":n=>(parseFloat(n)/3600).toFixed(6).replace(/\.?0+$/,""),"dur-hours→dur-seconds":n=>(parseFloat(n)*3600).toFixed(2).replace(/\.?0+$/,""),"dur-seconds→dur-days":n=>(parseFloat(n)/86400).toFixed(6).replace(/\.?0+$/,""),"dur-days→dur-seconds":n=>(parseFloat(n)*86400).toFixed(2).replace(/\.?0+$/,""),"dur-minutes→dur-hours":n=>(parseFloat(n)/60).toFixed(4).replace(/\.?0+$/,""),"dur-hours→dur-minutes":n=>(parseFloat(n)*60).toFixed(2).replace(/\.?0+$/,""),"dur-minutes→dur-days":n=>(parseFloat(n)/1440).toFixed(6).replace(/\.?0+$/,""),"dur-days→dur-minutes":n=>(parseFloat(n)*1440).toFixed(2).replace(/\.?0+$/,""),"dur-hours→dur-days":n=>(parseFloat(n)/24).toFixed(4).replace(/\.?0+$/,""),"dur-days→dur-hours":n=>(parseFloat(n)*24).toFixed(2).replace(/\.?0+$/,""),"dur-ms→dur-days":n=>(parseFloat(n)/864e5).toFixed(8).replace(/\.?0+$/,""),"dur-days→dur-ms":n=>(parseFloat(n)*864e5).toFixed(0),"dur-weeks→dur-seconds":n=>(parseFloat(n)*604800).toFixed(0),"dur-seconds→dur-weeks":n=>(parseFloat(n)/604800).toFixed(8).replace(/\.?0+$/,""),"dur-weeks→dur-ms":n=>(parseFloat(n)*6048e5).toFixed(0),"dur-ms→dur-weeks":n=>(parseFloat(n)/6048e5).toFixed(10).replace(/\.?0+$/,""),"joules→calories":n=>(parseFloat(n)*.239006).toFixed(4).replace(/\.?0+$/,""),"calories→joules":n=>(parseFloat(n)/.239006).toFixed(4).replace(/\.?0+$/,""),"joules→kcal":n=>(parseFloat(n)/4184).toFixed(6).replace(/\.?0+$/,""),"kcal→joules":n=>(parseFloat(n)*4184).toFixed(2).replace(/\.?0+$/,""),"joules→kwh":n=>(parseFloat(n)/36e5).toFixed(8).replace(/\.?0+$/,""),"kwh→joules":n=>(parseFloat(n)*36e5).toFixed(2).replace(/\.?0+$/,""),"joules→btu":n=>(parseFloat(n)*947817e-9).toFixed(6).replace(/\.?0+$/,""),"btu→joules":n=>(parseFloat(n)/947817e-9).toFixed(2).replace(/\.?0+$/,""),"calories→kcal":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"kcal→calories":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"calories→kwh":n=>(parseFloat(n)/860421).toFixed(8).replace(/\.?0+$/,""),"kwh→calories":n=>(parseFloat(n)*860421).toFixed(2).replace(/\.?0+$/,""),"calories→btu":n=>(parseFloat(n)*.003968).toFixed(6).replace(/\.?0+$/,""),"btu→calories":n=>(parseFloat(n)/.003968).toFixed(2).replace(/\.?0+$/,""),"kcal→kwh":n=>(parseFloat(n)/860.421).toFixed(6).replace(/\.?0+$/,""),"kwh→kcal":n=>(parseFloat(n)*860.421).toFixed(2).replace(/\.?0+$/,""),"kcal→btu":n=>(parseFloat(n)*3.96832).toFixed(4).replace(/\.?0+$/,""),"btu→kcal":n=>(parseFloat(n)/3.96832).toFixed(4).replace(/\.?0+$/,""),"kwh→btu":n=>(parseFloat(n)*3412.14).toFixed(2).replace(/\.?0+$/,""),"btu→kwh":n=>(parseFloat(n)/3412.14).toFixed(6).replace(/\.?0+$/,""),"megajoules→joules":n=>(parseFloat(n)*1e6).toFixed(0),"joules→megajoules":n=>(parseFloat(n)/1e6).toFixed(8).replace(/\.?0+$/,""),"megajoules→kwh":n=>(parseFloat(n)/3.6).toFixed(6).replace(/\.?0+$/,""),"kwh→megajoules":n=>(parseFloat(n)*3.6).toFixed(4).replace(/\.?0+$/,""),"megajoules→kcal":n=>(parseFloat(n)*239.006).toFixed(2).replace(/\.?0+$/,""),"kcal→megajoules":n=>(parseFloat(n)/239.006).toFixed(6).replace(/\.?0+$/,""),"megajoules→btu":n=>(parseFloat(n)*947.817).toFixed(2).replace(/\.?0+$/,""),"btu→megajoules":n=>(parseFloat(n)/947.817).toFixed(6).replace(/\.?0+$/,""),"psi→bar":n=>(parseFloat(n)*.0689476).toFixed(4).replace(/\.?0+$/,""),"bar→psi":n=>(parseFloat(n)/.0689476).toFixed(4).replace(/\.?0+$/,""),"psi→atm":n=>(parseFloat(n)*.068046).toFixed(4).replace(/\.?0+$/,""),"atm→psi":n=>(parseFloat(n)/.068046).toFixed(4).replace(/\.?0+$/,""),"psi→pascal":n=>(parseFloat(n)*6894.76).toFixed(2).replace(/\.?0+$/,""),"pascal→psi":n=>(parseFloat(n)/6894.76).toFixed(6).replace(/\.?0+$/,""),"psi→mmhg":n=>(parseFloat(n)*51.7149).toFixed(4).replace(/\.?0+$/,""),"mmhg→psi":n=>(parseFloat(n)/51.7149).toFixed(4).replace(/\.?0+$/,""),"bar→atm":n=>(parseFloat(n)*.986923).toFixed(4).replace(/\.?0+$/,""),"atm→bar":n=>(parseFloat(n)/.986923).toFixed(4).replace(/\.?0+$/,""),"bar→pascal":n=>(parseFloat(n)*1e5).toFixed(2).replace(/\.?0+$/,""),"pascal→bar":n=>(parseFloat(n)/1e5).toFixed(6).replace(/\.?0+$/,""),"bar→mmhg":n=>(parseFloat(n)*750.062).toFixed(4).replace(/\.?0+$/,""),"mmhg→bar":n=>(parseFloat(n)/750.062).toFixed(6).replace(/\.?0+$/,""),"atm→pascal":n=>(parseFloat(n)*101325).toFixed(2).replace(/\.?0+$/,""),"pascal→atm":n=>(parseFloat(n)/101325).toFixed(8).replace(/\.?0+$/,""),"atm→mmhg":n=>(parseFloat(n)*760).toFixed(4).replace(/\.?0+$/,""),"mmhg→atm":n=>(parseFloat(n)/760).toFixed(6).replace(/\.?0+$/,""),"pascal→mmhg":n=>(parseFloat(n)*.00750062).toFixed(4).replace(/\.?0+$/,""),"mmhg→pascal":n=>(parseFloat(n)/.00750062).toFixed(2).replace(/\.?0+$/,""),"degrees→radians":n=>(parseFloat(n)*Math.PI/180).toFixed(6).replace(/\.?0+$/,""),"radians→degrees":n=>(parseFloat(n)*180/Math.PI).toFixed(4).replace(/\.?0+$/,""),"degrees→gradians":n=>(parseFloat(n)*10/9).toFixed(4).replace(/\.?0+$/,""),"gradians→degrees":n=>(parseFloat(n)*9/10).toFixed(4).replace(/\.?0+$/,""),"radians→gradians":n=>(parseFloat(n)*200/Math.PI).toFixed(4).replace(/\.?0+$/,""),"gradians→radians":n=>(parseFloat(n)*Math.PI/200).toFixed(6).replace(/\.?0+$/,""),"turns→degrees":n=>(parseFloat(n)*360).toFixed(4).replace(/\.?0+$/,""),"degrees→turns":n=>(parseFloat(n)/360).toFixed(6).replace(/\.?0+$/,""),"turns→radians":n=>(parseFloat(n)*2*Math.PI).toFixed(6).replace(/\.?0+$/,""),"radians→turns":n=>(parseFloat(n)/(2*Math.PI)).toFixed(6).replace(/\.?0+$/,""),"turns→gradians":n=>(parseFloat(n)*400).toFixed(4).replace(/\.?0+$/,""),"gradians→turns":n=>(parseFloat(n)/400).toFixed(6).replace(/\.?0+$/,""),"gigabytes→terabytes":n=>(parseFloat(n)/1024).toFixed(6).replace(/\.?0+$/,""),"terabytes→gigabytes":n=>(parseFloat(n)*1024).toFixed(2).replace(/\.?0+$/,""),"terabytes→petabytes":n=>(parseFloat(n)/1024).toFixed(8).replace(/\.?0+$/,""),"petabytes→terabytes":n=>(parseFloat(n)*1024).toFixed(2).replace(/\.?0+$/,""),"megabytes→terabytes":n=>(parseFloat(n)/1048576).toFixed(8).replace(/\.?0+$/,""),"terabytes→megabytes":n=>(parseFloat(n)*1048576).toFixed(2).replace(/\.?0+$/,""),"kilobytes→terabytes":n=>(parseFloat(n)/1073741824).toFixed(10).replace(/\.?0+$/,""),"terabytes→kilobytes":n=>(parseFloat(n)*1073741824).toFixed(0),"bytes→terabytes":n=>(parseFloat(n)/1099511627776).toFixed(12).replace(/\.?0+$/,""),"terabytes→bytes":n=>(parseFloat(n)*1099511627776).toFixed(0),"megabytes→petabytes":n=>(parseFloat(n)/1073741824).toFixed(10).replace(/\.?0+$/,""),"petabytes→megabytes":n=>(parseFloat(n)*1073741824).toFixed(0),"gigabytes→petabytes":n=>(parseFloat(n)/1048576).toFixed(8).replace(/\.?0+$/,""),"petabytes→gigabytes":n=>(parseFloat(n)*1048576).toFixed(2).replace(/\.?0+$/,""),"bytes→petabytes":n=>(parseFloat(n)/0x4000000000000).toFixed(15).replace(/\.?0+$/,""),"petabytes→bytes":n=>(parseFloat(n)*0x4000000000000).toFixed(0),"kilobytes→petabytes":n=>(parseFloat(n)/1099511627776).toFixed(12).replace(/\.?0+$/,""),"petabytes→kilobytes":n=>(parseFloat(n)*1099511627776).toFixed(0),"hz→khz":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"khz→hz":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"hz→mhz":n=>(parseFloat(n)/1e6).toFixed(6).replace(/\.?0+$/,""),"mhz→hz":n=>(parseFloat(n)*1e6).toFixed(0),"hz→ghz":n=>(parseFloat(n)/1e9).toFixed(9).replace(/\.?0+$/,""),"ghz→hz":n=>(parseFloat(n)*1e9).toFixed(0),"khz→mhz":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"mhz→khz":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"khz→ghz":n=>(parseFloat(n)/1e6).toFixed(6).replace(/\.?0+$/,""),"ghz→khz":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"mhz→ghz":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"ghz→mhz":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"watts→kilowatts":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"kilowatts→watts":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"watts→horsepower":n=>(parseFloat(n)/745.7).toFixed(4).replace(/\.?0+$/,""),"horsepower→watts":n=>(parseFloat(n)*745.7).toFixed(2).replace(/\.?0+$/,""),"watts→btuh":n=>(parseFloat(n)*3.41214).toFixed(4).replace(/\.?0+$/,""),"btuh→watts":n=>(parseFloat(n)/3.41214).toFixed(4).replace(/\.?0+$/,""),"kilowatts→horsepower":n=>(parseFloat(n)*1.34102).toFixed(4).replace(/\.?0+$/,""),"horsepower→kilowatts":n=>(parseFloat(n)/1.34102).toFixed(4).replace(/\.?0+$/,""),"kilowatts→btuh":n=>(parseFloat(n)*3412.14).toFixed(2).replace(/\.?0+$/,""),"btuh→kilowatts":n=>(parseFloat(n)/3412.14).toFixed(6).replace(/\.?0+$/,""),"horsepower→btuh":n=>(parseFloat(n)*2544.43).toFixed(2).replace(/\.?0+$/,""),"btuh→horsepower":n=>(parseFloat(n)/2544.43).toFixed(6).replace(/\.?0+$/,""),"mpg→kml":n=>(parseFloat(n)*.425144).toFixed(4).replace(/\.?0+$/,""),"kml→mpg":n=>(parseFloat(n)/.425144).toFixed(4).replace(/\.?0+$/,""),"mpg→l100km":n=>(235.215/parseFloat(n)).toFixed(4).replace(/\.?0+$/,""),"l100km→mpg":n=>(235.215/parseFloat(n)).toFixed(4).replace(/\.?0+$/,""),"kml→l100km":n=>(100/parseFloat(n)).toFixed(4).replace(/\.?0+$/,""),"l100km→kml":n=>(100/parseFloat(n)).toFixed(4).replace(/\.?0+$/,""),"bps→kbps":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"kbps→bps":n=>(parseFloat(n)*1e3).toFixed(0),"bps→mbps":n=>(parseFloat(n)/1e6).toFixed(6).replace(/\.?0+$/,""),"mbps→bps":n=>(parseFloat(n)*1e6).toFixed(0),"bps→gbps":n=>(parseFloat(n)/1e9).toFixed(9).replace(/\.?0+$/,""),"gbps→bps":n=>(parseFloat(n)*1e9).toFixed(0),"kbps→mbps":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"mbps→kbps":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"kbps→gbps":n=>(parseFloat(n)/1e6).toFixed(6).replace(/\.?0+$/,""),"gbps→kbps":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"mbps→gbps":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"gbps→mbps":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"gbps→tbps":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"tbps→gbps":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"mbps→tbps":n=>(parseFloat(n)/1e6).toFixed(8).replace(/\.?0+$/,""),"tbps→mbps":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"kbps→tbps":n=>(parseFloat(n)/1e9).toFixed(12).replace(/\.?0+$/,""),"tbps→kbps":n=>(parseFloat(n)*1e9).toFixed(0),"bps→tbps":n=>(parseFloat(n)/1e12).toFixed(14).replace(/\.?0+$/,""),"tbps→bps":n=>(parseFloat(n)*1e12).toFixed(0),"tsp→tbsp":n=>(parseFloat(n)/3).toFixed(4).replace(/\.?0+$/,""),"tbsp→tsp":n=>(parseFloat(n)*3).toFixed(2).replace(/\.?0+$/,""),"tsp→cup-cook":n=>(parseFloat(n)/48).toFixed(4).replace(/\.?0+$/,""),"cup-cook→tsp":n=>(parseFloat(n)*48).toFixed(2).replace(/\.?0+$/,""),"tsp→ml":n=>(parseFloat(n)*4.92892).toFixed(4).replace(/\.?0+$/,""),"ml→tsp":n=>(parseFloat(n)/4.92892).toFixed(4).replace(/\.?0+$/,""),"tbsp→cup-cook":n=>(parseFloat(n)/16).toFixed(4).replace(/\.?0+$/,""),"cup-cook→tbsp":n=>(parseFloat(n)*16).toFixed(2).replace(/\.?0+$/,""),"tbsp→ml":n=>(parseFloat(n)*14.7868).toFixed(4).replace(/\.?0+$/,""),"ml→tbsp":n=>(parseFloat(n)/14.7868).toFixed(4).replace(/\.?0+$/,""),"cup-cook→ml":n=>(parseFloat(n)*236.588).toFixed(2).replace(/\.?0+$/,""),"ml→cup-cook":n=>(parseFloat(n)/236.588).toFixed(4).replace(/\.?0+$/,""),"toml→querystring":n=>{const s=vr(n),c=new URLSearchParams;for(const[l,p]of Object.entries(s))typeof p!="object"&&c.set(l,String(p));return c.toString()},"json-min→xml":n=>{const s=JSON.parse(n);function c(p,d){if(p==null)return`<${d}/>`;if(Array.isArray(p))return p.map(f=>c(f,d)).join(`
+`);if(typeof p=="object"){const f=Object.entries(p).map(([m,y])=>c(y,m)).join(`
+  `);return`<${d}>
+  ${f}
+</${d}>`}return`<${d}>${String(p).replace(/&/g,"&amp;").replace(/</g,"&lt;")}</${d}>`}const l=Object.keys(s);return l.length===1?`<?xml version="1.0"?>
+`+c(s[l[0]],l[0]):`<?xml version="1.0"?>
+`+c(s,"root")},"xml→json-min":n=>{const c=new DOMParser().parseFromString(n,"text/xml");if(c.querySelector("parsererror"))throw new Error("invalid XML");function l(p){const d={};if(p.attributes)for(const f of p.attributes)d["@"+f.name]=f.value;for(const f of p.childNodes)if(f.nodeType===3){const m=f.textContent.trim();if(m){if(!Object.keys(d).length)return m;d["#text"]=m}}else if(f.nodeType===1){const m=l(f);d[f.nodeName]?(Array.isArray(d[f.nodeName])||(d[f.nodeName]=[d[f.nodeName]]),d[f.nodeName].push(m)):d[f.nodeName]=m}return d}return JSON.stringify({[c.documentElement.nodeName]:l(c.documentElement)})},"csv→xml":n=>{const s=n.trim().split(`
+`),c=d=>{const f=[];let m="",y=!1;for(let b=0;b<d.length;b++){const M=d[b];y?M==='"'&&d[b+1]==='"'?(m+='"',b++):M==='"'?y=!1:m+=M:M==='"'?y=!0:M===","?(f.push(m),m=""):m+=M}return f.push(m),f},l=c(s[0]);return`<?xml version="1.0"?>
+<data>
+`+s.slice(1).map(d=>{const f=c(d);return`  <row>
+`+l.map((m,y)=>`    <${m}>${(f[y]||"").replace(/&/g,"&amp;").replace(/</g,"&lt;")}</${m}>`).join(`
+`)+`
+  </row>`}).join(`
+`)+`
+</data>`},"xml→csv":n=>{const c=new DOMParser().parseFromString(n,"text/xml");if(c.querySelector("parsererror"))throw new Error("invalid XML");const l=c.documentElement.children;if(!l.length)throw new Error("no data");const p=[...l[0].children].map(m=>m.nodeName),d=m=>{const y=String(m??"");return/[,"\n]/.test(y)?`"${y.replace(/"/g,'""')}"`:y},f=[...l].map(m=>p.map(y=>d(m.querySelector(y)?.textContent||"")).join(","));return[p.join(","),...f].join(`
+`)},"html-markup→markdown":n=>{let s=n;return s=s.replace(/<h1[^>]*>(.*?)<\/h1>/gi,"# $1"),s=s.replace(/<h2[^>]*>(.*?)<\/h2>/gi,"## $1"),s=s.replace(/<h3[^>]*>(.*?)<\/h3>/gi,"### $1"),s=s.replace(/<h4[^>]*>(.*?)<\/h4>/gi,"#### $1"),s=s.replace(/<strong[^>]*>(.*?)<\/strong>/gi,"**$1**"),s=s.replace(/<b[^>]*>(.*?)<\/b>/gi,"**$1**"),s=s.replace(/<em[^>]*>(.*?)<\/em>/gi,"*$1*"),s=s.replace(/<i[^>]*>(.*?)<\/i>/gi,"*$1*"),s=s.replace(/<code[^>]*>(.*?)<\/code>/gi,"`$1`"),s=s.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi,"[$2]($1)"),s=s.replace(/<br\s*\/?>/gi,`
+`),s=s.replace(/<p[^>]*>(.*?)<\/p>/gi,`$1
+`),s=s.replace(/<li[^>]*>(.*?)<\/li>/gi,"- $1"),s=s.replace(/<\/?[^>]+>/g,""),s=s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"'),s.trim()},"plain→html-markup":n=>n.split(/\n\n+/).map(s=>`<p>${s.replace(/\n/g,"<br>")}</p>`).join(`
+`),"color-hex→color-rgb":n=>{const s=Va(n.trim());if(!s)throw new Error("bad hex");return`rgb(${s.r}, ${s.g}, ${s.b})`},"color-hex→color-hsl":n=>{const s=Va(n.trim());if(!s)throw new Error("bad hex");const c=wr(s);return`hsl(${c.h}, ${c.s}%, ${c.l}%)`},"color-rgb→color-hex":n=>{const s=Za(n);if(!s)throw new Error("bad rgb");return"#"+[s.r,s.g,s.b].map(c=>c.toString(16).padStart(2,"0")).join("")},"color-rgb→color-hsl":n=>{const s=Za(n);if(!s)throw new Error("bad rgb");const c=wr(s);return`hsl(${c.h}, ${c.s}%, ${c.l}%)`},"color-hsl→color-hex":n=>{const s=Xa(n);if(!s)throw new Error("bad hsl");const c=Ka(s);return"#"+[c.r,c.g,c.b].map(l=>l.toString(16).padStart(2,"0")).join("")},"color-hsl→color-rgb":n=>{const s=Xa(n);if(!s)throw new Error("bad hsl");const c=Ka(s);return`rgb(${c.r}, ${c.g}, ${c.b})`},"color-hex→color-hsv":n=>{const s=Va(n.trim());if(!s)throw new Error("bad hex");const c=Ar(s);return`hsv(${c.h}, ${c.s}%, ${c.v}%)`},"color-rgb→color-hsv":n=>{const s=Za(n);if(!s)throw new Error("bad rgb");const c=Ar(s);return`hsv(${c.h}, ${c.s}%, ${c.v}%)`},"color-hsl→color-hsv":n=>{const s=Xa(n);if(!s)throw new Error("bad hsl");const c=Ka(s),l=Ar(c);return`hsv(${l.h}, ${l.s}%, ${l.v}%)`},"color-hsv→color-hex":n=>{const s=Ja(n);if(!s)throw new Error("bad hsv");const c=Qa(s);return"#"+[c.r,c.g,c.b].map(l=>l.toString(16).padStart(2,"0")).join("")},"color-hsv→color-rgb":n=>{const s=Ja(n);if(!s)throw new Error("bad hsv");const c=Qa(s);return`rgb(${c.r}, ${c.g}, ${c.b})`},"color-hsv→color-hsl":n=>{const s=Ja(n);if(!s)throw new Error("bad hsv");const c=Qa(s),l=wr(c);return`hsl(${l.h}, ${l.s}%, ${l.l}%)`},"color-hex→color-cmyk":n=>{const s=Va(n.trim());if(!s)throw new Error("bad hex");const c=s.r/255,l=s.g/255,p=s.b/255,d=1-Math.max(c,l,p);if(d===1)return"cmyk(0%, 0%, 0%, 100%)";const f=(1-c-d)/(1-d),m=(1-l-d)/(1-d),y=(1-p-d)/(1-d);return`cmyk(${Math.round(f*100)}%, ${Math.round(m*100)}%, ${Math.round(y*100)}%, ${Math.round(d*100)}%)`},"color-cmyk→color-hex":n=>{const s=n.match(/cmyk\(\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)/i);if(!s)throw new Error("bad cmyk");const[c,l,p,d]=[s[1],s[2],s[3],s[4]].map(b=>parseFloat(b)/100),f=Math.round(255*(1-c)*(1-d)),m=Math.round(255*(1-l)*(1-d)),y=Math.round(255*(1-p)*(1-d));return"#"+[f,m,y].map(b=>Math.max(0,Math.min(255,b)).toString(16).padStart(2,"0")).join("")},"color-rgb→color-cmyk":n=>{const s=Za(n);if(!s)throw new Error("bad rgb");const c=s.r/255,l=s.g/255,p=s.b/255,d=1-Math.max(c,l,p);if(d===1)return"cmyk(0%, 0%, 0%, 100%)";const f=(1-c-d)/(1-d),m=(1-l-d)/(1-d),y=(1-p-d)/(1-d);return`cmyk(${Math.round(f*100)}%, ${Math.round(m*100)}%, ${Math.round(y*100)}%, ${Math.round(d*100)}%)`},"color-cmyk→color-rgb":n=>{const s=n.match(/cmyk\(\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)/i);if(!s)throw new Error("bad cmyk");const[c,l,p,d]=[s[1],s[2],s[3],s[4]].map(b=>parseFloat(b)/100),f=Math.round(255*(1-c)*(1-d)),m=Math.round(255*(1-l)*(1-d)),y=Math.round(255*(1-p)*(1-d));return`rgb(${Math.max(0,Math.min(255,f))}, ${Math.max(0,Math.min(255,m))}, ${Math.max(0,Math.min(255,y))})`},"color-cmyk→color-hsl":n=>{const s=n.match(/cmyk\(\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)/i);if(!s)throw new Error("bad cmyk");const[c,l,p,d]=[s[1],s[2],s[3],s[4]].map(y=>parseFloat(y)/100),f={r:Math.round(255*(1-c)*(1-d)),g:Math.round(255*(1-l)*(1-d)),b:Math.round(255*(1-p)*(1-d))},m=wr(f);return`hsl(${m.h}, ${m.s}%, ${m.l}%)`},"color-hsl→color-cmyk":n=>{const s=Xa(n);if(!s)throw new Error("bad hsl");const c=Ka(s),l=c.r/255,p=c.g/255,d=c.b/255,f=1-Math.max(l,p,d);if(f===1)return"cmyk(0%, 0%, 0%, 100%)";const m=(1-l-f)/(1-f),y=(1-p-f)/(1-f),b=(1-d-f)/(1-f);return`cmyk(${Math.round(m*100)}%, ${Math.round(y*100)}%, ${Math.round(b*100)}%, ${Math.round(f*100)}%)`},"tsp→floz-cook":n=>(parseFloat(n)/6).toFixed(4).replace(/\.?0+$/,""),"floz-cook→tsp":n=>(parseFloat(n)*6).toFixed(2).replace(/\.?0+$/,""),"tbsp→floz-cook":n=>(parseFloat(n)/2).toFixed(4).replace(/\.?0+$/,""),"floz-cook→tbsp":n=>(parseFloat(n)*2).toFixed(2).replace(/\.?0+$/,""),"cup-cook→floz-cook":n=>(parseFloat(n)*8).toFixed(2).replace(/\.?0+$/,""),"floz-cook→cup-cook":n=>(parseFloat(n)/8).toFixed(4).replace(/\.?0+$/,""),"floz-cook→ml":n=>(parseFloat(n)*29.5735).toFixed(2).replace(/\.?0+$/,""),"ml→floz-cook":n=>(parseFloat(n)/29.5735).toFixed(4).replace(/\.?0+$/,""),"pint-cook→cup-cook":n=>(parseFloat(n)*2).toFixed(2).replace(/\.?0+$/,""),"cup-cook→pint-cook":n=>(parseFloat(n)/2).toFixed(4).replace(/\.?0+$/,""),"pint-cook→floz-cook":n=>(parseFloat(n)*16).toFixed(2).replace(/\.?0+$/,""),"floz-cook→pint-cook":n=>(parseFloat(n)/16).toFixed(4).replace(/\.?0+$/,""),"pint-cook→ml":n=>(parseFloat(n)*473.176).toFixed(2).replace(/\.?0+$/,""),"ml→pint-cook":n=>(parseFloat(n)/473.176).toFixed(4).replace(/\.?0+$/,""),"qt-cook→pint-cook":n=>(parseFloat(n)*2).toFixed(2).replace(/\.?0+$/,""),"pint-cook→qt-cook":n=>(parseFloat(n)/2).toFixed(4).replace(/\.?0+$/,""),"qt-cook→cup-cook":n=>(parseFloat(n)*4).toFixed(2).replace(/\.?0+$/,""),"cup-cook→qt-cook":n=>(parseFloat(n)/4).toFixed(4).replace(/\.?0+$/,""),"qt-cook→ml":n=>(parseFloat(n)*946.353).toFixed(2).replace(/\.?0+$/,""),"ml→qt-cook":n=>(parseFloat(n)/946.353).toFixed(4).replace(/\.?0+$/,""),"qt-cook→floz-cook":n=>(parseFloat(n)*32).toFixed(2).replace(/\.?0+$/,""),"floz-cook→qt-cook":n=>(parseFloat(n)/32).toFixed(4).replace(/\.?0+$/,""),"kib→megabytes":n=>(parseFloat(n)/976.5625).toFixed(6).replace(/\.?0+$/,""),"megabytes→kib":n=>(parseFloat(n)*976.5625).toFixed(2).replace(/\.?0+$/,""),"meters→micrometers":n=>(parseFloat(n)*1e6).toExponential(4).replace(/\.?0+e/,"e"),"micrometers→meters":n=>(parseFloat(n)*1e-6).toExponential(4).replace(/\.?0+e/,"e"),"mm→micrometers":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"micrometers→mm":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"cm→micrometers":n=>(parseFloat(n)*1e4).toFixed(2).replace(/\.?0+$/,""),"micrometers→cm":n=>(parseFloat(n)/1e4).toFixed(6).replace(/\.?0+$/,""),"inches→micrometers":n=>(parseFloat(n)*25400).toFixed(2).replace(/\.?0+$/,""),"micrometers→inches":n=>(parseFloat(n)/25400).toFixed(6).replace(/\.?0+$/,""),"micrometers→nanometers":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"nanometers→micrometers":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"mm→nanometers":n=>(parseFloat(n)*1e6).toFixed(0),"nanometers→mm":n=>(parseFloat(n)*1e-6).toFixed(8).replace(/\.?0+$/,""),"nanometers→meters":n=>(parseFloat(n)*1e-9).toExponential(4),"meters→nanometers":n=>(parseFloat(n)*1e9).toExponential(4),"nanometers→cm":n=>(parseFloat(n)*1e-7).toExponential(4),"cm→nanometers":n=>(parseFloat(n)*1e7).toExponential(4),"nanometers→inches":n=>(parseFloat(n)/254e5).toExponential(4),"inches→nanometers":n=>(parseFloat(n)*254e5).toExponential(4),"light-year→km":n=>(parseFloat(n)*9461e9).toExponential(4),"km→light-year":n=>(parseFloat(n)/9461e9).toExponential(4),"light-year→miles":n=>(parseFloat(n)*5879e9).toExponential(4),"miles→light-year":n=>(parseFloat(n)/5879e9).toExponential(4),"light-year→au":n=>(parseFloat(n)*63241.1).toFixed(1),"au→light-year":n=>(parseFloat(n)/63241.1).toExponential(6),"au→km":n=>(parseFloat(n)*1496e5).toExponential(4),"km→au":n=>(parseFloat(n)/1496e5).toExponential(6),"au→miles":n=>(parseFloat(n)*9296e4).toExponential(4),"miles→au":n=>(parseFloat(n)/9296e4).toExponential(6),"light-year→meters":n=>(parseFloat(n)*9461e12).toExponential(4),"meters→light-year":n=>(parseFloat(n)/9461e12).toExponential(6),"au→meters":n=>(parseFloat(n)*1496e8).toExponential(4),"meters→au":n=>(parseFloat(n)/1496e8).toExponential(6),"au→yards":n=>(parseFloat(n)*1636e8).toExponential(4),"yards→au":n=>(parseFloat(n)/1636e8).toExponential(6),"oz→carats":n=>(parseFloat(n)*141.748).toFixed(3).replace(/\.?0+$/,""),"carats→oz":n=>(parseFloat(n)/141.748).toFixed(6).replace(/\.?0+$/,""),"milligrams→carats":n=>(parseFloat(n)/200).toFixed(6).replace(/\.?0+$/,""),"carats→milligrams":n=>(parseFloat(n)*200).toFixed(2).replace(/\.?0+$/,""),"micrograms→oz":n=>(parseFloat(n)/283495231e-1).toExponential(4),"oz→micrograms":n=>(parseFloat(n)*283495231e-1).toExponential(4),"micrograms→kg":n=>(parseFloat(n)*1e-9).toExponential(4),"kg→micrograms":n=>(parseFloat(n)*1e9).toExponential(4),"gallon-us→cup-cook":n=>(parseFloat(n)*16).toFixed(2).replace(/\.?0+$/,""),"cup-cook→gallon-us":n=>(parseFloat(n)/16).toFixed(4).replace(/\.?0+$/,""),"gallon-us→floz-cook":n=>(parseFloat(n)*128).toFixed(2).replace(/\.?0+$/,""),"floz-cook→gallon-us":n=>(parseFloat(n)/128).toFixed(6).replace(/\.?0+$/,""),"gallon-us→ml":n=>(parseFloat(n)*3785.41).toFixed(2).replace(/\.?0+$/,""),"ml→gallon-us":n=>(parseFloat(n)/3785.41).toFixed(6).replace(/\.?0+$/,""),"gallon-us→pint-cook":n=>(parseFloat(n)*8).toFixed(2).replace(/\.?0+$/,""),"pint-cook→gallon-us":n=>(parseFloat(n)/8).toFixed(4).replace(/\.?0+$/,""),"gallon-us→qt-cook":n=>(parseFloat(n)*4).toFixed(2).replace(/\.?0+$/,""),"qt-cook→gallon-us":n=>(parseFloat(n)/4).toFixed(4).replace(/\.?0+$/,""),"gallon-us→liters":n=>(parseFloat(n)*3.78541).toFixed(4).replace(/\.?0+$/,""),"liters→gallon-us":n=>(parseFloat(n)/3.78541).toFixed(4).replace(/\.?0+$/,""),"watts→btu-per-hr":n=>(parseFloat(n)*3.41214).toFixed(4).replace(/\.?0+$/,""),"btu-per-hr→watts":n=>(parseFloat(n)/3.41214).toFixed(4).replace(/\.?0+$/,""),"horsepower→btu-per-hr":n=>(parseFloat(n)*2544.43).toFixed(2).replace(/\.?0+$/,""),"btu-per-hr→horsepower":n=>(parseFloat(n)/2544.43).toFixed(6).replace(/\.?0+$/,""),"kilowatts→btu-per-hr":n=>(parseFloat(n)*3412.14).toFixed(2).replace(/\.?0+$/,""),"btu-per-hr→kilowatts":n=>(parseFloat(n)/3412.14).toFixed(6).replace(/\.?0+$/,""),"watts→calories-per-sec":n=>(parseFloat(n)/4.184).toFixed(4).replace(/\.?0+$/,""),"calories-per-sec→watts":n=>(parseFloat(n)*4.184).toFixed(4).replace(/\.?0+$/,""),"horsepower→calories-per-sec":n=>(parseFloat(n)*745.7/4.184).toFixed(4).replace(/\.?0+$/,""),"calories-per-sec→horsepower":n=>(parseFloat(n)*4.184/745.7).toFixed(6).replace(/\.?0+$/,""),"hz→rpm":n=>(parseFloat(n)*60).toFixed(4).replace(/\.?0+$/,""),"rpm→hz":n=>(parseFloat(n)/60).toFixed(6).replace(/\.?0+$/,""),"hz→radians-per-sec":n=>(parseFloat(n)*2*Math.PI).toFixed(4).replace(/\.?0+$/,""),"radians-per-sec→hz":n=>(parseFloat(n)/(2*Math.PI)).toFixed(6).replace(/\.?0+$/,""),"rpm→radians-per-sec":n=>(parseFloat(n)*Math.PI/30).toFixed(4).replace(/\.?0+$/,""),"radians-per-sec→rpm":n=>(parseFloat(n)*30/Math.PI).toFixed(4).replace(/\.?0+$/,""),"troy-oz→kg":n=>(parseFloat(n)*.0311035).toFixed(6).replace(/\.?0+$/,""),"kg→troy-oz":n=>(parseFloat(n)/.0311035).toFixed(4).replace(/\.?0+$/,""),"troy-oz→milligrams":n=>(parseFloat(n)*31103.5).toFixed(2).replace(/\.?0+$/,""),"milligrams→troy-oz":n=>(parseFloat(n)/31103.5).toFixed(8).replace(/\.?0+$/,""),"troy-oz→carats":n=>(parseFloat(n)*155.517).toFixed(3).replace(/\.?0+$/,""),"carats→troy-oz":n=>(parseFloat(n)/155.517).toFixed(6).replace(/\.?0+$/,""),"troy-oz→lb":n=>(parseFloat(n)*.0685714).toFixed(6).replace(/\.?0+$/,""),"lb→troy-oz":n=>(parseFloat(n)/.0685714).toFixed(4).replace(/\.?0+$/,""),"calories-per-sec→kilowatts":n=>(parseFloat(n)*4.184/1e3).toFixed(6).replace(/\.?0+$/,""),"kilowatts→calories-per-sec":n=>(parseFloat(n)*1e3/4.184).toFixed(4).replace(/\.?0+$/,""),"rpm→khz":n=>(parseFloat(n)/6e4).toExponential(4),"khz→rpm":n=>(parseFloat(n)*6e4).toFixed(2).replace(/\.?0+$/,""),"radians-per-sec→khz":n=>(parseFloat(n)/(2*Math.PI*1e3)).toExponential(4),"khz→radians-per-sec":n=>(parseFloat(n)*2*Math.PI*1e3).toFixed(4).replace(/\.?0+$/,""),"sqm→sqkm":n=>(parseFloat(n)/1e6).toFixed(8).replace(/\.?0+$/,""),"sqkm→sqm":n=>(parseFloat(n)*1e6).toFixed(0),"sqft→sqkm":n=>(parseFloat(n)/107639104e-1).toFixed(10).replace(/\.?0+$/,""),"sqkm→sqft":n=>(parseFloat(n)*107639104e-1).toFixed(2).replace(/\.?0+$/,""),"sqkm→acres":n=>(parseFloat(n)*247.105).toFixed(4).replace(/\.?0+$/,""),"acres→sqkm":n=>(parseFloat(n)/247.105).toFixed(6).replace(/\.?0+$/,""),"sqkm→hectares":n=>(parseFloat(n)*100).toFixed(4).replace(/\.?0+$/,""),"hectares→sqkm":n=>(parseFloat(n)/100).toFixed(6).replace(/\.?0+$/,""),"sqmiles→sqkm":n=>(parseFloat(n)*2.58999).toFixed(4).replace(/\.?0+$/,""),"sqkm→sqmiles":n=>(parseFloat(n)/2.58999).toFixed(4).replace(/\.?0+$/,""),"sqmiles→sqft":n=>(parseFloat(n)*27878400).toFixed(0),"sqft→sqmiles":n=>(parseFloat(n)/27878400).toFixed(8).replace(/\.?0+$/,""),"sqmiles→acres":n=>(parseFloat(n)*640).toFixed(2).replace(/\.?0+$/,""),"acres→sqmiles":n=>(parseFloat(n)/640).toFixed(6).replace(/\.?0+$/,""),"sqmiles→sqm":n=>(parseFloat(n)*25899881e-1).toFixed(2).replace(/\.?0+$/,""),"sqm→sqmiles":n=>(parseFloat(n)/25899881e-1).toFixed(8).replace(/\.?0+$/,""),"sqinches→sqft":n=>(parseFloat(n)/144).toFixed(4).replace(/\.?0+$/,""),"sqft→sqinches":n=>(parseFloat(n)*144).toFixed(2).replace(/\.?0+$/,""),"sqinches→sqcm":n=>(parseFloat(n)*6.4516).toFixed(4).replace(/\.?0+$/,""),"sqcm→sqinches":n=>(parseFloat(n)/6.4516).toFixed(4).replace(/\.?0+$/,""),"sqcm→sqm":n=>(parseFloat(n)/1e4).toFixed(6).replace(/\.?0+$/,""),"sqm→sqcm":n=>(parseFloat(n)*1e4).toFixed(2).replace(/\.?0+$/,""),"sqinches→sqm":n=>(parseFloat(n)/1550).toFixed(6).replace(/\.?0+$/,""),"sqm→sqinches":n=>(parseFloat(n)*1550).toFixed(2).replace(/\.?0+$/,""),"pascal→kpa":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"kpa→pascal":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"bar→kpa":n=>(parseFloat(n)*100).toFixed(2).replace(/\.?0+$/,""),"kpa→bar":n=>(parseFloat(n)/100).toFixed(4).replace(/\.?0+$/,""),"atm→kpa":n=>(parseFloat(n)*101.325).toFixed(4).replace(/\.?0+$/,""),"kpa→atm":n=>(parseFloat(n)/101.325).toFixed(6).replace(/\.?0+$/,""),"psi→kpa":n=>(parseFloat(n)*6.89476).toFixed(4).replace(/\.?0+$/,""),"kpa→psi":n=>(parseFloat(n)/6.89476).toFixed(4).replace(/\.?0+$/,""),"mmhg→kpa":n=>(parseFloat(n)*.133322).toFixed(6).replace(/\.?0+$/,""),"kpa→mmhg":n=>(parseFloat(n)/.133322).toFixed(4).replace(/\.?0+$/,""),"kpa→hpa":n=>(parseFloat(n)*10).toFixed(2).replace(/\.?0+$/,""),"hpa→kpa":n=>(parseFloat(n)/10).toFixed(4).replace(/\.?0+$/,""),"pascal→hpa":n=>(parseFloat(n)/100).toFixed(4).replace(/\.?0+$/,""),"hpa→pascal":n=>(parseFloat(n)*100).toFixed(2).replace(/\.?0+$/,""),"bar→hpa":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"hpa→bar":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"atm→hpa":n=>(parseFloat(n)*1013.25).toFixed(2).replace(/\.?0+$/,""),"hpa→atm":n=>(parseFloat(n)/1013.25).toFixed(6).replace(/\.?0+$/,""),"psi→hpa":n=>(parseFloat(n)*68.9476).toFixed(4).replace(/\.?0+$/,""),"hpa→psi":n=>(parseFloat(n)/68.9476).toFixed(4).replace(/\.?0+$/,""),"mmhg→hpa":n=>(parseFloat(n)*1.33322).toFixed(4).replace(/\.?0+$/,""),"hpa→mmhg":n=>(parseFloat(n)/1.33322).toFixed(4).replace(/\.?0+$/,""),"degrees→arcminutes":n=>(parseFloat(n)*60).toFixed(4).replace(/\.?0+$/,""),"arcminutes→degrees":n=>(parseFloat(n)/60).toFixed(6).replace(/\.?0+$/,""),"degrees→arcseconds":n=>(parseFloat(n)*3600).toFixed(4).replace(/\.?0+$/,""),"arcseconds→degrees":n=>(parseFloat(n)/3600).toFixed(6).replace(/\.?0+$/,""),"arcminutes→arcseconds":n=>(parseFloat(n)*60).toFixed(4).replace(/\.?0+$/,""),"arcseconds→arcminutes":n=>(parseFloat(n)/60).toFixed(6).replace(/\.?0+$/,""),"radians→arcminutes":n=>(parseFloat(n)*180/Math.PI*60).toFixed(4).replace(/\.?0+$/,""),"arcminutes→radians":n=>(parseFloat(n)/60*Math.PI/180).toFixed(8).replace(/\.?0+$/,""),"turns→arcminutes":n=>(parseFloat(n)*21600).toFixed(4).replace(/\.?0+$/,""),"arcminutes→turns":n=>(parseFloat(n)/21600).toFixed(8).replace(/\.?0+$/,""),"ml→cubic-m":n=>(parseFloat(n)*1e-6).toExponential(4),"cubic-m→ml":n=>(parseFloat(n)*1e6).toFixed(0),"arcseconds→radians":n=>(parseFloat(n)/3600*Math.PI/180).toFixed(10).replace(/\.?0+$/,""),"radians→arcseconds":n=>(parseFloat(n)*180/Math.PI*3600).toFixed(4).replace(/\.?0+$/,""),"arcseconds→turns":n=>(parseFloat(n)/1296e3).toFixed(10).replace(/\.?0+$/,""),"turns→arcseconds":n=>(parseFloat(n)*1296e3).toFixed(2).replace(/\.?0+$/,""),"arcseconds→gradians":n=>(parseFloat(n)/3240).toFixed(6).replace(/\.?0+$/,""),"gradians→arcseconds":n=>(parseFloat(n)*3240).toFixed(2).replace(/\.?0+$/,""),"sqcm→sqft":n=>(parseFloat(n)/929.03).toFixed(6).replace(/\.?0+$/,""),"sqft→sqcm":n=>(parseFloat(n)*929.03).toFixed(4).replace(/\.?0+$/,""),"sqcm→sqkm":n=>(parseFloat(n)*1e-10).toExponential(4),"sqkm→sqcm":n=>(parseFloat(n)*1e10).toExponential(4),"sqcm→hectares":n=>(parseFloat(n)*1e-8).toExponential(4),"hectares→sqcm":n=>(parseFloat(n)*1e8).toFixed(0),"sqcm→acres":n=>(parseFloat(n)*247105e-13).toExponential(4),"acres→sqcm":n=>(parseFloat(n)/247105e-13).toExponential(4),"stone→grams":n=>(parseFloat(n)*6350.29).toFixed(2).replace(/\.?0+$/,""),"grams→stone":n=>(parseFloat(n)/6350.29).toFixed(6).replace(/\.?0+$/,""),"stone→oz":n=>(parseFloat(n)*224).toFixed(2).replace(/\.?0+$/,""),"oz→stone":n=>(parseFloat(n)/224).toFixed(6).replace(/\.?0+$/,""),"stone→ton-metric":n=>(parseFloat(n)*.00635029).toFixed(6).replace(/\.?0+$/,""),"ton-metric→stone":n=>(parseFloat(n)/.00635029).toFixed(4).replace(/\.?0+$/,""),"camelcase→snakecase":n=>n.replace(/([A-Z])/g,"_$1").toLowerCase().replace(/^_/,""),"snakecase→camelcase":n=>n.replace(/_([a-z])/g,(s,c)=>c.toUpperCase()),"camelcase→kebabcase":n=>n.replace(/([A-Z])/g,"-$1").toLowerCase().replace(/^-/,""),"kebabcase→camelcase":n=>n.replace(/-([a-z])/g,(s,c)=>c.toUpperCase()),"snakecase→kebabcase":n=>n.replace(/_/g,"-"),"kebabcase→snakecase":n=>n.replace(/-/g,"_"),"titlecase→camelcase":n=>n.replace(/\s+(\w)/g,(s,c)=>c.toUpperCase()).replace(/^\w/,s=>s.toLowerCase()),"titlecase→snakecase":n=>n.toLowerCase().replace(/\s+/g,"_"),"titlecase→kebabcase":n=>n.toLowerCase().replace(/\s+/g,"-"),"plain→lowercase":n=>n.toLowerCase(),"plain→uppercase":n=>n.toUpperCase(),"plain→titlecase":n=>n.replace(/\b\w/g,s=>s.toUpperCase()),"roman→binary":n=>{const s=n.trim().toUpperCase(),c={M:1e3,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};let l=0,p=0;for(const[d,f]of Object.entries(c))for(;s.startsWith(d,p);)l+=f,p+=d.length;return l===0?"(invalid roman numeral)":l.toString(2)},"binary→roman":n=>{const s=parseInt(n.trim(),2);if(isNaN(s)||s<=0||s>3999)return"(out of range for roman numerals: 1-3999)";const c=[[1e3,"M"],[900,"CM"],[500,"D"],[400,"CD"],[100,"C"],[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]];let l="",p=s;for(const[d,f]of c)for(;p>=d;)l+=f,p-=d;return l},"newtons→pound-force":n=>(parseFloat(n)*.224809).toFixed(4).replace(/\.?0+$/,""),"pound-force→newtons":n=>(parseFloat(n)*4.44822).toFixed(4).replace(/\.?0+$/,""),"newtons→kg-force":n=>(parseFloat(n)/9.80665).toFixed(4).replace(/\.?0+$/,""),"kg-force→newtons":n=>(parseFloat(n)*9.80665).toFixed(4).replace(/\.?0+$/,""),"newtons→dyne":n=>(parseFloat(n)*1e5).toFixed(2).replace(/\.?0+$/,""),"dyne→newtons":n=>(parseFloat(n)*1e-5).toFixed(8).replace(/\.?0+$/,""),"newtons→kilonewtons":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"kilonewtons→newtons":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"pound-force→kg-force":n=>(parseFloat(n)*.453592).toFixed(4).replace(/\.?0+$/,""),"kg-force→pound-force":n=>(parseFloat(n)*2.20462).toFixed(4).replace(/\.?0+$/,""),"kilonewtons→pound-force":n=>(parseFloat(n)*224.809).toFixed(4).replace(/\.?0+$/,""),"pound-force→kilonewtons":n=>(parseFloat(n)/224.809).toFixed(6).replace(/\.?0+$/,""),"kilonewtons→kg-force":n=>(parseFloat(n)*101.972).toFixed(4).replace(/\.?0+$/,""),"kg-force→kilonewtons":n=>(parseFloat(n)/101.972).toFixed(6).replace(/\.?0+$/,""),"lux→foot-candle":n=>(parseFloat(n)*.0929).toFixed(4).replace(/\.?0+$/,""),"foot-candle→lux":n=>(parseFloat(n)*10.7639).toFixed(4).replace(/\.?0+$/,""),"lux→millilux":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"millilux→lux":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"foot-candle→millilux":n=>(parseFloat(n)*10763.9).toFixed(2).replace(/\.?0+$/,""),"millilux→foot-candle":n=>(parseFloat(n)/10763.9).toFixed(8).replace(/\.?0+$/,""),"lowercase→titlecase":n=>n.replace(/\b\w/g,s=>s.toUpperCase()),"lowercase→snakecase":n=>n.trim().replace(/\s+/g,"_"),"lowercase→kebabcase":n=>n.trim().replace(/\s+/g,"-"),"lowercase→camelcase":n=>n.replace(/\s+(\w)/g,(s,c)=>c.toUpperCase()),"uppercase→titlecase":n=>n.toLowerCase().replace(/\b\w/g,s=>s.toUpperCase()),"uppercase→snakecase":n=>n.toLowerCase().replace(/\s+/g,"_"),"uppercase→kebabcase":n=>n.toLowerCase().replace(/\s+/g,"-"),"snakecase→uppercase":n=>n.toUpperCase(),"kebabcase→uppercase":n=>n.toUpperCase().replace(/-/g,"_"),"markdown→text":n=>n.replace(/#{1,6}\s+/g,"").replace(/\*\*(.+?)\*\*/g,"$1").replace(/\*(.+?)\*/g,"$1").replace(/__(.+?)__/g,"$1").replace(/_(.+?)_/g,"$1").replace(/`{3}[\s\S]*?`{3}/g,"").replace(/`(.+?)`/g,"$1").replace(/\[(.+?)\]\(.+?\)/g,"$1").replace(/!\[.*?\]\(.+?\)/g,"").replace(/^[-*+]\s+/gm,"").replace(/^\d+\.\s+/gm,"").replace(/^>\s+/gm,"").replace(/^[-*_]{3,}$/gm,"").replace(/\n{3,}/g,`
+
+`).trim(),"plain→camelcase":n=>n.trim().toLowerCase().replace(/[^a-z0-9]+(.)/g,(s,c)=>c.toUpperCase()),"plain→snakecase":n=>n.trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,""),"plain→kebabcase":n=>n.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""),"pt→pica":n=>(parseFloat(n)/12).toFixed(4).replace(/\.?0+$/,""),"pica→pt":n=>(parseFloat(n)*12).toFixed(4).replace(/\.?0+$/,""),"pt→px":n=>(parseFloat(n)*96/72).toFixed(4).replace(/\.?0+$/,""),"px→pt":n=>(parseFloat(n)*72/96).toFixed(4).replace(/\.?0+$/,""),"pt→inches":n=>(parseFloat(n)/72).toFixed(6).replace(/\.?0+$/,""),"inches→pt":n=>(parseFloat(n)*72).toFixed(4).replace(/\.?0+$/,""),"pt→mm":n=>(parseFloat(n)*25.4/72).toFixed(4).replace(/\.?0+$/,""),"mm→pt":n=>(parseFloat(n)*72/25.4).toFixed(4).replace(/\.?0+$/,""),"pt→cm":n=>(parseFloat(n)*2.54/72).toFixed(6).replace(/\.?0+$/,""),"cm→pt":n=>(parseFloat(n)*72/2.54).toFixed(4).replace(/\.?0+$/,""),"pica→inches":n=>(parseFloat(n)/6).toFixed(6).replace(/\.?0+$/,""),"inches→pica":n=>(parseFloat(n)*6).toFixed(4).replace(/\.?0+$/,""),"pica→px":n=>(parseFloat(n)*16).toFixed(2).replace(/\.?0+$/,""),"px→pica":n=>(parseFloat(n)/16).toFixed(4).replace(/\.?0+$/,""),"px→inches":n=>(parseFloat(n)/96).toFixed(6).replace(/\.?0+$/,""),"inches→px":n=>(parseFloat(n)*96).toFixed(2).replace(/\.?0+$/,""),"px→mm":n=>(parseFloat(n)*25.4/96).toFixed(4).replace(/\.?0+$/,""),"mm→px":n=>(parseFloat(n)*96/25.4).toFixed(4).replace(/\.?0+$/,""),"px→cm":n=>(parseFloat(n)*2.54/96).toFixed(6).replace(/\.?0+$/,""),"cm→px":n=>(parseFloat(n)*96/2.54).toFixed(4).replace(/\.?0+$/,""),"kgm3→gcm3":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"gcm3→kgm3":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"kgm3→lbft3":n=>(parseFloat(n)*.0624279).toFixed(4).replace(/\.?0+$/,""),"lbft3→kgm3":n=>(parseFloat(n)*16.0185).toFixed(4).replace(/\.?0+$/,""),"kgm3→lbgal":n=>(parseFloat(n)*.0083454).toFixed(6).replace(/\.?0+$/,""),"lbgal→kgm3":n=>(parseFloat(n)*119.826).toFixed(4).replace(/\.?0+$/,""),"gcm3→lbft3":n=>(parseFloat(n)*62.4279).toFixed(4).replace(/\.?0+$/,""),"lbft3→gcm3":n=>(parseFloat(n)/62.4279).toFixed(6).replace(/\.?0+$/,""),"gcm3→lbgal":n=>(parseFloat(n)*8.3454).toFixed(4).replace(/\.?0+$/,""),"lbgal→gcm3":n=>(parseFloat(n)/8.3454).toFixed(6).replace(/\.?0+$/,""),"lbft3→lbgal":n=>(parseFloat(n)/7.48052).toFixed(6).replace(/\.?0+$/,""),"lbgal→lbft3":n=>(parseFloat(n)*7.48052).toFixed(4).replace(/\.?0+$/,""),"ampere→milliamp":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"milliamp→ampere":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"ampere→microamp":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"microamp→ampere":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"ampere→kiloamp":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"kiloamp→ampere":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"milliamp→microamp":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"microamp→milliamp":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"milliamp→kiloamp":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"kiloamp→milliamp":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"volt→millivolt":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"millivolt→volt":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"volt→kilovolt":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"kilovolt→volt":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"volt→microvolt":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"microvolt→volt":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"millivolt→kilovolt":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"kilovolt→millivolt":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"millivolt→microvolt":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"microvolt→millivolt":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"cubic-m→liters":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"liters→cubic-m":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"cubic-m→gallons":n=>(parseFloat(n)*264.172).toFixed(4).replace(/\.?0+$/,""),"gallons→cubic-m":n=>(parseFloat(n)/264.172).toFixed(6).replace(/\.?0+$/,""),"cubic-ft→liters":n=>(parseFloat(n)*28.3168).toFixed(4).replace(/\.?0+$/,""),"liters→cubic-ft":n=>(parseFloat(n)/28.3168).toFixed(6).replace(/\.?0+$/,""),"cubic-ft→gallons":n=>(parseFloat(n)*7.48052).toFixed(4).replace(/\.?0+$/,""),"gallons→cubic-ft":n=>(parseFloat(n)/7.48052).toFixed(4).replace(/\.?0+$/,""),"cubic-m→cubic-ft":n=>(parseFloat(n)*35.3147).toFixed(4).replace(/\.?0+$/,""),"cubic-ft→cubic-m":n=>(parseFloat(n)/35.3147).toFixed(6).replace(/\.?0+$/,""),"milligrams→grams":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"grams→milligrams":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"milligrams→kg":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"kg→milligrams":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"milligrams→oz":n=>(parseFloat(n)*35274e-9).toFixed(8).replace(/\.?0+$/,""),"oz→milligrams":n=>(parseFloat(n)*28349.5).toFixed(2).replace(/\.?0+$/,""),"micrograms→milligrams":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"milligrams→micrograms":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"micrograms→grams":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"grams→micrograms":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"carats→grams":n=>(parseFloat(n)*.2).toFixed(4).replace(/\.?0+$/,""),"grams→carats":n=>(parseFloat(n)*5).toFixed(4).replace(/\.?0+$/,""),"troy-oz→grams":n=>(parseFloat(n)*31.1035).toFixed(4).replace(/\.?0+$/,""),"grams→troy-oz":n=>(parseFloat(n)/31.1035).toFixed(6).replace(/\.?0+$/,""),"troy-oz→oz":n=>(parseFloat(n)*1.09714).toFixed(4).replace(/\.?0+$/,""),"oz→troy-oz":n=>(parseFloat(n)/1.09714).toFixed(6).replace(/\.?0+$/,""),"dur-ms→dur-seconds":n=>(parseFloat(n)/1e3).toFixed(4).replace(/\.?0+$/,""),"dur-seconds→dur-ms":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"dur-ms→dur-minutes":n=>(parseFloat(n)/6e4).toFixed(6).replace(/\.?0+$/,""),"dur-minutes→dur-ms":n=>(parseFloat(n)*6e4).toFixed(2).replace(/\.?0+$/,""),"dur-ms→dur-hours":n=>(parseFloat(n)/36e5).toFixed(8).replace(/\.?0+$/,""),"dur-hours→dur-ms":n=>(parseFloat(n)*36e5).toFixed(2).replace(/\.?0+$/,""),"dur-weeks→dur-hours":n=>(parseFloat(n)*168).toFixed(4).replace(/\.?0+$/,""),"dur-hours→dur-weeks":n=>(parseFloat(n)/168).toFixed(6).replace(/\.?0+$/,""),"dur-weeks→dur-minutes":n=>(parseFloat(n)*10080).toFixed(2).replace(/\.?0+$/,""),"dur-minutes→dur-weeks":n=>(parseFloat(n)/10080).toFixed(8).replace(/\.?0+$/,""),"dur-weeks→dur-days":n=>(parseFloat(n)*7).toFixed(4).replace(/\.?0+$/,""),"dur-days→dur-weeks":n=>(parseFloat(n)/7).toFixed(6).replace(/\.?0+$/,""),"color-hsv→color-cmyk":n=>{const s=Ja(n);if(!s)throw new Error("bad hsv");const c=Qa(s),l=c.r/255,p=c.g/255,d=c.b/255,f=1-Math.max(l,p,d);return f===1?"cmyk(0%, 0%, 0%, 100%)":`cmyk(${Math.round((1-l-f)/(1-f)*100)}%, ${Math.round((1-p-f)/(1-f)*100)}%, ${Math.round((1-d-f)/(1-f)*100)}%, ${Math.round(f*100)}%)`},"color-cmyk→color-hsv":n=>{const s=n.match(/cmyk\(\s*([\d.]+)%[^,]*,\s*([\d.]+)%[^,]*,\s*([\d.]+)%[^,]*,\s*([\d.]+)%/i);if(!s)throw new Error("bad cmyk");const[c,l,p,d]=[parseFloat(s[1])/100,parseFloat(s[2])/100,parseFloat(s[3])/100,parseFloat(s[4])/100],f={r:Math.round(255*(1-c)*(1-d)),g:Math.round(255*(1-l)*(1-d)),b:Math.round(255*(1-p)*(1-d))},m=Ar(f);return`hsv(${m.h}, ${m.s}%, ${m.v}%)`},"ohm→kilohm":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"kilohm→ohm":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"ohm→megohm":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"megohm→ohm":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"ohm→milliohm":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"milliohm→ohm":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"kilohm→megohm":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"megohm→kilohm":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"milliohm→kilohm":n=>(parseFloat(n)*1e-6).toFixed(9).replace(/\.?0+$/,""),"kilohm→milliohm":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"ms2→gforce":n=>(parseFloat(n)/9.80665).toFixed(6).replace(/\.?0+$/,""),"gforce→ms2":n=>(parseFloat(n)*9.80665).toFixed(4).replace(/\.?0+$/,""),"ms2→fts2":n=>(parseFloat(n)*3.28084).toFixed(4).replace(/\.?0+$/,""),"fts2→ms2":n=>(parseFloat(n)/3.28084).toFixed(6).replace(/\.?0+$/,""),"ms2→cms2":n=>(parseFloat(n)*100).toFixed(4).replace(/\.?0+$/,""),"cms2→ms2":n=>(parseFloat(n)/100).toFixed(6).replace(/\.?0+$/,""),"gforce→fts2":n=>(parseFloat(n)*32.1741).toFixed(4).replace(/\.?0+$/,""),"fts2→gforce":n=>(parseFloat(n)/32.1741).toFixed(6).replace(/\.?0+$/,""),"gforce→cms2":n=>(parseFloat(n)*980.665).toFixed(4).replace(/\.?0+$/,""),"cms2→gforce":n=>(parseFloat(n)/980.665).toFixed(6).replace(/\.?0+$/,""),"fts2→cms2":n=>(parseFloat(n)*30.48).toFixed(4).replace(/\.?0+$/,""),"cms2→fts2":n=>(parseFloat(n)/30.48).toFixed(6).replace(/\.?0+$/,""),"nm-torque→lb-ft":n=>(parseFloat(n)*.737562).toFixed(4).replace(/\.?0+$/,""),"lb-ft→nm-torque":n=>(parseFloat(n)*1.35582).toFixed(4).replace(/\.?0+$/,""),"nm-torque→lb-in":n=>(parseFloat(n)*8.85075).toFixed(4).replace(/\.?0+$/,""),"lb-in→nm-torque":n=>(parseFloat(n)*.112985).toFixed(6).replace(/\.?0+$/,""),"nm-torque→kg-cm":n=>(parseFloat(n)*10.1972).toFixed(4).replace(/\.?0+$/,""),"kg-cm→nm-torque":n=>(parseFloat(n)*.098066).toFixed(6).replace(/\.?0+$/,""),"lb-ft→lb-in":n=>(parseFloat(n)*12).toFixed(4).replace(/\.?0+$/,""),"lb-in→lb-ft":n=>(parseFloat(n)/12).toFixed(6).replace(/\.?0+$/,""),"lb-ft→kg-cm":n=>(parseFloat(n)*13.8255).toFixed(4).replace(/\.?0+$/,""),"kg-cm→lb-ft":n=>(parseFloat(n)/13.8255).toFixed(6).replace(/\.?0+$/,""),"lb-in→kg-cm":n=>(parseFloat(n)*1.15212).toFixed(4).replace(/\.?0+$/,""),"kg-cm→lb-in":n=>(parseFloat(n)/1.15212).toFixed(6).replace(/\.?0+$/,""),"newton→kilonewton":n=>(parseFloat(n)/1e3).toFixed(8).replace(/\.?0+$/,""),"kilonewton→newton":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"newton→pound-force":n=>(parseFloat(n)*.224809).toFixed(6).replace(/\.?0+$/,""),"pound-force→newton":n=>(parseFloat(n)*4.44822).toFixed(6).replace(/\.?0+$/,""),"newton→kgforce":n=>(parseFloat(n)*.101972).toFixed(6).replace(/\.?0+$/,""),"kgforce→newton":n=>(parseFloat(n)*9.80665).toFixed(6).replace(/\.?0+$/,""),"newton→dyne":n=>(parseFloat(n)*1e5).toFixed(4).replace(/\.?0+$/,""),"dyne→newton":n=>(parseFloat(n)/1e5).toFixed(10).replace(/\.?0+$/,""),"kilonewton→pound-force":n=>(parseFloat(n)*224.809).toFixed(4).replace(/\.?0+$/,""),"pound-force→kilonewton":n=>(parseFloat(n)*.00444822).toFixed(8).replace(/\.?0+$/,""),"kilonewton→kgforce":n=>(parseFloat(n)*101.972).toFixed(4).replace(/\.?0+$/,""),"kgforce→kilonewton":n=>(parseFloat(n)*.00980665).toFixed(8).replace(/\.?0+$/,""),"pound-force→kgforce":n=>(parseFloat(n)*.453592).toFixed(6).replace(/\.?0+$/,""),"kgforce→pound-force":n=>(parseFloat(n)*2.20462).toFixed(6).replace(/\.?0+$/,""),"pound-force→dyne":n=>(parseFloat(n)*444822).toFixed(2).replace(/\.?0+$/,""),"dyne→pound-force":n=>(parseFloat(n)*224809e-11).toFixed(12).replace(/\.?0+$/,""),"lux→footcandle":n=>(parseFloat(n)*.092903).toFixed(6).replace(/\.?0+$/,""),"footcandle→lux":n=>(parseFloat(n)*10.7639).toFixed(4).replace(/\.?0+$/,""),"lux→phot":n=>(parseFloat(n)*1e-4).toFixed(8).replace(/\.?0+$/,""),"phot→lux":n=>(parseFloat(n)*1e4).toFixed(4).replace(/\.?0+$/,""),"lux→nox":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"nox→lux":n=>(parseFloat(n)/1e3).toFixed(8).replace(/\.?0+$/,""),"footcandle→phot":n=>(parseFloat(n)*.00929).toFixed(6).replace(/\.?0+$/,""),"phot→footcandle":n=>(parseFloat(n)/.00929).toFixed(4).replace(/\.?0+$/,""),"farad→microfarad":n=>(parseFloat(n)*1e6).toFixed(4).replace(/\.?0+$/,""),"microfarad→farad":n=>(parseFloat(n)*1e-6).toFixed(12).replace(/\.?0+$/,""),"farad→nanofarad":n=>(parseFloat(n)*1e9).toFixed(4).replace(/\.?0+$/,""),"nanofarad→farad":n=>(parseFloat(n)*1e-9).toFixed(15).replace(/\.?0+$/,""),"farad→picofarad":n=>(parseFloat(n)*1e12).toFixed(4).replace(/\.?0+$/,""),"picofarad→farad":n=>(parseFloat(n)*1e-12).toFixed(18).replace(/\.?0+$/,""),"microfarad→nanofarad":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"nanofarad→microfarad":n=>(parseFloat(n)/1e3).toFixed(8).replace(/\.?0+$/,""),"microfarad→picofarad":n=>(parseFloat(n)*1e6).toFixed(4).replace(/\.?0+$/,""),"picofarad→microfarad":n=>(parseFloat(n)*1e-6).toFixed(12).replace(/\.?0+$/,""),"nanofarad→picofarad":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"picofarad→nanofarad":n=>(parseFloat(n)/1e3).toFixed(8).replace(/\.?0+$/,""),"terahertz→gigahertz":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"gigahertz→terahertz":n=>(parseFloat(n)/1e3).toFixed(8).replace(/\.?0+$/,""),"terahertz→megahertz":n=>(parseFloat(n)*1e6).toFixed(4).replace(/\.?0+$/,""),"megahertz→terahertz":n=>(parseFloat(n)*1e-6).toFixed(12).replace(/\.?0+$/,""),"terahertz→kilohertz":n=>(parseFloat(n)*1e9).toFixed(4).replace(/\.?0+$/,""),"kilohertz→terahertz":n=>(parseFloat(n)*1e-9).toFixed(15).replace(/\.?0+$/,""),"terahertz→hertz":n=>(parseFloat(n)*1e12).toFixed(4).replace(/\.?0+$/,""),"hertz→terahertz":n=>(parseFloat(n)*1e-12).toFixed(18).replace(/\.?0+$/,""),"gigahertz→megahertz":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"megahertz→gigahertz":n=>(parseFloat(n)/1e3).toFixed(8).replace(/\.?0+$/,""),"gigahertz→kilohertz":n=>(parseFloat(n)*1e6).toFixed(4).replace(/\.?0+$/,""),"kilohertz→gigahertz":n=>(parseFloat(n)*1e-6).toFixed(12).replace(/\.?0+$/,""),"gigahertz→hertz":n=>(parseFloat(n)*1e9).toFixed(4).replace(/\.?0+$/,""),"hertz→gigahertz":n=>(parseFloat(n)*1e-9).toFixed(15).replace(/\.?0+$/,""),"percent→decimal-frac":n=>(parseFloat(n)/100).toFixed(6).replace(/\.?0+$/,""),"decimal-frac→percent":n=>(parseFloat(n)*100).toFixed(4).replace(/\.?0+$/,""),"percent→ppm":n=>(parseFloat(n)*1e4).toFixed(4).replace(/\.?0+$/,""),"ppm→percent":n=>(parseFloat(n)/1e4).toFixed(8).replace(/\.?0+$/,""),"percent→ppb":n=>(parseFloat(n)*1e7).toFixed(4).replace(/\.?0+$/,""),"ppb→percent":n=>(parseFloat(n)/1e7).toFixed(12).replace(/\.?0+$/,""),"decimal-frac→ppm":n=>(parseFloat(n)*1e6).toFixed(4).replace(/\.?0+$/,""),"ppm→decimal-frac":n=>(parseFloat(n)*1e-6).toFixed(12).replace(/\.?0+$/,""),"decimal-frac→ppb":n=>(parseFloat(n)*1e9).toFixed(4).replace(/\.?0+$/,""),"ppb→decimal-frac":n=>(parseFloat(n)*1e-9).toFixed(15).replace(/\.?0+$/,""),"ppm→ppb":n=>(parseFloat(n)*1e3).toFixed(4).replace(/\.?0+$/,""),"ppb→ppm":n=>(parseFloat(n)/1e3).toFixed(8).replace(/\.?0+$/,""),"pt-type→pica":n=>(parseFloat(n)/12).toFixed(6).replace(/\.?0+$/,""),"pica→pt-type":n=>(parseFloat(n)*12).toFixed(4).replace(/\.?0+$/,""),"pt-type→screen-px":n=>(parseFloat(n)*96/72).toFixed(4).replace(/\.?0+$/,""),"screen-px→pt-type":n=>(parseFloat(n)*72/96).toFixed(4).replace(/\.?0+$/,""),"pt-type→twip":n=>(parseFloat(n)*20).toFixed(4).replace(/\.?0+$/,""),"twip→pt-type":n=>(parseFloat(n)/20).toFixed(6).replace(/\.?0+$/,""),"pt-type→mm":n=>(parseFloat(n)*25.4/72).toFixed(6).replace(/\.?0+$/,""),"mm→pt-type":n=>(parseFloat(n)*72/25.4).toFixed(4).replace(/\.?0+$/,""),"pt-type→inch":n=>(parseFloat(n)/72).toFixed(8).replace(/\.?0+$/,""),"inch→pt-type":n=>(parseFloat(n)*72).toFixed(4).replace(/\.?0+$/,""),"pt-type→cm":n=>(parseFloat(n)*2.54/72).toFixed(6).replace(/\.?0+$/,""),"cm→pt-type":n=>(parseFloat(n)*72/2.54).toFixed(4).replace(/\.?0+$/,""),"pica→mm":n=>(parseFloat(n)*25.4/6).toFixed(4).replace(/\.?0+$/,""),"mm→pica":n=>(parseFloat(n)*6/25.4).toFixed(6).replace(/\.?0+$/,""),"pica→inch":n=>(parseFloat(n)/6).toFixed(6).replace(/\.?0+$/,""),"inch→pica":n=>(parseFloat(n)*6).toFixed(4).replace(/\.?0+$/,""),"pica→cm":n=>(parseFloat(n)*2.54/6).toFixed(4).replace(/\.?0+$/,""),"cm→pica":n=>(parseFloat(n)*6/2.54).toFixed(6).replace(/\.?0+$/,""),"pica→screen-px":n=>(parseFloat(n)*96/6).toFixed(4).replace(/\.?0+$/,""),"screen-px→pica":n=>(parseFloat(n)*6/96).toFixed(6).replace(/\.?0+$/,""),"screen-px→mm":n=>(parseFloat(n)*25.4/96).toFixed(6).replace(/\.?0+$/,""),"mm→screen-px":n=>(parseFloat(n)*96/25.4).toFixed(4).replace(/\.?0+$/,""),"screen-px→inch":n=>(parseFloat(n)/96).toFixed(8).replace(/\.?0+$/,""),"inch→screen-px":n=>(parseFloat(n)*96).toFixed(4).replace(/\.?0+$/,""),"screen-px→cm":n=>(parseFloat(n)*2.54/96).toFixed(6).replace(/\.?0+$/,""),"cm→screen-px":n=>(parseFloat(n)*96/2.54).toFixed(4).replace(/\.?0+$/,""),"twip→mm":n=>(parseFloat(n)*25.4/1440).toFixed(6).replace(/\.?0+$/,""),"mm→twip":n=>(parseFloat(n)*1440/25.4).toFixed(4).replace(/\.?0+$/,""),"twip→inch":n=>(parseFloat(n)/1440).toFixed(8).replace(/\.?0+$/,""),"inch→twip":n=>(parseFloat(n)*1440).toFixed(4).replace(/\.?0+$/,""),"twip→screen-px":n=>(parseFloat(n)*96/1440).toFixed(6).replace(/\.?0+$/,""),"screen-px→twip":n=>(parseFloat(n)*1440/96).toFixed(4).replace(/\.?0+$/,""),"twip→pica":n=>(parseFloat(n)/240).toFixed(6).replace(/\.?0+$/,""),"pica→twip":n=>(parseFloat(n)*240).toFixed(4).replace(/\.?0+$/,""),"dur-us→dur-ms":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"dur-ms→dur-us":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"dur-us→dur-seconds":n=>(parseFloat(n)/1e6).toFixed(9).replace(/\.?0+$/,""),"dur-seconds→dur-us":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"dur-us→dur-ns":n=>(parseFloat(n)*1e3).toFixed(2).replace(/\.?0+$/,""),"dur-ns→dur-us":n=>(parseFloat(n)/1e3).toFixed(6).replace(/\.?0+$/,""),"dur-ns→dur-ms":n=>(parseFloat(n)/1e6).toFixed(9).replace(/\.?0+$/,""),"dur-ms→dur-ns":n=>(parseFloat(n)*1e6).toFixed(2).replace(/\.?0+$/,""),"dur-ns→dur-seconds":n=>(parseFloat(n)/1e9).toFixed(12).replace(/\.?0+$/,""),"dur-seconds→dur-ns":n=>(parseFloat(n)*1e9).toFixed(2).replace(/\.?0+$/,""),"dur-ns→dur-minutes":n=>(parseFloat(n)/6e10).toFixed(14).replace(/\.?0+$/,""),"dur-minutes→dur-ns":n=>(parseFloat(n)*6e10).toFixed(0),"dur-months→dur-days":n=>(parseFloat(n)*30.4375).toFixed(4).replace(/\.?0+$/,""),"dur-days→dur-months":n=>(parseFloat(n)/30.4375).toFixed(6).replace(/\.?0+$/,""),"dur-months→dur-weeks":n=>(parseFloat(n)*4.34821).toFixed(4).replace(/\.?0+$/,""),"dur-weeks→dur-months":n=>(parseFloat(n)/4.34821).toFixed(6).replace(/\.?0+$/,""),"dur-months→dur-hours":n=>(parseFloat(n)*730.5).toFixed(2).replace(/\.?0+$/,""),"dur-hours→dur-months":n=>(parseFloat(n)/730.5).toFixed(8).replace(/\.?0+$/,""),"dur-months→dur-seconds":n=>(parseFloat(n)*2629800).toFixed(0),"dur-seconds→dur-months":n=>(parseFloat(n)/2629800).toFixed(10).replace(/\.?0+$/,""),"dur-years→dur-months":n=>(parseFloat(n)*12).toFixed(4).replace(/\.?0+$/,""),"dur-months→dur-years":n=>(parseFloat(n)/12).toFixed(6).replace(/\.?0+$/,""),"dur-years→dur-days":n=>(parseFloat(n)*365.25).toFixed(4).replace(/\.?0+$/,""),"dur-days→dur-years":n=>(parseFloat(n)/365.25).toFixed(8).replace(/\.?0+$/,""),"dur-years→dur-weeks":n=>(parseFloat(n)*52.1775).toFixed(4).replace(/\.?0+$/,""),"dur-weeks→dur-years":n=>(parseFloat(n)/52.1775).toFixed(8).replace(/\.?0+$/,""),"dur-years→dur-hours":n=>(parseFloat(n)*8766).toFixed(2).replace(/\.?0+$/,""),"dur-hours→dur-years":n=>(parseFloat(n)/8766).toFixed(8).replace(/\.?0+$/,""),"dur-years→dur-seconds":n=>(parseFloat(n)*31557600).toFixed(0),"dur-seconds→dur-years":n=>(parseFloat(n)/31557600).toFixed(10).replace(/\.?0+$/,""),"dur-years→dur-minutes":n=>(parseFloat(n)*525960).toFixed(0),"dur-minutes→dur-years":n=>(parseFloat(n)/525960).toFixed(10).replace(/\.?0+$/,"")},mc={};for(const n of Object.keys(uf)){const[s,c]=n.split("→");mc[s]||(mc[s]=[]),mc[s].push(c)}const Fy={"kg-force":"kgforce",kgforce:"kg-force"};function _p(n){const s=Fy[n];return s?[n,s]:[n]}function p0(n){return sf.has(n)?Ry(n):[]}function f0(n,s){for(const c of _p(n))for(const l of _p(s)){const p=uf[`${c}→${l}`];if(p)return p}return null}const xy={title:"Audio zuschneiden",intro:"Bereich auswählen, Ein- und Ausblenden einstellen und als Audiodatei speichern.",choose:"Audio auswählen",limits:"MP3, WAV, FLAC oder OGG/Vorbis · bis 100 MiB und 30 Minuten.",empty:"Wähle eine Audiodatei, um die Wellenform zu sehen.",preparing:"Wellenform und Vorschau werden vorbereitet …",exporting:"Audiodatei wird erstellt …",cancel:"Abbrechen",reset:"Zurücksetzen",waveform:"Wellenform",waveHelp:"Ziehe die Auswahlgrenzen oder gib Start und Ende unten ein. Pfeiltasten verschieben die Grenze um 0.01 Sekunden, mit Umschalttaste um 0.1 Sekunden.",start:"Start (Sekunden)",end:"Ende (Sekunden)",startHandle:"Auswahlstart",endHandle:"Auswahlende",fadeIn:"Einblenden (Sekunden)",fadeOut:"Ausblenden (Sekunden)",selection:"Auswahl: {duration} s",whole:"Ganze Datei",zoom:"Auswahl vergrössern",unzoom:"Ganze Wellenform",undo:"Rückgängig",redo:"Wiederholen",play:"Auswahl abspielen",pause:"Pausieren",format:"Ausgabeformat",bitrate:"MP3-Bitrate",export:"Audio exportieren",download:"Audiodatei herunterladen",ready:"Audiodatei ist bereit.",local:"Fades zusammen höchstens so lang wie die Auswahl.",errors:{playback_unavailable:"Dieser Browser kann die Audiovorschau nicht abspielen. Der Export ist weiterhin möglich.",invalid_file:"Die Audiodatei konnte nicht gelesen werden.",too_large:"Die Datei ist grösser als 100 MiB.",resource_limit:"Die Verarbeitung überschreitet ein Ressourcenlimit oder die Audiodatei ist unvollständig. Wähle eine kürzere Datei oder einen kleineren Bereich.",unsupported_type:"Wähle MP3, WAV, FLAC oder OGG/Vorbis.",type_mismatch:"Dateiendung, Inhalt und Dateityp stimmen nicht überein.",unsupported_codec:"Dieser Audiocodec wird nicht unterstützt. OGG muss Vorbis enthalten.",no_audio:"Die Datei enthält keine unterstützte Audiospur.",invalid_settings:"Prüfe Start, Ende und Fade-Längen.",conversion_failed:"Die Audiodatei konnte nicht verarbeitet werden.",media_runtime_unavailable:"Die Audiolaufzeit fehlt. Verbinde dich mit dem Internet und versuche es erneut. Nach erfolgreicher Nutzung ist sie im Browsercache offline verfügbar.",cancelled:"Verarbeitung abgebrochen.",playback:"Die Vorschau konnte nicht abgespielt werden."}},Ly={title:"Bild bearbeiten",intro:"Zuschneiden, drehen und eigene Texte oder Wasserzeichen ergänzen.",choose:"Bild auswählen",replace:"Bild wechseln",drop:"PNG, JPEG oder WebP hier ablegen",limits:"PNG, JPEG oder WebP bis 32 MiB, 24 Megapixel und 8192 px pro Seite.",working:"Bild wird vorbereitet …",cancel:"Abbrechen",reset:"Zurücksetzen",discardConfirm:"Die bisherigen Bildänderungen verwerfen?",unsaved:"Ungespeicherte Änderungen",preview:"Bildvorschau",canvas:"Bild und Elemente bearbeiten",dimensions:"{width} × {height} px",crop:"Zuschneiden",cropHint:"Lege den Ausschnitt fest und wende ihn anschliessend an.",cropAspect:"Seitenverhältnis",cropFree:"Frei",cropSquare:"1:1",cropFourThree:"4:3",cropSixteenNine:"16:9",cropX:"X-Position des Ausschnitts",cropY:"Y-Position des Ausschnitts",cropWidth:"Breite des Ausschnitts",cropHeight:"Höhe des Ausschnitts",applyCrop:"Ausschnitt anwenden",cropSelection:"Ausschnitt verschieben",cropResize:"Ausschnittsgrösse ändern",transform:"Drehen und spiegeln",rotateRight:"90° nach rechts drehen",mirrorHorizontal:"Horizontal spiegeln",mirrorVertical:"Vertikal spiegeln",elements:"Elemente",textContent:"Textinhalt",textPlaceholder:"Text eingeben",addText:"Text hinzufügen",addWatermark:"Wasserzeichen hinzufügen",duplicateWatermark:"Wasserzeichen erneut einfügen",watermarkLimits:"PNG, JPEG oder WebP bis 8 MiB und 4 Megapixel. Alle verwendeten Wasserzeichen zusammen höchstens 32 MiB.",noElements:"Noch keine Texte oder Wasserzeichen.",element:"{name} auswählen",textElement:"Text: {text}",imageElement:"Wasserzeichen: {name}",properties:"Eigenschaften",opacity:"Deckkraft",fontSize:"Schriftgrösse",color:"Farbe",x:"X-Position",y:"Y-Position",width:"Breite",height:"Höhe",centre:"Zentrieren",remove:"Element löschen",resize:"Elementgrösse ändern",undo:"Rückgängig",redo:"Wiederholen",export:"Export",format:"Dateiformat",quality:"Qualität",download:"{format} herunterladen",exporting:"Bild wird exportiert …",exported:"Bild wurde heruntergeladen.",errors:{invalid_file:"Das Bild konnte nicht verarbeitet werden. Wähle eine gültige PNG-, JPEG- oder WebP-Datei.",unsupported_type:"Dieses Dateiformat wird nicht unterstützt. Wähle PNG, JPEG oder WebP.",type_mismatch:"Dateiendung, Dateityp und Bildinhalt passen nicht zusammen.",resource_limit:"Das Bild überschreitet eine lokale Grössen- oder Pixelgrenze.",watermark_budget:"Das neue Wasserzeichen würde die Grenze von 32 MiB überschreiten. Die bisherigen Änderungen bleiben erhalten.",element_limit:"Es sind höchstens 20 Elemente möglich.",text_limit:"Ein Text darf höchstens 500 Zeichen enthalten.",invalid_crop:"Der Ausschnitt muss vollständig im Bild liegen.",invalid_settings:"Prüfe die eingegebenen Werte.",unsupported_browser:"Dieser Browser unterstützt den Bildeditor nicht vollständig.",cancelled:"Verarbeitung abgebrochen."}},Cy=Object.freeze({studioQr:Object.freeze({title:"QR-Code gestalten",intro:"Inhalt eingeben, Design anpassen.",modeLabel:"QR-Werkzeug",modeCreate:"Erstellen",modeRead:"Lesen",tabsLabel:"QR-Einstellungen",tabContent:"Inhalt",tabDesign:"Design",tabLogo:"Logo",contentType:"Inhaltstyp",typeText:"Text",typeUrl:"URL",typeWifi:"WLAN",typeContact:"Kontakt",typeEmail:"E-Mail",typeSms:"SMS",contentLabel:"Inhalt",textPlaceholder:"Text für den QR-Code eingeben",urlPlaceholder:"Webadresse einfügen",wifiName:"Netzwerkname",wifiEncryption:"Sicherheit",wifiOpen:"Offenes Netzwerk",wifiPassword:"Passwort",wifiHidden:"Netzwerk ist verborgen",contactName:"Name",contactOrganization:"Organisation",phone:"Telefonnummer",emailAddress:"E-Mail-Adresse",website:"Website",emailTo:"Empfängeradresse",emailSubject:"Betreff",message:"Nachricht",fieldErrors:Object.freeze({single_line:"Zeilenumbrüche, Tabulatoren und Steuerzeichen sind hier nicht unterstützt.",required:"Dieses Feld ist erforderlich.",http_url:"Gib eine vollständige HTTP- oder HTTPS-Adresse ein.",email:"Gib eine gültige E-Mail-Adresse ein.",phone:"Gib eine gültige Telefonnummer ein."}),byteUsage:"{used} von {capacity} Bytes",capacityRemaining:"Der QR-Code ist fast voll. Noch {remaining} Bytes sind verfügbar.",correctionLevel:"Fehlerkorrektur {level}",capacityError:"Der Inhalt ist für einen QR-Code mit den aktuellen Einstellungen zu lang.",foreground:"Vordergrund",background:"Hintergrund",foregroundPresets:"Vordergrundfarben",backgroundPresets:"Hintergrundfarben",selectForegroundPreset:"{color} als Vordergrund wählen",selectBackgroundPreset:"{color} als Hintergrund wählen",colourGraphite:"Graphit",colourGreen:"Grün",colourBlue:"Blau",colourPurple:"Violett",colourTerracotta:"Terrakotta",colourWhite:"Weiss",colourLightNeutral:"Hellgrau",colourMint:"Mint",colourLightBlue:"Hellblau",colourRose:"Rosé",contrastWarning:"Der Kontrast ist niedrig. Verwende deutlich unterschiedliche Farben, damit Scanner den Code zuverlässig erkennen.",moduleStyle:"Modulstil",cornerFrameStyle:"Eckrahmen",cornerDotStyle:"Eckpunkt",styleSquare:"Quadratisch",styleRounded:"Abgerundet",styleDots:"Punkte",styleExtraRounded:"Stark abgerundet",size:"Exportgrösse",sizeValue:"{value} px",quietZone:"Freier Rand",quietZoneValue:"{value} Module",quietZoneHint:"Mindestens vier freie Module schützen die Lesbarkeit.",logoInput:"Logo auswählen",logoAcceptHint:"PNG, JPEG oder WebP, maximal 4 MB und 12 Megapixel.",logoSelected:"Ausgewählt: {name}",logoRemove:"Logo entfernen",logoSize:"Logogrösse",logoSizeValue:"{value} %",logoSpacing:"Abstand zum Code",logoSpacingValue:"{value} px",cropZoom:"Ausschnitt vergrössern",cropControlLabel:"Logo-Ausschnitt verschieben",cropHint:"Ziehe das Bild im Rahmen. Mit den Pfeiltasten verschiebst du es schrittweise, mit Umschalt schneller.",cropCenter:"Zentrieren",logoSafety:"Mit Logo verwendet Folkkit automatisch die hohe Fehlerkorrektur H.",invalidLogo:"Diese Datei ist kein gültiges PNG-, JPEG- oder WebP-Bild.",largeLogo:"Das Logo ist zu gross. Verwende höchstens 4 MB und 12 Megapixel.",unsupportedLogo:"Dieser Browser kann das Logo nicht lokal verarbeiten.",previewTitle:"Vorschau",previewAlt:"QR-Code-Vorschau",previewUpdating:"Vorschau wird aktualisiert …",previewError:"Die Vorschau konnte nicht erstellt werden. Prüfe den Inhalt und die Einstellungen.",downloadPng:"PNG herunterladen",downloadSvg:"SVG herunterladen",downloading:"Download wird vorbereitet …",downloadError:"Der QR-Code konnte nicht exportiert werden.",reset:"Zurücksetzen",readerTitle:"QR-Code lesen",readerIntro:"QR-Codes aus Fotos und Screenshots auslesen.",readerInput:"QR-Bild auswählen",readerHint:"PNG, JPEG oder WebP, maximal 12 MB und 12 Megapixel.",readerProgress:"QR-Code wird gelesen …",readerCancel:"Abbrechen",readerResult:"Gelesener Inhalt",readerCopy:"Inhalt kopieren",readerCopied:"Inhalt kopiert.",readerOpenLink:"Link öffnen",readerReset:"Anderes Bild wählen",readerErrors:Object.freeze({invalid_file:"Diese Datei ist kein gültiges PNG-, JPEG- oder WebP-Bild.",too_large:"Das Bild ist zu gross. Verwende höchstens 12 MB und 12 Megapixel.",not_found:"Kein QR-Code gefunden. Prüfe, ob der Code vollständig und scharf abgebildet ist.",timeout:"Das Lesen hat zu lange gedauert. Versuche ein kleineres oder schärferes Bild.",unsupported_browser:"Dieser Browser kann das Bild nicht lokal lesen.",decode_failed:"Das Bild konnte nicht gelesen werden.",copy_failed:"Der Inhalt konnte nicht kopiert werden."})})}),xr={layoutHint:"Inhalte, Listen und Tabellen werden übernommen. Seitenlayout und Formatierung können sich ändern.",limits:"DOCX bis 20 MiB · Markdown und HTML bis 2 MiB",errors:{invalid_document:"Das Dokument ist beschädigt oder passt nicht zum Dateityp.",document_too_large:"Das Dokument überschreitet die lokale Verarbeitungsgrenze.",document_timeout:"Die Verarbeitung hat zu lange gedauert. Versuche ein kleineres Dokument.",unsafe_document:"Dieses Dokument enthält eine nicht unterstützte oder unsichere Struktur.",document_runtime_unavailable:"Das Dokumentmodul ist nicht verfügbar. Lade es einmal mit Internetverbindung und versuche es erneut."},warnings:{external_resources_omitted:"Extern verknüpfte oder fehlende Bilder wurden ausgelassen.",unsupported_images_omitted:"Nicht unterstützte Bilder wurden ausgelassen. PNG, JPEG und WebP werden übernommen.",layout_changed:"Seitenlayout und Formatierung können vom Original abweichen."}},Dy={applySettingsOne:"Für eine weitere Datei übernehmen",applySettingsMany:"Für {count} weitere Dateien übernehmen",matchingSettings:"Nur Dateien mit {pair}.",settingsApplied:"Einstellungen übernommen.",settingsAlreadyMatch:"Die passenden Dateien verwenden bereits diese Einstellungen.",removeCompleted:"Fertige Aufträge entfernen",editOriginal:"Original bearbeiten",editResult:"Ergebnis bearbeiten",documentLayout:xr.layoutHint,documentLimits:xr.limits,warnings:xr.warnings,title:"Dateien konvertieren",subtitle:"Bilder, Dokumente, Audio und Video.",optimizeTitle:"Bilder verkleinern",optimizeSubtitle:"PNG, JPEG und WebP lokal neu berechnen oder proportional verkleinern.",limitsLabel:"Dateigrenzen",modeLabel:"Arbeitsmodus",modeConvert:"Konvertieren",modeOptimize:"Bilder verkleinern",choose:"Dateien auswählen",add:"Dateien hinzufügen",drop:"Dateien hier ablegen",dropHint:"PNG, JPEG, WebP, PDF, DOCX, Markdown, HTML, MP3, WAV, FLAC, OGG, MP4, WebM, MOV",optimizeDropHint:"PNG, JPEG oder WebP",limits:"Bis zu 20 Dateien · 100 MiB pro Datei (PDF: 32 MiB · DOCX: 20 MiB · MD/HTML: 2 MiB) · 250 MiB insgesamt · 64 MiB pro Ergebnis",width:"Breite (px)",height:"Höhe (px)",maxWidth:"Maximale Breite (px)",maxHeight:"Maximale Höhe (px)",qualityLevel:"Qualitätsstufe",qualitySmall:"Stärker komprimiert",qualityBalanced:"Ausgewogen",qualityHigh:"Hohe Qualität",pageSize:"PDF-Seitengrösse",original:"Originale Bildgrösse",orientation:"Ausrichtung",portrait:"Hochformat",landscape:"Querformat",dpi:"PDF-Auflösung",bitrate:"MP3-Bitrate",flacLevel:"FLAC-Kompressionsstufe",vorbisQuality:"Vorbis-Qualität",resolution:"Videoauflösung",trim:"Videoausschnitt wählen",wavHint:"WAV: unkomprimiertes PCM16.",commonTarget:"Zielformat für alle Dateien",individual:"Pro Datei wählen",target:"Zielformat",files:"Dateien",convert:"Dateien konvertieren",optimize:"Optimierung starten",cancel:"Konvertierung abbrechen",cancelOptimize:"Optimierung abbrechen",clear:"Dateien entfernen",remove:"Entfernen",retry:"Erneut versuchen",download:"Herunterladen",downloadZip:"Alle als ZIP herunterladen",downloadFileZip:"Ergebnisse als ZIP herunterladen",fileNumber:"Datei",creatingZip:"ZIP wird erstellt…",quality:"Qualität (%)",pages:"PDF-Seiten",pagesHint:"Alle Seiten oder zum Beispiel 1-3,5. Höchstens 100 Seiten.",clipStart:"Ausschnitt ab (Sekunden)",clipDuration:"Dauer (Sekunden)",clipHint:"Wähle einen Ausschnitt bis 30 Sekunden. GIF: 720 px, 12 Bilder/s.",imageHint:"Für die Originalgrösse beide Masse leer lassen. Das Seitenverhältnis bleibt erhalten. JPEG erhält einen weissen Hintergrund.",optimizeHint:"Leere Masse behalten die Originalgrösse. Grössere Werte werden nicht hochskaliert.",optimizePngHint:"PNG wird ohne Qualitätsregler verarbeitet. Leere Masse behalten die Originalgrösse; grössere Werte werden nicht hochskaliert.",audioHint:"MP3: 192 kbit/s · WAV: PCM16 · FLAC: Stufe 5 · OGG: Vorbis-Qualität 5",videoHint:"Höchstens 1080p, ohne Vergrösserung. MP4: H.264/AAC · WebM: VP8/Opus.",combine:"Bilder in dieser Reihenfolge zu einem PDF verbinden",moveUp:"Nach oben",moveDown:"Nach unten",combined:"Im gemeinsamen PDF enthalten",local:"Deine Dateien bleiben auf diesem Gerät.",settings:"Einstellungen",unknown:"Unbekanntes Format",optimizeUnsupported:"Nur PNG-, JPEG- und WebP-Bilder können in diesem Modus verarbeitet werden.",before:"Vorher",after:"Nachher",result:"Ergebnis",keptOriginal:"Mit diesen Einstellungen wird die Datei nicht kleiner. Du erhältst das Original.",reducedBy:"Dateigrösse reduziert um",largerResult:"Die Ergebnisdatei ist grösser als das Original.",largerAfterResize:"Die Abmessungen wurden geändert; die Datei ist dabei grösser geworden.",sameSize:"Die Dateigrösse ist unverändert.",downloadResult:"Ergebnis herunterladen",status:{detecting:"Format wird geprüft…",ready:"Bereit",running:"Wird verarbeitet…",done:"Fertig",error:"Fehlgeschlagen",cancelled:"Abgebrochen",unsupported:"In diesem Modus nicht verfügbar"},errors:{...xr.errors,invalid_settings:"Wähle einen unterstützten Wert für diese Einstellungen.",unsupported_type:"Dieses Dateiformat wird nicht unterstützt.",type_mismatch:"Der Dateiinhalt passt nicht zur Endung oder zum Dateityp.",unsupported_pair:"Diese Konvertierung ist nicht verfügbar.",too_large:"Die ausgewählten Dateien überschreiten die Grössenbegrenzung.",resource_limit:"Die Datei überschreitet die lokale Verarbeitungsgrenze. Versuche eine kleinere Datei oder weniger Seiten.",invalid_file:"Die Datei konnte nicht gelesen werden.",unsupported_codec:"Der enthaltene Audio- oder Video-Codec wird nicht unterstützt.",invalid_pages:"Gib gültige Seitenzahlen ein, zum Beispiel 1-3,5.",invalid_clip:"Wähle einen Ausschnitt innerhalb des Videos mit einer Dauer von 1 bis 30 Sekunden.",no_audio:"Diese Datei enthält keine unterstützte Tonspur.",media_runtime_unavailable:"Das Verarbeitungsmodul ist offline noch nicht verfügbar. Lade es einmal mit Internetverbindung und versuche es erneut.",conversion_failed:"Die Konvertierung ist fehlgeschlagen. Du kannst diese Datei erneut versuchen.",cancelled:"Konvertierung abgebrochen."}},ky={resize:"Skalieren: {corner}",corner:{nw:"oben links",ne:"oben rechts",sw:"unten links",se:"unten rechts"},properties:"Eigenschaften",allPages:"Alle auswählen",clearPages:"Auswahl aufheben",selectedPages:"{count} ausgewählt",selectPage:"Seite {number} auswählen",viewing:"Angezeigt",pageSelectionHint:"Seiten für gemeinsame Aktionen ankreuzen. Ausgewählte Seiten zum Sortieren ziehen.",rotateSelected:"Ausgewählte Seiten drehen",deleteSelected:"Ausgewählte Seiten löschen",extractSelected:"Ausgewählte Seiten herunterladen",actions:{edit:{title:"PDF bearbeiten",before:"Wähle ein PDF, um Text, Bilder und Seiten zu bearbeiten.",after:"Unterstützte Objekte ziehen oder an den Eckgriffen skalieren. Text zum Bearbeiten doppelt anklicken."},merge:{title:"PDFs zusammenführen",before:"Wähle das erste PDF. Hänge danach weitere PDFs in der gewünschten Reihenfolge an.",after:"Wähle «Weiteres PDF anfügen» für jede weitere Datei. Lade danach das zusammengeführte PDF herunter."},extract:{title:"PDF-Seiten extrahieren",before:"Wähle ein PDF und kreuze die Seiten an, die du herunterladen möchtest.",after:"Kreuze eine oder mehrere, auch getrennte Seiten an. Der Download folgt der Dokumentreihenfolge."},rotate:{title:"PDF-Seiten drehen",before:"Wähle ein PDF und danach die Seiten zum Drehen.",after:"Kreuze die gewünschten Seiten an. Jede Aktion dreht alle ausgewählten Seiten um 90 Grad im Uhrzeigersinn."},count:{title:"PDF-Seiten zählen",before:"Wähle ein PDF, um die Seitenzahl zu sehen.",after:"Dieses PDF enthält {count} Seiten."},organize:{title:"PDF-Seiten ordnen",before:"Wähle ein PDF, um Seiten auszuwählen, zu sortieren oder zu entfernen.",after:"Kreuze Seiten für gemeinsame Aktionen an. Ziehe sie in die gewünschte Reihenfolge oder nutze die Verschiebeknöpfe."}},recover:"Letzten Bearbeitungsstand wiederherstellen",title:"PDF bearbeiten",intro:"Texte anpassen, Seiten ordnen und Ergänzungen einfügen.",choose:"PDF auswählen",drop:"PDF hier ablegen",limits:"Bis 32 MiB und 200 Seiten. Deine Datei bleibt in diesem Browser.",working:"PDF wird verarbeitet …",cancel:"Abbrechen",download:"PDF herunterladen",original:"Original herunterladen",undo:"Rückgängig",redo:"Wiederholen",saved:"Änderungen heruntergeladen",unsaved:"Ungespeicherte Änderungen",discard:"Ungespeicherte Änderungen verwerfen?",page:"Seite {number}",pages:"Seiten",select:"Auswählen",text:"Text",image:"Bild",highlight:"Markieren",underline:"Unterstreichen",draw:"Zeichnen",note:"Notiz",rectangle:"Rechteck",ellipse:"Ellipse",line:"Linie",signature:"Unterschrift zeichnen",signatureImage:"Unterschrift als Bild",tools:"Werkzeuge",content:"Textinhalt",apply:"Übernehmen",insert:"Einfügen",fontSize:"Schriftgrösse",color:"Farbe",stroke:"Linienstärke",x:"X-Position",y:"Y-Position",width:"Breite",height:"Höhe",placement:"Position ab linker unterer Seitenecke in PDF-Punkten. Du kannst auch direkt auf der Seite platzieren oder zeichnen.",selectHint:"Wähle ein Text- oder Bildobjekt auf der Seite.",textHint:"Unterstützte Textobjekte werden im PDF ersetzt. Es gibt keinen automatischen Absatzumbruch.",unsupportedText:"Dieses Textobjekt lässt sich hier nicht zuverlässig ersetzen. Nutze bei Bedarf neuen Text an einer freien Stelle.",scan:"Auf dieser Seite wurde kein bearbeitbarer Text gefunden. Für Scans ist keine Texterkennung enthalten.",fontHint:"Lateinische Zeichen mit Umlauten. Vollständige eingebettete Schriften und Standardschriften werden unterstützt, Teilmengen und gedrehte Textobjekte können ausgeschlossen sein.",signatureHint:"Eine sichtbare Unterschrift als Bild oder Zeichnung, ohne kryptografische Signatur.",selectedObject:"{type} {number}",objectText:"Textobjekt",objectImage:"Bildobjekt",removeObject:"Objekt löschen",moveLeft:"Nach links",moveRight:"Nach rechts",moveUp:"Nach oben",moveDown:"Nach unten",grow:"Vergrössern",shrink:"Verkleinern",rotate:"Seite drehen",duplicate:"Seite duplizieren",deletePage:"Seite löschen",previous:"Seite nach vorne",next:"Seite nach hinten",blank:"Leere Seite",merge:"Weiteres PDF anfügen",extract:"Seite herunterladen",zoom:"Zoom",search:"Text suchen",searchAction:"Suchen",noResults:"Kein Text gefunden.",matches:"{count} Treffer",preview:"PDF-Seitenvorschau",document:"PDF-Dokument",close:"Dokument schliessen",addHint:"Wähle ein Werkzeug. Klicken platziert Text und Notizen; Ziehen erstellt Formen und Zeichnungen.",errors:{unsupported_structure:"Vorhandene Formularstrukturen lassen sich bei diesem Vorgang nicht zuverlässig erhalten. Das PDF wurde nicht verändert.",invalid_file:"Das PDF konnte nicht verarbeitet werden. Wähle eine gültige, unverschlüsselte Datei.",resource_limit:"Die Datei oder dieser Arbeitsschritt überschreitet das lokale Limit. Verwende eine kleinere Datei oder einen tieferen Zoom.",unsupported_text:"Diese Schrift, Zeichen oder Textausrichtung wird nicht unterstützt. Die Änderung wurde verworfen.",last_page:"Die letzte Seite kann nicht gelöscht werden.",cancelled:"Verarbeitung abgebrochen.",unsupported_browser:"Dieser Browser unterstützt den PDF-Arbeitsbereich nicht."}},Wi={title:"Rechner",intro:"Zahlen einsetzen. Ergebnis direkt sehen.",choose:"Rechner wählen",calculators:{percent:"Prozent","rule-of-three":"Dreisatz",pythagoras:"Pythagoras",circle:"Kreis",area:"Flächen",volume:"Volumen",units:"Einheiten"},descriptions:{percent:"Anteil, Prozentsatz und Veränderung","rule-of-three":"Direkt proportionale Werte",pythagoras:"Seiten im rechtwinkligen Dreieck",circle:"Radius, Durchmesser, Umfang und Fläche",area:"Rechteck und Dreieck",volume:"Quader und Zylinder",units:"Längen, Gewichte, Temperaturen und mehr"},operation:"Berechnung",percentModes:{of:"Wie viel sind X % von Y?",share:"Wie viel Prozent sind X von Y?",change:"Prozentuale Veränderung",discount:"Rabatt abziehen",increase:"Aufschlag addieren"},fields:{rate:"Prozentsatz",base:"Grundwert",part:"Anteil",previous:"Ausgangswert",next:"Neuer Wert",originalPrice:"Originalpreis",discountRate:"Rabatt (%)",surchargeRate:"Aufschlag (%)",first:"Wert A",second:"Entspricht B",third:"Gesuchter Wert C",a:"Kathete a",b:"Kathete b",c:"Hypotenuse c",radius:"Radius",diameter:"Durchmesser",width:"Breite",triangleBase:"Grundseite",height:"Höhe",depth:"Tiefe",value:"Wert"},missing:"Gesuchte Seite",knownMeasure:"Bekannte Grösse",shape:"Form",shapes:{rectangle:"Rechteck",triangle:"Dreieck",cuboid:"Quader",cylinder:"Zylinder"},category:"Grösse",categories:{length:"Länge",area:"Fläche",volume:"Volumen",mass:"Gewicht",temperature:"Temperatur",time:"Zeit",speed:"Geschwindigkeit",storage:"Speichergrösse"},from:"Von",to:"Nach",swap:"Einheiten tauschen",clear:"Leeren",resultHeading:"Ergebnis",empty:"Werte eingeben",emptyHint:"Das Ergebnis erscheint hier.",formula:"Formel",results:{result:"Ergebnis",changeAmount:"Änderungsbetrag",finalPrice:"Endpreis",a:"Kathete a",b:"Kathete b",c:"Hypotenuse c",radius:"Radius",diameter:"Durchmesser",circumference:"Umfang",area:"Fläche",perimeter:"Umfang",volume:"Volumen"},unitSquared:"Quadrateinheiten",unitCubed:"Kubikeinheiten",sameUnits:"Alle Längen in derselben Einheit eingeben.",triangleHint:"Die Höhe steht senkrecht auf der Grundseite.",pythagorasHint:"c ist die längste Seite, gegenüber dem rechten Winkel.",ruleHint:"A entspricht B. Wie viel entspricht dann C?",percentChangeHint:"Der Ausgangswert muss grösser als null sein.",decimalHint:"Dezimalkomma oder Dezimalpunkt, ohne Tausendertrennzeichen.",precision:"Anzeige mit bis zu 12 signifikanten Stellen.",storageHint:"MB, GB und TB sind dezimal (1000). MiB, GiB und TiB sind binär (1024). Alle Angaben in Byte.",temperatureHint:"Temperaturen ab dem absoluten Nullpunkt.",errors:{number:"Gib eine gültige, endliche Zahl ein.",positive:"Dieser Wert muss grösser als null sein.",nonzero:"Dieser Wert darf nicht null sein.",nonnegative:"Dieser Wert darf nicht negativ sein.",discountRate:"Der Rabatt muss zwischen 0 und 100 % liegen.",hypotenuse:"c muss grösser als die bekannte Kathete sein.",temperature:"Die Temperatur liegt unter dem absoluten Nullpunkt.",range:"Diese Zahlen sind für eine zuverlässige Berechnung zu gross oder zu klein.",selection:"Wähle eine gültige Berechnung und passende Einheiten."},unitNames:{length:{m:"Meter",cm:"Zentimeter",mm:"Millimeter",km:"Kilometer",in:"Zoll",ft:"Fuss",yd:"Yard",mi:"Meile"},area:{m2:"Quadratmeter",cm2:"Quadratzentimeter",mm2:"Quadratmillimeter",km2:"Quadratkilometer",ha:"Hektar",ft2:"Quadratfuss"},volume:{l:"Liter",ml:"Milliliter",m3:"Kubikmeter",cm3:"Kubikzentimeter",usgal:"US-Gallone"},mass:{kg:"Kilogramm",g:"Gramm",mg:"Milligramm",t:"Tonne",lb:"Pfund (lb)",oz:"Unze"},temperature:{C:"Celsius",F:"Fahrenheit",K:"Kelvin"},time:{h:"Stunde",min:"Minute",s:"Sekunde",ms:"Millisekunde",day:"Tag",week:"Woche"},speed:{kmh:"Kilometer pro Stunde",ms:"Meter pro Sekunde",mph:"Meilen pro Stunde",kn:"Knoten"},storage:{B:"Byte",kB:"Kilobyte",MB:"Megabyte",GB:"Gigabyte",TB:"Terabyte",KiB:"Kibibyte",MiB:"Mebibyte",GiB:"Gibibyte",TiB:"Tebibyte"}}},Hy={...Wi,calculators:{...Wi.calculators,"aspect-ratio":"Seitenverhältnis",loan:"Kreditrate",bmi:"BMI",date:"Datum",duration:"Zeitspannen"},descriptions:{...Wi.descriptions,"aspect-ratio":"Verhältnis vereinfachen und Bildgrössen anpassen",loan:"Monatsrate, Rückzahlung und Zinsen",bmi:"Body-Mass-Index aus Gewicht und Grösse",date:"Tage zählen und ein Datum verschieben",duration:"Zeiten addieren und abziehen"},fields:{...Wi.fields,pixelWidth:"Breite (px)",pixelHeight:"Höhe (px)",targetWidth:"Zielbreite (px)",principal:"Kreditbetrag",annualRate:"Jahreszins (%)",months:"Laufzeit (Monate)",weight:"Gewicht (kg)",bodyHeight:"Grösse (cm)",startDate:"Startdatum",endDate:"Enddatum",days:"Anzahl Tage",hours:"Stunden",minutes:"Minuten",seconds:"Sekunden"},aspectModes:{ratio:"Verhältnis berechnen",resize:"Grösse anpassen"},results:{...Wi.results,ratio:"Seitenverhältnis",targetWidth:"Zielbreite",targetHeight:"Zielhöhe",monthlyPayment:"Monatsrate",totalPayment:"Rückzahlung gesamt",totalInterest:"Zinsen gesamt",bmi:"BMI",days:"Tage zwischen den Daten",date:"Neues Datum",duration:"Gesamtdauer",totalSeconds:"Sekunden gesamt"},example:"Beispiel",copy:"Kopieren",copied:"Kopiert",copyError:"Kopieren fehlgeschlagen",copyResult:"{name} kopieren",dateModes:{difference:"Tage zwischen zwei Daten",add:"Tage hinzufügen oder abziehen"},dateDifferenceHint:"Das Startdatum wird nicht mitgezählt. Ein früheres Enddatum ergibt einen negativen Wert.",dateAddHint:"Mit einer negativen Anzahl gehst du zurück.",dateDifferenceFormula:"Kalendertage vom Startdatum bis zum Enddatum",dateAddFormula:"Neues Datum = Startdatum + Anzahl Tage",durationFormula:`Sekunden = Stunden × 3600 + Minuten × 60 + Sekunden
+Alle Zeitspannen mit ihrem Vorzeichen zusammenzählen.`,durationHint:"Minuten und Sekunden von 0 bis 59. Leere Felder zählen als 0.",durationRow:"Zeitspanne {number}",durationOperation:"Rechenzeichen für Zeitspanne {number}",removeDuration:"Zeitspanne {number} entfernen",addDuration:"Zeitspanne hinzufügen",add:"Addieren",subtract:"Abziehen",remove:"Entfernen",roundedPrecision:"Gerundete Anzeige; sehr kleine und grosse Werte mit bis zu 12 Stellen.",aspectHint:"Breite und Höhe in ganzen Pixeln eingeben.",aspectResizeHint:"Die Zielhöhe wird auf ganze Pixel gerundet.",aspectRatioFormula:"Breite : Höhe, vollständig gekürzt",aspectResizeFormula:"Zielhöhe = Zielbreite × Höhe ÷ Breite",loanHint:"Gleichbleibender Jahreszins, Raten am Monatsende, ohne Gebühren. Alle Beträge in derselben Währung.",loanFormula:`Rate = Betrag × i ÷ (1 − (1 + i)⁻ⁿ)
+i = Jahreszins ÷ 1200; n = Monate
+Bei 0 %: Betrag ÷ Monate`,bmiHint:"Orientierungswert für Erwachsene.",errors:{...Wi.errors,integer:"Gib eine ganze Pixelzahl ein.",dimension:"Die Bildabmessungen müssen zwischen 1 und 1000000000 Pixeln liegen.",rate:"Der Jahreszins muss zwischen 0 und 100 % liegen.",months:"Gib eine ganze Laufzeit zwischen 1 und 1200 Monaten ein.",date:"Wähle ein gültiges Datum zwischen den Jahren 1 und 9999.",days:"Gib eine ganze Anzahl Tage zwischen −3652058 und 3652058 ein.",dateRange:"Das Ergebnis liegt ausserhalb der Jahre 1 bis 9999.",durationRows:"Verwende 1 bis 50 Zeitspannen.",durationHours:"Gib ganze Stunden von 0 bis 999999 ein.",durationPart:"Gib eine ganze Zahl von 0 bis 59 ein."}},My=Object.freeze({...Cy,studioConvert:Dy,studioPdf:ky,studioCalculate:Hy,studioImage:Ly,studioAudio:xy,shell:Object.freeze({skip:"Zum Inhalt springen",home:"Startseite",tools:"Weitere Werkzeuge",qr:"QR-Codes",pdf:"PDF",convert:"Konvertieren",calculate:"Rechner",image:"Bildeditor",audio:"Audio schneiden",loading:"Wird geladen …",loadError:"Der Arbeitsbereich konnte nicht geladen werden.",retry:"Erneut laden",unsaved:"Du hast ungespeicherte PDF-Änderungen. Wirklich verlassen?",privacyStatus:"Lokal verarbeitet",localeLabel:"Sprache wählen",themeToggle:"Dunkles Design",menuOpen:"Menü öffnen",menuClose:"Menü schliessen",mobileNavigation:"Mobile Navigation",primaryNavigation:"Hauptnavigation",privacy:"Datenschutz",openSource:"Open Source",licenses:"Lizenzen",terms:"Nutzungsbedingungen",contact:"Kontakt",source:"Quellcode",footerNavigation:"Fussnavigation",footerNote:"Deine Dateien bleiben bei dir."}),home:Object.freeze({eyebrow:"Werkzeuge für den Alltag",title:"Was möchtest du machen?",intro:"Deine Werkzeuge. Direkt im Browser.",sampleTitle:"Projektplan",sampleLine1:"Ideen festhalten.",sampleLine2:"Details bearbeiten.",sampleLine3:"Weiter geht’s.",privacyTitle:"Deine Dateien bleiben in diesem Browser.",privacyBody:"Folkkit überträgt keine Dateiinhalte zur Verarbeitung. Der statische Webhost kann beim Seitenaufruf technische Zugriffsdaten erhalten.",pdfTitle:"PDF bearbeiten",pdfBody:"Texte, Markierungen und Seiten.",qrTitle:"QR-Code erstellen",qrBody:"Mit Farben, Formen und eigenem Logo.",convertTitle:"Datei konvertieren",convertBody:"Bilder, Dokumente, Audio und Video.",calculateTitle:"Rechner & Einheiten",calculateBody:"Prozente, Geometrie und Einheiten.",catalogLink:"Weitere Werkzeuge entdecken"}),catalog:Object.freeze({imageEditor:"Bild bearbeiten",imageEditorDescription:"Zuschneiden, drehen, Text und Wasserzeichen ergänzen",audioTrim:"Audio schneiden",audioTrimDescription:"Ausschnitt wählen, anhören und ein- oder ausblenden",documentConvert:"Dokumente konvertieren",documentConvertDescription:"DOCX, Markdown und HTML umwandeln",toolCount:"{count} Werkzeuge",eyebrow:"Werkzeugkatalog",title:"Weitere Werkzeuge",intro:"Für Text, Daten und kleine Aufgaben zwischendurch.",openTool:"{name} öffnen",search:"Werkzeuge suchen",searchPlaceholder:"Name oder Aufgabe",category:"Kategorie",allCategories:"Alle Kategorien",favoritesOnly:"Nur Favoriten",addFavorite:"{name} zu Favoriten hinzufügen",removeFavorite:"{name} aus Favoriten entfernen",filteredCount:"{count} von {total} Werkzeugen",empty:"Keine passenden Werkzeuge",emptyHint:"Versuche einen anderen Suchbegriff oder entferne einen Filter.",clearFilters:"Filter zurücksetzen",storageError:"Dein Browser speichert die Favoriten gerade nicht. Sie bleiben bis zum Verlassen dieser Seite verfügbar.",studioCategory:"Studio",qrReader:"QR-Code lesen",qrReaderDescription:"Inhalt aus einem QR-Bild auslesen",imageOptimize:"Bilder verkleinern",imageOptimizeDescription:"Dateigrösse und Abmessungen anpassen"}),workspace:Object.freeze({eyebrow:"Werkzeug",title:"Datei lokal bearbeiten",intro:"Eingabe wählen und Ergebnis mitnehmen.",dropOverlay:"Datei zum Konvertieren ablegen",unsupportedDrop:"Dieser Dateityp lässt sich hier nicht öffnen. Wähle ein passendes Werkzeug.",pairTitle:"{from} in {to}",pairDescription:"{from} lokal in {to} umwandeln. Dateiinhalte werden nicht hochgeladen.",toolDescription:"{name} lokal im Browser verwenden. Dateiinhalte werden nicht hochgeladen."}),keyboardHelp:Object.freeze({title:"Tastaturkürzel",convertGroup:"Konvertierungsbereich",focusInput:"Eingabefeld fokussieren",swap:"Eingabe ↔ Ausgabe tauschen",copyOutput:"Ausgabe kopieren",reset:"Konvertierung zurücksetzen",toggleBatch:"Stapelmodus umschalten",backToFormats:"Zurück zur Formatauswahl",globalGroup:"Allgemein",toggleTheme:"Zwischen hellem und dunklem Design wechseln",thisHelp:"Diese Hilfe",footer:"Mit ? oder Esc schliessen",close:"Tastaturhilfe schliessen",closeVisible:"Schliessen"}),workspaceTools:Object.freeze({input:"Eingabe",output:"Ergebnis",inputText:"Eingabetext",conversionResult:"Konvertierungsergebnis",toolInputText:"Werkzeugeingabe",toolOutputText:"Werkzeugergebnis",formatInputPlaceholder:"Wert eingeben oder einfügen",resultPlaceholder:"Ergebnis erscheint hier",parametersPlaceholder:"Parameter eingeben",clear:"Zurücksetzen",clearInput:"Eingabe löschen",selectFile:"Datei auswählen",selectFiles:"PDF-Dateien auswählen",dropFile:"Datei hier ablegen oder auswählen",dropFiles:"Dateien hier ablegen oder auswählen",convert:"Konvertieren",parameters:"Werkzeugparameter",progressLabel:"Fortschritt",processing:"Verarbeitung läuft: {progress}",loadingRuntime:"Medienmodul wird lokal geladen.",loadingTool:"Werkzeug wird lokal geladen.",mediaModuleUnavailable:"Das Medienmodul ist offline noch nicht verfügbar. Stelle die Internetverbindung wieder her und versuche es erneut.",toolModuleUnavailable:"Dieses Werkzeugmodul ist offline noch nicht verfügbar. Stelle die Internetverbindung wieder her und versuche es erneut.",retryModule:"Erneut versuchen",cancel:"Abbrechen",download:"Herunterladen",copy:"Kopieren",copied:"Ergebnis kopiert",copiedToClipboard:"In Zwischenablage kopiert",copiedOutput:"Ausgabe kopiert",linkCopied:"Link kopiert",shareLinkCopied:"Freigabelink kopiert",discard:"Verwerfen",previewAlt:"Lokale Ergebnisvorschau",shareTool:"Werkzeug teilen",moreFiles:"{count} weitere Dateien",detected:"erkannt",selectInput:"Eingabe auswählen: {name}",selectOutput:"Ausgabeformat auswählen: {name}",swap:"Formate tauschen",noReverseConversion:"Keine umgekehrte Konvertierung verfügbar",enableBatch:"Stapelmodus aktivieren",disableBatch:"Stapelmodus deaktivieren",addFavourite:"Formatpaar zu Favoriten hinzufügen",removeFavourite:"Formatpaar aus Favoriten entfernen",pickColor:"Farbe auswählen",copyResult:"Ergebnis kopieren",downloadResult:"Ergebnis herunterladen",useAsInput:"Ergebnis als Eingabe verwenden",wordWrapOn:"Zeilenumbruch aktiv",wordWrapOff:"Zeilenumbruch inaktiv",showLineNumbers:"Zeilennummern anzeigen",hideLineNumbers:"Zeilennummern ausblenden",shareConversion:"Konvertierung teilen",colorPreview:"Farbvorschau",base64Preview:"Base64-Vorschau",chain:"Weiterverarbeiten",generate:"Erzeugen",saveResult:"Ergebnis speichern",inputStats:"Zeichen {characters} · Wörter {words} · Zeilen {lines}",outputStats:"Zeichen {characters} · Zeilen {lines}",characterCount:"Zeichen: {count}",byteCount:"{count} Bytes"}),history:Object.freeze({consent:"Der lokale Verlauf wird erst nach deiner Zustimmung in diesem Browser gespeichert.",enable:"Lokalen Verlauf aktivieren",recent:"Letzte Konvertierungen",deleteAndDisable:"Verlauf löschen und deaktivieren",empty:"Noch kein lokaler Verlauf.",remove:"Aus Verlauf entfernen",copy:"Ergebnis kopieren",reuse:"Wiederverwenden",copied:"In Zwischenablage kopiert",now:"jetzt",minutesAgo:"vor {count} Min.",hoursAgo:"vor {count} Std.",daysAgo:"vor {count} Tagen"}),toolPicker:Object.freeze({searchConversions:"Konvertierungen durchsuchen",searchFormats:"Formate durchsuchen",searchConversionsPlaceholder:"Alle Konvertierungen durchsuchen …",searchFormatsPlaceholder:"Formate durchsuchen …",formats:"Formate",tools:"Werkzeuge",noResults:"Keine Ergebnisse",noFormats:"Keine Formate gefunden",noItems:"Keine Einträge in dieser Kategorie",recent:"Zuletzt verwendet",tabs:Object.freeze({text:"Text",encode:"Codierung",data:"Daten",number:"Zahlen",hash:"Prüfwerte",color:"Farben",units:"Einheiten",image:"Bilder",media:"Audio und Video",document:"PDF und Dokumente",utility:"Hilfsmittel"}),groups:Object.freeze({Text:"Text",Case:"Gross- und Kleinschreibung",Data:"Daten",Number:"Zahlen",Color:"Farben",Recent:"Zuletzt verwendet"})}),errorBoundary:Object.freeze({message:"Bei diesem Werkzeug ist ein Fehler aufgetreten.",retry:"Erneut versuchen"}),errors:Object.freeze({unsupportedType:"Dieser Dateityp wird von diesem Werkzeug nicht unterstützt.",unsupportedPair:"Für dieses Formatpaar existiert keine Konvertierung.",unsupportedBrowser:"QR-Codes können in diesem Browser nicht gelesen werden.",tooLarge:"Die ausgewählte Datei ist für dieses Gerät zu gross.",invalidFile:"Die Datei ist beschädigt oder ungültig.",outOfMemory:"Der verfügbare Speicher reicht für diese Verarbeitung nicht aus.",cancelled:"Der Vorgang wurde abgebrochen.",conversionFailed:"Die Verarbeitung ist fehlgeschlagen.",mediaRuntimeUnavailable:"FFmpeg-Core und WASM sind offline nicht verfügbar. Stelle die Internetverbindung wieder her und versuche es erneut.",resourceLimit:"Die Eingabe überschreitet die sichere Verarbeitungsgrenze."}),formatCompatibility:Object.freeze({warningTitle:"Diese Dateiformate sind nicht miteinander kompatibel.",warningBody:"Die vorhandene Konvertierungsfunktion ist nur für einen bewussten Spezialfall vorgesehen. Prüfe das Ergebnis sorgfältig.",confirmation:"Ich weiss, was ich mache, und verstehe, dass diese Dateiformate nicht miteinander kompatibel sind."}),labels:Object.freeze({experimental:"Experimentell",mediaWarning:"Experimentell. Das lokale Medienmodul benötigt je nach Datei viel Speicher und Rechenleistung."}),categories:Object.freeze({encode:"QR und Codierung",hash:"Prüfwerte",data:"Daten",number:"Zahlen",color:"Farben",utility:"Hilfsmittel",image:"Bilder",media:"Audio und Video",document:"PDF und Dokumente"}),tools:Object.freeze({base64Encode:Object.freeze({name:"Base64 codieren",description:"Text lokal in Base64 umwandeln",placeholder:"Text eingeben oder einfügen"}),base64Decode:Object.freeze({name:"Base64 decodieren",description:"Base64 lokal in Text zurückwandeln"}),urlEncode:Object.freeze({name:"URL codieren",description:"Text für eine URL percent-codieren"}),urlDecode:Object.freeze({name:"URL decodieren",description:"Percent-codierten URL-Text zurückwandeln"}),htmlEncode:Object.freeze({name:"HTML-Zeichen maskieren",description:"HTML-Sonderzeichen durch Entities ersetzen"}),htmlDecode:Object.freeze({name:"HTML-Entities decodieren",description:"HTML-Entities in Zeichen zurückwandeln"}),hexEncode:Object.freeze({name:"Text in Hex",description:"Text lokal in Hexadezimalwerte umwandeln"}),hexDecode:Object.freeze({name:"Hex in Text",description:"Hexadezimalwerte lokal in Text umwandeln"}),binaryEncode:Object.freeze({name:"Text in Binär",description:"Text lokal in Binärwerte umwandeln"}),binaryDecode:Object.freeze({name:"Binär in Text",description:"Binärwerte lokal in Text umwandeln"}),unicodeEscape:Object.freeze({name:"Unicode maskieren",description:"Text in Unicode-Escape-Sequenzen umwandeln"}),unicodeUnescape:Object.freeze({name:"Unicode-Escapes decodieren",description:"Unicode-Escape-Sequenzen in Text zurückwandeln"}),rot13:Object.freeze({name:"ROT13",description:"ROT13 lokal auf Text anwenden"}),atbash:Object.freeze({name:"Atbash",description:"Das lateinische Alphabet lokal spiegeln"}),sha256:Object.freeze({name:"SHA-256-Prüfwert",description:"SHA-256-Prüfwert eines Textes berechnen"}),jsonPrettify:Object.freeze({name:"JSON formatieren",description:"JSON mit Einrückungen lesbar formatieren"}),jsonMinify:Object.freeze({name:"JSON minimieren",description:"Unnötige Leerzeichen aus JSON entfernen"}),jsonEscape:Object.freeze({name:"JSON-String maskieren",description:"Text als JSON-String maskieren"}),csvToJson:Object.freeze({name:"CSV in JSON",description:"Eine CSV-Tabelle in ein JSON-Array umwandeln"}),decToHex:Object.freeze({name:"Dezimal in Hex",description:"Eine Dezimalzahl in Hexadezimal umwandeln"}),hexToDec:Object.freeze({name:"Hex in Dezimal",description:"Eine Hexadezimalzahl in Dezimal umwandeln"}),decToBin:Object.freeze({name:"Dezimal in Binär",description:"Eine Dezimalzahl in Binär umwandeln"}),binToDec:Object.freeze({name:"Binär in Dezimal",description:"Eine Binärzahl in Dezimal umwandeln"}),decToOct:Object.freeze({name:"Dezimal in Oktal",description:"Eine Dezimalzahl in Oktal umwandeln"}),octToDec:Object.freeze({name:"Oktal in Dezimal",description:"Eine Oktalzahl in Dezimal umwandeln"}),colorConvert:Object.freeze({name:"Farbwert umwandeln",description:"Zwischen HEX, RGB und HSL umwandeln"}),cssMinify:Object.freeze({name:"CSS minimieren",description:"Kommentare und unnötige Leerzeichen aus CSS entfernen"}),jsonValidate:Object.freeze({name:"JSON-Syntax prüfen",description:"JSON-Syntax lokal parsen und Fehler anzeigen"}),base64urlEncode:Object.freeze({name:"Base64URL codieren",description:"Text in URL-sicheres Base64 umwandeln"}),base64urlDecode:Object.freeze({name:"Base64URL decodieren",description:"URL-sicheres Base64 in Text zurückwandeln"}),slugGen:Object.freeze({name:"URL-Slug erstellen",description:"Text in einen einfachen URL-Slug umwandeln"}),charCount:Object.freeze({name:"Zeichen und Wörter zählen",description:"Zeichen, Wörter, Zeilen und Bytes lokal zählen"}),reverseText:Object.freeze({name:"Text umkehren",description:"Die Reihenfolge der Zeichen umkehren"}),percentageCalc:Object.freeze({name:"Prozent berechnen",description:"Einfache Prozentaufgaben lokal berechnen",placeholder:"15% von 200"}),aspectRatio:Object.freeze({name:"Seitenverhältnis berechnen",description:"Ein begrenztes Seitenverhältnis aus Breite und Höhe berechnen"}),loanCalc:Object.freeze({name:"Kreditrate berechnen",description:"Monatsrate, Gesamtkosten und Tilgungsverlauf aus Betrag, Zinssatz und Laufzeit schätzen",placeholder:"250000 4.5% 30",notice:"Nur eine lokale Rechenhilfe, keine Finanzberatung."}),bmiCalc:Object.freeze({name:"BMI berechnen",description:"Den Body-Mass-Index aus Gewicht und Grösse berechnen",placeholder:"70kg 175cm",notice:"Nur eine allgemeine Rechenhilfe, keine medizinische Beratung."}),pngToJpg:Object.freeze({name:"PNG in JPEG",description:"Ein PNG-Bild lokal in JPEG umwandeln"}),jpgToPng:Object.freeze({name:"JPEG in PNG",description:"Ein JPEG-Bild lokal in PNG umwandeln"}),audioToMp3:Object.freeze({name:"Audio in MP3",description:"Eine Audiodatei lokal in MP3 umwandeln"}),textToQr:Object.freeze({name:"Text in QR-Code",description:"QR-Code aus Text oder einem Link erstellen",placeholder:"Text oder Link eingeben"}),imagesToPdf:Object.freeze({name:"Bilder in PDF",description:"Mehrere Bilder zu einem PDF zusammenführen"}),mergePdf:Object.freeze({name:"PDFs zusammenführen",description:"Mehrere PDF-Dateien zu einer Datei zusammenführen"}),pdfPageCount:Object.freeze({name:"PDF-Seiten zählen",description:"Anzahl Seiten einer PDF-Datei ermitteln"}),pdfSplit:Object.freeze({name:"PDF-Seite extrahieren",description:"Eine einzelne Seite aus einer PDF-Datei extrahieren",parameterPlaceholder:"Seitennummer, zum Beispiel 1"}),pdfExtractRange:Object.freeze({name:"PDF-Seiten extrahieren",description:"Einen Seitenbereich aus einer PDF-Datei extrahieren",parameterPlaceholder:"Seitenbereich, zum Beispiel 1-5 oder 1,3,5"}),textToPdf:Object.freeze({name:"Text in PDF",description:"Klartext in ein einfaches PDF-Dokument umwandeln",placeholder:"Text eingeben oder einfügen"}),pdfMetadata:Object.freeze({name:"PDF-Metadaten",description:"Titel, Autor und weitere PDF-Metadaten anzeigen"}),pdfRotate:Object.freeze({name:"PDF-Seiten drehen",description:"Alle Seiten einer PDF-Datei drehen",parameterPlaceholder:"Grad: 90, 180 oder 270"})})}),zy={title:"Trim audio",intro:"Select a range, adjust fades and save an audio file.",choose:"Choose audio",limits:"MP3, WAV, FLAC or OGG/Vorbis · up to 100 MiB and 30 minutes.",empty:"Choose an audio file to see its waveform.",preparing:"Preparing waveform and preview …",exporting:"Creating audio file …",cancel:"Cancel",reset:"Reset",waveform:"Waveform",waveHelp:"Drag the selection edges or enter start and end below. Arrow keys move an edge by 0.01 seconds, or 0.1 seconds with Shift.",start:"Start (seconds)",end:"End (seconds)",startHandle:"Selection start",endHandle:"Selection end",fadeIn:"Fade in (seconds)",fadeOut:"Fade out (seconds)",selection:"Selection: {duration} s",whole:"Whole file",zoom:"Zoom to selection",unzoom:"Whole waveform",undo:"Undo",redo:"Redo",play:"Play selection",pause:"Pause",format:"Output format",bitrate:"MP3 bitrate",export:"Export audio",download:"Download audio file",ready:"Your audio file is ready.",local:"Combined fades cannot exceed the selection length.",errors:{playback_unavailable:"This browser cannot play the audio preview. You can still export the file.",invalid_file:"The audio file could not be read.",too_large:"The file exceeds 100 MiB.",resource_limit:"Processing exceeded a resource limit or the audio file is incomplete. Choose a shorter file or smaller range.",unsupported_type:"Choose MP3, WAV, FLAC or OGG/Vorbis.",type_mismatch:"The extension, contents and file type do not match.",unsupported_codec:"This audio codec is unsupported. OGG must contain Vorbis.",no_audio:"The file has no supported audio track.",invalid_settings:"Check the start, end and fade lengths.",conversion_failed:"The audio file could not be processed.",media_runtime_unavailable:"The audio runtime is unavailable. Connect to the internet and try again. After successful use, the browser cache makes it available offline.",cancelled:"Processing cancelled.",playback:"The preview could not be played."}},Uy={title:"Edit image",intro:"Crop, rotate and add your own text or watermark.",choose:"Choose image",replace:"Change image",drop:"Drop a PNG, JPEG or WebP here",limits:"PNG, JPEG or WebP up to 32 MiB, 24 megapixels and 8192 px per side.",working:"Preparing image …",cancel:"Cancel",reset:"Reset",discardConfirm:"Discard the current image changes?",unsaved:"Unsaved changes",preview:"Image preview",canvas:"Edit image and elements",dimensions:"{width} × {height} px",crop:"Crop",cropHint:"Set the crop area, then apply it.",cropAspect:"Aspect ratio",cropFree:"Free",cropSquare:"1:1",cropFourThree:"4:3",cropSixteenNine:"16:9",cropX:"Crop X position",cropY:"Crop Y position",cropWidth:"Crop width",cropHeight:"Crop height",applyCrop:"Apply crop",cropSelection:"Move crop area",cropResize:"Resize crop area",transform:"Rotate and mirror",rotateRight:"Rotate 90° right",mirrorHorizontal:"Mirror horizontally",mirrorVertical:"Mirror vertically",elements:"Elements",textContent:"Text content",textPlaceholder:"Enter text",addText:"Add text",addWatermark:"Add watermark",duplicateWatermark:"Add watermark again",watermarkLimits:"PNG, JPEG or WebP up to 8 MiB and 4 megapixels. All referenced watermarks together may use up to 32 MiB.",noElements:"No text or watermarks yet.",element:"Select {name}",textElement:"Text: {text}",imageElement:"Watermark: {name}",properties:"Properties",opacity:"Opacity",fontSize:"Font size",color:"Colour",x:"X position",y:"Y position",width:"Width",height:"Height",centre:"Centre",remove:"Delete element",resize:"Resize element",undo:"Undo",redo:"Redo",export:"Export",format:"File format",quality:"Quality",download:"Download {format}",exporting:"Exporting image …",exported:"Image downloaded.",errors:{invalid_file:"The image could not be processed. Choose a valid PNG, JPEG or WebP file.",unsupported_type:"This file format is unsupported. Choose PNG, JPEG or WebP.",type_mismatch:"The file extension, media type and image content do not match.",resource_limit:"The image exceeds a local size or pixel limit.",watermark_budget:"The new watermark would exceed the 32 MiB limit. Your current work is unchanged.",element_limit:"You can add up to 20 elements.",text_limit:"Text elements may contain up to 500 characters.",invalid_crop:"The crop area must remain inside the image.",invalid_settings:"Check the entered values.",unsupported_browser:"This browser does not fully support the image editor.",cancelled:"Processing cancelled."}},jy=Object.freeze({studioQr:Object.freeze({title:"Design a QR code",intro:"Enter content and adjust the design.",modeLabel:"QR tool",modeCreate:"Create",modeRead:"Read",tabsLabel:"QR settings",tabContent:"Content",tabDesign:"Design",tabLogo:"Logo",contentType:"Content type",typeText:"Text",typeUrl:"URL",typeWifi:"Wi-Fi",typeContact:"Contact",typeEmail:"Email",typeSms:"SMS",contentLabel:"Content",textPlaceholder:"Enter text for the QR code",urlPlaceholder:"Paste a web address",wifiName:"Network name",wifiEncryption:"Security",wifiOpen:"Open network",wifiPassword:"Password",wifiHidden:"Network is hidden",contactName:"Name",contactOrganization:"Organisation",phone:"Phone number",emailAddress:"Email address",website:"Website",emailTo:"Recipient address",emailSubject:"Subject",message:"Message",fieldErrors:Object.freeze({single_line:"Line breaks, tabs and control characters are not supported here.",required:"This field is required.",http_url:"Enter a complete HTTP or HTTPS address.",email:"Enter a valid email address.",phone:"Enter a valid phone number."}),byteUsage:"{used} of {capacity} bytes",capacityRemaining:"The QR code is almost full. {remaining} bytes remain.",correctionLevel:"Error correction {level}",capacityError:"The content is too long for a QR code with the current settings.",foreground:"Foreground",background:"Background",foregroundPresets:"Foreground colours",backgroundPresets:"Background colours",selectForegroundPreset:"{color} as foreground",selectBackgroundPreset:"{color} as background",colourGraphite:"Graphite",colourGreen:"Green",colourBlue:"Blue",colourPurple:"Purple",colourTerracotta:"Terracotta",colourWhite:"White",colourLightNeutral:"Light neutral",colourMint:"Mint",colourLightBlue:"Light blue",colourRose:"Rose",contrastWarning:"The contrast is low. Use clearly different colours so scanners can read the code reliably.",moduleStyle:"Module style",cornerFrameStyle:"Corner frame",cornerDotStyle:"Corner dot",styleSquare:"Square",styleRounded:"Rounded",styleDots:"Dots",styleExtraRounded:"Extra rounded",size:"Export size",sizeValue:"{value} px",quietZone:"Quiet zone",quietZoneValue:"{value} modules",quietZoneHint:"At least four clear modules protect readability.",logoInput:"Choose logo",logoAcceptHint:"PNG, JPEG, or WebP, up to 4 MB and 12 megapixels.",logoSelected:"Selected: {name}",logoRemove:"Remove logo",logoSize:"Logo size",logoSizeValue:"{value}%",logoSpacing:"Space around logo",logoSpacingValue:"{value} px",cropZoom:"Crop zoom",cropControlLabel:"Move logo crop",cropHint:"Drag the image inside the frame. Use the arrow keys for small steps and Shift for larger steps.",cropCenter:"Centre",logoSafety:"When a logo is present, Folkkit automatically uses high error correction H.",invalidLogo:"This file is not a valid PNG, JPEG, or WebP image.",largeLogo:"The logo is too large. Use no more than 4 MB and 12 megapixels.",unsupportedLogo:"This browser cannot process the logo locally.",previewTitle:"Preview",previewAlt:"QR code preview",previewUpdating:"Updating preview…",previewError:"The preview could not be created. Check the content and settings.",downloadPng:"Download PNG",downloadSvg:"Download SVG",downloading:"Preparing download…",downloadError:"The QR code could not be exported.",reset:"Reset",readerTitle:"Read a QR code",readerIntro:"Read QR codes from photos and screenshots.",readerInput:"Choose QR image",readerHint:"PNG, JPEG, or WebP, up to 12 MB and 12 megapixels.",readerProgress:"Reading QR code…",readerCancel:"Cancel",readerResult:"Decoded content",readerCopy:"Copy content",readerCopied:"Content copied.",readerOpenLink:"Open link",readerReset:"Choose another image",readerErrors:Object.freeze({invalid_file:"This file is not a valid PNG, JPEG, or WebP image.",too_large:"The image is too large. Use no more than 12 MB and 12 megapixels.",not_found:"No QR code was found. Check that the whole code is sharp and visible.",timeout:"Reading took too long. Try a smaller or sharper image.",unsupported_browser:"This browser cannot read the image locally.",decode_failed:"The image could not be read.",copy_failed:"The content could not be copied."})})}),Lr={layoutHint:"Content, lists and tables are preserved. Page layout and formatting may change.",limits:"DOCX up to 20 MiB · Markdown and HTML up to 2 MiB",errors:{invalid_document:"The document is damaged or does not match its file type.",document_too_large:"The document exceeds the local processing limit.",document_timeout:"Processing took too long. Try a smaller document.",unsafe_document:"The document contains an unsupported or unsafe structure.",document_runtime_unavailable:"The document module is unavailable. Connect once to load it, then retry."},warnings:{external_resources_omitted:"Externally linked or missing images were omitted.",unsupported_images_omitted:"Unsupported images were omitted. PNG, JPEG and WebP are supported.",layout_changed:"Page layout and formatting may differ from the original."}},Py={applySettingsOne:"Apply to 1 other file",applySettingsMany:"Apply to {count} other files",matchingSettings:"Only files using {pair}.",settingsApplied:"Settings applied.",settingsAlreadyMatch:"The matching files already use these settings.",removeCompleted:"Remove completed",editOriginal:"Edit original",editResult:"Edit result",documentLayout:Lr.layoutHint,documentLimits:Lr.limits,warnings:Lr.warnings,title:"Convert files",subtitle:"Images, documents, audio and video.",optimizeTitle:"Make images smaller",optimizeSubtitle:"Re-encode or proportionally resize PNG, JPEG and WebP images on this device.",limitsLabel:"File limits",modeLabel:"Workspace mode",modeConvert:"Convert",modeOptimize:"Make images smaller",choose:"Choose files",add:"Add files",drop:"Drop your files here",dropHint:"PNG, JPEG, WebP, PDF, DOCX, Markdown, HTML, MP3, WAV, FLAC, OGG, MP4, WebM, MOV",optimizeDropHint:"PNG, JPEG or WebP",limits:"Up to 20 files · 100 MiB per file (PDF: 32 MiB · DOCX: 20 MiB · MD/HTML: 2 MiB) · 250 MiB total · 64 MiB per result",width:"Width (px)",height:"Height (px)",maxWidth:"Maximum width (px)",maxHeight:"Maximum height (px)",qualityLevel:"Quality level",qualitySmall:"More compression",qualityBalanced:"Balanced",qualityHigh:"High quality",pageSize:"PDF page size",original:"Original image size",orientation:"Orientation",portrait:"Portrait",landscape:"Landscape",dpi:"PDF resolution",bitrate:"MP3 bitrate",flacLevel:"FLAC compression level",vorbisQuality:"Vorbis quality",resolution:"Video resolution",trim:"Choose a video clip",wavHint:"WAV: uncompressed PCM16.",commonTarget:"Output for all files",individual:"Choose per file",target:"Output format",files:"Files",convert:"Convert files",optimize:"Start optimization",cancel:"Cancel conversion",cancelOptimize:"Cancel optimization",clear:"Clear files",remove:"Remove",retry:"Retry",download:"Download",downloadZip:"Download all as ZIP",downloadFileZip:"Download results as ZIP",fileNumber:"file",creatingZip:"Preparing ZIP…",quality:"Quality (%)",pages:"PDF pages",pagesHint:"All pages, or for example 1-3,5. Maximum 100 pages.",clipStart:"Clip start (seconds)",clipDuration:"Clip length (seconds)",clipHint:"Select a clip up to 30 seconds. GIF: 720 px, 12 fps.",imageHint:"Leave dimensions empty for original size. Aspect ratio stays the same. JPEG uses a white background.",optimizeHint:"Leave both limits empty to keep the original dimensions. Larger values never upscale the image.",optimizePngHint:"PNG has no ineffective quality control. Leave both limits empty for original dimensions; larger values never upscale the image.",audioHint:"MP3: 192 kbit/s · WAV: PCM16 · FLAC: level 5 · OGG: Vorbis quality 5",videoHint:"Maximum 1080p, no upscaling. MP4: H.264/AAC · WebM: VP8/Opus.",combine:"Combine images into one PDF in this order",moveUp:"Move up",moveDown:"Move down",combined:"Included in the combined PDF",local:"Files stay on this device.",settings:"Settings",unknown:"Unknown format",optimizeUnsupported:"Only PNG, JPEG and WebP images can be processed in this mode.",before:"Before",after:"After",result:"Result",keptOriginal:"These settings would not reduce the file size. The original is provided instead.",reducedBy:"File size reduced by",largerResult:"The resulting file is larger than the original.",largerAfterResize:"The dimensions changed, but the resulting file is larger.",sameSize:"The file size is unchanged.",downloadResult:"Download result",status:{detecting:"Checking format…",ready:"Ready",running:"Processing…",done:"Done",error:"Failed",cancelled:"Cancelled",unsupported:"Not available in this mode"},errors:{...Lr.errors,invalid_settings:"Choose a supported value for these settings.",unsupported_type:"This file format is not supported.",type_mismatch:"The file content does not match its extension or file type.",unsupported_pair:"This conversion is not available.",too_large:"The selected files exceed the size limit.",resource_limit:"The file exceeds the local processing limit. Try a smaller file or fewer pages.",invalid_file:"The file could not be read.",unsupported_codec:"The actual audio or video codec is not supported.",invalid_pages:"Enter valid page numbers, for example 1-3,5.",invalid_clip:"Choose a clip within the video, with a length of 1 to 30 seconds.",no_audio:"This file contains no supported audio track.",media_runtime_unavailable:"The processing module is not available offline yet. Connect once to load it, then retry.",conversion_failed:"Conversion failed. You can retry this file.",cancelled:"Conversion cancelled."}},Gy={resize:"Resize {corner}",corner:{nw:"top left",ne:"top right",sw:"bottom left",se:"bottom right"},properties:"Properties",allPages:"Select all",clearPages:"Clear selection",selectedPages:"{count} selected",selectPage:"Select page {number}",viewing:"Viewing",pageSelectionHint:"Tick pages for a joint action. Drag selected pages to reorder them.",rotateSelected:"Rotate selected pages",deleteSelected:"Delete selected pages",extractSelected:"Download selected pages",actions:{edit:{title:"Edit PDF",before:"Choose a PDF to edit text, images and pages.",after:"Drag supported objects or resize them with the corner handles. Double-click text to edit it."},merge:{title:"Merge PDFs",before:"Choose the first PDF. Then append further PDFs in the desired order.",after:"Use “Append another PDF” for each additional file. Download the merged PDF when ready."},extract:{title:"Extract PDF pages",before:"Choose a PDF, then tick the pages you want to download.",after:"Tick one or more pages, including separate pages. The download follows the document order."},rotate:{title:"Rotate PDF pages",before:"Choose a PDF, then select the pages to rotate.",after:"Tick the pages to rotate. Each action turns all selected pages 90 degrees clockwise."},count:{title:"Count PDF pages",before:"Choose a PDF to see its page count.",after:"This PDF contains {count} pages."},organize:{title:"Organize PDF pages",before:"Choose a PDF to select, reorder or remove pages.",after:"Tick pages for joint actions. Drag them into order or use the move buttons."}},recover:"Restore the last editing state",title:"Edit PDF",intro:"Change text, arrange pages and add content.",choose:"Choose PDF",drop:"Drop a PDF here",limits:"Up to 32 MiB and 200 pages. Your file stays in this browser.",working:"Processing PDF …",cancel:"Cancel",download:"Download PDF",original:"Download original",undo:"Undo",redo:"Redo",saved:"Changes downloaded",unsaved:"Unsaved changes",discard:"Discard unsaved changes?",page:"Page {number}",pages:"Pages",select:"Select",text:"Text",image:"Image",highlight:"Highlight",underline:"Underline",draw:"Draw",note:"Note",rectangle:"Rectangle",ellipse:"Ellipse",line:"Line",signature:"Draw signature",signatureImage:"Signature image",tools:"Tools",content:"Text content",apply:"Apply",insert:"Insert",fontSize:"Font size",color:"Colour",stroke:"Line width",x:"X position",y:"Y position",width:"Width",height:"Height",placement:"Position from the bottom left of the page in PDF points. You can also place or draw directly on the page.",selectHint:"Select a text or image object on the page.",textHint:"Supported text objects are replaced in the PDF. Paragraphs do not wrap automatically.",unsupportedText:"This text object cannot be replaced reliably here. You can add new text in an empty area.",scan:"No editable text was found on this page. Text recognition for scans is not included.",fontHint:"Latin characters including accents. Standard and complete embedded fonts are supported; subsets and rotated text objects may be excluded.",signatureHint:"A visible signature as an image or drawing, without a cryptographic signature.",selectedObject:"{type} {number}",objectText:"Text object",objectImage:"Image object",removeObject:"Delete object",moveLeft:"Move left",moveRight:"Move right",moveUp:"Move up",moveDown:"Move down",grow:"Make larger",shrink:"Make smaller",rotate:"Rotate page",duplicate:"Duplicate page",deletePage:"Delete page",previous:"Move page earlier",next:"Move page later",blank:"Blank page",merge:"Append another PDF",extract:"Download page",zoom:"Zoom",search:"Search text",searchAction:"Search",noResults:"No text found.",matches:"{count} matches",preview:"PDF page preview",document:"PDF document",close:"Close document",addHint:"Choose a tool. Click to place text and notes; drag to create shapes and drawings.",errors:{unsupported_structure:"Existing form structures cannot be preserved reliably for this operation. The PDF was not changed.",invalid_file:"The PDF could not be processed. Choose a valid, unencrypted file.",resource_limit:"The file or operation exceeds the local limit. Use a smaller file or lower zoom.",unsupported_text:"This font, character or text orientation is unsupported. The change was discarded.",last_page:"The last page cannot be deleted.",cancelled:"Processing cancelled.",unsupported_browser:"This browser does not support the PDF workspace."}},$i={title:"Calculators",intro:"Enter your numbers. See the result.",choose:"Choose a calculator",calculators:{percent:"Percentage","rule-of-three":"Proportion",pythagoras:"Pythagoras",circle:"Circle",area:"Area",volume:"Volume",units:"Units"},descriptions:{percent:"Portion, percentage and change","rule-of-three":"Directly proportional values",pythagoras:"Sides of a right triangle",circle:"Radius, diameter, circumference and area",area:"Rectangle and triangle",volume:"Cuboid and cylinder",units:"Length, weight, temperature and more"},operation:"Calculation",percentModes:{of:"What is X% of Y?",share:"X is what percentage of Y?",change:"Percentage change",discount:"Subtract discount",increase:"Add surcharge"},fields:{rate:"Percentage",base:"Base value",part:"Portion",previous:"Original value",next:"New value",originalPrice:"Original price",discountRate:"Discount (%)",surchargeRate:"Surcharge (%)",first:"Value A",second:"Corresponds to B",third:"New value C",a:"Leg a",b:"Leg b",c:"Hypotenuse c",radius:"Radius",diameter:"Diameter",width:"Width",triangleBase:"Base",height:"Height",depth:"Depth",value:"Value"},missing:"Find side",knownMeasure:"Known measurement",shape:"Shape",shapes:{rectangle:"Rectangle",triangle:"Triangle",cuboid:"Cuboid",cylinder:"Cylinder"},category:"Measurement",categories:{length:"Length",area:"Area",volume:"Volume",mass:"Weight",temperature:"Temperature",time:"Time",speed:"Speed",storage:"Data size"},from:"From",to:"To",swap:"Swap units",clear:"Clear",resultHeading:"Result",empty:"Enter values",emptyHint:"Your result will appear here.",formula:"Formula",results:{result:"Result",changeAmount:"Change amount",finalPrice:"Final price",a:"Leg a",b:"Leg b",c:"Hypotenuse c",radius:"Radius",diameter:"Diameter",circumference:"Circumference",area:"Area",perimeter:"Perimeter",volume:"Volume"},unitSquared:"square units",unitCubed:"cubic units",sameUnits:"Use the same unit for every length.",triangleHint:"The height is perpendicular to the base.",pythagorasHint:"c is the longest side, opposite the right angle.",ruleHint:"A corresponds to B. What does C correspond to?",percentChangeHint:"The original value must be greater than zero.",decimalHint:"Use a decimal point or comma, without thousands separators.",precision:"Displayed to up to 12 significant digits.",storageHint:"MB, GB and TB are decimal (1000). MiB, GiB and TiB are binary (1024). All values are in bytes.",temperatureHint:"Temperatures must be at or above absolute zero.",errors:{number:"Enter a valid, finite number.",positive:"This value must be greater than zero.",nonzero:"This value cannot be zero.",nonnegative:"This value cannot be negative.",discountRate:"Discount must be between 0 and 100%.",hypotenuse:"c must be longer than the known leg.",temperature:"This temperature is below absolute zero.",range:"These numbers are too large or too small for a reliable calculation.",selection:"Choose a valid calculation and compatible units."},unitNames:{length:{m:"Metre",cm:"Centimetre",mm:"Millimetre",km:"Kilometre",in:"Inch",ft:"Foot",yd:"Yard",mi:"Mile"},area:{m2:"Square metre",cm2:"Square centimetre",mm2:"Square millimetre",km2:"Square kilometre",ha:"Hectare",ft2:"Square foot"},volume:{l:"Litre",ml:"Millilitre",m3:"Cubic metre",cm3:"Cubic centimetre",usgal:"US gallon"},mass:{kg:"Kilogram",g:"Gram",mg:"Milligram",t:"Tonne",lb:"Pound",oz:"Ounce"},temperature:{C:"Celsius",F:"Fahrenheit",K:"Kelvin"},time:{h:"Hour",min:"Minute",s:"Second",ms:"Millisecond",day:"Day",week:"Week"},speed:{kmh:"Kilometres per hour",ms:"Metres per second",mph:"Miles per hour",kn:"Knot"},storage:{B:"Byte",kB:"Kilobyte",MB:"Megabyte",GB:"Gigabyte",TB:"Terabyte",KiB:"Kibibyte",MiB:"Mebibyte",GiB:"Gibibyte",TiB:"Tebibyte"}}},By={...$i,calculators:{...$i.calculators,"aspect-ratio":"Aspect ratio",loan:"Loan payment",bmi:"BMI",date:"Dates",duration:"Durations"},descriptions:{...$i.descriptions,"aspect-ratio":"Simplify ratios and resize images",loan:"Monthly payment, total repayment and interest",bmi:"Body mass index from weight and height",date:"Count days and shift a date",duration:"Add and subtract time spans"},fields:{...$i.fields,pixelWidth:"Width (px)",pixelHeight:"Height (px)",targetWidth:"Target width (px)",principal:"Loan amount",annualRate:"Annual interest rate (%)",months:"Term (months)",weight:"Weight (kg)",bodyHeight:"Height (cm)",startDate:"Start date",endDate:"End date",days:"Number of days",hours:"Hours",minutes:"Minutes",seconds:"Seconds"},aspectModes:{ratio:"Calculate ratio",resize:"Resize"},results:{...$i.results,ratio:"Aspect ratio",targetWidth:"Target width",targetHeight:"Target height",monthlyPayment:"Monthly payment",totalPayment:"Total repayment",totalInterest:"Total interest",bmi:"BMI",days:"Days between dates",date:"New date",duration:"Total duration",totalSeconds:"Total seconds"},example:"Example",copy:"Copy",copied:"Copied",copyError:"Copy failed",copyResult:"Copy {name}",dateModes:{difference:"Days between two dates",add:"Add or subtract days"},dateDifferenceHint:"The start date is excluded. An earlier end date gives a negative result.",dateAddHint:"Use a negative number to go back.",dateDifferenceFormula:"Calendar days from the start date to the end date",dateAddFormula:"New date = start date + number of days",durationFormula:`Seconds = hours × 3600 + minutes × 60 + seconds
+Add all signed durations together.`,durationHint:"Minutes and seconds range from 0 to 59. Blank fields count as 0.",durationRow:"Duration {number}",durationOperation:"Operation for duration {number}",removeDuration:"Remove duration {number}",addDuration:"Add duration",add:"Add",subtract:"Subtract",remove:"Remove",roundedPrecision:"Rounded display; very small and large values use up to 12 digits.",aspectHint:"Enter width and height in whole pixels.",aspectResizeHint:"The target height is rounded to whole pixels.",aspectRatioFormula:"Width : height, reduced to lowest terms",aspectResizeFormula:"Target height = target width × height ÷ width",loanHint:"Fixed annual interest, payments at month end, excluding fees. Use the same currency for all amounts.",loanFormula:`Payment = amount × i ÷ (1 − (1 + i)⁻ⁿ)
+i = annual interest rate ÷ 1200; n = months
+At 0%: amount ÷ months`,bmiHint:"A screening measure for adults.",errors:{...$i.errors,integer:"Enter a whole number of pixels.",dimension:"Image dimensions must be between 1 and 1000000000 pixels.",rate:"Annual interest must be between 0 and 100%.",months:"Enter a whole term between 1 and 1200 months.",date:"Choose a valid date in years 1 to 9999.",days:"Enter a whole number of days between −3652058 and 3652058.",dateRange:"The result is outside years 1 to 9999.",durationRows:"Use 1 to 50 durations.",durationHours:"Enter whole hours from 0 to 999999.",durationPart:"Enter a whole number from 0 to 59."}},Yy=Object.freeze({...jy,studioConvert:Py,studioPdf:Gy,studioCalculate:By,studioImage:Uy,studioAudio:zy,shell:Object.freeze({skip:"Skip to content",home:"Home",tools:"More tools",qr:"QR codes",pdf:"PDF",convert:"Convert",calculate:"Calculators",image:"Image editor",audio:"Trim audio",loading:"Loading …",loadError:"This workspace could not be loaded.",retry:"Reload",unsaved:"You have unsaved PDF changes. Leave this page?",privacyStatus:"Processed locally",localeLabel:"Choose language",themeToggle:"Dark theme",menuOpen:"Open menu",menuClose:"Close menu",mobileNavigation:"Mobile navigation",primaryNavigation:"Primary navigation",privacy:"Privacy",openSource:"Open source",licenses:"Licenses",terms:"Terms",contact:"Contact",source:"Source code",footerNavigation:"Footer navigation",footerNote:"Your files stay with you."}),home:Object.freeze({eyebrow:"Everyday tools",title:"What would you like to do?",intro:"Your tools. Right in your browser.",sampleTitle:"Project plan",sampleLine1:"Capture ideas.",sampleLine2:"Edit the details.",sampleLine3:"Keep things moving.",privacyTitle:"Your files stay in this browser.",privacyBody:"Folkkit does not send file contents away for processing. The static web host may receive technical access data when you open the site.",pdfTitle:"Edit PDF",pdfBody:"Text, annotations, and pages.",qrTitle:"Create QR code",qrBody:"Colors, shapes, and your own logo.",convertTitle:"Convert file",convertBody:"Images, documents, audio, and video.",calculateTitle:"Calculators & units",calculateBody:"Percentages, geometry, and unit conversions.",catalogLink:"Discover more tools"}),catalog:Object.freeze({imageEditor:"Edit images",imageEditorDescription:"Crop, rotate, add text and watermarks",audioTrim:"Trim audio",audioTrimDescription:"Select, listen to and fade an audio clip",documentConvert:"Convert documents",documentConvertDescription:"Convert DOCX, Markdown and HTML",toolCount:"{count} tools",eyebrow:"Tool catalog",title:"More tools",intro:"For text, data, and small everyday tasks.",openTool:"Open {name}",search:"Search tools",searchPlaceholder:"Name or task",category:"Category",allCategories:"All categories",favoritesOnly:"Favorites only",addFavorite:"Add {name} to favorites",removeFavorite:"Remove {name} from favorites",filteredCount:"{count} of {total} tools",empty:"No matching tools",emptyHint:"Try another search term or remove a filter.",clearFilters:"Reset filters",storageError:"Your browser cannot save favorites right now. They remain available until you leave this page.",studioCategory:"Studio",qrReader:"Read a QR code",qrReaderDescription:"Read the content of a QR image",imageOptimize:"Reduce image size",imageOptimizeDescription:"Adjust file size and dimensions"}),workspace:Object.freeze({eyebrow:"Tool",title:"Work with a file locally",intro:"Choose an input and take the result with you.",dropOverlay:"Drop the file to convert it",unsupportedDrop:"This file type cannot be opened here. Choose a suitable tool.",pairTitle:"{from} to {to}",pairDescription:"Convert {from} to {to} locally in your browser. File contents are not uploaded.",toolDescription:"Use {name} locally in your browser. File contents are not uploaded."}),keyboardHelp:Object.freeze({title:"Keyboard Shortcuts",convertGroup:"Convert Panel",focusInput:"Focus input field",swap:"Swap from ↔ to",copyOutput:"Copy output",reset:"Reset conversion",toggleBatch:"Toggle batch mode",backToFormats:"Back to format mode",globalGroup:"Global",toggleTheme:"Toggle dark/light theme",thisHelp:"This help",footer:"Press ? or Esc to close",close:"Close keyboard help",closeVisible:"Close"}),workspaceTools:Object.freeze({input:"Input",output:"Result",inputText:"Input text",conversionResult:"Conversion result",toolInputText:"Tool input",toolOutputText:"Tool result",formatInputPlaceholder:"Enter or paste a value",resultPlaceholder:"The result will appear here",parametersPlaceholder:"Enter parameters",clear:"Reset",clearInput:"Clear input",selectFile:"Choose file",selectFiles:"Choose PDF files",dropFile:"Drop a file here or choose one",dropFiles:"Drop files here or choose them",convert:"Convert",parameters:"Tool parameters",progressLabel:"Progress",processing:"Processing: {progress}",loadingRuntime:"Loading the local media module.",loadingTool:"Loading the tool locally.",mediaModuleUnavailable:"The media module is not available offline yet. Reconnect to the internet and try again.",toolModuleUnavailable:"This tool module is not available offline yet. Reconnect to the internet and try again.",retryModule:"Try again",cancel:"Cancel",download:"Download",copy:"Copy",copied:"Result copied",copiedToClipboard:"Copied to clipboard",copiedOutput:"Output copied",linkCopied:"Link copied",shareLinkCopied:"Share link copied",discard:"Discard",previewAlt:"Local result preview",shareTool:"Share this tool",moreFiles:"{count} more files",detected:"detected",selectInput:"Choose input: {name}",selectOutput:"Choose output format: {name}",swap:"Swap formats",noReverseConversion:"No reverse conversion available",enableBatch:"Enable batch mode",disableBatch:"Disable batch mode",addFavourite:"Add format pair to favourites",removeFavourite:"Remove format pair from favourites",pickColor:"Choose a colour",copyResult:"Copy result",downloadResult:"Download result",useAsInput:"Use result as input",wordWrapOn:"Word wrap on",wordWrapOff:"Word wrap off",showLineNumbers:"Show line numbers",hideLineNumbers:"Hide line numbers",shareConversion:"Share conversion",colorPreview:"Colour preview",base64Preview:"Base64 preview",chain:"Continue with",generate:"Generate",saveResult:"Save result",inputStats:"Characters {characters} · words {words} · lines {lines}",outputStats:"Characters {characters} · lines {lines}",characterCount:"Characters: {count}",byteCount:"{count} bytes"}),history:Object.freeze({consent:"Local history is stored in this browser only after you enable it.",enable:"Enable local history",recent:"Recent conversions",deleteAndDisable:"Delete history and disable it",empty:"No local history yet.",remove:"Remove from history",copy:"Copy result",reuse:"Reuse",copied:"Copied to clipboard",now:"now",minutesAgo:"{count} min ago",hoursAgo:"{count} hr ago",daysAgo:"{count} days ago"}),toolPicker:Object.freeze({searchConversions:"Search conversions",searchFormats:"Search formats",searchConversionsPlaceholder:"Search all conversions…",searchFormatsPlaceholder:"Search formats…",formats:"Formats",tools:"Tools",noResults:"No results",noFormats:"No formats found",noItems:"No items in this category",recent:"Recent",tabs:Object.freeze({text:"Text",encode:"Encoding",data:"Data",number:"Numbers",hash:"Checksums",color:"Colours",units:"Units",image:"Images",media:"Audio and video",document:"PDF and documents",utility:"Utilities"}),groups:Object.freeze({Text:"Text",Case:"Letter case",Data:"Data",Number:"Numbers",Color:"Colours",Recent:"Recent"})}),errorBoundary:Object.freeze({message:"Something went wrong with this tool.",retry:"Try again"}),errors:Object.freeze({unsupportedType:"This file type is not supported by this tool.",unsupportedPair:"No conversion exists for this format pair.",unsupportedBrowser:"QR codes cannot be read in this browser.",tooLarge:"The selected file is too large for this device.",invalidFile:"The file is damaged or invalid.",outOfMemory:"There is not enough available memory for this conversion.",cancelled:"The operation was cancelled.",conversionFailed:"Processing failed.",mediaRuntimeUnavailable:"FFmpeg core and WASM are not available offline. Reconnect to the internet and try again.",resourceLimit:"The input exceeds the safe processing limit."}),formatCompatibility:Object.freeze({warningTitle:"These file formats are not compatible with each other.",warningBody:"The available conversion is intended only for a deliberate specialist case. Check the result carefully.",confirmation:"I know what I am doing and understand that these file formats are not compatible with each other."}),labels:Object.freeze({experimental:"Experimental",mediaWarning:"Experimental. The local media module may need substantial memory and processing power for some files."}),categories:Object.freeze({encode:"QR and encoding",hash:"Checksums",data:"Data",number:"Numbers",color:"Colors",utility:"Utilities",image:"Images",media:"Audio and video",document:"PDF and documents"}),tools:Object.freeze({base64Encode:Object.freeze({name:"Base64 encode",description:"Convert text to Base64 locally",placeholder:"Type or paste text"}),base64Decode:Object.freeze({name:"Base64 decode",description:"Convert Base64 back to text locally"}),urlEncode:Object.freeze({name:"URL encode",description:"Percent-encode text for a URL"}),urlDecode:Object.freeze({name:"URL decode",description:"Convert percent-encoded URL text back to text"}),htmlEncode:Object.freeze({name:"Escape HTML characters",description:"Replace HTML special characters with entities"}),htmlDecode:Object.freeze({name:"Decode HTML entities",description:"Convert HTML entities back to characters"}),hexEncode:Object.freeze({name:"Text to hex",description:"Convert text to hexadecimal values locally"}),hexDecode:Object.freeze({name:"Hex to text",description:"Convert hexadecimal values to text locally"}),binaryEncode:Object.freeze({name:"Text to binary",description:"Convert text to binary values locally"}),binaryDecode:Object.freeze({name:"Binary to text",description:"Convert binary values to text locally"}),unicodeEscape:Object.freeze({name:"Unicode escape",description:"Convert text to Unicode escape sequences"}),unicodeUnescape:Object.freeze({name:"Decode Unicode escapes",description:"Convert Unicode escape sequences back to text"}),rot13:Object.freeze({name:"ROT13",description:"Apply ROT13 to text locally"}),atbash:Object.freeze({name:"Atbash",description:"Mirror the Latin alphabet locally"}),sha256:Object.freeze({name:"SHA-256 checksum",description:"Calculate the SHA-256 checksum of text"}),jsonPrettify:Object.freeze({name:"Format JSON",description:"Format JSON with readable indentation"}),jsonMinify:Object.freeze({name:"Minify JSON",description:"Remove unnecessary whitespace from JSON"}),jsonEscape:Object.freeze({name:"Escape JSON string",description:"Escape text as a JSON string"}),csvToJson:Object.freeze({name:"CSV to JSON",description:"Convert a CSV table to a JSON array"}),decToHex:Object.freeze({name:"Decimal to hex",description:"Convert a decimal number to hexadecimal"}),hexToDec:Object.freeze({name:"Hex to decimal",description:"Convert a hexadecimal number to decimal"}),decToBin:Object.freeze({name:"Decimal to binary",description:"Convert a decimal number to binary"}),binToDec:Object.freeze({name:"Binary to decimal",description:"Convert a binary number to decimal"}),decToOct:Object.freeze({name:"Decimal to octal",description:"Convert a decimal number to octal"}),octToDec:Object.freeze({name:"Octal to decimal",description:"Convert an octal number to decimal"}),colorConvert:Object.freeze({name:"Convert color value",description:"Convert between HEX, RGB, and HSL"}),cssMinify:Object.freeze({name:"Minify CSS",description:"Remove comments and unnecessary whitespace from CSS"}),jsonValidate:Object.freeze({name:"Check JSON syntax",description:"Parse JSON syntax locally and show errors"}),base64urlEncode:Object.freeze({name:"Base64URL encode",description:"Convert text to URL-safe Base64"}),base64urlDecode:Object.freeze({name:"Base64URL decode",description:"Convert URL-safe Base64 back to text"}),slugGen:Object.freeze({name:"Create URL slug",description:"Convert text to a simple URL slug"}),charCount:Object.freeze({name:"Count characters and words",description:"Count characters, words, lines, and bytes locally"}),reverseText:Object.freeze({name:"Reverse text",description:"Reverse the order of characters"}),percentageCalc:Object.freeze({name:"Percentage calculator",description:"Calculate simple percentage expressions locally",placeholder:"15% of 200"}),aspectRatio:Object.freeze({name:"Aspect ratio calculator",description:"Calculate a bounded aspect ratio from width and height"}),loanCalc:Object.freeze({name:"Loan payment calculator",description:"Estimate monthly payment, total cost, and amortization from amount, rate, and term",placeholder:"250000 4.5% 30",notice:"Local calculation aid only, not financial advice."}),bmiCalc:Object.freeze({name:"BMI calculator",description:"Calculate body mass index from weight and height",placeholder:"70kg 175cm",notice:"General calculation aid only, not medical advice."}),pngToJpg:Object.freeze({name:"PNG to JPEG",description:"Convert a PNG image to JPEG locally"}),jpgToPng:Object.freeze({name:"JPEG to PNG",description:"Convert a JPEG image to PNG locally"}),audioToMp3:Object.freeze({name:"Audio to MP3",description:"Convert an audio file to MP3 locally"}),textToQr:Object.freeze({name:"Text to QR code",description:"Create a QR code from text or a link",placeholder:"Type text or a link"}),imagesToPdf:Object.freeze({name:"Images to PDF",description:"Combine several images into one PDF"}),mergePdf:Object.freeze({name:"Merge PDFs",description:"Combine several PDF files into one file"}),pdfPageCount:Object.freeze({name:"Count PDF pages",description:"Find the number of pages in a PDF file"}),pdfSplit:Object.freeze({name:"Extract PDF page",description:"Extract one page from a PDF file",parameterPlaceholder:"Page number, for example 1"}),pdfExtractRange:Object.freeze({name:"Extract PDF pages",description:"Extract a page range from a PDF file",parameterPlaceholder:"Page range, for example 1-5 or 1,3,5"}),textToPdf:Object.freeze({name:"Text to PDF",description:"Convert plain text into a simple PDF document",placeholder:"Type or paste text"}),pdfMetadata:Object.freeze({name:"PDF metadata",description:"View a PDF title, author, and other metadata"}),pdfRotate:Object.freeze({name:"Rotate PDF pages",description:"Rotate every page in a PDF file",parameterPlaceholder:"Degrees: 90, 180, or 270"})})}),df=_.createContext(null);function Lt(){const n=_.useContext(df);if(!n)throw new Error("useI18n must be used within an I18nProvider");return n}const Wy=Object.freeze({de:My,en:Yy});function jr(n){return n==="en"?"en":"de"}function hn(n,s,c={}){const l=s.split(".").reduce((p,d)=>p?.[d],n);if(typeof l!="string")throw new Error(`Missing translation: ${s}`);return l.replace(/\{(\w+)\}/g,(p,d)=>String(c[d]??`{${d}}`))}function Ac(n){return Wy[jr(n)]}const qp=Object.freeze(["core","advanced","experimental","hidden"]),hf=Object.freeze({text:"encode",qr:"encode",image:"image",hash:"hash",crypto:"hash",data:"data",web:"web",number:"number",color:"color",utility:"utility",imageFormat:"image",media:"media",pdf:"document"}),$y=Object.freeze({text:"Hidden pending a named bounded-output fixture and localized release copy.",qr:"Hidden pending QR capability verification.",image:"Hidden pending exact input signatures, Blob result normalization, and image fixtures.",hash:"Hidden pending digest fixtures and copy that does not imply password or security validation.",crypto:"Hidden because cryptographic, password, or randomness claims require a separate security review.",data:"Hidden pending bounded structured-data fixtures and output-size review.",web:"Hidden pending per-tool review of validators, generators, and any live-lookup implication.",number:"Hidden pending bounded numerical fixtures and expansion limits.",color:"Hidden pending deterministic color fixtures and review of accessibility claims.",utility:"Hidden pending per-tool review for dated data, professional advice, and bounded output.",imageFormat:"Hidden pending exact PNG/JPEG validation, Canvas cleanup, and Blob result fixtures.",media:"Hidden pending same-origin FFmpeg network and cancellation evidence.",pdf:"Hidden pending PDF runtime evidence."}),_y=Object.freeze({"qr-to-text":"Hidden until a real successful decode fixture passes in a supported browser."});function Xe({module:n,category:s=hf[n],tier:c,translationKey:l,runtimeClass:p,inputLimitClass:d,outputNaming:f,evidenceId:m,...y}){return Object.freeze({module:n,category:s,tier:c,translationKey:l,runtimeClass:p,inputLimitClass:d,outputNaming:f,evidenceId:m,...y})}function pe(n,s,c,l={}){return Xe({module:s,category:l.category,tier:"advanced",translationKey:c,runtimeClass:l.runtimeClass||"main-thread",inputLimitClass:"text-5-mib",outputNaming:"inline-text",evidenceId:`tool:${n}`,placeholderKey:l.placeholderKey,noticeKey:l.noticeKey})}function qy(n,s,c,l={}){return Xe({module:"media",tier:"experimental",translationKey:s,runtimeClass:"ffmpeg-wasm",inputLimitClass:"media-device",outputNaming:"converter-filename",evidenceId:`tool:${n}`,acceptsFile:!0,acceptTypes:c,isMediaConverter:!0,limits:jt.media,noticeKey:"labels.mediaWarning",hasTextInput:l.hasTextInput,parameterPlaceholderKey:l.parameterPlaceholderKey})}const Vy=Object.freeze({"base64-encode":Xe({module:"text",tier:"advanced",translationKey:"base64Encode",runtimeClass:"main-thread",inputLimitClass:"text-5-mib",outputNaming:"inline-text",evidenceId:"tool:base64-encode",placeholderKey:"tools.base64Encode.placeholder"}),"base64-decode":pe("base64-decode","text","base64Decode"),"url-encode":pe("url-encode","text","urlEncode"),"url-decode":pe("url-decode","text","urlDecode"),"html-encode":pe("html-encode","text","htmlEncode"),"html-decode":pe("html-decode","text","htmlDecode"),"hex-encode":pe("hex-encode","text","hexEncode"),"hex-decode":pe("hex-decode","text","hexDecode"),"binary-encode":pe("binary-encode","text","binaryEncode"),"binary-decode":pe("binary-decode","text","binaryDecode"),"unicode-escape":pe("unicode-escape","text","unicodeEscape"),"unicode-unescape":pe("unicode-unescape","text","unicodeUnescape"),rot13:pe("rot13","text","rot13"),atbash:pe("atbash","text","atbash"),sha256:pe("sha256","hash","sha256",{runtimeClass:"web-crypto"}),"json-prettify":pe("json-prettify","data","jsonPrettify"),"json-minify":pe("json-minify","data","jsonMinify"),"json-escape":pe("json-escape","data","jsonEscape"),"csv-to-json":pe("csv-to-json","data","csvToJson"),"dec-to-hex":pe("dec-to-hex","number","decToHex"),"hex-to-dec":pe("hex-to-dec","number","hexToDec"),"dec-to-bin":pe("dec-to-bin","number","decToBin"),"bin-to-dec":pe("bin-to-dec","number","binToDec"),"dec-to-oct":pe("dec-to-oct","number","decToOct"),"oct-to-dec":pe("oct-to-dec","number","octToDec"),"color-convert":pe("color-convert","color","colorConvert"),"css-minify":pe("css-minify","web","cssMinify",{category:"data"}),"json-validate":pe("json-validate","web","jsonValidate",{category:"data"}),"base64url-encode":pe("base64url-encode","web","base64urlEncode",{category:"encode"}),"base64url-decode":pe("base64url-decode","web","base64urlDecode",{category:"encode"}),"slug-gen":pe("slug-gen","web","slugGen",{category:"utility"}),"char-count":pe("char-count","utility","charCount"),"reverse-text":pe("reverse-text","utility","reverseText"),"percentage-calc":pe("percentage-calc","utility","percentageCalc",{placeholderKey:"tools.percentageCalc.placeholder"}),"aspect-ratio":pe("aspect-ratio","utility","aspectRatio"),"loan-calc":Xe({module:"utility",tier:"advanced",translationKey:"loanCalc",runtimeClass:"main-thread",inputLimitClass:"text-5-mib",outputNaming:"inline-text",evidenceId:"tool:loan-calc",placeholderKey:"tools.loanCalc.placeholder",noticeKey:"tools.loanCalc.notice"}),"bmi-calc":Xe({module:"utility",tier:"advanced",translationKey:"bmiCalc",runtimeClass:"main-thread",inputLimitClass:"text-5-mib",outputNaming:"inline-text",evidenceId:"tool:bmi-calc",placeholderKey:"tools.bmiCalc.placeholder",noticeKey:"tools.bmiCalc.notice"}),"png-to-jpg":Xe({module:"imageFormat",tier:"advanced",translationKey:"pngToJpg",runtimeClass:"canvas",inputLimitClass:"image-device",outputNaming:"converter-filename",evidenceId:"tool:png-to-jpg",acceptsFile:!0,acceptTypes:"image/png,.png",isMediaConverter:!0,limits:jt.images}),"jpg-to-png":Xe({module:"imageFormat",tier:"advanced",translationKey:"jpgToPng",runtimeClass:"canvas",inputLimitClass:"image-device",outputNaming:"converter-filename",evidenceId:"tool:jpg-to-png",acceptsFile:!0,acceptTypes:"image/jpeg,.jpg,.jpeg",isMediaConverter:!0,limits:jt.images}),"audio-to-mp3":qy("audio-to-mp3","audioToMp3","audio/*"),"text-to-qr":Xe({module:"qr",tier:"core",translationKey:"textToQr",runtimeClass:"main-thread",inputLimitClass:"text-5-mib",outputNaming:"generated-image",evidenceId:"tool:text-to-qr",showsPreview:!0,placeholderKey:"tools.textToQr.placeholder"}),"images-to-pdf":Xe({module:"pdf",tier:"core",translationKey:"imagesToPdf",runtimeClass:"pdf-lib",inputLimitClass:"image-device",outputNaming:"converter-filename",evidenceId:"tool:images-to-pdf",acceptsFile:!0,acceptTypes:"image/png,image/jpeg,.png,.jpg,.jpeg",multipleFiles:!0,isMediaConverter:!0,limits:jt.images}),"merge-pdf":Xe({module:"pdf",tier:"core",translationKey:"mergePdf",runtimeClass:"pdf-lib",inputLimitClass:"pdf-device",outputNaming:"converter-filename",evidenceId:"tool:merge-pdf",acceptsFile:!0,acceptTypes:"application/pdf,.pdf",multipleFiles:!0,isMediaConverter:!0,limits:jt.pdf}),"pdf-page-count":Xe({module:"pdf",tier:"core",translationKey:"pdfPageCount",runtimeClass:"pdf-lib",inputLimitClass:"pdf-device",outputNaming:"inline-text",evidenceId:"tool:pdf-page-count",acceptsFile:!0,acceptTypes:"application/pdf,.pdf",isMediaConverter:!0,limits:jt.pdf}),"pdf-split":Xe({module:"pdf",tier:"core",translationKey:"pdfSplit",runtimeClass:"pdf-lib",inputLimitClass:"pdf-device",outputNaming:"converter-filename",evidenceId:"tool:pdf-split",acceptsFile:!0,acceptTypes:"application/pdf,.pdf",isMediaConverter:!0,hasTextInput:!0,parameterPlaceholderKey:"tools.pdfSplit.parameterPlaceholder",limits:jt.pdf}),"pdf-extract-range":Xe({module:"pdf",tier:"core",translationKey:"pdfExtractRange",runtimeClass:"pdf-lib",inputLimitClass:"pdf-device",outputNaming:"converter-filename",evidenceId:"tool:pdf-extract-range",acceptsFile:!0,acceptTypes:"application/pdf,.pdf",isMediaConverter:!0,hasTextInput:!0,parameterPlaceholderKey:"tools.pdfExtractRange.parameterPlaceholder",limits:jt.pdf}),"text-to-pdf":Xe({module:"pdf",tier:"core",translationKey:"textToPdf",runtimeClass:"pdf-lib",inputLimitClass:"text-5-mib",outputNaming:"converter-filename",evidenceId:"tool:text-to-pdf",placeholderKey:"tools.textToPdf.placeholder"}),"pdf-metadata":Xe({module:"pdf",tier:"core",translationKey:"pdfMetadata",runtimeClass:"pdf-lib",inputLimitClass:"pdf-device",outputNaming:"inline-text",evidenceId:"tool:pdf-metadata",acceptsFile:!0,acceptTypes:"application/pdf,.pdf",isMediaConverter:!0,limits:jt.pdf}),"pdf-rotate":Xe({module:"pdf",tier:"core",translationKey:"pdfRotate",runtimeClass:"pdf-lib",inputLimitClass:"pdf-device",outputNaming:"converter-filename",evidenceId:"tool:pdf-rotate",acceptsFile:!0,acceptTypes:"application/pdf,.pdf",isMediaConverter:!0,hasTextInput:!0,parameterPlaceholderKey:"tools.pdfRotate.parameterPlaceholder",limits:jt.pdf})}),Rc=Object.freeze(Object.entries(ry).flatMap(([n,s])=>s.map(c=>{const l=Vy[c];return Object.freeze(l?{id:c,...l}:{id:c,module:n,category:hf[n],tier:"hidden",translationKey:c,hiddenReason:_y[c]||$y[n]})})));Object.freeze(wc.map(n=>{const s=Hr(n.id);return Object.freeze(s?{id:n.id,kind:"format",category:s.category,tier:s.tier,runtimeClass:s.runtimeClass,inputLimitClass:s.inputLimitClass,outputNaming:s.outputNaming,evidenceId:s.evidenceId,nameDe:s.nameDe,nameEn:s.nameEn,descriptionDe:s.descriptionDe,descriptionEn:s.descriptionEn}:{id:n.id,kind:"format",category:"format",tier:"hidden",hiddenReason:"Hidden pending an independent literal fixture with exact output and a defensible input limit."})}));Rc.filter(n=>n.tier!=="hidden").length;function Ky(n,s){const c=Ac(s),l={...n,tierLabel:n.tier==="experimental"?hn(c,"labels.experimental"):null,name:hn(c,`tools.${n.translationKey}.name`),description:hn(c,`tools.${n.translationKey}.description`),categoryName:hn(c,`categories.${n.category}`)};return n.placeholderKey&&(l.placeholder=hn(c,n.placeholderKey)),n.parameterPlaceholderKey&&(l.textPlaceholder=hn(c,n.parameterPlaceholderKey)),n.noticeKey&&(l.notice=hn(c,n.noticeKey)),l}function Zy(n="de"){const s=jr(n);return Rc.filter(c=>c.tier!=="hidden").sort((c,l)=>qp.indexOf(c.tier)-qp.indexOf(l.tier)).map(c=>Ky(c,s))}function m0(n="de"){const s=Ac(jr(n)),c=new Set(Rc.filter(l=>l.tier!=="hidden").map(l=>l.category));return sy.filter(l=>c.has(l.id)).map(l=>({id:l.id,name:hn(s,`categories.${l.id}`)}))}const Tt=Object.freeze({locale:"folkkit:locale",theme:"folkkit:theme",favorites:"folkkit:favorites",favoriteTools:"folkkit:favorite-tools",recentTools:"folkkit:recent-tools",historyEnabled:"folkkit:history-enabled",contentHistory:"folkkit:content-history",installDismissed:"folkkit:install-dismissed"});function Xy(){return localStorage.getItem(Tt.historyEnabled)==="true"}function bc(n){if(n===!0){localStorage.setItem(Tt.historyEnabled,"true");return}localStorage.removeItem(Tt.historyEnabled)}function Qy(){try{const n=JSON.parse(localStorage.getItem(Tt.contentHistory)||"[]");return Array.isArray(n)?n:[]}catch{return[]}}function Tc(n){Array.isArray(n)&&localStorage.setItem(Tt.contentHistory,JSON.stringify(n))}function Jy(){localStorage.removeItem(Tt.contentHistory)}function eb(){const n=localStorage.getItem(Tt.theme);return n==="light"||n==="dark"?n:"light"}function tb(){const[n,s]=_.useState(eb);return _.useEffect(()=>{document.documentElement.setAttribute("data-theme",n),localStorage.setItem(Tt.theme,n);const l=document.querySelector('meta[name="theme-color"]');l&&l.setAttribute("content",n==="dark"?"#171c20":"#f6f7f8")},[n]),{theme:n,toggle:()=>s(l=>l==="light"?"dark":"light")}}const pf="https://github.com/ThisIsPhantom/folkkit";function nb(n){if(!/^[0-9a-f]{40}$/.test(n))throw new Error("Build information requires an exact 40-character Git commit.");return Object.freeze({commit:n,sourceUrl:`${pf}/tree/${n}`})}const Vp="77f92d63641a01d541c552bef70d7b14f174fcef",Ec=/^[0-9a-f]{40}$/.test(Vp)?nb(Vp):Object.freeze({commit:"development",sourceUrl:pf});function ib({onNavigate:n}){const{t:s}=Lt(),c=[["privacy","/privacy"],["openSource","/open-source"],["licenses","/licenses"],["terms","/terms"],["contact","/contact"]];return T.jsx("footer",{className:"site-footer",children:T.jsxs("div",{className:"site-footer__inner",children:[T.jsx("p",{children:s("shell.footerNote")}),T.jsx("nav",{"aria-label":s("shell.footerNavigation"),children:T.jsxs("ul",{role:"list",className:"site-footer__links",children:[c.map(([l,p])=>T.jsx("li",{children:T.jsx("a",{href:p,onClick:d=>{d.preventDefault(),n(p)},children:s(`shell.${l}`)})},l)),T.jsx("li",{children:T.jsx("a",{href:Ec.sourceUrl,children:s("shell.source")})})]})})]})})}var ab={outline:{xmlns:"http://www.w3.org/2000/svg",width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},filled:{xmlns:"http://www.w3.org/2000/svg",width:24,height:24,viewBox:"0 0 24 24",fill:"currentColor",stroke:"none"}};const Ct=(n,s,c,l)=>{const p=_.forwardRef(({color:d="currentColor",size:f=24,stroke:m=2,title:y,className:b,children:M,...z},N)=>_.createElement("svg",{ref:N,...ab[n],width:f,height:f,className:["tabler-icon",`tabler-icon-${s}`,b].join(" "),strokeWidth:m,stroke:d,...z},[y&&_.createElement("title",{key:"svg-title"},y),...l.map(([x,k])=>_.createElement(x,k)),...Array.isArray(M)?M:[M]]));return p.displayName=`${c}`,p};const ob=[["path",{d:"M5 12l14 0",key:"svg-0"}],["path",{d:"M13 18l6 -6",key:"svg-1"}],["path",{d:"M13 6l6 6",key:"svg-2"}]],Ki=Ct("outline","arrow-right","ArrowRight",ob);const rb=[["path",{d:"M7 10h14l-4 -4",key:"svg-0"}],["path",{d:"M17 14h-14l4 4",key:"svg-1"}]],sb=Ct("outline","arrows-exchange","ArrowsExchange",rb);const lb=[["path",{d:"M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14",key:"svg-0"}],["path",{d:"M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1",key:"svg-1"}],["path",{d:"M8 14l0 .01",key:"svg-2"}],["path",{d:"M12 14l0 .01",key:"svg-3"}],["path",{d:"M16 14l0 .01",key:"svg-4"}],["path",{d:"M8 17l0 .01",key:"svg-5"}],["path",{d:"M12 17l0 .01",key:"svg-6"}],["path",{d:"M16 17l0 .01",key:"svg-7"}]],cb=Ct("outline","calculator","Calculator",lb);const ub=[["path",{d:"M14 3v4a1 1 0 0 0 1 1h4",key:"svg-0"}],["path",{d:"M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4",key:"svg-1"}],["path",{d:"M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6",key:"svg-2"}],["path",{d:"M17 18h2",key:"svg-3"}],["path",{d:"M20 15h-3v6",key:"svg-4"}],["path",{d:"M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1",key:"svg-5"}]],ff=Ct("outline","file-type-pdf","FileTypePdf",ub);const db=[["path",{d:"M4 6l16 0",key:"svg-0"}],["path",{d:"M4 12l16 0",key:"svg-1"}],["path",{d:"M4 18l16 0",key:"svg-2"}]],hb=Ct("outline","menu-2","Menu2",db);const pb=[["path",{d:"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008",key:"svg-0"}]],fb=Ct("outline","moon","Moon",pb);const mb=[["path",{d:"M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0",key:"svg-0"}],["path",{d:"M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0",key:"svg-1"}],["path",{d:"M9 17v-13h10v13",key:"svg-2"}],["path",{d:"M9 8h10",key:"svg-3"}]],gb=Ct("outline","music","Music",mb);const yb=[["path",{d:"M15 8h.01",key:"svg-0"}],["path",{d:"M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12",key:"svg-1"}],["path",{d:"M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5",key:"svg-2"}],["path",{d:"M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3",key:"svg-3"}]],mf=Ct("outline","photo","Photo",yb);const bb=[["path",{d:"M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4",key:"svg-0"}],["path",{d:"M7 17l0 .01",key:"svg-1"}],["path",{d:"M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4",key:"svg-2"}],["path",{d:"M7 7l0 .01",key:"svg-3"}],["path",{d:"M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4",key:"svg-4"}],["path",{d:"M17 7l0 .01",key:"svg-5"}],["path",{d:"M14 14l3 0",key:"svg-6"}],["path",{d:"M20 14l0 .01",key:"svg-7"}],["path",{d:"M14 14l0 3",key:"svg-8"}],["path",{d:"M14 20l3 0",key:"svg-9"}],["path",{d:"M17 17l3 0",key:"svg-10"}],["path",{d:"M20 17l0 3",key:"svg-11"}]],Tb=Ct("outline","qrcode","Qrcode",bb);const Eb=[["path",{d:"M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245",key:"svg-0"}]],Kp=Ct("outline","star","Star",Eb);const Ob=[["path",{d:"M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0",key:"svg-0"}],["path",{d:"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7",key:"svg-1"}]],Sb=Ct("outline","sun","Sun",Ob);const vb=[["path",{d:"M18 6l-12 12",key:"svg-0"}],["path",{d:"M6 6l12 12",key:"svg-1"}]],wb=Ct("outline","x","X",vb);function Zp({active:n,children:s,href:c,onNavigate:l}){const p=d=>{d.button!==0||d.metaKey||d.ctrlKey||d.shiftKey||d.altKey||(d.preventDefault(),l(c))};return T.jsx("a",{className:"site-nav__link",href:c,"aria-current":n?"page":void 0,onClick:p,children:s})}function Ab({route:n,onNavigate:s,locale:c,onLocaleChange:l,theme:p,onThemeToggle:d}){const{t:f}=Lt(),[m,y]=_.useState(!1),b=_.useRef(null);_.useEffect(()=>{if(!m)return;const N=x=>{x.key==="Escape"&&(y(!1),b.current?.focus())};return window.addEventListener("keydown",N),()=>window.removeEventListener("keydown",N)},[m]);const M=[{href:"/qr",route:"qr",label:"shell.qr"},{href:"/pdf",route:"pdf",label:"shell.pdf"},{href:"/convert",route:"convert",label:"shell.convert"},{href:"/calculate",route:"calculate",label:"shell.calculate"},{href:"/tools",route:"catalog",label:"shell.tools"}],z=N=>{y(!1),s(N)};return T.jsxs("header",{className:"site-header",children:[T.jsxs("div",{className:"site-header__inner",children:[T.jsx("div",{className:"site-header__brand-group",children:T.jsxs("a",{className:"wordmark display",href:"/","aria-label":f("shell.home"),onClick:N=>{N.preventDefault(),z("/")},children:[T.jsx("span",{className:"wordmark__symbol","aria-hidden":"true",children:"f."}),"Folkkit"]})}),T.jsx("nav",{className:"site-nav site-nav--desktop","aria-label":f("shell.primaryNavigation"),children:M.map(N=>T.jsx(Zp,{href:N.href,active:n===N.route,onNavigate:z,children:f(N.label)},N.href))}),T.jsxs("div",{className:"site-header__actions",children:[T.jsxs("div",{className:"locale-switch",role:"group","aria-label":f("shell.localeLabel"),children:[T.jsx("button",{type:"button","aria-label":"Deutsch","aria-pressed":c==="de",onClick:()=>l("de"),children:"DE"}),T.jsx("button",{type:"button","aria-label":"English","aria-pressed":c==="en",onClick:()=>l("en"),children:"EN"})]}),T.jsx("button",{className:"theme-button",type:"button","aria-label":f("shell.themeToggle"),title:f("shell.themeToggle"),"aria-pressed":p==="dark",onClick:d,children:p==="dark"?T.jsx(Sb,{size:20,"aria-hidden":"true"}):T.jsx(fb,{size:20,"aria-hidden":"true"})}),T.jsx("button",{className:"menu-button",ref:b,type:"button","aria-expanded":m,"aria-controls":"mobile-navigation","aria-label":f(m?"shell.menuClose":"shell.menuOpen"),onClick:()=>y(N=>!N),children:m?T.jsx(wb,{size:22,"aria-hidden":"true"}):T.jsx(hb,{size:22,"aria-hidden":"true"})})]})]}),m&&T.jsx("nav",{id:"mobile-navigation",className:"site-nav site-nav--mobile","aria-label":f("shell.mobileNavigation"),children:M.map(N=>T.jsx(Zp,{href:N.href,active:n===N.route,onNavigate:z,children:f(N.label)},N.href))})]})}function Rb({locale:n,onLocaleChange:s,route:c,onNavigate:l,children:p}){const{theme:d,toggle:f}=tb(),{t:m}=Lt(),y=_.useCallback(()=>f(),[f]);return _.useEffect(()=>{const b=M=>{const z=["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName);(M.metaKey||M.ctrlKey)&&M.key.toLowerCase()==="d"&&!z&&(M.preventDefault(),y())};return window.addEventListener("keydown",b),()=>window.removeEventListener("keydown",b)},[y]),T.jsxs("div",{className:"shell",children:[T.jsx("a",{className:"skip-link",href:"#main-content",children:m("shell.skip")}),T.jsx(Ab,{route:c,onNavigate:l,locale:n,onLocaleChange:s,theme:d,onThemeToggle:y}),T.jsx("main",{id:"main-content",className:`shell__main shell__main--${c}`,tabIndex:"-1",children:p}),T.jsx(ib,{onNavigate:l})]})}const Xp=n=>String(n).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase();function Nb(n){try{const s=localStorage.getItem(Tt.favoriteTools)||"[]";if(s.length>16384)return[];const c=JSON.parse(s),l=new Set(n.map(p=>p.id));return Array.isArray(c)?[...new Set(c.filter(p=>typeof p=="string"&&l.has(p)))]:[]}catch{return[]}}function Ib({entries:n,onSelect:s}){const{t:c}=Lt(),[l,p]=_.useState(""),[d,f]=_.useState("all"),[m,y]=_.useState(!1),[b,M]=_.useState(()=>Nb(n)),[z,N]=_.useState(!1),x=[...new Map(n.map(B=>[B.category,B.categoryName])).entries()],k=Xp(l).trim().split(/\s+/).filter(Boolean),H=n.filter(B=>(d==="all"||B.category===d)&&(!m||b.includes(B.id))&&k.every(J=>Xp(`${B.name} ${B.description} ${B.categoryName}`).includes(J))),U=B=>{const J=b.includes(B)?b.filter(se=>se!==B):[...b,B];M(J);try{localStorage.setItem(Tt.favoriteTools,JSON.stringify(J)),N(!1)}catch{N(!0)}},de=()=>{p(""),f("all"),y(!1)};return T.jsxs("div",{className:"catalog-page page-frame",children:[T.jsxs("header",{className:"page-heading heading-group",children:[T.jsx("h1",{className:"display",children:c("catalog.title")}),T.jsx("p",{children:c("catalog.intro")})]}),T.jsxs("form",{className:"catalog-toolbar",onSubmit:B=>B.preventDefault(),role:"search",children:[T.jsxs("label",{className:"catalog-search",htmlFor:"catalog-search",children:[T.jsx("span",{children:c("catalog.search")}),T.jsx("input",{id:"catalog-search",name:"search",type:"search",maxLength:128,value:l,onChange:B=>p(B.target.value),placeholder:c("catalog.searchPlaceholder"),autoComplete:"off"})]}),T.jsxs("label",{htmlFor:"catalog-category",children:[T.jsx("span",{children:c("catalog.category")}),T.jsxs("select",{id:"catalog-category",name:"category",value:d,onChange:B=>f(B.target.value),children:[T.jsx("option",{value:"all",children:c("catalog.allCategories")}),x.map(([B,J])=>T.jsx("option",{value:B,children:J},B))]})]}),T.jsxs("button",{type:"button",className:"catalog-favorites-filter","aria-pressed":m,onClick:()=>y(B=>!B),children:[T.jsx(Kp,{size:18,"aria-hidden":"true"}),c("catalog.favoritesOnly")]})]}),T.jsx("p",{className:"catalog-count",role:"status",children:c("catalog.filteredCount",{count:H.length,total:n.length})}),z&&T.jsx("p",{className:"catalog-storage-note",children:c("catalog.storageError")}),H.length===0&&T.jsxs("div",{className:"catalog-empty",children:[T.jsx("h2",{children:c("catalog.empty")}),T.jsx("p",{children:c("catalog.emptyHint")}),T.jsx("button",{type:"button",onClick:de,children:c("catalog.clearFilters")})]}),T.jsx("ul",{className:"catalog-list",role:"list",children:H.map(B=>T.jsxs("li",{children:[T.jsxs("button",{className:"catalog-list__open",type:"button",onClick:()=>s({kind:"tool",toolId:B.id}),"aria-label":c("catalog.openTool",{name:B.name}),children:[T.jsxs("span",{className:"catalog-list__copy",children:[T.jsx("span",{className:"catalog-list__title",children:B.name}),T.jsx("span",{className:"catalog-list__description",children:B.description})]}),T.jsxs("span",{className:"catalog-list__meta",children:[T.jsx("span",{children:B.categoryName}),B.tierLabel&&T.jsx("span",{className:"tier-badge",children:B.tierLabel})]})]}),T.jsx("button",{className:"catalog-favorite",type:"button","aria-pressed":b.includes(B.id),"aria-label":c(b.includes(B.id)?"catalog.removeFavorite":"catalog.addFavorite",{name:B.name}),onClick:()=>U(B.id),children:T.jsx(Kp,{size:20,"aria-hidden":"true"})})]},B.id))})]})}const to=Object.freeze({privacy:Object.freeze({testId:"privacy",eyebrow:"Transparente Datenbearbeitung",title:"Datenschutz",intro:"Folkkit verarbeitet ausgewählte Inhalte im Browser. Beim Laden der Website können trotzdem technische Zugriffsdaten anfallen. Diese Erklärung trennt beide Vorgänge.",operatorTitle:"Verantwortliche Stelle",operatorMissing:"Die öffentlichen Betreiberangaben wurden für diesen privaten Vorabstand noch nicht freigegeben. Ein Release-Build bleibt gesperrt, bis Name und Kontakt-E-Mail genehmigt und hinterlegt sind.",sourcesLabel:"Offizielle Orientierung",sources:Object.freeze([Object.freeze({id:"edoeb-privacy-statements",label:"EDÖB: Datenschutzerklärungen im Internet",url:"https://www.edoeb.admin.ch/de/datenschutzerklaerungen-im-internet"}),Object.freeze({id:"edoeb-information-duty",label:"EDÖB: Informationspflicht",url:"https://www.edoeb.admin.ch/de/informationspflicht"})]),sections:Object.freeze([Object.freeze({id:"local-processing",title:"Lokale Dateiverarbeitung",paragraphs:Object.freeze(["Ausgewählte Dateien, eingefügte Inhalte, Vorschauen und Ergebnisse verarbeitet Folkkit lokal im Browser auf deinem Gerät. Diese Inhalte werden nicht zur Bearbeitung an einen Anwendungsserver übertragen.","Die Verarbeitung kann Arbeitsspeicher, Prozessor und lokale Browserfunktionen beanspruchen. Beim Verwerfen, Zurücksetzen oder Verlassen eines Werkzeugs entfernt Folkkit seine temporären Objekt-URLs und Arbeitsspeicherverweise, soweit der Browser dies zulässt."])}),Object.freeze({id:"same-origin-cache",title:"Website-Dateien und Offline-Cache",paragraphs:Object.freeze(["Der Browser lädt HTML, JavaScript, CSS, Manifest, Favicon sowie bei Bedarf PDF-, QR- und FFmpeg-Module inklusive WebAssembly vom gleichen Ursprung wie die Website.","Ein Service Worker kann diese Anwendungsdateien für die Offline-Nutzung im Cache Storage speichern. Ausgewählte Dateien, Eingaben, Vorschauen, Ergebnisse und die optionale Inhaltschronik werden nicht in diesem Offline-Cache gespeichert."])}),Object.freeze({id:"history",title:"Optionale lokale Inhaltschronik",paragraphs:Object.freeze(["Inhalte bleiben standardmässig nur während der aktuellen Sitzung verfügbar. Eine lokale Inhaltschronik speichert begrenzte Ein- und Ausgaben im Local Storage dieses Browsers erst, wenn du sie ausdrücklich aktivierst.","Du kannst einzelne Einträge löschen, die ganze Inhaltschronik löschen oder die Einwilligung widerrufen. Beim Widerruf entfernt Folkkit die gespeicherte Inhaltschronik auf diesem Gerät."])}),Object.freeze({id:"host-logs",title:"Technische Zugriffsprotokolle bei Hosttech",paragraphs:Object.freeze(["Ob Hosttech technische Zugriffsprotokolle erstellt und welche Daten sie enthalten, hängt von der aktiven Hosting-Konfiguration ab. Mögliche Felder sind IP-Adresse, Zeitpunkt, angeforderter Pfad, Referrer und User-Agent.","Umfang, Zweck und Aufbewahrungsdauer müssen vor der öffentlichen Veröffentlichung anhand dieser Konfiguration bestätigt werden. Für diese Vorabversion liegt dazu keine verifizierte Konfiguration vor."])}),Object.freeze({id:"no-tracking",title:"Keine Analytik, Werbung oder Telemetrie",paragraphs:Object.freeze(["Folkkit V1 enthält keine Analytik, keine Telemetrie, keine Werbeskripte und keine Anzeigen. Das passive AdSense-Metadatum im HTML-Head bezeichnet lediglich ein mögliches künftiges Eigentümerkonto. Dieses Metadatum löst selbst keine Netzwerkverbindung, Cookies oder Anzeigenlaufzeit aus.","Externe Links zu EDÖB, GNU, GitHub oder FFmpeg werden erst aufgerufen, wenn du ihnen folgst. Dann gelten die Datenschutzbestimmungen des jeweiligen Ziels."])}),Object.freeze({id:"preferences-rights",title:"Einstellungen und Anliegen",paragraphs:Object.freeze(["Sprache, Design, Favoriten, zuletzt verwendete Werkzeug-IDs und die Entscheidung zur Inhaltschronik können lokal im Browser gespeichert werden. Diese Einstellungen enthalten standardmässig keine ausgewählten Dateien oder konvertierten Ergebnisse.","Datenschutzanliegen und Begehren zu Auskunft, Berichtigung oder Löschung können über die auf der Kontaktseite veröffentlichte Kontakt-E-Mail eingereicht werden, sobald die genehmigten Angaben für den öffentlichen Release hinterlegt sind."])})])}),source:Object.freeze({testId:"open-source",eyebrow:"Offener Quellcode",title:"Open Source",intro:"Der Code hinter Folkkit ist öffentlich. Du kannst ihn lesen und unter den Lizenzbedingungen weiterverwenden.",revisionLabel:"Diese Version",revisionLink:"Exakte Revision auf GitHub öffnen",availabilityNote:"Der vollständige Quellcode ist auf GitHub ohne Anmeldung einsehbar. Der Link führt zum Stand dieser Version.",sourcesLabel:"Projektquellen",sources:Object.freeze([Object.freeze({id:"upstream",label:"Upstream: MercuriusDream/convert-everything",url:"https://github.com/MercuriusDream/convert-everything"}),Object.freeze({id:"gnu-agpl",label:"GNU Affero General Public License 3.0",url:"https://www.gnu.org/licenses/agpl-3.0.html"})]),sections:Object.freeze([Object.freeze({id:"license",title:"Folkkit-Lizenz",paragraphs:Object.freeze(["Folkkit ist als Gesamtwerk ausschliesslich unter AGPL-3.0-only veröffentlicht. Der vollständige Lizenztext liegt im Repository in der Datei LICENSE."])}),Object.freeze({id:"upstream",title:"Herkunft und Änderungen",paragraphs:Object.freeze(["Folkkit basiert auf Convert Everything von MercuriusDream. Die Git-Historie, Urheberhinweise und der Upstream-Verweis bleiben erhalten.","Folkkit ergänzt unter anderem die zweisprachige Oberfläche, lokale Datenschutzkontrollen, Laufzeitgrenzen, Offline-Verhalten sowie diese Rechts- und Quellcodeflächen."])})])}),licenses:Object.freeze({testId:"licenses",eyebrow:"Lizenznachweise",title:"Lizenzen",intro:"Folkkit und die mitgelieferten Laufzeitkomponenten unterliegen ihren jeweiligen Lizenzen. Die generierten Hinweise stammen aus der gesperrten Abhängigkeitsstruktur und dem manuellen Laufzeit-Asset-Register.",noticesTitle:"Generierte Hinweise zu Drittkomponenten",noticesIntro:"Die folgende Datei wird deterministisch aus bun.lock und scripts/runtime-assets.json erzeugt. Sie umfasst direkte und transitive Laufzeitpakete, das Favicon, den Verzicht auf eingebettete Schriftdateien sowie FFmpeg-JavaScript und WebAssembly.",sourcesLabel:"Primäre Lizenzquellen",sources:Object.freeze([Object.freeze({id:"gnu-agpl",label:"GNU Affero General Public License 3.0",url:"https://www.gnu.org/licenses/agpl-3.0.html"}),Object.freeze({id:"ffmpeg-legal",label:"FFmpeg: Lizenz und rechtliche Hinweise",url:"https://ffmpeg.org/legal.html"})]),sections:Object.freeze([Object.freeze({id:"folkkit",title:"Folkkit und Upstream",paragraphs:Object.freeze(["Folkkit bleibt AGPL-3.0-only. Die Lizenz erlaubt Nutzung, Änderung und Weitergabe unter ihren Bedingungen und enthält Haftungs- und Gewährleistungsausschlüsse im gesetzlich zulässigen Umfang.","Die Herkunft von MercuriusDream/convert-everything sowie dessen Historie und Hinweise bleiben Teil des Projekts."])}),Object.freeze({id:"ffmpeg",title:"FFmpeg und ffmpeg.wasm",paragraphs:Object.freeze(["FFmpeg steht überwiegend unter LGPL-2.1-or-later; optionale Bestandteile können GPL-2.0-or-later unterliegen. Das ausgelieferte Paket @ffmpeg/core 0.12.10 deklariert GPL-2.0-or-later. Die erzeugten Hinweise führen die konkreten Paket- und Asset-Angaben auf.","Die FFmpeg-Core-Dateien werden als JavaScript und WebAssembly vom gleichen Ursprung ausgeliefert. Ihre Registrierung ausserhalb der JavaScript-Abhängigkeitsliste verhindert, dass WASM bei der Lizenzprüfung übersehen wird."])})])}),terms:Object.freeze({testId:"terms",eyebrow:"Rahmen der Nutzung",title:"Nutzungsbedingungen",intro:"Diese Bedingungen beschreiben den technischen Zweck und die Grenzen von Folkkit V1. Sie sind keine Zusicherung für einen bestimmten Verwendungszweck.",sourcesLabel:"Lizenzgrundlage",sources:Object.freeze([Object.freeze({id:"gnu-agpl",label:"GNU Affero General Public License 3.0",url:"https://www.gnu.org/licenses/agpl-3.0.html"}),Object.freeze({id:"source",label:"Quellcode und Build-Revision",url:"/open-source"})]),sections:Object.freeze([Object.freeze({id:"scope",title:"Zweck und Verfügbarkeit",paragraphs:Object.freeze(["Folkkit stellt kostenlose, kontolose Browserwerkzeuge für gelegentliche Datei-, Text-, PDF-, QR- und Rechenaufgaben bereit. Es besteht kein Anspruch auf dauernde Verfügbarkeit, Fehlerfreiheit oder Unterstützung eines bestimmten Browsers oder Dateiformats.","Werkzeuge können Eingaben wegen Dateigrösse, Format, Gerätespeicher oder fehlender Browserfunktionen ablehnen. Experimentelle Medienwerkzeuge können besonders viel Arbeitsspeicher und Rechenleistung benötigen."])}),Object.freeze({id:"responsibility",title:"Eigene Verantwortung",paragraphs:Object.freeze(["Du bist dafür verantwortlich, dass du Dateien und Inhalte bearbeiten darfst und Ergebnisse vor ihrer weiteren Verwendung prüfst. Bewahre wichtige Originale und Sicherungskopien ausserhalb von Folkkit auf.","Folkkit prüft nicht, ob ein Ergebnis für einen bestimmten rechtlichen Zweck genügt, und übernimmt keine Gewähr dafür, dass ein Ergebnis rechtlich wirksam oder konform ist."])}),Object.freeze({id:"medical",title:"Gesundheitsbezogene Rechenhilfe",paragraphs:Object.freeze(["Der BMI-Rechner ist nur eine allgemeine Rechenhilfe und keine medizinische Beratung, Diagnose oder Behandlungsempfehlung. Besprich gesundheitliche Fragen mit einer qualifizierten Fachperson.","Ein Rechenergebnis berücksichtigt keine individuelle Krankengeschichte, keine Körperzusammensetzung und keine weiteren medizinischen Faktoren."])}),Object.freeze({id:"finance",title:"Finanzbezogene Rechenhilfe",paragraphs:Object.freeze(["Der Kreditrechner ist nur eine vereinfachte Rechenhilfe und keine Finanzberatung, Kreditzusage oder Offerte. Konditionen, Gebühren, Steuern, Rundungen und Zahlungspläne können in der Praxis abweichen.","Triff keine finanzielle Entscheidung allein aufgrund eines Folkkit-Ergebnisses. Prüfe die massgeblichen Vertragsunterlagen und hole bei Bedarf fachliche Beratung ein."])}),Object.freeze({id:"license",title:"Open-Source-Lizenz und Drittkomponenten",paragraphs:Object.freeze(["Folkkit wird unter AGPL-3.0-only bereitgestellt. Für Drittkomponenten gelten die auf der Lizenzseite aufgeführten Bedingungen und Hinweise.","Soweit das anwendbare Recht es zulässt, gelten die Gewährleistungs- und Haftungsregeln der jeweiligen Open-Source-Lizenzen. Zwingende gesetzliche Rechte bleiben unberührt."])})])}),contact:Object.freeze({testId:"contact",eyebrow:"Betreiber und Anfragen",title:"Kontakt",intro:"Die öffentliche Kontaktseite darf nur genehmigte Betreiberangaben anzeigen.",operatorTitle:"Öffentliche Betreiberangaben",operatorMissing:"Die öffentlichen Betreiberangaben wurden für diesen privaten Vorabstand noch nicht freigegeben. Ein Release-Build bleibt bis zur Hinterlegung von Name und Kontakt-E-Mail gesperrt.",emailLabel:"E-Mail schreiben",sourcesLabel:"Weitere Informationen",sources:Object.freeze([Object.freeze({id:"privacy",label:"Datenschutzerklärung",url:"/privacy"}),Object.freeze({id:"source",label:"Quellcode und Build-Revision",url:"/open-source"})]),sections:Object.freeze([Object.freeze({id:"requests",title:"Anliegen",paragraphs:Object.freeze(["Nutze die veröffentlichte Kontakt-E-Mail für Fragen zum Betrieb, zum Datenschutz oder zur Ausübung datenschutzrechtlicher Rechte.","Übermittle keine vertraulichen Dateiinhalte, Gesundheitsdaten, Finanzdaten oder Zugangsdaten per unverschlüsselter E-Mail."])}),Object.freeze({id:"tool-support",title:"Technische Hinweise",paragraphs:Object.freeze(["Nenne bei einem technischen Problem das Werkzeug, den Browser, die ungefähre Dateigrösse und die angezeigte Fehlermeldung. Sende die betroffene Datei nur nach einer ausdrücklichen und geeigneten sicheren Absprache.","Folkkit enthält keine Telemetrie. Der Betreiber erhält deshalb nicht automatisch Informationen über fehlgeschlagene Verarbeitungsvorgänge."])})])})}),no=Object.freeze({privacy:Object.freeze({testId:"privacy",eyebrow:"Transparent data processing",title:"Privacy",intro:"Folkkit processes selected content in the browser. Technical access data may still arise when the website loads. This notice separates those two processes.",operatorTitle:"Controller",operatorMissing:"The public operator details have not yet been approved for this private pre-release. A release build remains blocked until the approved name and contact email are provided.",sourcesLabel:"Official guidance",sources:Object.freeze([Object.freeze({id:"edoeb-privacy-statements",label:"FDPIC: Privacy policies on the internet",url:"https://www.edoeb.admin.ch/de/datenschutzerklaerungen-im-internet"}),Object.freeze({id:"edoeb-information-duty",label:"FDPIC: Duty to provide information",url:"https://www.edoeb.admin.ch/de/informationspflicht"})]),sections:Object.freeze([Object.freeze({id:"local-processing",title:"Local file processing",paragraphs:Object.freeze(["Folkkit processes selected files, pasted content, previews, and results locally in the browser on your device. It does not transfer that content to an application server for processing.","Processing may use memory, processor capacity, and local browser features. When you discard or reset work or leave a tool, Folkkit removes its temporary object URLs and memory references as far as the browser permits."])}),Object.freeze({id:"same-origin-cache",title:"Website files and offline cache",paragraphs:Object.freeze(["The browser loads HTML, JavaScript, CSS, the manifest, the favicon, and, when needed, PDF, QR, and FFmpeg modules including WebAssembly from the same origin as the website.","A service worker may store these application files in Cache Storage for offline use. Selected files, inputs, previews, results, and optional content history are not stored in that offline cache."])}),Object.freeze({id:"history",title:"Optional local content history",paragraphs:Object.freeze(["Content is available only for the current session by default. Local content history stores limited inputs and outputs in this browser's Local Storage only after you explicitly enable it.","You can delete individual entries, clear all content history, or withdraw consent. When you withdraw consent, Folkkit removes the stored content history from this device."])}),Object.freeze({id:"host-logs",title:"Technical access logs at Hosttech",paragraphs:Object.freeze(["Whether Hosttech creates technical access logs and which data they contain depends on the active hosting configuration. Possible fields are the IP address, timestamp, requested path, referrer, and user agent.","The scope, purpose, and retention period must be confirmed against that configuration before public release. No verified configuration is available for this pre-release."])}),Object.freeze({id:"no-tracking",title:"No analytics, advertising, or telemetry",paragraphs:Object.freeze(["Folkkit V1 contains no analytics, telemetry, advertising scripts, or ads. Passive AdSense ownership metadata in the HTML head merely identifies a possible future owner account. The metadata itself causes no network connection, cookies, or advertising runtime.","External links to the FDPIC, GNU, GitHub, or FFmpeg are opened only when you follow them. The destination's privacy terms then apply."])}),Object.freeze({id:"preferences-rights",title:"Preferences and requests",paragraphs:Object.freeze(["Language, theme, favourites, recent tool IDs, and the content history choice may be stored locally in the browser. By default, these preferences contain no selected files or converted results.","Privacy questions and requests for access, correction, or deletion can be submitted through the contact email published on the contact page once approved details are configured for public release."])})])}),source:Object.freeze({testId:"open-source",eyebrow:"Open code",title:"Open source",intro:"The code behind Folkkit is public. You can read and reuse it under the license terms.",revisionLabel:"This version",revisionLink:"Open exact revision on GitHub",availabilityNote:"The full source code is available on GitHub without signing in. The link opens the source for this version.",sourcesLabel:"Project sources",sources:Object.freeze([Object.freeze({id:"upstream",label:"Upstream: MercuriusDream/convert-everything",url:"https://github.com/MercuriusDream/convert-everything"}),Object.freeze({id:"gnu-agpl",label:"GNU Affero General Public License 3.0",url:"https://www.gnu.org/licenses/agpl-3.0.html"})]),sections:Object.freeze([Object.freeze({id:"license",title:"Folkkit license",paragraphs:Object.freeze(["Folkkit as a whole is released exclusively under AGPL-3.0-only. The full license text is stored in the repository as LICENSE."])}),Object.freeze({id:"upstream",title:"Origin and modifications",paragraphs:Object.freeze(["Folkkit is based on Convert Everything by MercuriusDream. The Git history, copyright notices, and upstream reference remain intact.","Folkkit adds the bilingual interface, local privacy controls, runtime limits, offline behaviour, and these legal and source surfaces, among other changes."])})])}),licenses:Object.freeze({testId:"licenses",eyebrow:"License records",title:"Licenses",intro:"Folkkit and its bundled runtime components are subject to their respective licenses. The generated notices come from the locked dependency graph and the manually maintained runtime asset register.",noticesTitle:"Generated third-party notices",noticesIntro:"The following file is generated deterministically from bun.lock and scripts/runtime-assets.json. It covers direct and transitive runtime packages, the favicon, the absence of embedded font files, and the FFmpeg JavaScript and WebAssembly assets.",sourcesLabel:"Primary license sources",sources:Object.freeze([Object.freeze({id:"gnu-agpl",label:"GNU Affero General Public License 3.0",url:"https://www.gnu.org/licenses/agpl-3.0.html"}),Object.freeze({id:"ffmpeg-legal",label:"FFmpeg: License and legal considerations",url:"https://ffmpeg.org/legal.html"})]),sections:Object.freeze([Object.freeze({id:"folkkit",title:"Folkkit and upstream",paragraphs:Object.freeze(["Folkkit remains AGPL-3.0-only. The license permits use, modification, and redistribution under its conditions and includes warranty and liability disclaimers to the extent permitted by law.","The origin in MercuriusDream/convert-everything, its history, and its notices remain part of the project."])}),Object.freeze({id:"ffmpeg",title:"FFmpeg and ffmpeg.wasm",paragraphs:Object.freeze(["FFmpeg is mostly licensed under LGPL-2.1-or-later, while optional parts may be covered by GPL-2.0-or-later. The shipped @ffmpeg/core 0.12.10 package declares GPL-2.0-or-later. The generated notices list the concrete package and asset metadata.","FFmpeg core files are served as same-origin JavaScript and WebAssembly. Registering them outside the JavaScript dependency list prevents the WASM asset from being missed during license review."])})])}),terms:Object.freeze({testId:"terms",eyebrow:"Terms of use",title:"Terms",intro:"These terms describe the technical purpose and limits of Folkkit V1. They do not promise fitness for a particular use.",sourcesLabel:"License basis",sources:Object.freeze([Object.freeze({id:"gnu-agpl",label:"GNU Affero General Public License 3.0",url:"https://www.gnu.org/licenses/agpl-3.0.html"}),Object.freeze({id:"source",label:"Source code and build revision",url:"/open-source"})]),sections:Object.freeze([Object.freeze({id:"scope",title:"Purpose and availability",paragraphs:Object.freeze(["Folkkit provides free, accountless browser tools for occasional file, text, PDF, QR, and calculation tasks. There is no entitlement to continuous availability, error-free operation, or support for a particular browser or file format.","Tools may reject input because of file size, format, device memory, or missing browser capabilities. Experimental media tools may require substantial memory and processor capacity."])}),Object.freeze({id:"responsibility",title:"Your responsibility",paragraphs:Object.freeze(["You are responsible for having the right to process files and content and for checking results before further use. Keep important originals and backups outside Folkkit.","Folkkit does not check whether output meets a particular legal requirement and gives no guarantee that output is legally effective or compliant."])}),Object.freeze({id:"medical",title:"Health calculation aid",paragraphs:Object.freeze(["The BMI calculator is a general calculation aid only. It is not medical advice, a diagnosis, or a treatment recommendation. Discuss health questions with a qualified professional.","A calculation does not account for individual medical history, body composition, or other medical factors."])}),Object.freeze({id:"finance",title:"Financial calculation aid",paragraphs:Object.freeze(["The loan calculator is a simplified calculation aid only. It is not financial advice, a credit decision, or an offer. Terms, fees, taxes, rounding, and payment schedules may differ in practice.","Do not make a financial decision based only on a Folkkit result. Check the relevant contract documents and obtain professional advice if needed."])}),Object.freeze({id:"license",title:"Open-source license and third-party components",paragraphs:Object.freeze(["Folkkit is provided under AGPL-3.0-only. The conditions and notices shown on the licenses page apply to third-party components.","To the extent permitted by applicable law, the warranty and liability terms of the respective open-source licenses apply. Mandatory statutory rights remain unaffected."])})])}),contact:Object.freeze({testId:"contact",eyebrow:"Operator and requests",title:"Contact",intro:"The public contact page may display only approved operator details.",operatorTitle:"Public operator details",operatorMissing:"The public operator details have not yet been approved for this private pre-release. A release build remains blocked until the name and contact email are provided.",emailLabel:"Send email",sourcesLabel:"More information",sources:Object.freeze([Object.freeze({id:"privacy",label:"Privacy notice",url:"/privacy"}),Object.freeze({id:"source",label:"Source code and build revision",url:"/open-source"})]),sections:Object.freeze([Object.freeze({id:"requests",title:"Requests",paragraphs:Object.freeze(["Use the published contact email for questions about operation, privacy, or the exercise of data protection rights.","Do not send confidential file contents, health data, financial data, or credentials by unencrypted email."])}),Object.freeze({id:"tool-support",title:"Technical information",paragraphs:Object.freeze(["For a technical problem, state the tool, browser, approximate file size, and displayed error message. Send the affected file only after an explicit arrangement through a suitable secure channel.","Folkkit contains no telemetry. The operator therefore receives no automatic information about failed processing operations."])})])})}),Fb={VITE_PUBLIC_CONTACT_EMAIL:"ruskoigor25@gmail.com",VITE_PUBLIC_OPERATOR_NAME:"Igor Rusko"},Qp=Object.freeze({VITE_PUBLIC_OPERATOR_NAME:"Example Operator",VITE_PUBLIC_CONTACT_EMAIL:"operator@example.com"});function Jp(n){return typeof n=="string"?n.trim():""}function xb(n={}){return Object.freeze({name:Jp(n.VITE_PUBLIC_OPERATOR_NAME),email:Jp(n.VITE_PUBLIC_CONTACT_EMAIL)})}function Lb(n){const s=[];return n.name?n.name.toLowerCase()===Qp.VITE_PUBLIC_OPERATOR_NAME.toLowerCase()&&s.push("VITE_PUBLIC_OPERATOR_NAME still contains the example value."):s.push("VITE_PUBLIC_OPERATOR_NAME is required."),n.email?n.email.toLowerCase()===Qp.VITE_PUBLIC_CONTACT_EMAIL.toLowerCase()?s.push("VITE_PUBLIC_CONTACT_EMAIL still contains the example value."):/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n.email)||s.push("VITE_PUBLIC_CONTACT_EMAIL must be a valid email address."):s.push("VITE_PUBLIC_CONTACT_EMAIL is required."),s}function gf(n){return Lb(n).length===0}const Cb=Fb||{},Un=xb(Cb);function io({content:n,children:s}){const c=`legal-title-${n.testId}`;return T.jsxs("article",{className:"legal-page page-frame","aria-labelledby":c,"data-testid":`legal-page-${n.testId}`,children:[T.jsxs("header",{className:"legal-page__header",children:[T.jsx("p",{className:"eyebrow",children:n.eyebrow}),T.jsx("h1",{id:c,className:"display",children:n.title}),T.jsx("p",{children:n.intro})]}),s,T.jsx("div",{className:"legal-page__sections",children:n.sections.map(l=>T.jsxs("section",{id:l.id,"aria-labelledby":`${n.testId}-${l.id}`,children:[T.jsx("h2",{id:`${n.testId}-${l.id}`,children:l.title}),l.paragraphs.map(p=>T.jsx("p",{children:p},p))]},l.id))}),T.jsxs("section",{className:"legal-page__sources","aria-labelledby":`${n.testId}-sources`,children:[T.jsx("h2",{id:`${n.testId}-sources`,children:n.sourcesLabel}),T.jsx("ul",{children:n.sources.map(l=>T.jsx("li",{children:T.jsx("a",{href:l.url,children:l.label})},l.id))})]})]})}function Db(){const{locale:n}=Lt(),s=(n==="en"?no:to).contact,c=gf(Un);return T.jsx(io,{content:s,children:T.jsxs("section",{className:"legal-page__operator","aria-labelledby":"contact-operator",children:[T.jsx("h2",{id:"contact-operator",children:s.operatorTitle}),c?T.jsxs("address",{children:[T.jsx("strong",{children:Un.name}),T.jsxs("a",{href:`mailto:${Un.email}`,children:[s.emailLabel,": ",Un.email]})]}):T.jsx("p",{className:"legal-page__gate",children:s.operatorMissing})]})})}const kb="/assets/qr-preview-DebKZAhx.svg",Hb=[{kind:"qr",title:"home.qrTitle",body:"home.qrBody",icon:Tb},{kind:"pdf",title:"home.pdfTitle",body:"home.pdfBody",icon:ff},{kind:"convert",title:"home.convertTitle",body:"home.convertBody",icon:sb}];function Mb({kind:n,t:s}){return n==="qr"?T.jsxs("div",{className:"tool-preview tool-preview--qr","aria-hidden":"true",children:[T.jsxs("div",{className:"qr-sample",children:[T.jsx("img",{src:kb,alt:"",width:"156",height:"156"}),T.jsx("span",{className:"qr-sample__mark",children:"f."})]}),T.jsxs("div",{className:"preview-swatches",children:[T.jsx("span",{}),T.jsx("span",{}),T.jsx("span",{})]})]}):n==="pdf"?T.jsxs("div",{className:"tool-preview tool-preview--pdf","aria-hidden":"true",children:[T.jsxs("div",{className:"pdf-sample",children:[T.jsx("span",{className:"pdf-sample__tag",children:"PDF"}),T.jsx("strong",{children:s("home.sampleTitle")}),T.jsx("p",{children:s("home.sampleLine1")}),T.jsx("mark",{children:s("home.sampleLine2")}),T.jsx("p",{children:s("home.sampleLine3")}),T.jsx("span",{className:"pdf-sample__cursor"})]}),T.jsxs("div",{className:"pdf-sample__toolbar",children:[T.jsx("span",{children:"T"}),T.jsx("span",{children:"↗"}),T.jsx("span",{children:"✓"})]})]}):T.jsxs("div",{className:"tool-preview tool-preview--convert","aria-hidden":"true",children:[T.jsxs("div",{className:"convert-sample",children:[T.jsx(mf,{size:26,stroke:1.5}),T.jsx("span",{children:"PNG"}),T.jsx(Ki,{size:22}),T.jsx("strong",{children:"WEBP"})]}),T.jsxs("div",{className:"convert-sample convert-sample--secondary",children:[T.jsx(ff,{size:26,stroke:1.5}),T.jsx("span",{children:"PDF"}),T.jsx(Ki,{size:22}),T.jsx("strong",{children:"JPG"})]})]})}function zb({onOpenCore:n,onOpenCatalog:s,editors:c=[]}){const{t:l}=Lt();return T.jsxs("div",{className:"home-page page-frame studio-home",children:[T.jsx("section",{className:"home-hero","aria-labelledby":"home-title",children:T.jsxs("div",{className:"heading-group",children:[T.jsx("h1",{id:"home-title",className:"display",children:l("home.title")}),T.jsx("p",{className:"home-hero__intro",children:l("home.intro")})]})}),T.jsxs("section",{className:"core-entry-section","aria-label":l("home.eyebrow"),children:[T.jsx("div",{className:"core-entry-grid",children:Hb.map(p=>T.jsxs("button",{className:`core-entry core-entry--${p.kind}`,type:"button","aria-label":l(p.title),onClick:()=>n(p.kind),children:[T.jsx(Mb,{kind:p.kind,t:l}),T.jsxs("span",{className:"core-entry__content",children:[T.jsxs("span",{className:"core-entry__title",children:[T.jsx(p.icon,{size:22,stroke:1.7,"aria-hidden":"true"}),l(p.title)]}),T.jsx("span",{className:"core-entry__body",children:l(p.body)})]}),T.jsx("span",{className:"core-entry__go","aria-hidden":"true",children:T.jsx(Ki,{size:22})})]},p.kind))}),T.jsxs("button",{className:"calculator-entry",type:"button",onClick:()=>n("calculate"),children:[T.jsx("span",{className:"calculator-entry__icon","aria-hidden":"true",children:T.jsx(cb,{size:26,stroke:1.6})}),T.jsxs("span",{children:[T.jsx("strong",{children:l("home.calculateTitle")}),T.jsx("span",{children:l("home.calculateBody")})]}),T.jsx(Ki,{size:22,"aria-hidden":"true"})]}),c.length>0&&T.jsx("div",{className:"editor-entry-grid",children:c.map(p=>T.jsxs("button",{className:"editor-entry",type:"button",onClick:()=>n(p),children:[p==="image"?T.jsx(mf,{size:24,"aria-hidden":"true"}):T.jsx(gb,{size:24,"aria-hidden":"true"}),T.jsxs("span",{children:[T.jsx("strong",{children:l(p==="image"?"catalog.imageEditor":"catalog.audioTrim")}),T.jsx("span",{children:l(p==="image"?"catalog.imageEditorDescription":"catalog.audioTrimDescription")})]}),T.jsx(Ki,{size:21,"aria-hidden":"true"})]},p))}),T.jsxs("button",{className:"catalog-link",type:"button",onClick:s,children:[l("home.catalogLink"),T.jsx(Ki,{size:18,"aria-hidden":"true"})]})]})]})}const Ub=`# Folkkit Third-Party Notices
+
+This file is generated deterministically from \`bun.lock\` and \`scripts/runtime-assets.json\`. Do not edit it manually.
+
+## Application license and upstream attribution
+
+- Folkkit is licensed under \`AGPL-3.0-only\`.
+- License text: GNU Affero General Public License 3.0
+- Upstream project: MercuriusDream/convert-everything
+
+## Bundled runtime packages
+
+The locked runtime graph contains 52 direct and transitive packages. License identifiers and source links come from the installed package metadata for the exact locked versions. Available license, licence, copying, and notice files are preserved below.
+
+### @bjorn3/browser_wasi_shim 0.4.2
+
+- License: \`MIT OR Apache-2.0\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/browser-wasi-shim-0.4.2-LICENSE-MIT.txt</summary>
+
+\`\`\`text
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+<details>
+<summary>scripts/license-texts/browser-wasi-shim-0.4.2-LICENSE-APACHE.txt</summary>
+
+\`\`\`text
+                                 Apache License
+                           Version 2.0, January 2004
+                        [external reference listed in repository notices]
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       [external reference listed in repository notices]
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+\`\`\`
+
+</details>
+
+### @embedpdf/pdfium 2.15.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2024 CloudPDF, Ji Chang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+<details>
+<summary>LICENSE.pdfium</summary>
+
+\`\`\`text
+// Copyright 2014 PDFium Authors. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//    * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//    * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+                                 Apache License
+                           Version 2.0, January 2004
+                        [external reference listed in repository notices]
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+   1. Definitions.
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+   END OF TERMS AND CONDITIONS
+   APPENDIX: How to apply the Apache License to your work.
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+   Copyright [yyyy] [name of copyright owner]
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       [external reference listed in repository notices]
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+\`\`\`
+
+</details>
+
+### @ffmpeg/core 0.12.10
+
+- License: \`GPL-2.0-or-later\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/GPL-2.0-or-later.txt</summary>
+
+\`\`\`text
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 2, June 1991
+
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
+ [external reference listed in repository notices]
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The licenses for most software are designed to take away your
+freedom to share and change it.  By contrast, the GNU General Public
+License is intended to guarantee your freedom to share and change free
+software--to make sure the software is free for all its users.  This
+General Public License applies to most of the Free Software
+Foundation's software and to any other program whose authors commit to
+using it.  (Some other Free Software Foundation software is covered by
+the GNU Lesser General Public License instead.)  You can apply it to
+your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+this service if you wish), that you receive source code or can get it
+if you want it, that you can change the software or use pieces of it
+in new free programs; and that you know you can do these things.
+
+  To protect your rights, we need to make restrictions that forbid
+anyone to deny you these rights or to ask you to surrender the rights.
+These restrictions translate to certain responsibilities for you if you
+distribute copies of the software, or if you modify it.
+
+  For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must give the recipients all the rights that
+you have.  You must make sure that they, too, receive or can get the
+source code.  And you must show them these terms so they know their
+rights.
+
+  We protect your rights with two steps: (1) copyright the software, and
+(2) offer you this license which gives you legal permission to copy,
+distribute and/or modify the software.
+
+  Also, for each author's protection and ours, we want to make certain
+that everyone understands that there is no warranty for this free
+software.  If the software is modified by someone else and passed on, we
+want its recipients to know that what they have is not the original, so
+that any problems introduced by others will not reflect on the original
+authors' reputations.
+
+  Finally, any free program is threatened constantly by software
+patents.  We wish to avoid the danger that redistributors of a free
+program will individually obtain patent licenses, in effect making the
+program proprietary.  To prevent this, we have made it clear that any
+patent must be licensed for everyone's free use or not licensed at all.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                    GNU GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License applies to any program or other work which contains
+a notice placed by the copyright holder saying it may be distributed
+under the terms of this General Public License.  The "Program", below,
+refers to any such program or work, and a "work based on the Program"
+means either the Program or any derivative work under copyright law:
+that is to say, a work containing the Program or a portion of it,
+either verbatim or with modifications and/or translated into another
+language.  (Hereinafter, translation is included without limitation in
+the term "modification".)  Each licensee is addressed as "you".
+
+Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running the Program is not restricted, and the output from the Program
+is covered only if its contents constitute a work based on the
+Program (independent of having been made by running the Program).
+Whether that is true depends on what the Program does.
+
+  1. You may copy and distribute verbatim copies of the Program's
+source code as you receive it, in any medium, provided that you
+conspicuously and appropriately publish on each copy an appropriate
+copyright notice and disclaimer of warranty; keep intact all the
+notices that refer to this License and to the absence of any warranty;
+and give any other recipients of the Program a copy of this License
+along with the Program.
+
+You may charge a fee for the physical act of transferring a copy, and
+you may at your option offer warranty protection in exchange for a fee.
+
+  2. You may modify your copy or copies of the Program or any portion
+of it, thus forming a work based on the Program, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+    a) You must cause the modified files to carry prominent notices
+    stating that you changed the files and the date of any change.
+
+    b) You must cause any work that you distribute or publish, that in
+    whole or in part contains or is derived from the Program or any
+    part thereof, to be licensed as a whole at no charge to all third
+    parties under the terms of this License.
+
+    c) If the modified program normally reads commands interactively
+    when run, you must cause it, when started running for such
+    interactive use in the most ordinary way, to print or display an
+    announcement including an appropriate copyright notice and a
+    notice that there is no warranty (or else, saying that you provide
+    a warranty) and that users may redistribute the program under
+    these conditions, and telling the user how to view a copy of this
+    License.  (Exception: if the Program itself is interactive but
+    does not normally print such an announcement, your work based on
+    the Program is not required to print an announcement.)
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Program,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Program, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Program.
+
+In addition, mere aggregation of another work not based on the Program
+with the Program (or with a work based on the Program) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+  3. You may copy and distribute the Program (or a work based on it,
+under Section 2) in object code or executable form under the terms of
+Sections 1 and 2 above provided that you also do one of the following:
+
+    a) Accompany it with the complete corresponding machine-readable
+    source code, which must be distributed under the terms of Sections
+    1 and 2 above on a medium customarily used for software interchange; or,
+
+    b) Accompany it with a written offer, valid for at least three
+    years, to give any third party, for a charge no more than your
+    cost of physically performing source distribution, a complete
+    machine-readable copy of the corresponding source code, to be
+    distributed under the terms of Sections 1 and 2 above on a medium
+    customarily used for software interchange; or,
+
+    c) Accompany it with the information you received as to the offer
+    to distribute corresponding source code.  (This alternative is
+    allowed only for noncommercial distribution and only if you
+    received the program in object code or executable form with such
+    an offer, in accord with Subsection b above.)
+
+The source code for a work means the preferred form of the work for
+making modifications to it.  For an executable work, complete source
+code means all the source code for all modules it contains, plus any
+associated interface definition files, plus the scripts used to
+control compilation and installation of the executable.  However, as a
+special exception, the source code distributed need not include
+anything that is normally distributed (in either source or binary
+form) with the major components (compiler, kernel, and so on) of the
+operating system on which the executable runs, unless that component
+itself accompanies the executable.
+
+If distribution of executable or object code is made by offering
+access to copy from a designated place, then offering equivalent
+access to copy the source code from the same place counts as
+distribution of the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+  4. You may not copy, modify, sublicense, or distribute the Program
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense or distribute the Program is
+void, and will automatically terminate your rights under this License.
+However, parties who have received copies, or rights, from you under
+this License will not have their licenses terminated so long as such
+parties remain in full compliance.
+
+  5. You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Program or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Program (or any work based on the
+Program), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Program or works based on it.
+
+  6. Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the
+original licensor to copy, distribute or modify the Program subject to
+these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties to
+this License.
+
+  7. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Program at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Program by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Program.
+
+If any portion of this section is held invalid or unenforceable under
+any particular circumstance, the balance of the section is intended to
+apply and the section as a whole is intended to apply in other
+circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system, which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+  8. If the distribution and/or use of the Program is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Program under this License
+may add an explicit geographical distribution limitation excluding
+those countries, so that distribution is permitted only in or among
+countries not thus excluded.  In such case, this License incorporates
+the limitation as if written in the body of this License.
+
+  9. The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of this License which applies to it and "any
+later version", you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+this License, you may choose any version ever published by the Free Software
+Foundation.
+
+  10. If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+
+                            NO WARRANTY
+
+  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+                     END OF TERMS AND CONDITIONS
+
+            How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+convey the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, see [external reference listed in repository notices].
+
+Also add information on how to contact you by electronic and paper mail.
+
+If the program is interactive, make it output a short notice like this
+when it starts in an interactive mode:
+
+    Gnomovision version 69, Copyright (C) year name of author
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type \`show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type \`show c' for details.
+
+The hypothetical commands \`show w' and \`show c' should show the appropriate
+parts of the General Public License.  Of course, the commands you use may
+be called something other than \`show w' and \`show c'; they could even be
+mouse-clicks or menu items--whatever suits your program.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  Here is a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the program
+  \`Gnomovision' (which makes passes at compilers) written by James Hacker.
+
+  <signature of Moe Ghoul>, 1 April 1989
+  Moe Ghoul, President of Vice
+
+This General Public License does not permit incorporating your program into
+proprietary programs.  If your program is a subroutine library, you may
+consider it more useful to permit linking proprietary applications with the
+library.  If this is what you want to do, use the GNU Lesser General
+Public License instead of this License.
+\`\`\`
+
+</details>
+
+### @ffmpeg/ffmpeg 0.12.15
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/MIT-ffmpegwasm.txt</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2019 Jerome Wu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### @ffmpeg/types 0.12.4
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/MIT-ffmpegwasm.txt</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2019 Jerome Wu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### @ffmpeg/util 0.12.2
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/MIT-ffmpegwasm.txt</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2019 Jerome Wu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### @pdf-lib/standard-fonts 1.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.md</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2018 Andrew Dillon
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### @pdf-lib/upng 1.0.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2017 Photopea
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### @tabler/icons 3.46.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2020-2026 Paweł Kuna
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### @tabler/icons-react 3.46.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2020-2026 Paweł Kuna
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### ansi-regex 5.0.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### ansi-styles 4.3.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### camelcase 5.3.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### cliui 6.0.0
+
+- License: \`ISC\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.txt</summary>
+
+\`\`\`text
+Copyright (c) 2015, Contributors
+
+Permission to use, copy, modify, and/or distribute this software
+for any purpose with or without fee is hereby granted, provided
+that the above copyright notice and this permission notice
+appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE
+LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### color-convert 2.0.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+Copyright (c) 2011-2016 Heather Arthur <fayearthur@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### color-name 1.1.4
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+The MIT License (MIT)
+Copyright (c) 2015 Dmitry Ivanov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### decamelize 1.2.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+The MIT License (MIT)
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### dijkstrajs 1.0.3
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.md</summary>
+
+\`\`\`\`text
+\`\`\`
+Dijkstra path-finding functions. Adapted from the Dijkstar Python project.
+
+Copyright (C) 2008
+  Wyatt Baldwin <self@wyattbaldwin.com>
+  All rights reserved
+
+Licensed under the MIT license.
+
+  [external reference listed in repository notices]
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+\`\`\`
+\`\`\`\`
+
+</details>
+
+### emoji-regex 8.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE-MIT.txt</summary>
+
+\`\`\`text
+Copyright Mathias Bynens [external reference listed in repository notices]
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### entities 8.0.0
+
+- License: \`BSD-2-Clause\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+Copyright (c) Felix Böhm
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+\`\`\`
+
+</details>
+
+### fflate 0.8.2
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2023 Arjun Barrett
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### find-up 5.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> ([external reference listed in repository notices])
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### get-caller-file 2.0.5
+
+- License: \`ISC\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.md</summary>
+
+\`\`\`text
+ISC License (ISC)
+Copyright 2018 Stefan Penner
+
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### is-fullwidth-code-point 3.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### jsqr 1.4.0
+
+- License: \`Apache-2.0\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+                                 Apache License
+                           Version 2.0, January 2004
+                        [external reference listed in repository notices]
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "{}"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright {yyyy} {name of copyright owner}
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       [external reference listed in repository notices]
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+\`\`\`
+
+</details>
+
+### locate-path 6.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> ([external reference listed in repository notices])
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### p-limit 3.1.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> ([external reference listed in repository notices])
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### p-locate 5.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> ([external reference listed in repository notices])
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### pako 1.0.11
+
+- License: \`(MIT AND Zlib)\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>node_modules/pako/LICENSE</summary>
+
+\`\`\`text
+(The MIT License)
+
+Copyright (C) 2014-2017 by Vitaly Puzrin and Andrei Tuputcyn
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+\`\`\`
+
+</details>
+
+<details>
+<summary>node_modules/pako/lib/zlib/README</summary>
+
+\`\`\`text
+Content of this folder follows zlib C sources as close as possible.
+That's intended to simplify maintainability and guarantee equal API
+and result.
+
+Key differences:
+
+- Everything is in JavaScript.
+- No platform-dependent blocks.
+- Some things like crc32 rewritten to keep size small and make JIT
+  work better.
+- Some code is different due missed features in JS (macros, pointers,
+  structures, header files)
+- Specific API methods are not implemented (see notes in root readme)
+
+This port is based on zlib 1.2.8.
+
+This port is under zlib license (see below) with contribution and addition of javascript
+port under expat license (see LICENSE at root of project)
+
+Copyright:
+(C) 1995-2013 Jean-loup Gailly and Mark Adler
+(C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
+
+
+From zlib's README
+=============================================================================
+
+Acknowledgments:
+
+  The deflate format used by zlib was defined by Phil Katz.  The deflate and
+  zlib specifications were written by L.  Peter Deutsch.  Thanks to all the
+  people who reported problems and suggested various improvements in zlib; they
+  are too numerous to cite here.
+
+Copyright notice:
+
+ (C) 1995-2013 Jean-loup Gailly and Mark Adler
+
+Copyright (c) <''year''> <''copyright holders''>
+
+This software is provided 'as-is', without any express or implied
+warranty. In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+
+  Jean-loup Gailly        Mark Adler
+  jloup@gzip.org          madler@alumni.caltech.edu
+\`\`\`
+
+</details>
+
+### pandoc-wasm 1.1.0
+
+- License: \`GPL-2.0-or-later\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+The JavaScript library code in this repository is licensed under the MIT License:
+
+MIT License
+
+Copyright (c) Tweag I/O Limited, Johannes Wilm, and pandoc-wasm contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Pandoc is released under the [GPL], version 2 or later:
+
+Copyright (C) 2006-2024 John MacFarlane <jgm at berkeley dot edu>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, see [external reference listed in repository notices].
+
+The GNU General Public License is available in the file COPYING.md in
+the source distribution. On Debian systems, the complete text of the
+GPL can be found in \`/usr/share/common-licenses/GPL\`.
+
+[GPL]: [external reference listed in repository notices]
+
+The complete source code for pandoc version X.Y.Z is available at
+[external reference listed in repository notices]
+and at [external reference listed in repository notices].
+
+Pandoc includes some code with different copyrights, or subject to different
+licenses. The copyright and license statements for these sources are included
+in the COPYRIGHT file in the above pandoc version X.Y.Z repositories. All are
+GPL-compatible licenses.
+\`\`\`
+
+</details>
+
+### parse5 8.0.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+Copyright (c) 2013-2019 Ivan Nikulin (ifaaan@gmail.com, [external reference listed in repository notices])
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### path-exists 4.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### pdf-lib 1.17.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.md</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2019 Andrew Dillon
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### pngjs 7.0.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+pngjs original work Copyright (c) 2015 Luke Page & Original Contributors
+pngjs derived work Copyright (c) 2012 Kuba Niegowski
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### qr-code-styling 1.9.2
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2019 Denys Kozak
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### qrcode 1.5.4
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+The MIT License (MIT)
+
+Copyright (c) 2012 Ryan Day
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### qrcode-generator 1.5.2
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/MIT-qrcode-generator.txt</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2009 Kazuhiko Arase
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### react 19.2.8
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Meta Platforms, Inc. and affiliates.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### react-dom 19.2.8
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Meta Platforms, Inc. and affiliates.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### require-directory 2.1.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+The MIT License (MIT)
+
+Copyright (c) 2011 Troy Goode <troygoode@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### require-main-filename 2.0.0
+
+- License: \`ISC\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.txt</summary>
+
+\`\`\`text
+Copyright (c) 2016, Contributors
+
+Permission to use, copy, modify, and/or distribute this software
+for any purpose with or without fee is hereby granted, provided
+that the above copyright notice and this permission notice
+appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE
+LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### scheduler 0.27.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Meta Platforms, Inc. and affiliates.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### set-blocking 2.0.0
+
+- License: \`ISC\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.txt</summary>
+
+\`\`\`text
+Copyright (c) 2016, Contributors
+
+Permission to use, copy, modify, and/or distribute this software
+for any purpose with or without fee is hereby granted, provided
+that the above copyright notice and this permission notice
+appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE
+LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### string-width 4.2.3
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### strip-ansi 6.0.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### tslib 1.14.1
+
+- License: \`0BSD\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.txt</summary>
+
+\`\`\`text
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### which-module 2.0.1
+
+- License: \`ISC\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+Copyright (c) 2016, Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright notice
+and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### wrap-ansi 6.2.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### y18n 4.0.3
+
+- License: \`ISC\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+Copyright (c) 2015, Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright notice
+and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### yargs 15.4.1
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+MIT License
+
+Copyright 2010 James Halliday (mail@substack.net); Modified work Copyright 2014 Contributors (ben@npmjs.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+\`\`\`
+
+</details>
+
+### yargs-parser 18.1.3
+
+- License: \`ISC\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE.txt</summary>
+
+\`\`\`text
+Copyright (c) 2016, Contributors
+
+Permission to use, copy, modify, and/or distribute this software
+for any purpose with or without fee is hereby granted, provided
+that the above copyright notice and this permission notice
+appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE
+LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+\`\`\`
+
+</details>
+
+### yocto-queue 0.1.0
+
+- License: \`MIT\`
+- Source: [external reference listed in repository notices]
+
+<details>
+<summary>license</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> ([external reference listed in repository notices])
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\`\`\`
+
+</details>
+
+## Manually registered runtime assets
+
+These assets require an explicit record because a JavaScript lockfile alone does not prove coverage of copied files or WebAssembly.
+
+### FFmpeg / ffmpeg.wasm runtime assets 0.12.10
+
+- License: \`GPL-2.0-or-later\`
+- Source: [external reference listed in repository notices]
+- Deployed paths: \`public/vendor/ffmpeg/ffmpeg-core.js\`, \`public/vendor/ffmpeg/ffmpeg-core.wasm\`
+- FFmpeg licensing: [external reference listed in repository notices]
+- GNU GPL 2.0: [external reference listed in repository notices]
+- GNU LGPL 2.1: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/GPL-2.0-or-later.txt</summary>
+
+\`\`\`text
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 2, June 1991
+
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
+ [external reference listed in repository notices]
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The licenses for most software are designed to take away your
+freedom to share and change it.  By contrast, the GNU General Public
+License is intended to guarantee your freedom to share and change free
+software--to make sure the software is free for all its users.  This
+General Public License applies to most of the Free Software
+Foundation's software and to any other program whose authors commit to
+using it.  (Some other Free Software Foundation software is covered by
+the GNU Lesser General Public License instead.)  You can apply it to
+your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+this service if you wish), that you receive source code or can get it
+if you want it, that you can change the software or use pieces of it
+in new free programs; and that you know you can do these things.
+
+  To protect your rights, we need to make restrictions that forbid
+anyone to deny you these rights or to ask you to surrender the rights.
+These restrictions translate to certain responsibilities for you if you
+distribute copies of the software, or if you modify it.
+
+  For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must give the recipients all the rights that
+you have.  You must make sure that they, too, receive or can get the
+source code.  And you must show them these terms so they know their
+rights.
+
+  We protect your rights with two steps: (1) copyright the software, and
+(2) offer you this license which gives you legal permission to copy,
+distribute and/or modify the software.
+
+  Also, for each author's protection and ours, we want to make certain
+that everyone understands that there is no warranty for this free
+software.  If the software is modified by someone else and passed on, we
+want its recipients to know that what they have is not the original, so
+that any problems introduced by others will not reflect on the original
+authors' reputations.
+
+  Finally, any free program is threatened constantly by software
+patents.  We wish to avoid the danger that redistributors of a free
+program will individually obtain patent licenses, in effect making the
+program proprietary.  To prevent this, we have made it clear that any
+patent must be licensed for everyone's free use or not licensed at all.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                    GNU GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License applies to any program or other work which contains
+a notice placed by the copyright holder saying it may be distributed
+under the terms of this General Public License.  The "Program", below,
+refers to any such program or work, and a "work based on the Program"
+means either the Program or any derivative work under copyright law:
+that is to say, a work containing the Program or a portion of it,
+either verbatim or with modifications and/or translated into another
+language.  (Hereinafter, translation is included without limitation in
+the term "modification".)  Each licensee is addressed as "you".
+
+Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running the Program is not restricted, and the output from the Program
+is covered only if its contents constitute a work based on the
+Program (independent of having been made by running the Program).
+Whether that is true depends on what the Program does.
+
+  1. You may copy and distribute verbatim copies of the Program's
+source code as you receive it, in any medium, provided that you
+conspicuously and appropriately publish on each copy an appropriate
+copyright notice and disclaimer of warranty; keep intact all the
+notices that refer to this License and to the absence of any warranty;
+and give any other recipients of the Program a copy of this License
+along with the Program.
+
+You may charge a fee for the physical act of transferring a copy, and
+you may at your option offer warranty protection in exchange for a fee.
+
+  2. You may modify your copy or copies of the Program or any portion
+of it, thus forming a work based on the Program, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+    a) You must cause the modified files to carry prominent notices
+    stating that you changed the files and the date of any change.
+
+    b) You must cause any work that you distribute or publish, that in
+    whole or in part contains or is derived from the Program or any
+    part thereof, to be licensed as a whole at no charge to all third
+    parties under the terms of this License.
+
+    c) If the modified program normally reads commands interactively
+    when run, you must cause it, when started running for such
+    interactive use in the most ordinary way, to print or display an
+    announcement including an appropriate copyright notice and a
+    notice that there is no warranty (or else, saying that you provide
+    a warranty) and that users may redistribute the program under
+    these conditions, and telling the user how to view a copy of this
+    License.  (Exception: if the Program itself is interactive but
+    does not normally print such an announcement, your work based on
+    the Program is not required to print an announcement.)
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Program,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Program, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Program.
+
+In addition, mere aggregation of another work not based on the Program
+with the Program (or with a work based on the Program) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+  3. You may copy and distribute the Program (or a work based on it,
+under Section 2) in object code or executable form under the terms of
+Sections 1 and 2 above provided that you also do one of the following:
+
+    a) Accompany it with the complete corresponding machine-readable
+    source code, which must be distributed under the terms of Sections
+    1 and 2 above on a medium customarily used for software interchange; or,
+
+    b) Accompany it with a written offer, valid for at least three
+    years, to give any third party, for a charge no more than your
+    cost of physically performing source distribution, a complete
+    machine-readable copy of the corresponding source code, to be
+    distributed under the terms of Sections 1 and 2 above on a medium
+    customarily used for software interchange; or,
+
+    c) Accompany it with the information you received as to the offer
+    to distribute corresponding source code.  (This alternative is
+    allowed only for noncommercial distribution and only if you
+    received the program in object code or executable form with such
+    an offer, in accord with Subsection b above.)
+
+The source code for a work means the preferred form of the work for
+making modifications to it.  For an executable work, complete source
+code means all the source code for all modules it contains, plus any
+associated interface definition files, plus the scripts used to
+control compilation and installation of the executable.  However, as a
+special exception, the source code distributed need not include
+anything that is normally distributed (in either source or binary
+form) with the major components (compiler, kernel, and so on) of the
+operating system on which the executable runs, unless that component
+itself accompanies the executable.
+
+If distribution of executable or object code is made by offering
+access to copy from a designated place, then offering equivalent
+access to copy the source code from the same place counts as
+distribution of the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+  4. You may not copy, modify, sublicense, or distribute the Program
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense or distribute the Program is
+void, and will automatically terminate your rights under this License.
+However, parties who have received copies, or rights, from you under
+this License will not have their licenses terminated so long as such
+parties remain in full compliance.
+
+  5. You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Program or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Program (or any work based on the
+Program), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Program or works based on it.
+
+  6. Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the
+original licensor to copy, distribute or modify the Program subject to
+these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties to
+this License.
+
+  7. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Program at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Program by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Program.
+
+If any portion of this section is held invalid or unenforceable under
+any particular circumstance, the balance of the section is intended to
+apply and the section as a whole is intended to apply in other
+circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system, which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+  8. If the distribution and/or use of the Program is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Program under this License
+may add an explicit geographical distribution limitation excluding
+those countries, so that distribution is permitted only in or among
+countries not thus excluded.  In such case, this License incorporates
+the limitation as if written in the body of this License.
+
+  9. The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of this License which applies to it and "any
+later version", you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+this License, you may choose any version ever published by the Free Software
+Foundation.
+
+  10. If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+
+                            NO WARRANTY
+
+  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+                     END OF TERMS AND CONDITIONS
+
+            How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+convey the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, see [external reference listed in repository notices].
+
+Also add information on how to contact you by electronic and paper mail.
+
+If the program is interactive, make it output a short notice like this
+when it starts in an interactive mode:
+
+    Gnomovision version 69, Copyright (C) year name of author
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type \`show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type \`show c' for details.
+
+The hypothetical commands \`show w' and \`show c' should show the appropriate
+parts of the General Public License.  Of course, the commands you use may
+be called something other than \`show w' and \`show c'; they could even be
+mouse-clicks or menu items--whatever suits your program.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  Here is a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the program
+  \`Gnomovision' (which makes passes at compilers) written by James Hacker.
+
+  <signature of Moe Ghoul>, 1 April 1989
+  Moe Ghoul, President of Vice
+
+This General Public License does not permit incorporating your program into
+proprietary programs.  If your program is a subroutine library, you may
+consider it more useful to permit linking proprietary applications with the
+library.  If this is what you want to do, use the GNU Lesser General
+Public License instead of this License.
+\`\`\`
+
+</details>
+
+<details>
+<summary>scripts/license-texts/LGPL-2.1-or-later.txt</summary>
+
+\`\`\`text
+                  GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 2.1, February 1999
+
+ Copyright (C) 1991, 1999 Free Software Foundation, Inc.
+ [external reference listed in repository notices]
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+[This is the first released version of the Lesser GPL.  It also counts
+ as the successor of the GNU Library Public License, version 2, hence
+ the version number 2.1.]
+
+                            Preamble
+
+  The licenses for most software are designed to take away your
+freedom to share and change it.  By contrast, the GNU General Public
+Licenses are intended to guarantee your freedom to share and change
+free software--to make sure the software is free for all its users.
+
+  This license, the Lesser General Public License, applies to some
+specially designated software packages--typically libraries--of the
+Free Software Foundation and other authors who decide to use it.  You
+can use it too, but we suggest you first think carefully about whether
+this license or the ordinary General Public License is the better
+strategy to use in any particular case, based on the explanations below.
+
+  When we speak of free software, we are referring to freedom of use,
+not price.  Our General Public Licenses are designed to make sure that
+you have the freedom to distribute copies of free software (and charge
+for this service if you wish); that you receive source code or can get
+it if you want it; that you can change the software and use pieces of
+it in new free programs; and that you are informed that you can do
+these things.
+
+  To protect your rights, we need to make restrictions that forbid
+distributors to deny you these rights or to ask you to surrender these
+rights.  These restrictions translate to certain responsibilities for
+you if you distribute copies of the library or if you modify it.
+
+  For example, if you distribute copies of the library, whether gratis
+or for a fee, you must give the recipients all the rights that we gave
+you.  You must make sure that they, too, receive or can get the source
+code.  If you link other code with the library, you must provide
+complete object files to the recipients, so that they can relink them
+with the library after making changes to the library and recompiling
+it.  And you must show them these terms so they know their rights.
+
+  We protect your rights with a two-step method: (1) we copyright the
+library, and (2) we offer you this license, which gives you legal
+permission to copy, distribute and/or modify the library.
+
+  To protect each distributor, we want to make it very clear that
+there is no warranty for the free library.  Also, if the library is
+modified by someone else and passed on, the recipients should know
+that what they have is not the original version, so that the original
+author's reputation will not be affected by problems that might be
+introduced by others.
+\f
+  Finally, software patents pose a constant threat to the existence of
+any free program.  We wish to make sure that a company cannot
+effectively restrict the users of a free program by obtaining a
+restrictive license from a patent holder.  Therefore, we insist that
+any patent license obtained for a version of the library must be
+consistent with the full freedom of use specified in this license.
+
+  Most GNU software, including some libraries, is covered by the
+ordinary GNU General Public License.  This license, the GNU Lesser
+General Public License, applies to certain designated libraries, and
+is quite different from the ordinary General Public License.  We use
+this license for certain libraries in order to permit linking those
+libraries into non-free programs.
+
+  When a program is linked with a library, whether statically or using
+a shared library, the combination of the two is legally speaking a
+combined work, a derivative of the original library.  The ordinary
+General Public License therefore permits such linking only if the
+entire combination fits its criteria of freedom.  The Lesser General
+Public License permits more lax criteria for linking other code with
+the library.
+
+  We call this license the "Lesser" General Public License because it
+does Less to protect the user's freedom than the ordinary General
+Public License.  It also provides other free software developers Less
+of an advantage over competing non-free programs.  These disadvantages
+are the reason we use the ordinary General Public License for many
+libraries.  However, the Lesser license provides advantages in certain
+special circumstances.
+
+  For example, on rare occasions, there may be a special need to
+encourage the widest possible use of a certain library, so that it becomes
+a de-facto standard.  To achieve this, non-free programs must be
+allowed to use the library.  A more frequent case is that a free
+library does the same job as widely used non-free libraries.  In this
+case, there is little to gain by limiting the free library to free
+software only, so we use the Lesser General Public License.
+
+  In other cases, permission to use a particular library in non-free
+programs enables a greater number of people to use a large body of
+free software.  For example, permission to use the GNU C Library in
+non-free programs enables many more people to use the whole GNU
+operating system, as well as its variant, the GNU/Linux operating
+system.
+
+  Although the Lesser General Public License is Less protective of the
+users' freedom, it does ensure that the user of a program that is
+linked with the Library has the freedom and the wherewithal to run
+that program using a modified version of the Library.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.  Pay close attention to the difference between a
+"work based on the library" and a "work that uses the library".  The
+former contains code derived from the library, whereas the latter must
+be combined with the library in order to run.
+\f
+                  GNU LESSER GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License Agreement applies to any software library or other
+program which contains a notice placed by the copyright holder or
+other authorized party saying it may be distributed under the terms of
+this Lesser General Public License (also called "this License").
+Each licensee is addressed as "you".
+
+  A "library" means a collection of software functions and/or data
+prepared so as to be conveniently linked with application programs
+(which use some of those functions and data) to form executables.
+
+  The "Library", below, refers to any such software library or work
+which has been distributed under these terms.  A "work based on the
+Library" means either the Library or any derivative work under
+copyright law: that is to say, a work containing the Library or a
+portion of it, either verbatim or with modifications and/or translated
+straightforwardly into another language.  (Hereinafter, translation is
+included without limitation in the term "modification".)
+
+  "Source code" for a work means the preferred form of the work for
+making modifications to it.  For a library, complete source code means
+all the source code for all modules it contains, plus any associated
+interface definition files, plus the scripts used to control compilation
+and installation of the library.
+
+  Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running a program using the Library is not restricted, and output from
+such a program is covered only if its contents constitute a work based
+on the Library (independent of the use of the Library in a tool for
+writing it).  Whether that is true depends on what the Library does
+and what the program that uses the Library does.
+
+  1. You may copy and distribute verbatim copies of the Library's
+complete source code as you receive it, in any medium, provided that
+you conspicuously and appropriately publish on each copy an
+appropriate copyright notice and disclaimer of warranty; keep intact
+all the notices that refer to this License and to the absence of any
+warranty; and distribute a copy of this License along with the
+Library.
+
+  You may charge a fee for the physical act of transferring a copy,
+and you may at your option offer warranty protection in exchange for a
+fee.
+\f
+  2. You may modify your copy or copies of the Library or any portion
+of it, thus forming a work based on the Library, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+    a) The modified work must itself be a software library.
+
+    b) You must cause the files modified to carry prominent notices
+    stating that you changed the files and the date of any change.
+
+    c) You must cause the whole of the work to be licensed at no
+    charge to all third parties under the terms of this License.
+
+    d) If a facility in the modified Library refers to a function or a
+    table of data to be supplied by an application program that uses
+    the facility, other than as an argument passed when the facility
+    is invoked, then you must make a good faith effort to ensure that,
+    in the event an application does not supply such function or
+    table, the facility still operates, and performs whatever part of
+    its purpose remains meaningful.
+
+    (For example, a function in a library to compute square roots has
+    a purpose that is entirely well-defined independent of the
+    application.  Therefore, Subsection 2d requires that any
+    application-supplied function or table used by this function must
+    be optional: if the application does not supply it, the square
+    root function must still compute square roots.)
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Library,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Library, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote
+it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Library.
+
+In addition, mere aggregation of another work not based on the Library
+with the Library (or with a work based on the Library) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+  3. You may opt to apply the terms of the ordinary GNU General Public
+License instead of this License to a given copy of the Library.  To do
+this, you must alter all the notices that refer to this License, so
+that they refer to the ordinary GNU General Public License, version 2,
+instead of to this License.  (If a newer version than version 2 of the
+ordinary GNU General Public License has appeared, then you can specify
+that version instead if you wish.)  Do not make any other change in
+these notices.
+\f
+  Once this change is made in a given copy, it is irreversible for
+that copy, so the ordinary GNU General Public License applies to all
+subsequent copies and derivative works made from that copy.
+
+  This option is useful when you wish to copy part of the code of
+the Library into a program that is not a library.
+
+  4. You may copy and distribute the Library (or a portion or
+derivative of it, under Section 2) in object code or executable form
+under the terms of Sections 1 and 2 above provided that you accompany
+it with the complete corresponding machine-readable source code, which
+must be distributed under the terms of Sections 1 and 2 above on a
+medium customarily used for software interchange.
+
+  If distribution of object code is made by offering access to copy
+from a designated place, then offering equivalent access to copy the
+source code from the same place satisfies the requirement to
+distribute the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+  5. A program that contains no derivative of any portion of the
+Library, but is designed to work with the Library by being compiled or
+linked with it, is called a "work that uses the Library".  Such a
+work, in isolation, is not a derivative work of the Library, and
+therefore falls outside the scope of this License.
+
+  However, linking a "work that uses the Library" with the Library
+creates an executable that is a derivative of the Library (because it
+contains portions of the Library), rather than a "work that uses the
+library".  The executable is therefore covered by this License.
+Section 6 states terms for distribution of such executables.
+
+  When a "work that uses the Library" uses material from a header file
+that is part of the Library, the object code for the work may be a
+derivative work of the Library even though the source code is not.
+Whether this is true is especially significant if the work can be
+linked without the Library, or if the work is itself a library.  The
+threshold for this to be true is not precisely defined by law.
+
+  If such an object file uses only numerical parameters, data
+structure layouts and accessors, and small macros and small inline
+functions (ten lines or less in length), then the use of the object
+file is unrestricted, regardless of whether it is legally a derivative
+work.  (Executables containing this object code plus portions of the
+Library will still fall under Section 6.)
+
+  Otherwise, if the work is a derivative of the Library, you may
+distribute the object code for the work under the terms of Section 6.
+Any executables containing that work also fall under Section 6,
+whether or not they are linked directly with the Library itself.
+\f
+  6. As an exception to the Sections above, you may also combine or
+link a "work that uses the Library" with the Library to produce a
+work containing portions of the Library, and distribute that work
+under terms of your choice, provided that the terms permit
+modification of the work for the customer's own use and reverse
+engineering for debugging such modifications.
+
+  You must give prominent notice with each copy of the work that the
+Library is used in it and that the Library and its use are covered by
+this License.  You must supply a copy of this License.  If the work
+during execution displays copyright notices, you must include the
+copyright notice for the Library among them, as well as a reference
+directing the user to the copy of this License.  Also, you must do one
+of these things:
+
+    a) Accompany the work with the complete corresponding
+    machine-readable source code for the Library including whatever
+    changes were used in the work (which must be distributed under
+    Sections 1 and 2 above); and, if the work is an executable linked
+    with the Library, with the complete machine-readable "work that
+    uses the Library", as object code and/or source code, so that the
+    user can modify the Library and then relink to produce a modified
+    executable containing the modified Library.  (It is understood
+    that the user who changes the contents of definitions files in the
+    Library will not necessarily be able to recompile the application
+    to use the modified definitions.)
+
+    b) Use a suitable shared library mechanism for linking with the
+    Library.  A suitable mechanism is one that (1) uses at run time a
+    copy of the library already present on the user's computer system,
+    rather than copying library functions into the executable, and (2)
+    will operate properly with a modified version of the library, if
+    the user installs one, as long as the modified version is
+    interface-compatible with the version that the work was made with.
+
+    c) Accompany the work with a written offer, valid for at
+    least three years, to give the same user the materials
+    specified in Subsection 6a, above, for a charge no more
+    than the cost of performing this distribution.
+
+    d) If distribution of the work is made by offering access to copy
+    from a designated place, offer equivalent access to copy the above
+    specified materials from the same place.
+
+    e) Verify that the user has already received a copy of these
+    materials or that you have already sent this user a copy.
+
+  For an executable, the required form of the "work that uses the
+Library" must include any data and utility programs needed for
+reproducing the executable from it.  However, as a special exception,
+the materials to be distributed need not include anything that is
+normally distributed (in either source or binary form) with the major
+components (compiler, kernel, and so on) of the operating system on
+which the executable runs, unless that component itself accompanies
+the executable.
+
+  It may happen that this requirement contradicts the license
+restrictions of other proprietary libraries that do not normally
+accompany the operating system.  Such a contradiction means you cannot
+use both them and the Library together in an executable that you
+distribute.
+\f
+  7. You may place library facilities that are a work based on the
+Library side-by-side in a single library together with other library
+facilities not covered by this License, and distribute such a combined
+library, provided that the separate distribution of the work based on
+the Library and of the other library facilities is otherwise
+permitted, and provided that you do these two things:
+
+    a) Accompany the combined library with a copy of the same work
+    based on the Library, uncombined with any other library
+    facilities.  This must be distributed under the terms of the
+    Sections above.
+
+    b) Give prominent notice with the combined library of the fact
+    that part of it is a work based on the Library, and explaining
+    where to find the accompanying uncombined form of the same work.
+
+  8. You may not copy, modify, sublicense, link with, or distribute
+the Library except as expressly provided under this License.  Any
+attempt otherwise to copy, modify, sublicense, link with, or
+distribute the Library is void, and will automatically terminate your
+rights under this License.  However, parties who have received copies,
+or rights, from you under this License will not have their licenses
+terminated so long as such parties remain in full compliance.
+
+  9. You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Library or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Library (or any work based on the
+Library), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Library or works based on it.
+
+  10. Each time you redistribute the Library (or any work based on the
+Library), the recipient automatically receives a license from the
+original licensor to copy, distribute, link with or modify the Library
+subject to these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties with
+this License.
+\f
+  11. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Library at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Library by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Library.
+
+If any portion of this section is held invalid or unenforceable under any
+particular circumstance, the balance of the section is intended to apply,
+and the section as a whole is intended to apply in other circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+  12. If the distribution and/or use of the Library is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Library under this License may add
+an explicit geographical distribution limitation excluding those countries,
+so that distribution is permitted only in or among countries not thus
+excluded.  In such case, this License incorporates the limitation as if
+written in the body of this License.
+
+  13. The Free Software Foundation may publish revised and/or new
+versions of the Lesser General Public License from time to time.
+Such new versions will be similar in spirit to the present version,
+but may differ in detail to address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Library
+specifies a version number of this License which applies to it and
+"any later version", you have the option of following the terms and
+conditions either of that version or of any later version published by
+the Free Software Foundation.  If the Library does not specify a
+license version number, you may choose any version ever published by
+the Free Software Foundation.
+\f
+  14. If you wish to incorporate parts of the Library into other free
+programs whose distribution conditions are incompatible with these,
+write to the author to ask for permission.  For software which is
+copyrighted by the Free Software Foundation, write to the Free
+Software Foundation; we sometimes make exceptions for this.  Our
+decision will be guided by the two goals of preserving the free status
+of all derivatives of our free software and of promoting the sharing
+and reuse of software generally.
+
+                            NO WARRANTY
+
+  15. BECAUSE THE LIBRARY IS LICENSED FREE OF CHARGE, THERE IS NO
+WARRANTY FOR THE LIBRARY, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
+EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+OTHER PARTIES PROVIDE THE LIBRARY "AS IS" WITHOUT WARRANTY OF ANY
+KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE
+LIBRARY IS WITH YOU.  SHOULD THE LIBRARY PROVE DEFECTIVE, YOU ASSUME
+THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+  16. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY
+AND/OR REDISTRIBUTE THE LIBRARY AS PERMITTED ABOVE, BE LIABLE TO YOU
+FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR
+CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+LIBRARY (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE LIBRARY TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGES.
+
+                     END OF TERMS AND CONDITIONS
+\f
+           How to Apply These Terms to Your New Libraries
+
+  If you develop a new library, and you want it to be of the greatest
+possible use to the public, we recommend making it free software that
+everyone can redistribute and change.  You can do so by permitting
+redistribution under these terms (or, alternatively, under the terms of the
+ordinary General Public License).
+
+  To apply these terms, attach the following notices to the library.  It is
+safest to attach them to the start of each source file to most effectively
+convey the exclusion of warranty; and each file should have at least the
+"copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the library's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, see [external reference listed in repository notices].
+
+Also add information on how to contact you by electronic and paper mail.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the library, if
+necessary.  Here is a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the
+  library \`Frob' (a library for tweaking knobs) written by James Random Hacker.
+
+  <signature of Moe Ghoul>, 1 April 1990
+  Moe Ghoul, President of Vice
+
+That's all there is to it!
+\`\`\`
+
+</details>
+
+<details>
+<summary>scripts/license-texts/MIT-ffmpegwasm.txt</summary>
+
+\`\`\`text
+MIT License
+
+Copyright (c) 2019 Jerome Wu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### Folkkit favicon 1
+
+- License: \`AGPL-3.0-only\`
+- Source: [external reference listed in repository notices]
+- Deployed paths: \`public/favicon.svg\`
+- GNU AGPL 3.0: [external reference listed in repository notices]
+
+<details>
+<summary>LICENSE</summary>
+
+\`\`\`text
+                    GNU AFFERO GENERAL PUBLIC LICENSE
+                       Version 3, 19 November 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. [external reference listed in repository notices]
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The GNU Affero General Public License is a free, copyleft license for
+software and other kinds of works, specifically designed to ensure
+cooperation with the community in the case of network server software.
+
+  The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+our General Public Licenses are intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains free
+software for all its users.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+them if you wish), that you receive source code or can get it if you
+want it, that you can change the software or use pieces of it in new
+free programs, and that you know you can do these things.
+
+  Developers that use our General Public Licenses protect your rights
+with two steps: (1) assert copyright on the software, and (2) offer
+you this License which gives you legal permission to copy, distribute
+and/or modify the software.
+
+  A secondary benefit of defending all users' freedom is that
+improvements made in alternate versions of the program, if they
+receive widespread use, become available for other developers to
+incorporate.  Many developers of free software are heartened and
+encouraged by the resulting cooperation.  However, in the case of
+software used on network servers, this result may fail to come about.
+The GNU General Public License permits making a modified version and
+letting the public access it on a server without ever releasing its
+source code to the public.
+
+  The GNU Affero General Public License is designed specifically to
+ensure that, in such cases, the modified source code becomes available
+to the community.  It requires the operator of a network server to
+provide the source code of the modified version running there to the
+users of that server.  Therefore, public use of a modified version, on
+a publicly accessible server, gives the public access to the source
+code of the modified version.
+
+  An older license, called the Affero General Public License and
+published by Affero, was designed to accomplish similar goals.  This is
+a different license, not a version of the Affero GPL, but Affero has
+released a new version of the Affero GPL which permits relicensing under
+this license.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                       TERMS AND CONDITIONS
+
+  0. Definitions.
+
+  "This License" refers to version 3 of the GNU Affero General Public License.
+
+  "Copyright" also means copyright-like laws that apply to other kinds of
+works, such as semiconductor masks.
+
+  "The Program" refers to any copyrightable work licensed under this
+License.  Each licensee is addressed as "you".  "Licensees" and
+"recipients" may be individuals or organizations.
+
+  To "modify" a work means to copy from or adapt all or part of the work
+in a fashion requiring copyright permission, other than the making of an
+exact copy.  The resulting work is called a "modified version" of the
+earlier work or a work "based on" the earlier work.
+
+  A "covered work" means either the unmodified Program or a work based
+on the Program.
+
+  To "propagate" a work means to do anything with it that, without
+permission, would make you directly or secondarily liable for
+infringement under applicable copyright law, except executing it on a
+computer or modifying a private copy.  Propagation includes copying,
+distribution (with or without modification), making available to the
+public, and in some countries other activities as well.
+
+  To "convey" a work means any kind of propagation that enables other
+parties to make or receive copies.  Mere interaction with a user through
+a computer network, with no transfer of a copy, is not conveying.
+
+  An interactive user interface displays "Appropriate Legal Notices"
+to the extent that it includes a convenient and prominently visible
+feature that (1) displays an appropriate copyright notice, and (2)
+tells the user that there is no warranty for the work (except to the
+extent that warranties are provided), that licensees may convey the
+work under this License, and how to view a copy of this License.  If
+the interface presents a list of user commands or options, such as a
+menu, a prominent item in the list meets this criterion.
+
+  1. Source Code.
+
+  The "source code" for a work means the preferred form of the work
+for making modifications to it.  "Object code" means any non-source
+form of a work.
+
+  A "Standard Interface" means an interface that either is an official
+standard defined by a recognized standards body, or, in the case of
+interfaces specified for a particular programming language, one that
+is widely used among developers working in that language.
+
+  The "System Libraries" of an executable work include anything, other
+than the work as a whole, that (a) is included in the normal form of
+packaging a Major Component, but which is not part of that Major
+Component, and (b) serves only to enable use of the work with that
+Major Component, or to implement a Standard Interface for which an
+implementation is available to the public in source code form.  A
+"Major Component", in this context, means a major essential component
+(kernel, window system, and so on) of the specific operating system
+(if any) on which the executable work runs, or a compiler used to
+produce the work, or an object code interpreter used to run it.
+
+  The "Corresponding Source" for a work in object code form means all
+the source code needed to generate, install, and (for an executable
+work) run the object code and to modify the work, including scripts to
+control those activities.  However, it does not include the work's
+System Libraries, or general-purpose tools or generally available free
+programs which are used unmodified in performing those activities but
+which are not part of the work.  For example, Corresponding Source
+includes interface definition files associated with source files for
+the work, and the source code for shared libraries and dynamically
+linked subprograms that the work is specifically designed to require,
+such as by intimate data communication or control flow between those
+subprograms and other parts of the work.
+
+  The Corresponding Source need not include anything that users
+can regenerate automatically from other parts of the Corresponding
+Source.
+
+  The Corresponding Source for a work in source code form is that
+same work.
+
+  2. Basic Permissions.
+
+  All rights granted under this License are granted for the term of
+copyright on the Program, and are irrevocable provided the stated
+conditions are met.  This License explicitly affirms your unlimited
+permission to run the unmodified Program.  The output from running a
+covered work is covered by this License only if the output, given its
+content, constitutes a covered work.  This License acknowledges your
+rights of fair use or other equivalent, as provided by copyright law.
+
+  You may make, run and propagate covered works that you do not
+convey, without conditions so long as your license otherwise remains
+in force.  You may convey covered works to others for the sole purpose
+of having them make modifications exclusively for you, or provide you
+with facilities for running those works, provided that you comply with
+the terms of this License in conveying all material for which you do
+not control copyright.  Those thus making or running the covered works
+for you must do so exclusively on your behalf, under your direction
+and control, on terms that prohibit them from making any copies of
+your copyrighted material outside their relationship with you.
+
+  Conveying under any other circumstances is permitted solely under
+the conditions stated below.  Sublicensing is not allowed; section 10
+makes it unnecessary.
+
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+
+  No covered work shall be deemed part of an effective technological
+measure under any applicable law fulfilling obligations under article
+11 of the WIPO copyright treaty adopted on 20 December 1996, or
+similar laws prohibiting or restricting circumvention of such
+measures.
+
+  When you convey a covered work, you waive any legal power to forbid
+circumvention of technological measures to the extent such circumvention
+is effected by exercising rights under this License with respect to
+the covered work, and you disclaim any intention to limit operation or
+modification of the work as a means of enforcing, against the work's
+users, your or third parties' legal rights to forbid circumvention of
+technological measures.
+
+  4. Conveying Verbatim Copies.
+
+  You may convey verbatim copies of the Program's source code as you
+receive it, in any medium, provided that you conspicuously and
+appropriately publish on each copy an appropriate copyright notice;
+keep intact all notices stating that this License and any
+non-permissive terms added in accord with section 7 apply to the code;
+keep intact all notices of the absence of any warranty; and give all
+recipients a copy of this License along with the Program.
+
+  You may charge any price or no price for each copy that you convey,
+and you may offer support or warranty protection for a fee.
+
+  5. Conveying Modified Source Versions.
+
+  You may convey a work based on the Program, or the modifications to
+produce it from the Program, in the form of source code under the
+terms of section 4, provided that you also meet all of these conditions:
+
+    a) The work must carry prominent notices stating that you modified
+    it, and giving a relevant date.
+
+    b) The work must carry prominent notices stating that it is
+    released under this License and any conditions added under section
+    7.  This requirement modifies the requirement in section 4 to
+    "keep intact all notices".
+
+    c) You must license the entire work, as a whole, under this
+    License to anyone who comes into possession of a copy.  This
+    License will therefore apply, along with any applicable section 7
+    additional terms, to the whole of the work, and all its parts,
+    regardless of how they are packaged.  This License gives no
+    permission to license the work in any other way, but it does not
+    invalidate such permission if you have separately received it.
+
+    d) If the work has interactive user interfaces, each must display
+    Appropriate Legal Notices; however, if the Program has interactive
+    interfaces that do not display Appropriate Legal Notices, your
+    work need not make them do so.
+
+  A compilation of a covered work with other separate and independent
+works, which are not by their nature extensions of the covered work,
+and which are not combined with it such as to form a larger program,
+in or on a volume of a storage or distribution medium, is called an
+"aggregate" if the compilation and its resulting copyright are not
+used to limit the access or legal rights of the compilation's users
+beyond what the individual works permit.  Inclusion of a covered work
+in an aggregate does not cause this License to apply to the other
+parts of the aggregate.
+
+  6. Conveying Non-Source Forms.
+
+  You may convey a covered work in object code form under the terms
+of sections 4 and 5, provided that you also convey the
+machine-readable Corresponding Source under the terms of this License,
+in one of these ways:
+
+    a) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by the
+    Corresponding Source fixed on a durable physical medium
+    customarily used for software interchange.
+
+    b) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by a
+    written offer, valid for at least three years and valid for as
+    long as you offer spare parts or customer support for that product
+    model, to give anyone who possesses the object code either (1) a
+    copy of the Corresponding Source for all the software in the
+    product that is covered by this License, on a durable physical
+    medium customarily used for software interchange, for a price no
+    more than your reasonable cost of physically performing this
+    conveying of source, or (2) access to copy the
+    Corresponding Source from a network server at no charge.
+
+    c) Convey individual copies of the object code with a copy of the
+    written offer to provide the Corresponding Source.  This
+    alternative is allowed only occasionally and noncommercially, and
+    only if you received the object code with such an offer, in accord
+    with subsection 6b.
+
+    d) Convey the object code by offering access from a designated
+    place (gratis or for a charge), and offer equivalent access to the
+    Corresponding Source in the same way through the same place at no
+    further charge.  You need not require recipients to copy the
+    Corresponding Source along with the object code.  If the place to
+    copy the object code is a network server, the Corresponding Source
+    may be on a different server (operated by you or a third party)
+    that supports equivalent copying facilities, provided you maintain
+    clear directions next to the object code saying where to find the
+    Corresponding Source.  Regardless of what server hosts the
+    Corresponding Source, you remain obligated to ensure that it is
+    available for as long as needed to satisfy these requirements.
+
+    e) Convey the object code using peer-to-peer transmission, provided
+    you inform other peers where the object code and Corresponding
+    Source of the work are being offered to the general public at no
+    charge under subsection 6d.
+
+  A separable portion of the object code, whose source code is excluded
+from the Corresponding Source as a System Library, need not be
+included in conveying the object code work.
+
+  A "User Product" is either (1) a "consumer product", which means any
+tangible personal property which is normally used for personal, family,
+or household purposes, or (2) anything designed or sold for incorporation
+into a dwelling.  In determining whether a product is a consumer product,
+doubtful cases shall be resolved in favor of coverage.  For a particular
+product received by a particular user, "normally used" refers to a
+typical or common use of that class of product, regardless of the status
+of the particular user or of the way in which the particular user
+actually uses, or expects or is expected to use, the product.  A product
+is a consumer product regardless of whether the product has substantial
+commercial, industrial or non-consumer uses, unless such uses represent
+the only significant mode of use of the product.
+
+  "Installation Information" for a User Product means any methods,
+procedures, authorization keys, or other information required to install
+and execute modified versions of a covered work in that User Product from
+a modified version of its Corresponding Source.  The information must
+suffice to ensure that the continued functioning of the modified object
+code is in no case prevented or interfered with solely because
+modification has been made.
+
+  If you convey an object code work under this section in, or with, or
+specifically for use in, a User Product, and the conveying occurs as
+part of a transaction in which the right of possession and use of the
+User Product is transferred to the recipient in perpetuity or for a
+fixed term (regardless of how the transaction is characterized), the
+Corresponding Source conveyed under this section must be accompanied
+by the Installation Information.  But this requirement does not apply
+if neither you nor any third party retains the ability to install
+modified object code on the User Product (for example, the work has
+been installed in ROM).
+
+  The requirement to provide Installation Information does not include a
+requirement to continue to provide support service, warranty, or updates
+for a work that has been modified or installed by the recipient, or for
+the User Product in which it has been modified or installed.  Access to a
+network may be denied when the modification itself materially and
+adversely affects the operation of the network or violates the rules and
+protocols for communication across the network.
+
+  Corresponding Source conveyed, and Installation Information provided,
+in accord with this section must be in a format that is publicly
+documented (and with an implementation available to the public in
+source code form), and must require no special password or key for
+unpacking, reading or copying.
+
+  7. Additional Terms.
+
+  "Additional permissions" are terms that supplement the terms of this
+License by making exceptions from one or more of its conditions.
+Additional permissions that are applicable to the entire Program shall
+be treated as though they were included in this License, to the extent
+that they are valid under applicable law.  If additional permissions
+apply only to part of the Program, that part may be used separately
+under those permissions, but the entire Program remains governed by
+this License without regard to the additional permissions.
+
+  When you convey a copy of a covered work, you may at your option
+remove any additional permissions from that copy, or from any part of
+it.  (Additional permissions may be written to require their own
+removal in certain cases when you modify the work.)  You may place
+additional permissions on material, added by you to a covered work,
+for which you have or can give appropriate copyright permission.
+
+  Notwithstanding any other provision of this License, for material you
+add to a covered work, you may (if authorized by the copyright holders of
+that material) supplement the terms of this License with terms:
+
+    a) Disclaiming warranty or limiting liability differently from the
+    terms of sections 15 and 16 of this License; or
+
+    b) Requiring preservation of specified reasonable legal notices or
+    author attributions in that material or in the Appropriate Legal
+    Notices displayed by works containing it; or
+
+    c) Prohibiting misrepresentation of the origin of that material, or
+    requiring that modified versions of such material be marked in
+    reasonable ways as different from the original version; or
+
+    d) Limiting the use for publicity purposes of names of licensors or
+    authors of the material; or
+
+    e) Declining to grant rights under trademark law for use of some
+    trade names, trademarks, or service marks; or
+
+    f) Requiring indemnification of licensors and authors of that
+    material by anyone who conveys the material (or modified versions of
+    it) with contractual assumptions of liability to the recipient, for
+    any liability that these contractual assumptions directly impose on
+    those licensors and authors.
+
+  All other non-permissive additional terms are considered "further
+restrictions" within the meaning of section 10.  If the Program as you
+received it, or any part of it, contains a notice stating that it is
+governed by this License along with a term that is a further
+restriction, you may remove that term.  If a license document contains
+a further restriction but permits relicensing or conveying under this
+License, you may add to a covered work material governed by the terms
+of that license document, provided that the further restriction does
+not survive such relicensing or conveying.
+
+  If you add terms to a covered work in accord with this section, you
+must place, in the relevant source files, a statement of the
+additional terms that apply to those files, or a notice indicating
+where to find the applicable terms.
+
+  Additional terms, permissive or non-permissive, may be stated in the
+form of a separately written license, or stated as exceptions;
+the above requirements apply either way.
+
+  8. Termination.
+
+  You may not propagate or modify a covered work except as expressly
+provided under this License.  Any attempt otherwise to propagate or
+modify it is void, and will automatically terminate your rights under
+this License (including any patent licenses granted under the third
+paragraph of section 11).
+
+  However, if you cease all violation of this License, then your
+license from a particular copyright holder is reinstated (a)
+provisionally, unless and until the copyright holder explicitly and
+finally terminates your license, and (b) permanently, if the copyright
+holder fails to notify you of the violation by some reasonable means
+prior to 60 days after the cessation.
+
+  Moreover, your license from a particular copyright holder is
+reinstated permanently if the copyright holder notifies you of the
+violation by some reasonable means, this is the first time you have
+received notice of violation of this License (for any work) from that
+copyright holder, and you cure the violation prior to 30 days after
+your receipt of the notice.
+
+  Termination of your rights under this section does not terminate the
+licenses of parties who have received copies or rights from you under
+this License.  If your rights have been terminated and not permanently
+reinstated, you do not qualify to receive new licenses for the same
+material under section 10.
+
+  9. Acceptance Not Required for Having Copies.
+
+  You are not required to accept this License in order to receive or
+run a copy of the Program.  Ancillary propagation of a covered work
+occurring solely as a consequence of using peer-to-peer transmission
+to receive a copy likewise does not require acceptance.  However,
+nothing other than this License grants you permission to propagate or
+modify any covered work.  These actions infringe copyright if you do
+not accept this License.  Therefore, by modifying or propagating a
+covered work, you indicate your acceptance of this License to do so.
+
+  10. Automatic Licensing of Downstream Recipients.
+
+  Each time you convey a covered work, the recipient automatically
+receives a license from the original licensors, to run, modify and
+propagate that work, subject to this License.  You are not responsible
+for enforcing compliance by third parties with this License.
+
+  An "entity transaction" is a transaction transferring control of an
+organization, or substantially all assets of one, or subdividing an
+organization, or merging organizations.  If propagation of a covered
+work results from an entity transaction, each party to that
+transaction who receives a copy of the work also receives whatever
+licenses to the work the party's predecessor in interest had or could
+give under the previous paragraph, plus a right to possession of the
+Corresponding Source of the work from the predecessor in interest, if
+the predecessor has it or can get it with reasonable efforts.
+
+  You may not impose any further restrictions on the exercise of the
+rights granted or affirmed under this License.  For example, you may
+not impose a license fee, royalty, or other charge for exercise of
+rights granted under this License, and you may not initiate litigation
+(including a cross-claim or counterclaim in a lawsuit) alleging that
+any patent claim is infringed by making, using, selling, offering for
+sale, or importing the Program or any portion of it.
+
+  11. Patents.
+
+  A "contributor" is a copyright holder who authorizes use under this
+License of the Program or a work on which the Program is based.  The
+work thus licensed is called the contributor's "contributor version".
+
+  A contributor's "essential patent claims" are all patent claims
+owned or controlled by the contributor, whether already acquired or
+hereafter acquired, that would be infringed by some manner, permitted
+by this License, of making, using, or selling its contributor version,
+but do not include claims that would be infringed only as a
+consequence of further modification of the contributor version.  For
+purposes of this definition, "control" includes the right to grant
+patent sublicenses in a manner consistent with the requirements of
+this License.
+
+  Each contributor grants you a non-exclusive, worldwide, royalty-free
+patent license under the contributor's essential patent claims, to
+make, use, sell, offer for sale, import and otherwise run, modify and
+propagate the contents of its contributor version.
+
+  In the following three paragraphs, a "patent license" is any express
+agreement or commitment, however denominated, not to enforce a patent
+(such as an express permission to practice a patent or covenant not to
+sue for patent infringement).  To "grant" such a patent license to a
+party means to make such an agreement or commitment not to enforce a
+patent against the party.
+
+  If you convey a covered work, knowingly relying on a patent license,
+and the Corresponding Source of the work is not available for anyone
+to copy, free of charge and under the terms of this License, through a
+publicly available network server or other readily accessible means,
+then you must either (1) cause the Corresponding Source to be so
+available, or (2) arrange to deprive yourself of the benefit of the
+patent license for this particular work, or (3) arrange, in a manner
+consistent with the requirements of this License, to extend the patent
+license to downstream recipients.  "Knowingly relying" means you have
+actual knowledge that, but for the patent license, your conveying the
+covered work in a country, or your recipient's use of the covered work
+in a country, would infringe one or more identifiable patents in that
+country that you have reason to believe are valid.
+
+  If, pursuant to or in connection with a single transaction or
+arrangement, you convey, or propagate by procuring conveyance of, a
+covered work, and grant a patent license to some of the parties
+receiving the covered work authorizing them to use, propagate, modify
+or convey a specific copy of the covered work, then the patent license
+you grant is automatically extended to all recipients of the covered
+work and works based on it.
+
+  A patent license is "discriminatory" if it does not include within
+the scope of its coverage, prohibits the exercise of, or is
+conditioned on the non-exercise of one or more of the rights that are
+specifically granted under this License.  You may not convey a covered
+work if you are a party to an arrangement with a third party that is
+in the business of distributing software, under which you make payment
+to the third party based on the extent of your activity of conveying
+the work, and under which the third party grants, to any of the
+parties who would receive the covered work from you, a discriminatory
+patent license (a) in connection with copies of the covered work
+conveyed by you (or copies made from those copies), or (b) primarily
+for and in connection with specific products or compilations that
+contain the covered work, unless you entered into that arrangement,
+or that patent license was granted, prior to 28 March 2007.
+
+  Nothing in this License shall be construed as excluding or limiting
+any implied license or other defenses to infringement that may
+otherwise be available to you under applicable patent law.
+
+  12. No Surrender of Others' Freedom.
+
+  If conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot convey a
+covered work so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you may
+not convey it at all.  For example, if you agree to terms that obligate you
+to collect a royalty for further conveying from those to whom you convey
+the Program, the only way you could satisfy both those terms and this
+License would be to refrain entirely from conveying the Program.
+
+  13. Remote Network Interaction; Use with the GNU General Public License.
+
+  Notwithstanding any other provision of this License, if you modify the
+Program, your modified version must prominently offer all users
+interacting with it remotely through a computer network (if your version
+supports such interaction) an opportunity to receive the Corresponding
+Source of your version by providing access to the Corresponding Source
+from a network server at no charge, through some standard or customary
+means of facilitating copying of software.  This Corresponding Source
+shall include the Corresponding Source for any work covered by version 3
+of the GNU General Public License that is incorporated pursuant to the
+following paragraph.
+
+  Notwithstanding any other provision of this License, you have
+permission to link or combine any covered work with a work licensed
+under version 3 of the GNU General Public License into a single
+combined work, and to convey the resulting work.  The terms of this
+License will continue to apply to the part which is the covered work,
+but the work with which it is combined will remain governed by version
+3 of the GNU General Public License.
+
+  14. Revised Versions of this License.
+
+  The Free Software Foundation may publish revised and/or new versions of
+the GNU Affero General Public License from time to time.  Such new versions
+will be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+  Each version is given a distinguishing version number.  If the
+Program specifies that a certain numbered version of the GNU Affero General
+Public License "or any later version" applies to it, you have the
+option of following the terms and conditions either of that numbered
+version or of any later version published by the Free Software
+Foundation.  If the Program does not specify a version number of the
+GNU Affero General Public License, you may choose any version ever published
+by the Free Software Foundation.
+
+  If the Program specifies that a proxy can decide which future
+versions of the GNU Affero General Public License can be used, that proxy's
+public statement of acceptance of a version permanently authorizes you
+to choose that version for the Program.
+
+  Later license versions may give you additional or different
+permissions.  However, no additional obligations are imposed on any
+author or copyright holder as a result of your choosing to follow a
+later version.
+
+  15. Disclaimer of Warranty.
+
+  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
+OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
+IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
+ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+  16. Limitation of Liability.
+
+  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
+THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
+GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
+DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
+EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
+
+  17. Interpretation of Sections 15 and 16.
+
+  If the disclaimer of warranty and limitation of liability provided
+above cannot be given local legal effect according to their terms,
+reviewing courts shall apply local law that most closely approximates
+an absolute waiver of all civil liability in connection with the
+Program, unless a warranty or assumption of liability accompanies a
+copy of the Program in return for a fee.
+
+                     END OF TERMS AND CONDITIONS
+
+            How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+state the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see [external reference listed in repository notices].
+
+Also add information on how to contact you by electronic and paper mail.
+
+  If your software can interact with users remotely through a computer
+network, you should also make sure that it provides a way for users to
+get its source.  For example, if your program is a web application, its
+interface could display a "Source" link that leads users to an archive
+of the code.  There are many ways you could offer source, and different
+solutions will be better for different programs; see section 13 for the
+specific requirements.
+
+  You should also get your employer (if you work as a programmer) or school,
+if any, to sign a "copyright disclaimer" for the program, if necessary.
+For more information on this, and how to apply and follow the GNU AGPL, see
+[external reference listed in repository notices].
+\`\`\`
+
+</details>
+
+### Pandoc document engine via pandoc-wasm 1.1.0 3.10
+
+- License: \`GPL-2.0-or-later\`
+- Source: [external reference listed in repository notices]
+- Deployed paths: \`public/vendor/pandoc/pandoc.wasm\`
+- Pandoc WASM wrapper source at version1.1.0: [external reference listed in repository notices]
+
+<details>
+<summary>scripts/license-texts/GPL-2.0-or-later.txt</summary>
+
+\`\`\`text
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 2, June 1991
+
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
+ [external reference listed in repository notices]
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The licenses for most software are designed to take away your
+freedom to share and change it.  By contrast, the GNU General Public
+License is intended to guarantee your freedom to share and change free
+software--to make sure the software is free for all its users.  This
+General Public License applies to most of the Free Software
+Foundation's software and to any other program whose authors commit to
+using it.  (Some other Free Software Foundation software is covered by
+the GNU Lesser General Public License instead.)  You can apply it to
+your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+this service if you wish), that you receive source code or can get it
+if you want it, that you can change the software or use pieces of it
+in new free programs; and that you know you can do these things.
+
+  To protect your rights, we need to make restrictions that forbid
+anyone to deny you these rights or to ask you to surrender the rights.
+These restrictions translate to certain responsibilities for you if you
+distribute copies of the software, or if you modify it.
+
+  For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must give the recipients all the rights that
+you have.  You must make sure that they, too, receive or can get the
+source code.  And you must show them these terms so they know their
+rights.
+
+  We protect your rights with two steps: (1) copyright the software, and
+(2) offer you this license which gives you legal permission to copy,
+distribute and/or modify the software.
+
+  Also, for each author's protection and ours, we want to make certain
+that everyone understands that there is no warranty for this free
+software.  If the software is modified by someone else and passed on, we
+want its recipients to know that what they have is not the original, so
+that any problems introduced by others will not reflect on the original
+authors' reputations.
+
+  Finally, any free program is threatened constantly by software
+patents.  We wish to avoid the danger that redistributors of a free
+program will individually obtain patent licenses, in effect making the
+program proprietary.  To prevent this, we have made it clear that any
+patent must be licensed for everyone's free use or not licensed at all.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                    GNU GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License applies to any program or other work which contains
+a notice placed by the copyright holder saying it may be distributed
+under the terms of this General Public License.  The "Program", below,
+refers to any such program or work, and a "work based on the Program"
+means either the Program or any derivative work under copyright law:
+that is to say, a work containing the Program or a portion of it,
+either verbatim or with modifications and/or translated into another
+language.  (Hereinafter, translation is included without limitation in
+the term "modification".)  Each licensee is addressed as "you".
+
+Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running the Program is not restricted, and the output from the Program
+is covered only if its contents constitute a work based on the
+Program (independent of having been made by running the Program).
+Whether that is true depends on what the Program does.
+
+  1. You may copy and distribute verbatim copies of the Program's
+source code as you receive it, in any medium, provided that you
+conspicuously and appropriately publish on each copy an appropriate
+copyright notice and disclaimer of warranty; keep intact all the
+notices that refer to this License and to the absence of any warranty;
+and give any other recipients of the Program a copy of this License
+along with the Program.
+
+You may charge a fee for the physical act of transferring a copy, and
+you may at your option offer warranty protection in exchange for a fee.
+
+  2. You may modify your copy or copies of the Program or any portion
+of it, thus forming a work based on the Program, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+    a) You must cause the modified files to carry prominent notices
+    stating that you changed the files and the date of any change.
+
+    b) You must cause any work that you distribute or publish, that in
+    whole or in part contains or is derived from the Program or any
+    part thereof, to be licensed as a whole at no charge to all third
+    parties under the terms of this License.
+
+    c) If the modified program normally reads commands interactively
+    when run, you must cause it, when started running for such
+    interactive use in the most ordinary way, to print or display an
+    announcement including an appropriate copyright notice and a
+    notice that there is no warranty (or else, saying that you provide
+    a warranty) and that users may redistribute the program under
+    these conditions, and telling the user how to view a copy of this
+    License.  (Exception: if the Program itself is interactive but
+    does not normally print such an announcement, your work based on
+    the Program is not required to print an announcement.)
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Program,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Program, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Program.
+
+In addition, mere aggregation of another work not based on the Program
+with the Program (or with a work based on the Program) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+  3. You may copy and distribute the Program (or a work based on it,
+under Section 2) in object code or executable form under the terms of
+Sections 1 and 2 above provided that you also do one of the following:
+
+    a) Accompany it with the complete corresponding machine-readable
+    source code, which must be distributed under the terms of Sections
+    1 and 2 above on a medium customarily used for software interchange; or,
+
+    b) Accompany it with a written offer, valid for at least three
+    years, to give any third party, for a charge no more than your
+    cost of physically performing source distribution, a complete
+    machine-readable copy of the corresponding source code, to be
+    distributed under the terms of Sections 1 and 2 above on a medium
+    customarily used for software interchange; or,
+
+    c) Accompany it with the information you received as to the offer
+    to distribute corresponding source code.  (This alternative is
+    allowed only for noncommercial distribution and only if you
+    received the program in object code or executable form with such
+    an offer, in accord with Subsection b above.)
+
+The source code for a work means the preferred form of the work for
+making modifications to it.  For an executable work, complete source
+code means all the source code for all modules it contains, plus any
+associated interface definition files, plus the scripts used to
+control compilation and installation of the executable.  However, as a
+special exception, the source code distributed need not include
+anything that is normally distributed (in either source or binary
+form) with the major components (compiler, kernel, and so on) of the
+operating system on which the executable runs, unless that component
+itself accompanies the executable.
+
+If distribution of executable or object code is made by offering
+access to copy from a designated place, then offering equivalent
+access to copy the source code from the same place counts as
+distribution of the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+  4. You may not copy, modify, sublicense, or distribute the Program
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense or distribute the Program is
+void, and will automatically terminate your rights under this License.
+However, parties who have received copies, or rights, from you under
+this License will not have their licenses terminated so long as such
+parties remain in full compliance.
+
+  5. You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Program or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Program (or any work based on the
+Program), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Program or works based on it.
+
+  6. Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the
+original licensor to copy, distribute or modify the Program subject to
+these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties to
+this License.
+
+  7. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Program at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Program by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Program.
+
+If any portion of this section is held invalid or unenforceable under
+any particular circumstance, the balance of the section is intended to
+apply and the section as a whole is intended to apply in other
+circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system, which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+  8. If the distribution and/or use of the Program is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Program under this License
+may add an explicit geographical distribution limitation excluding
+those countries, so that distribution is permitted only in or among
+countries not thus excluded.  In such case, this License incorporates
+the limitation as if written in the body of this License.
+
+  9. The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of this License which applies to it and "any
+later version", you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+this License, you may choose any version ever published by the Free Software
+Foundation.
+
+  10. If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+
+                            NO WARRANTY
+
+  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+                     END OF TERMS AND CONDITIONS
+
+            How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+convey the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, see [external reference listed in repository notices].
+
+Also add information on how to contact you by electronic and paper mail.
+
+If the program is interactive, make it output a short notice like this
+when it starts in an interactive mode:
+
+    Gnomovision version 69, Copyright (C) year name of author
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type \`show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type \`show c' for details.
+
+The hypothetical commands \`show w' and \`show c' should show the appropriate
+parts of the General Public License.  Of course, the commands you use may
+be called something other than \`show w' and \`show c'; they could even be
+mouse-clicks or menu items--whatever suits your program.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  Here is a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the program
+  \`Gnomovision' (which makes passes at compilers) written by James Hacker.
+
+  <signature of Moe Ghoul>, 1 April 1989
+  Moe Ghoul, President of Vice
+
+This General Public License does not permit incorporating your program into
+proprietary programs.  If your program is a subroutine library, you may
+consider it more useful to permit linking proprietary applications with the
+library.  If this is what you want to do, use the GNU Lesser General
+Public License instead of this License.
+\`\`\`
+
+</details>
+
+<details>
+<summary>scripts/license-texts/Pandoc-3.10-COPYRIGHT.txt</summary>
+
+\`\`\`text
+Pandoc
+Copyright (C) 2006-2024 John MacFarlane <jgm at berkeley dot edu>
+
+With the exceptions noted below, this code is released under the [GPL],
+version 2 or later:
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, see [external reference listed in repository notices].
+
+The GNU General Public License is available in the file COPYING.md in
+the source distribution.  On Debian systems, the complete text of the
+GPL can be found in \`/usr/share/common-licenses/GPL\`.
+
+[GPL]: [external reference listed in repository notices]
+
+The complete source code for pandoc version X.Y.Z is available at
+[external reference listed in repository notices]
+and at [external reference listed in repository notices].
+
+Pandoc includes some code with different copyrights, or subject to different
+licenses.  The copyright and license statements for these sources are included
+below.  All are GPL-compatible licenses.
+
+----------------------------------------------------------------------
+The modules in the \`pandoc-types\` repository (Text.Pandoc.Definition,
+Text.Pandoc.Builder, Text.Pandoc.Generics, Text.Pandoc.JSON,
+Text.Pandoc.Walk) are licensed under the BSD 3-clause license:
+
+Copyright (c) 2006-2024, John MacFarlane
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+
+    * Neither the name of John MacFarlane nor the names of other
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+----------------------------------------------------------------------
+Pandoc's templates (in \`data/templates\`) are dual-licensed as either
+GPL (v2 or higher, same as pandoc) or (at your option) the BSD
+3-clause license.
+
+Copyright (c) 2014--2024, John MacFarlane
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Writers/Muse.hs
+Copyright (C) 2017-2020 Alexander Krotov
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Writers/Texinfo.hs
+Copyright (C) 2008-2024 John MacFarlane and Peter Wang
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Writers/OpenDocument.hs
+Copyright (C) 2008-2024 Andrea Rossato and John MacFarlane
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Writers/Org.hs
+Copyright (C) 2010-2024 Puneeth Chaganti, John MacFarlane, and
+                        Albert Krewinkel
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Writers/ZimWiki.hs
+Copyright (C) 2017 Alex Ivkin
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/Docx.hs
+src/Text/Pandoc/Readers/Docx/*
+Copyright (C) 2014-2020 Jesse Rosenthal
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/Textile.hs
+Copyright (C) 2010-2024 Paul Rivier and John MacFarlane
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/TikiWiki.hs
+Copyright (C) 2017 Robin Lee Powell
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/JATS.hs
+Copyright (C) 2017-2018 Hamish Mackenzie
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/EPUB.hs
+Copyright (C) 2014-2024 Matthew Pickering and John MacFarlane
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/Org.hs
+src/Text/Pandoc/Readers/Org/*
+test/Tests/Readers/Org/*
+Copyright (C) 2014-2024 Albert Krewinkel
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+pandoc-lua-engine/src/Text/Pandoc/Lua.hs
+pandoc-lua-engine/src/Text/Pandoc/Lua/*
+pandoc-lua-engine/test/lua/*
+Copyright (C) 2017--2024 Albert Krewinkel and John MacFarlane
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/Jira.hs
+src/Text/Pandoc/Writers/Jira.hs
+test/Tests/Readers/Jira.hs
+Copyright (C) 2019--2024 Albert Krewinkel
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+src/Text/Pandoc/Readers/FB2.hs
+Copyright (C) 2018--2019 Alexander Krotov
+
+Released under the GNU General Public License version 2 or later.
+
+----------------------------------------------------------------------
+The dzslides template contains JavaScript and CSS from Paul Rouget's
+dzslides template.
+[external reference listed in repository notices]
+
+Released under the Do What the Fuck You Want To Public License.
+
+------------------------------------------------------------------------
+Pandoc embeds a Lua interpreter (via hslua).
+
+Copyright © 1994--2023 Lua.org, PUC-Rio.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+------------------------------------------------------------------------
+Some of the code in wasm/pandoc.js and the patches in wasm/patches is
+from [external reference listed in repository notices] It is released under
+this license:
+
+MIT License
+
+Copyright (c) Tweag I/O Limited.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\`\`\`
+
+</details>
+
+### EmbedPDF PDFium browser engine 2.15.0
+
+- License: \`BSD-3-Clause AND Apache-2.0\`
+- Source: [external reference listed in repository notices]
+- Deployed paths: \`assets/pdfium-*.wasm\`
+
+<details>
+<summary>scripts/license-texts/PDFium-2.15.0.txt</summary>
+
+\`\`\`text
+// Copyright 2014 PDFium Authors. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//    * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//    * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+                                 Apache License
+                           Version 2.0, January 2004
+                        [external reference listed in repository notices]
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+   1. Definitions.
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+   END OF TERMS AND CONDITIONS
+   APPENDIX: How to apply the Apache License to your work.
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+   Copyright [yyyy] [name of copyright owner]
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       [external reference listed in repository notices]
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+\`\`\`
+
+</details>
+
+## Fonts
+
+No font files are distributed. Folkkit distributes no font files. Its CSS uses system font stacks supplied by the user's operating system and browser.
+`;function jb(){const{locale:n}=Lt(),s=(n==="en"?no:to).licenses;return T.jsx(io,{content:s,children:T.jsxs("section",{className:"legal-page__notices","aria-labelledby":"third-party-notices",children:[T.jsx("h2",{id:"third-party-notices",children:s.noticesTitle}),T.jsx("p",{children:s.noticesIntro}),T.jsx("pre",{tabIndex:"0",children:Ub})]})})}function Pb({content:n}){return gf(Un)?T.jsxs("address",{children:[T.jsx("strong",{children:Un.name}),T.jsx("a",{href:`mailto:${Un.email}`,children:Un.email})]}):T.jsx("p",{className:"legal-page__gate",children:n.operatorMissing})}function Gb(){const{locale:n}=Lt(),s=(n==="en"?no:to).privacy;return T.jsx(io,{content:s,children:T.jsxs("section",{className:"legal-page__operator","aria-labelledby":"privacy-operator",children:[T.jsx("h2",{id:"privacy-operator",children:s.operatorTitle}),T.jsx(Pb,{content:s})]})})}function Bb(){const{locale:n}=Lt(),s=(n==="en"?no:to).source;return T.jsx(io,{content:s,children:T.jsxs("section",{className:"legal-page__revision","aria-labelledby":"source-revision",children:[T.jsx("h2",{id:"source-revision",children:s.revisionLabel}),T.jsx("code",{children:Ec.commit}),T.jsx("a",{href:Ec.sourceUrl,children:s.revisionLink}),T.jsx("p",{children:s.availabilityNote})]})})}function Yb(){const{locale:n}=Lt(),s=(n==="en"?no:to).terms;return T.jsx(io,{content:s})}function Wb(){try{return window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}catch{return"auto"}}const ef=Object.freeze({"/privacy":"privacy","/open-source":"openSource","/licenses":"licenses","/terms":"terms","/contact":"contact"}),Oc=Object.freeze({pdf:"/pdf",qr:"/qr",convert:"/convert",calculate:"/calculate",image:"/image",audio:"/audio"}),Mr=Object.freeze({"percentage-calc":"percent","aspect-ratio":"aspect-ratio","bmi-calc":"bmi","loan-calc":"loan"}),yf=Object.freeze(Object.keys(Mr));function $b({search:n="",hash:s=""}){const c=new URLSearchParams(n).get("tool")||(s.startsWith("#tool/")?s.slice(6):"");return yf.includes(c)?c:null}function _b({search:n="",hash:s=""}){const c=$b({search:n,hash:s});if(c)return Mr[c];const l=new URLSearchParams(n).get("calculator");return["percent","rule-of-three","pythagoras","circle","area","volume","units","aspect-ratio","loan","bmi","date","duration"].includes(l)?l:"percent"}const tf=Object.freeze({"image-editor":"/image","audio-trim":"/audio","document-convert":"/convert?target=docx","text-to-qr":"/qr","qr-to-text":"/qr?mode=read","qr-reader":"/qr?mode=read","image-optimize":"/convert?mode=optimize","merge-pdf":"/pdf?action=merge","pdf-split":"/pdf?action=extract","pdf-extract-range":"/pdf?action=extract","pdf-rotate":"/pdf?action=rotate","pdf-page-count":"/pdf?action=count","images-to-pdf":"/convert?target=pdf&combine=1","png-to-jpg":"/convert?target=jpeg","jpg-to-png":"/convert?target=png","audio-to-mp3":"/convert?target=mp3"});function bf(n){return Object.hasOwn(Mr,n)?`/calculate?calculator=${Mr[n]}`:Object.hasOwn(tf,n)?tf[n]:null}function zr({pathname:n="/",search:s="",hash:c=""}){if(!["/","/workspace"].includes(n))return null;const l=new URLSearchParams(s).get("tool")||(c.startsWith("#tool/")?c.slice(6):"");return bf(l)}function Cr(n,s){const c=zr(s),l=new URLSearchParams(c?c.split("?")[1]||"":s.search||"");if(n==="calculate")return{calculator:_b({search:l.toString()})};if(n==="qr")return{mode:l.get("mode")==="read"?"read":"create"};if(n==="pdf")return{action:["merge","extract","rotate","count","organize"].includes(l.get("action"))?l.get("action"):"edit"};if(n==="convert"){const p=["png","jpeg","webp","pdf","mp3","wav","flac","ogg","mp4","webm","gif","docx","markdown","html"].includes(l.get("target"))?l.get("target"):void 0;return{mode:l.get("mode")==="optimize"?"optimize":"convert",target:p,combine:p==="pdf"&&l.get("combine")==="1"}}return{}}function Tf({pathname:n="/",search:s="",hash:c=""}){if(Object.values(Oc).includes(n))return n.slice(1);if(ef[n])return`legal:${ef[n]}`;if(n==="/tools")return"catalog";const l=zr({pathname:n,search:s,hash:c});return l?l.slice(1).split("?")[0]:n==="/workspace"||s||c.startsWith("#tool/")?"workspace":"home"}class qb extends _.Component{constructor(s){super(s),this.state={hasError:!1,error:null}}static getDerivedStateFromError(s){return{hasError:!0,error:s}}render(){return this.state.hasError?T.jsx("div",{className:"converter-view",children:T.jsxs("div",{className:"error-msg",role:"alert",children:[this.props.message,T.jsx("br",{}),T.jsx("button",{className:"pill-btn-sm error-retry",type:"button",onClick:()=>this.props.onRetry?this.props.onRetry():this.setState({hasError:!1,error:null}),children:this.props.retryLabel})]})}):this.props.children}}function nf(n){const{t:s}=Lt();return T.jsx(qb,{...n,message:s("errorBoundary.message"),retryLabel:s("errorBoundary.retry")})}const Vb=_.lazy(()=>ai(()=>import("./QrDesignerPage-DSY6s-gh.js"),__vite__mapDeps([0,1,2,3]))),Kb=_.lazy(()=>ai(()=>import("./FileConverterPage-BxiGLjIM.js"),__vite__mapDeps([4,5,6,7,8,2,9]))),Zb=_.lazy(()=>ai(()=>import("./PdfEditorPage-BZrUsaqA.js"),__vite__mapDeps([10,11,6,12]))),Xb=_.lazy(()=>ai(()=>import("./WorkspacePage-Cl3av8NG.js"),__vite__mapDeps([13,6,14]))),Qb=_.lazy(()=>ai(()=>import("./CalculatorPage-KW5OZMbE.js"),__vite__mapDeps([15,16]))),qi={image:_.lazy(()=>ai(()=>import("./ImageEditorPage-CN2UWY8A.js"),__vite__mapDeps([17,7,5,6,8,2,18,19]))),audio:_.lazy(()=>ai(()=>import("./AudioEditorPage-CLdjPm8V.js").then(n=>n.f),__vite__mapDeps([20,5,6,18,21])))},_i=["qr","convert","calculate",...Object.keys(qi)],Jb=Object.freeze({privacy:Gb,openSource:Bb,licenses:jb,terms:Yb,contact:Db});function Dr(){return Tf(window.location)}function e0(){requestAnimationFrame(()=>{document.getElementById("main-content")?.focus({preventScroll:!0})})}function t0(){const{locale:n,setLocale:s,t:c}=Lt(),[l,p]=_.useState(Dr),[d,f]=_.useState(()=>_i.includes(l)?{[l]:Cr(l,window.location)}:{}),[m,y]=_.useState(()=>Cr("pdf",window.location)),b=_.useRef({}),[M,z]=_.useState(null),N=_.useRef(0),x=_.useCallback(Y=>z(K=>K?.id===Y?null:K),[]),k=_.useRef(!1),H=_.useRef(`${window.location.pathname}${window.location.search}${window.location.hash}`),U=_.useCallback(Y=>{k.current=Y},[]),de=_.useMemo(()=>Zy(n),[n]),B=l.startsWith("legal:")?"legal":l,J=l.startsWith("legal:")?Jb[l.slice(6)]:null;_.useEffect(()=>{document.documentElement.lang=n},[n]),_.useEffect(()=>{const Y=zr(window.location);Y&&(history.replaceState(null,"",Y),H.current=Y),_i.includes(l)&&(b.current[l]=`${window.location.pathname}${window.location.search}`)},[l,d]);const se=_.useCallback((Y=!0)=>{const K=Dr(),he=zr(window.location);if(he&&history.replaceState(null,"",he),H.current=`${window.location.pathname}${window.location.search}${window.location.hash}`,p(K),_i.includes(K)){const Ne=Cr(K,window.location);f(Et=>({...Et,[K]:Ne}))}K==="pdf"?y(Cr("pdf",window.location)):z(Ne=>Ne?.route==="pdf"?null:Ne),Y&&e0()},[]);_.useEffect(()=>{if(l==="workspace")return;const Y=l.startsWith("legal:")?l.slice(6):l==="catalog"?"tools":l;document.title=l==="home"?"Folkkit":`${c(`shell.${Y}`)} · Folkkit`},[l,c]),_.useEffect(()=>{const Y=()=>{const K=Dr();if(k.current&&K!=="pdf"&&!window.confirm(c("shell.unsaved"))){history.pushState(null,"",H.current);return}K!=="pdf"&&(k.current=!1),se()};return window.addEventListener("popstate",Y),()=>window.removeEventListener("popstate",Y)},[c,se]);const ne=_.useCallback(Y=>{const K=_i.find(Dt=>Y===Oc[Dt]),he=new URL(K&&b.current[K]?b.current[K]:Y,window.location.origin),Ne=Tf(he),Et=Ne===Dr()&&_i.includes(Ne);return k.current&&Ne!=="pdf"&&!window.confirm(c("shell.unsaved"))?!1:(Ne!=="pdf"&&(k.current=!1),history.pushState(null,"",`${he.pathname}${he.search}${he.hash}`),se(!Et),Et||window.scrollTo({top:0,behavior:Wb()}),!0)},[c,se]),ge=_.useCallback((Y,K)=>{const he=Y==="text-to-qr"?"/qr?mode=create":bf(Y);return he?(ne(he)&&K&&z({id:++N.current,file:K,route:he.slice(1).split("?")[0]}),!0):!1},[ne]),X=Y=>{ne(Oc[Y])},Ie=({kind:Y,toolId:K,from:he,to:Ne})=>{Y==="tool"?ge(K)||ne(`/workspace?tool=${encodeURIComponent(K)}`):ne(`/workspace?from=${encodeURIComponent(he)}&to=${encodeURIComponent(Ne)}`)};return T.jsxs(Rb,{locale:n,onLocaleChange:s,route:B,onNavigate:ne,children:[l==="home"&&T.jsx(zb,{editors:Object.keys(qi),onOpenCore:X,onOpenCatalog:()=>ne("/tools")}),l==="catalog"&&T.jsx(Ib,{entries:[...oy(c).filter(Y=>!Y.editor||Object.hasOwn(qi,Y.editor)),...de.filter(Y=>!yf.includes(Y.id))],onSelect:Ie}),_i.filter(Y=>d[Y]).map(Y=>T.jsx("div",{hidden:l!==Y,inert:l!==Y,className:"studio-session",children:T.jsx(nf,{onRetry:()=>window.location.reload(),children:T.jsxs(_.Suspense,{fallback:T.jsxs("div",{className:"studio-page studio-loading",children:[T.jsx("h1",{children:c(`shell.${Y}`)}),T.jsx("p",{role:"status",children:c("shell.loading")})]}),children:[qi[Y]&&_.createElement(qi[Y],{active:l===Y,fileRequest:M?.route===Y?M:void 0,onFileRequestConsumed:x}),Y==="qr"&&T.jsx(Vb,{initialMode:d.qr.mode,onModeChange:K=>ne(`/qr?mode=${K}`),active:l===Y}),Y==="convert"&&T.jsx(Kb,{editorKinds:Object.keys(qi),onOpenEditor:(K,he)=>ge(K==="image"?"image-editor":"audio-trim",he),initialMode:d.convert.mode,initialTarget:d.convert.target,initialCombine:d.convert.combine,fileRequest:M?.route==="convert"?M:void 0,onFileRequestConsumed:x,onModeChange:K=>ne(`/convert?mode=${K}`),active:l===Y}),Y==="calculate"&&T.jsx(Qb,{initialCalculator:d.calculate.calculator,onSelectCalculator:K=>{K!==d.calculate.calculator&&ne(`/calculate?calculator=${K}`)}})]})})},Y)),["pdf","workspace"].includes(l)&&T.jsx(nf,{onRetry:()=>window.location.reload(),children:T.jsxs(_.Suspense,{fallback:T.jsxs("div",{className:"studio-page studio-loading",children:[T.jsx("h1",{children:c(l==="workspace"?"workspace.title":`shell.${l}`)}),T.jsxs("p",{role:"status",children:[T.jsx("span",{className:"studio-spinner","aria-hidden":"true"}),c("shell.loading")]})]}),children:[l==="pdf"&&T.jsx(Zb,{initialAction:m.action,fileRequest:M?.route==="pdf"?M:void 0,onFileRequestConsumed:x,onDirtyChange:U}),l==="workspace"&&T.jsx(Xb,{onOpenTool:ge})]})},l),J&&T.jsx(J,{})]})}const Ef=_.createContext(null);function g0(){return _.useContext(Ef)}function n0({children:n}){const[s,c]=_.useState(null),l=_.useRef(null),p=_.useCallback(d=>{clearTimeout(l.current),c(d),l.current=setTimeout(()=>c(null),1500)},[]);return T.jsxs(Ef.Provider,{value:p,children:[n,s&&T.jsx("div",{className:"toast",role:"status","aria-live":"polite",children:s})]})}function i0(n){if(n==="de"||n==="en")return n;try{const s=localStorage.getItem(Tt.locale);if(s==="de"||s==="en")return s}catch{}return"de"}function a0({children:n,initialLocale:s}){const[c,l]=_.useState(()=>i0(s)),p=_.useCallback(m=>{const y=jr(m);l(y);try{localStorage.setItem(Tt.locale,y)}catch{}},[]),d=_.useCallback((m,y)=>hn(Ac(c),m,y),[c]),f=_.useMemo(()=>({locale:c,setLocale:p,t:d}),[c,p,d]);return T.jsx(df.Provider,{value:f,children:n})}const Of=30,af=120,o0="convert-everything-history",r0="folkkit:history-change";function kr(){window.dispatchEvent(new Event(r0))}function Sc(){Jy(),localStorage.removeItem(o0)}function Vi(){return Xy()?!0:(Sc(),bc(!1),!1)}function Sf(n){return!n||typeof n.from!="string"||typeof n.to!="string"||typeof n.input!="string"||typeof n.output!="string"||!Number.isFinite(n.timestamp)||!rf(n.from,n.to)?null:{from:n.from,to:n.to,input:n.input.slice(0,af),output:n.output.slice(0,af),timestamp:n.timestamp}}function gc(){const n=Qy().map(Sf).filter(Boolean).slice(0,Of),s=localStorage.getItem(Tt.contentHistory),c=JSON.stringify(n);return s!==null&&s!==c&&Tc(n),n}const y0=Object.freeze({isEnabled(){return Vi()},setEnabled(n){const s=Vi();(n!==!0||!s)&&Sc(),bc(n),kr()},list(){return Vi()?gc().map(n=>({...n})):[]},append(n){if(!Vi())return;const s=Sf(n);s&&(Tc([s,...gc()].slice(0,Of)),kr())},remove(n){if(!Vi()||!Number.isInteger(n)||n<0)return;const s=gc();n>=s.length||(s.splice(n,1),Tc(s),kr())},clear({revokeConsent:n=!1}={}){Sc(),n&&bc(!1),kr()}});function s0(){try{return Vi(),!0}catch{return!1}}s0();ty.createRoot(document.getElementById("root")).render(T.jsx(_.StrictMode,{children:T.jsx(a0,{children:T.jsx(n0,{children:T.jsx(t0,{})})})}));"serviceWorker"in navigator&&window.addEventListener("load",()=>{const c=`${"/".endsWith("/")?"/":"//"}sw.js`;navigator.serviceWorker.register(c).catch(l=>{console.warn("[SW] Service worker registration failed:",l)})});export{Wb as A,Ct as B,Va as C,wr as D,nf as E,c0 as F,r0 as H,sb as I,jt as T,ai as _,Rc as a,of as b,cy as c,g0 as d,f0 as e,d0 as f,p0 as g,y0 as h,rf as i,T as j,Ny as k,Iy as l,Za as m,ly as n,Xa as o,Tt as p,Ka as q,_ as r,Ja as s,Qa as t,Lt as u,u0 as v,l0 as w,Zy as x,m0 as y,h0 as z};
