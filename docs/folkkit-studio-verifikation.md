@@ -159,7 +159,7 @@ Lokal bestanden 982 Unit- und Vertragstests, die vollständige Codeprüfung, 47 
 
 ## Bildebenen vom 11. September 2026
 
-Texte und Wasserzeichen lassen sich innerhalb der bestehenden Bildsitzung duplizieren sowie jeweils eine Ebene nach vorne oder hinten verschieben. Die Elementliste zeigt das oberste Element zuerst. Eine Kopie behält Text, Schriftgrösse, Farbe, Deckkraft, Ausrichtung und Ressourcen-ID. Sie wird um bis zu 16 Bildpixel versetzt; wenn sie vollständig ins Bild passt, bleibt sie darin. Überdimensionierte Elemente behalten ihre bisherige Lage auf der betroffenen Achse. Wasserzeichen referenzieren weiterhin dieselbe Quelldatei. Die Grenze von 20 Elementen und das gemeinsame Ressourcenbudget bleiben bestehen.
+Texte und Wasserzeichen lassen sich innerhalb der bestehenden Bildsitzung duplizieren sowie jeweils eine Ebene nach vorne oder hinten verschieben. Die Elementliste zeigt das oberste Element zuerst. Eine Kopie behält Text, Schriftgrösse, Farbe, Deckkraft, Ausrichtung und Ressourcen-ID. Ihre Position wird zunächst um 16 Bildpixel versetzt und auf jeder passenden Achse auf den Bildbereich begrenzt. Überdimensionierte Elemente behalten ihre bisherige Lage auf der betroffenen Achse. Wasserzeichen referenzieren weiterhin dieselbe Quelldatei. Die Grenze von 20 Elementen und das gemeinsame Ressourcenbudget bleiben bestehen.
 
 Jede ausgeführte Aktion bildet einen eigenen Undo-Schritt. Die Grenzknöpfe bleiben über `aria-disabled` fokussierbar; ihr Aufrufschutz verhindert leere Verlaufseinträge. Die bestehende Funktion zum erneuten Einfügen eines ursprünglichen Wasserzeichens bleibt verfügbar. Vorschau und Export verwenden dieselbe Elementreihenfolge.
 
