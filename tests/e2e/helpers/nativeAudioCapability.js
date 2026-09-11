@@ -50,7 +50,8 @@ export async function nativeAudioCapability(page) {
   }, bytes)
   try {
     await page.locator('#folkkit-native-audio-capability').click({ timeout: 3000 })
-    await page.waitForFunction(() => globalThis.__nativeAudioCapabilityResult !== null, null, { timeout: 6000 })
+    // Media completion must remain observable when animation frames are not delivered.
+    await page.waitForFunction(() => globalThis.__nativeAudioCapabilityResult !== null, null, { timeout: 6000, polling: 100 })
     const result = await page.evaluate(() => globalThis.__readNativeAudioCapability())
     if (result.supported === true) return { supported: true }
     if (result.supported === false && [3,4].includes(result.code)) return { supported: false, code: result.code }
