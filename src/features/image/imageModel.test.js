@@ -131,3 +131,63 @@ describe('image limits and history', () => {
     expect(second.history.present.elements.map(element => element.resourceId)).toEqual(['wm', 'wm'])
   })
 })
+
+
+import * as imageModel from './imageModel.js'
+
+describe('image layer duplication and ordering', () => {
+  it('duplicates transformed text without changing its style or the original matrix', () => {
+    expect(imageModel.duplicateElement).toBeTypeOf('function')
+    let state = addElement(createImageState({ width: 300, height: 200 }), {
+      id: 'text', type: 'text', text: 'Title', x: 50, y: 40, width: 80, height: 30,
+      fontSize: 22, color: '#166534', opacity: .4,
+    })
+    state = rotateState(mirrorState(state, 'horizontal'))
+    const original = structuredClone(state)
+    const copy = imageModel.duplicateElement(state, 'text', 'copy')
+    expect(state).toEqual(original)
+    expect(copy.elements[1]).toMatchObject({ id: 'copy', text: 'Title', fontSize: 22, color: '#166534', opacity: .4 })
+    expect(copy.elements[1].matrix.slice(0, 4)).toEqual(state.elements[0].matrix.slice(0, 4))
+    expect(copy.elements[1].matrix).not.toBe(state.elements[0].matrix)
+    const bounds = transformedBounds(state.elements[0]), copiedBounds = transformedBounds(copy.elements[1])
+    expect(copiedBounds).toEqual({ ...bounds, x: bounds.x + 16, y: Math.min(bounds.y + 16, state.height - bounds.height) })
+    expect(copy.selectedId).toBe('copy')
+    expect(copy.dirty).toBe(true)
+  })
+
+  it('keeps a duplicated watermark inside the image and reuses its resource through undo/redo', () => {
+    expect(imageModel.duplicateElement).toBeTypeOf('function')
+    const state = addElement(createImageState({ width: 100, height: 80 }), { id: 'mark', type: 'image', resourceId: 'wm', x: 75, y: 55, width: 20, height: 20, opacity: .75 })
+    const copied = imageModel.duplicateElement(state, 'mark', 'copy')
+    expect(transformedBounds(copied.elements[1])).toEqual({ x: 80, y: 60, width: 20, height: 20 })
+    const registry = new Map([['wm', { file: { size: 1024 } }]])
+    const history = commitHistory(createHistory(state), copied)
+    expect(referencedResourceBytes(history, registry)).toBe(1024)
+    expect(undoHistory(history).present.elements).toHaveLength(1)
+    expect(redoHistory(undoHistory(history)).present.elements).toEqual(copied.elements)
+  })
+
+  it('moves a layer one step while preserving geometry, selection and boundary no-ops', () => {
+    expect(imageModel.moveElement).toBeTypeOf('function')
+    let state = createImageState({ width: 100, height: 80 })
+    for (const id of ['a', 'b', 'c']) state = addElement(state, { id, type: 'image', resourceId: id, x: 5, y: 10, width: 20, height: 20, opacity: .6 })
+    state = { ...state, selectedId: 'b' }
+    const moved = imageModel.moveElement(state, 'b', 1)
+    expect(moved.elements.map(element => element.id)).toEqual(['a', 'c', 'b'])
+    expect(moved.selectedId).toBe('b')
+    expect(moved.elements[2]).toEqual(state.elements[1])
+    expect(moved.elements[2].matrix).not.toBe(state.elements[1].matrix)
+    expect(imageModel.moveElement(moved, 'b', 1)).toBe(moved)
+    expect(imageModel.moveElement(state, 'a', -1)).toBe(state)
+    expect(imageModel.moveElement(moved, 'b', -1).elements.map(element => element.id)).toEqual(['a', 'b', 'c'])
+    expect(() => imageModel.moveElement(state, 'b', 2)).toThrow('invalid_settings')
+  })
+
+  it('keeps the existing twenty-element limit when duplicating', () => {
+    expect(imageModel.duplicateElement).toBeTypeOf('function')
+    let state = addElement(createImageState({ width: 100, height: 80 }), { id: 'a', type: 'image', resourceId: 'wm', x: 0, y: 0, width: 10, height: 10 })
+    for (let index = 1; index < IMAGE_LIMITS.elements; index++) state = imageModel.duplicateElement(state, 'a', String(index))
+    expect(() => imageModel.duplicateElement(state, 'a', 'extra')).toThrow('element_limit')
+    expect(state.elements).toHaveLength(20)
+  })
+})

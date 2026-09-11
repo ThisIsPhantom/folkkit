@@ -79,3 +79,6 @@
 @media (prefers-reduced-motion: reduce) {
   .image-editor * { scroll-behavior: auto; }
 }
+
+.image-layer-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.image-layer-actions button[aria-disabled="true"] { opacity: .48; cursor: default; }

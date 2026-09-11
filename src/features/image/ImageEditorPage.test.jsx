@@ -397,3 +397,32 @@ it('cancels initial image loading and closes its late bitmap without replacing a
   expect(screen.getByText('retry.png')).toBeVisible()
   expect(screen.queryByText('old.png')).not.toBeInTheDocument()
 })
+
+
+it('orders and duplicates selected layers with one undo step per action', async () => {
+  const result = renderEditor()
+  fireEvent.change(screen.getByLabelText('Bild auswählen'), { target: { files: [file()] } })
+  await screen.findByText('300 × 200 px')
+  const draft = result.container.querySelector('[name="image-text-draft"]')
+  for (const text of ['A', 'B']) {
+    fireEvent.change(draft, { target: { value: text } })
+    fireEvent.click(screen.getByRole('button', { name: 'Text hinzufügen', exact: true }))
+  }
+  const labels = () => [...result.container.querySelectorAll('.image-element-list button')].map(button => button.textContent)
+  expect(labels()).toEqual(['Text: B', 'Text: A'])
+  fireEvent.click([...result.container.querySelectorAll('.image-element-list button')].find(button => button.textContent === 'Text: A'))
+  const forward = screen.getByRole('button', { name: 'Nach vorne', exact: true })
+  fireEvent.click(forward)
+  expect(labels()).toEqual(['Text: A', 'Text: B'])
+  expect(forward).toHaveAttribute('aria-disabled', 'true')
+  fireEvent.click(forward)
+  fireEvent.click(screen.getByRole('button', { name: 'Rückgängig', exact: true }))
+  expect(labels()).toEqual(['Text: B', 'Text: A'])
+  fireEvent.click(screen.getByRole('button', { name: 'Auswahl duplizieren', exact: true }))
+  expect(labels()).toHaveLength(3)
+  expect(result.container.querySelector('.image-element-list [aria-pressed="true"]')).toHaveTextContent('Text: A')
+  fireEvent.click(screen.getByRole('button', { name: 'Rückgängig', exact: true }))
+  expect(labels()).toHaveLength(2)
+  fireEvent.click(screen.getByRole('button', { name: 'Wiederholen', exact: true }))
+  expect(labels()).toHaveLength(3)
+})

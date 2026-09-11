@@ -8,8 +8,8 @@ import ImageCanvas from './ImageCanvas.jsx'
 import { downloadImage, exportImage } from './imageClient.js'
 import { loadImageFile } from './imageFiles.js'
 import {
-  addElement, applyCrop, centreElement, commitHistory, commitResourceElement, createHistory, createImageState,
-  mirrorState, redoHistory, releaseUnreferencedResources, removeElement, rotateState,
+  IMAGE_LIMITS, addElement, applyCrop, centreElement, commitHistory, commitResourceElement, createHistory, createImageState, duplicateElement,
+  mirrorState, moveElement, redoHistory, releaseUnreferencedResources, removeElement, rotateState,
   transformedBounds, undoHistory, updateCropField, updateElement,
 } from './imageModel.js'
 import { paintImageDocument } from './imageRenderer.js'
@@ -404,6 +404,10 @@ export default function ImageEditorPage({
   }
 
   const bounds = selected ? transformedBounds(selected) : null
+  const selectedIndex = imageDocument?.elements.findIndex(element => element.id === selected?.id) ?? -1
+  const canMoveForward = selectedIndex >= 0 && selectedIndex < imageDocument.elements.length - 1
+  const canMoveBackward = selectedIndex > 0
+  const canDuplicate = Boolean(selected) && imageDocument.elements.length < IMAGE_LIMITS.elements
   const reusableWatermark = selected?.type === 'image'
     ? resources.get(selected.resourceId)
     : [...resources.values()].at(-1)
@@ -449,7 +453,7 @@ export default function ImageEditorPage({
             <label className="image-file-label" htmlFor="image-watermark-file"><IconPhotoPlus aria-hidden="true" />{t('studioImage.addWatermark')}</label>
             {reusableWatermark && <button type="button" onClick={() => duplicateWatermark(reusableWatermark)}>{t('studioImage.duplicateWatermark')}</button>}
             <p>{t('studioImage.watermarkLimits')}</p>
-            <div className="image-element-list">{imageDocument.elements.length ? imageDocument.elements.map(element => {
+            <div className="image-element-list">{imageDocument.elements.length ? [...imageDocument.elements].reverse().map(element => {
               const name = element.type === 'text' ? t('studioImage.textElement', { text: element.text.slice(0, 36) }) : t('studioImage.imageElement', { name: resources.get(element.resourceId)?.name || '' })
               return <button type="button" key={element.id} aria-pressed={imageDocument.selectedId === element.id} onClick={() => replacePresent(current => ({ ...current, selectedId: element.id }))}>{name}</button>
             }) : <p>{t('studioImage.noElements')}</p>}</div>
@@ -458,6 +462,11 @@ export default function ImageEditorPage({
             {selected.type === 'text' && <><label className="image-field-wide">{t('studioImage.textContent')}<textarea name="selected-text" maxLength="500" value={selected.text} onChange={event => commit(current => updateElement(current, selected.id, { text: event.target.value }))} /></label><label>{t('studioImage.fontSize')}<input name="font-size" type="number" min="6" max="512" value={selected.fontSize} onChange={event => commit(current => updateElement(current, selected.id, { fontSize: Number(event.target.value) }))} /></label><label>{t('studioImage.color')}<input name="text-color" type="color" value={selected.color} onFocus={() => beginControlGesture(selected.id, 'color')} onChange={event => previewControlGesture(selected.id, 'color', { color: event.target.value })} onBlur={completeControlGesture} onKeyDown={event => { if (event.key === 'Escape') cancelControlGesture(); else beginControlGesture(selected.id, 'color') }} /></label></>}
             <label>{t('studioImage.opacity')}<input ref={opacityInputRef} name="opacity" type="range" min="0" max="100" value={Math.round(selected.opacity * 100)} onPointerDown={event => beginOpacityPointer(event, selected.id)} onChange={event => changeOpacity(event, selected.id)} onLostPointerCapture={event => { if (opacityPointerRef.current?.id === event.pointerId && !opacityPointerRef.current.blocked) cancelControlGesture() }} onKeyDown={event => { if (event.key === 'Escape') cancelControlGesture(); else if (opacityPointerRef.current) event.preventDefault(); else beginControlGesture(selected.id, 'opacity') }} onKeyUp={() => { if (!opacityPointerRef.current) completeControlGesture() }} onBlur={() => { if (!opacityPointerRef.current) completeControlGesture() }} /></label>
             {[['x', 'x'], ['y', 'y'], ['width', 'width'], ['height', 'height']].map(([key, label]) => <label key={key}>{t(`studioImage.${label}`)}<input name={`element-${key}`} type="number" min={key === 'width' || key === 'height' ? 1 : undefined} value={Math.round(bounds[key])} onChange={event => commit(current => updateElement(current, selected.id, { [key]: Number(event.target.value) }))} /></label>)}
+            <div className="image-layer-actions image-field-wide" role="group" aria-label={t('studioImage.layerActions')}>
+              <button type="button" className="image-field-wide" aria-disabled={!canDuplicate || undefined} title={!canDuplicate ? t('studioImage.errors.element_limit') : undefined} onClick={() => { if (canDuplicate) commit(current => duplicateElement(current, selected.id, nextId(selected.type))) }}>{t('studioImage.duplicateElement')}</button>
+              <button type="button" aria-disabled={!canMoveForward || undefined} onClick={() => { if (canMoveForward) commit(current => moveElement(current, selected.id, 1)) }}>{t('studioImage.moveForward')}</button>
+              <button type="button" aria-disabled={!canMoveBackward || undefined} onClick={() => { if (canMoveBackward) commit(current => moveElement(current, selected.id, -1)) }}>{t('studioImage.moveBackward')}</button>
+            </div>
             <button type="button" onClick={() => commit(current => centreElement(current, selected.id))}>{t('studioImage.centre')}</button>
             <button type="button" className="image-danger" onClick={() => commit(current => removeElement(current, selected.id))}><IconTrash aria-hidden="true" />{t('studioImage.remove')}</button>
           </div></details>}

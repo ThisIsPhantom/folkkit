@@ -150,6 +150,26 @@ export function updateElement(state, id, changes) {
   return { ...cloneState(state), elements, dirty: true }
 }
 
+export function duplicateElement(state, id, newId) {
+  const original = state.elements.find(element => element.id === id)
+  if (!original) return state
+  const bounds = transformedBounds(original)
+  const x = bounds.width <= state.width ? Math.max(0, Math.min(bounds.x + 16, state.width - bounds.width)) : bounds.x
+  const y = bounds.height <= state.height ? Math.max(0, Math.min(bounds.y + 16, state.height - bounds.height)) : bounds.y
+  const copy = { ...original, id: newId, matrix: multiplyMatrix([1, 0, 0, 1, x - bounds.x, y - bounds.y], original.matrix) }
+  delete copy.x; delete copy.y
+  return addElement(state, copy)
+}
+
+export function moveElement(state, id, direction) {
+  if (direction !== -1 && direction !== 1) throw imageError('invalid_settings')
+  const index = state.elements.findIndex(element => element.id === id), target = index + direction
+  if (index < 0 || target < 0 || target >= state.elements.length) return state
+  const next = cloneState(state)
+  ;[next.elements[index], next.elements[target]] = [next.elements[target], next.elements[index]]
+  return { ...next, dirty: true }
+}
+
 export function removeElement(state, id) {
   if (!state.elements.some(element => element.id === id)) return state
   return { ...cloneState(state), elements: state.elements.filter(element => element.id !== id).map(element => ({ ...element, matrix: [...element.matrix] })), selectedId: state.selectedId === id ? null : state.selectedId, dirty: true }
