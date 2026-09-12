@@ -1,4 +1,5 @@
 export default {
+ fileArea:'Audiodatei',drop:'Audiodatei hier ablegen',replaceDrop:'Andere Audiodatei hier ablegen',
  title:'Audio zuschneiden',intro:'Bereich auswählen, Ein- und Ausblenden einstellen und als Audiodatei speichern.',
  choose:'Audio auswählen',limits:'MP3, WAV, FLAC oder OGG/Vorbis · bis 100 MiB und 30 Minuten.',
  empty:'Wähle eine Audiodatei, um die Wellenform zu sehen.',preparing:'Wellenform und Vorschau werden vorbereitet …',exporting:'Audiodatei wird erstellt …',cancel:'Abbrechen',reset:'Zurücksetzen',

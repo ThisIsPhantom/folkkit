@@ -18,7 +18,7 @@ Die freigegebene [Studio-Erweiterung](docs/superpowers/plans/2026-09-05-folkkit-
 Die [Erweiterung für Bilder, Dokumente und Audio](docs/superpowers/specs/2026-09-06-folkkit-creative-tools-design.md) ergänzt zwei Editoren und die Dokumentformate im Konverter:
 
 - `/image`: PNG, JPEG und WebP zuschneiden, drehen und spiegeln; eigene Texte und Wasserzeichen mit direkter Vorschau verschieben und vergrössern. Ausgewählte Texte und Wasserzeichen lassen sich duplizieren und in ihrer Reihenfolge ändern. Rückgängig, Wiederholen und Export verwenden das unveränderte Original als Grundlage.
-- `/audio`: MP3, WAV, FLAC und OGG/Vorbis zuschneiden, anhand der Wellenform auswählen, mit Ein-/Ausblenden anhören und exportieren.
+- `/audio`: MP3, WAV, FLAC und OGG/Vorbis per Dateiauswahl oder Drag-and-drop öffnen, zuschneiden, mit Ein-/Ausblenden anhören und exportieren. Enter übernimmt Zeiteingaben, Escape verwirft den Entwurf; der Fokus bleibt im Feld. Unveränderte Werte erhalten den fertigen Download.
 - DOCX/Markdown/HTML: Texte, Listen, Tabellen und unterstützte eingebettete Bilder konvertieren. Word-Seitenlayouts werden nicht identisch nachgebildet; eigene Word-Sprungmarken können verloren gehen. HTML-Ausgaben sind passiv; externe Bilder werden ausgelassen. Markdown mit Bildern wird als ZIP ausgegeben.
 
 Die Audiovorschau verwendet den nativen Decoder des Browsers. Fehler können auch nach einem erfolgreichen Start auftreten. Folkkit zeigt sie an; Bearbeiten und Exportieren bleiben verfügbar.
