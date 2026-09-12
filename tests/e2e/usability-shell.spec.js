@@ -110,7 +110,13 @@ test('keeps mobile calculator selection focused for consecutive arrow-key choice
   await expect(selector).toHaveValue('pythagoras')
 })
 
-test('clears unconsented legacy content when opening a studio directly', async ({ page }) => {
+// Keep legacy storage cleanup in its own Playwright worker/browser. A closed
+// cleanup browser must never be reused by the regular converter-session tests.
+const storageCleanupTest = test.extend({
+  legacyStorageWorker: [async ({ browserName }, use) => { await use(browserName) }, { scope: 'worker', auto: true }],
+})
+
+storageCleanupTest('clears unconsented legacy content when opening a studio directly', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('folkkit:content-history', JSON.stringify([{ input: 'UNCONSENTED-STUDIO-FIXTURE' }]))
     localStorage.setItem('convert-everything-history', JSON.stringify([{ input: 'UNCONSENTED-STUDIO-FIXTURE' }]))

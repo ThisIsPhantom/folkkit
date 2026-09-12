@@ -28,8 +28,11 @@ function checkDocx(bytes) {
   expect(media).toHaveLength(3)
   expect(strFromU8(entries['word/_rels/document.xml.rels'])).not.toContain('document-external.invalid')
 }
-test('@matrix documents convert all six pairs with Unicode, tables and three local raster formats', async ({ page }, testInfo) => {
-  test.setTimeout(240_000)
+const documentPairs = ['markdown', 'html', 'docx'].flatMap(from => ['markdown', 'html', 'docx'].filter(to => to !== from).map(to => ({ from, to })))
+for (const { from, to } of documentPairs) test(`@matrix documents convert ${from} to ${to} with Unicode, tables and three local raster formats`, async ({ page }, testInfo) => {
+  // Each conversion keeps its own 65-second assertion and 60-second engine cap.
+  // DOCX inputs additionally need one verified seed conversion.
+  test.setTimeout(from === 'docx' ? 150_000 : 90_000)
   const requests = [], errors = []
   page.on('request', request => requests.push({ url: request.url(), method: request.method(), body: request.postData() }))
   page.on('pageerror', error => errors.push(error.message))
@@ -37,37 +40,37 @@ test('@matrix documents convert all six pairs with Unicode, tables and three loc
   await page.goto('/convert')
   expect(requests.some(request => request.url.includes('pandoc.wasm'))).toBe(false)
   const fixtures = { markdown: { name: 'fixture.md', mimeType: 'text/markdown', buffer: Buffer.from(markdown) }, html: { name: 'fixture.html', mimeType: 'text/html', buffer: Buffer.from(html) } }
-  const seed = await convert(page, fixtures.markdown, 'docx')
-  checkDocx(seed.bytes)
-  fixtures.docx = { name: 'fixture.docx', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', buffer: seed.bytes }
-  for (const from of ['markdown', 'html', 'docx']) for (const to of ['markdown', 'html', 'docx']) if (from !== to) {
-    const result = await convert(page, fixtures[from], to)
-    if (to === 'docx') checkDocx(result.bytes)
-    else if (to === 'markdown') {
-      expect(result.name).toBe('fixture.zip')
-      const entries = unzipSync(result.bytes), md = strFromU8(entries['document.md'])
-      expect(md).toContain('Grüezi'); expect(md).toContain('世界'); expect(md).not.toContain('<script')
-      for (const image of ['image-1.png', 'image-2.jpg', 'image-3.webp']) { expect(entries[image]).toBeTruthy(); expect(md).toContain(image) }
-    } else {
-      const document = await page.evaluate(text => {
-        const dom = new DOMParser().parseFromString(text, 'text/html')
-        return { anchors: [...dom.querySelectorAll('a[href^="#"]')].map(link => ({ href: link.getAttribute('href'), target: Boolean(dom.getElementById(link.getAttribute('href').slice(1))) })), text: dom.body.textContent, tables: dom.querySelectorAll('table').length, images: [...dom.images].map(img => img.src), active: dom.querySelectorAll('script,iframe,form,svg,style,[onerror],[onclick]').length }
-      }, result.bytes.toString('utf8'))
-      // The pinned DOCX reader regenerates heading IDs and drops custom bookmarks.
-      // Preserve IDs that reach the AST from Markdown/HTML; do not claim a DOCX bookmark round-trip.
-      if (from !== 'docx') { expect(document.anchors.length).toBeGreaterThan(0); expect(document.anchors.every(anchor => anchor.target)).toBe(true) }
-      expect(document.text).toContain('Grüezi'); expect(document.text).toContain('世界'); expect(document.tables).toBe(1); expect(document.active).toBe(0)
-      expect(document.images).toHaveLength(3); expect(document.images.every(src => /^data:image\/(png|jpeg|webp);base64,/.test(src))).toBe(true)
-    }
-    if (from === 'html') await expect(page.getByText('Externally linked or missing images were omitted.', { exact: true })).toBeVisible()
+  if (from === 'docx') {
+    const seed = await convert(page, fixtures.markdown, 'docx')
+    checkDocx(seed.bytes)
+    fixtures.docx = { name: 'fixture.docx', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', buffer: seed.bytes }
   }
+  const result = await convert(page, fixtures[from], to)
+  if (to === 'docx') checkDocx(result.bytes)
+  else if (to === 'markdown') {
+    expect(result.name).toBe('fixture.zip')
+    const entries = unzipSync(result.bytes), md = strFromU8(entries['document.md'])
+    expect(md).toContain('Grüezi'); expect(md).toContain('世界'); expect(md).not.toContain('<script')
+    for (const image of ['image-1.png', 'image-2.jpg', 'image-3.webp']) { expect(entries[image]).toBeTruthy(); expect(md).toContain(image) }
+  } else {
+    const document = await page.evaluate(text => {
+      const dom = new DOMParser().parseFromString(text, 'text/html')
+      return { anchors: [...dom.querySelectorAll('a[href^="#"]')].map(link => ({ href: link.getAttribute('href'), target: Boolean(dom.getElementById(link.getAttribute('href').slice(1))) })), text: dom.body.textContent, tables: dom.querySelectorAll('table').length, images: [...dom.images].map(img => img.src), active: dom.querySelectorAll('script,iframe,form,svg,style,[onerror],[onclick]').length }
+    }, result.bytes.toString('utf8'))
+    // The pinned DOCX reader regenerates heading IDs and drops custom bookmarks.
+    // Preserve IDs that reach the AST from Markdown/HTML; do not claim a DOCX bookmark round-trip.
+    if (from !== 'docx') { expect(document.anchors.length).toBeGreaterThan(0); expect(document.anchors.every(anchor => anchor.target)).toBe(true) }
+    expect(document.text).toContain('Grüezi'); expect(document.text).toContain('世界'); expect(document.tables).toBe(1); expect(document.active).toBe(0)
+    expect(document.images).toHaveLength(3); expect(document.images.every(src => /^data:image\/(png|jpeg|webp);base64,/.test(src))).toBe(true)
+  }
+  if (from === 'html') await expect(page.getByText('Externally linked or missing images were omitted.', { exact: true })).toBeVisible()
   expect(await page.evaluate(() => window.documentCanary)).toBeUndefined()
   const origin = new URL(page.url()).origin
   expect(requests.every(request => new URL(request.url).origin === origin && ['GET', 'HEAD'].includes(request.method) && !request.body)).toBe(true)
   expect(errors).toEqual([])
   await page.setViewportSize({ width: 390, height: 844 })
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  await page.screenshot({ path: testInfo.outputPath('documents-mobile.png'), fullPage: true })
+  await page.screenshot({ path: testInfo.outputPath(`documents-${from}-to-${to}-mobile.png`), fullPage: true })
 })
 
 test.describe('documents cancellation', () => {
