@@ -46,14 +46,44 @@ async function centreImageControl(control) {
   }, { message: 'Canvas pointer coordinates must be stable after scrolling.', intervals: [50, 100, 200] }).toBe(true)
 }
 
+async function imageControlSnapshot(control) {
+  // Fixed categories and geometry only: never log text, filenames, URLs or DOM markup.
+  return control.evaluate(node => {
+    const category = element => !element ? 'outside'
+      : element === node || node.contains(element) ? 'control'
+      : element.closest('.site-header') ? 'header'
+      : element.closest('.image-inspector') ? 'inspector'
+      : element.closest('.image-busy,.image-message') ? 'notice'
+      : element.closest('.image-canvas-stage') ? 'canvas' : 'other'
+    const number = value => Number.isFinite(value) ? Math.round(value * 1000) / 1000 : null
+    const box = node.getBoundingClientRect(), scrollContainers = []
+    for (let parent = node.parentElement; parent && scrollContainers.length < 8; parent = parent.parentElement) {
+      if (parent.scrollTop || parent.scrollLeft || parent.scrollHeight > parent.clientHeight || parent.scrollWidth > parent.clientWidth) {
+        scrollContainers.push({ kind: category(parent), x: number(parent.scrollLeft), y: number(parent.scrollTop), width: number(parent.clientWidth), height: number(parent.clientHeight) })
+      }
+    }
+    return {
+      control: { x: number(box.x), y: number(box.y), width: number(box.width), height: number(box.height) },
+      hit: category(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)),
+      active: category(document.activeElement), scroll: { x: number(scrollX), y: number(scrollY) },
+      viewport: { width: number(innerWidth), height: number(innerHeight) }, scrollContainers,
+    }
+  }, undefined, { timeout: 1000 }).catch(() => ({ unavailable: true }))
+}
+
 async function revealImageControl(control) {
   // Protocol scrollIntoViewIfNeeded can place a canvas control beneath the sticky header.
   await centreImageControl(control)
-  await expect.poll(() => control.evaluate(node => {
-    const box = node.getBoundingClientRect()
-    const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
-    return hit === node || node.contains(hit)
-  }), { message: 'Pointer gestures must start on the visible canvas control.' }).toBe(true)
+  try {
+    await expect.poll(() => control.evaluate(node => {
+      const box = node.getBoundingClientRect()
+      const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
+      return hit === node || node.contains(hit)
+    }), { message: 'Pointer gestures must start on the visible canvas control.' }).toBe(true)
+  } catch (error) {
+    console.info('IMAGE_CONTROL_VISIBILITY ' + JSON.stringify(await imageControlSnapshot(control)))
+    throw error
+  }
 }
 
 test('crop, clockwise rotation and mirror map original pixels exactly through the worker', async ({ page }) => {
@@ -706,4 +736,38 @@ test('image layer order and duplicates preserve exported pixels, style and undo 
   expect(requests.filter(request => /^https?:/.test(request.url())).every(request => new URL(request.url()).origin === new URL(page.url()).origin)).toBe(true)
   await page.evaluate(() => window.scrollTo(0, 0))
   await page.screenshot({ path: info.outputPath('image-layer-controls.png'), fullPage: true })
+})
+
+
+test('canvas visibility diagnostics preserve the hit-target guard without logging contents', async ({ page }) => {
+  const diagnostics=[], originalInfo=console.info
+  console.info=(...args)=>{if(String(args[0]).startsWith('IMAGE_CONTROL_VISIBILITY '))diagnostics.push(args[0]);originalInfo(...args)}
+  try {
+    await page.goto('/image')
+    await page.getByLabel('Bild auswählen',{exact:true}).setInputFiles(imageFixture())
+    const control=page.getByRole('button',{name:'Ausschnittsgrösse ändern',exact:true})
+    await expect(control).toBeVisible()
+    await page.evaluate(()=>{
+      const blocker=document.createElement('div')
+      blocker.textContent='PRIVATE-FIXTURE-CONTENT'
+      Object.assign(blocker.style,{position:'fixed',inset:'0',zIndex:'2147483647',background:'white'})
+      document.body.append(blocker)
+    })
+    await expect(revealImageControl(control)).rejects.toThrow('Pointer gestures must start on the visible canvas control.')
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0]).not.toContain('PRIVATE-FIXTURE-CONTENT')
+    const snapshot=JSON.parse(diagnostics[0].slice('IMAGE_CONTROL_VISIBILITY '.length))
+    expect(snapshot.hit).toBe('other')
+    expect(snapshot.control.width).toBeGreaterThan(0)
+    expect(snapshot.control.height).toBeGreaterThan(0)
+    expect(Object.keys(snapshot).sort()).toEqual(['active','control','hit','scroll','scrollContainers','viewport'])
+  } finally { console.info=originalInfo }
+})
+
+test('missing canvas controls return bounded content-free visibility diagnostics',async({page})=>{
+  await page.goto('/image')
+  const started=Date.now()
+  const snapshot=await imageControlSnapshot(page.locator('[data-missing-control]'))
+  expect(snapshot).toEqual({unavailable:true})
+  expect(Date.now()-started).toBeLessThan(3000)
 })
