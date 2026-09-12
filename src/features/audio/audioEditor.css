@@ -14,3 +14,6 @@
 @media(max-width:600px){.audio-upload.is-compact{flex-wrap:wrap}.audio-upload.is-compact .audio-file-row{width:100%;justify-content:flex-start}.audio-upload.is-compact .audio-file-row button{flex:1}}
 
 .audio-history-controls{display:inline-flex;flex-shrink:0;gap:.7rem}
+
+/* Preserve the local touch minimum against the more specific shared Studio field rule. */
+.audio-editor input[type=number],.audio-editor select{min-height:48px!important}

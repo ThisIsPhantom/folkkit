@@ -355,6 +355,7 @@ test('@matrix audio upload and precise fields preserve focus and completed downl
  await expect(page.getByText('Audiodatei hier ablegen',{exact:true})).toBeVisible()
  const picked=page.waitForEvent('filechooser');await chooser.press('Enter');await (await picked).setFiles(fixture('wav'))
  await expect(page.locator('.audio-wave')).toBeVisible({timeout:90000})
+ for(const control of await page.locator('.audio-fields input,.audio-export select').all())expect((await control.boundingBox()).height).toBeGreaterThanOrEqual(48)
  const start=page.getByLabel('Start (Sekunden)',{exact:true})
  await start.fill('0.2');await start.press('Enter');await expect(start).toBeFocused()
  await expect(page.getByRole('slider',{name:'Auswahlstart'})).toHaveAttribute('aria-valuenow','0.2')
