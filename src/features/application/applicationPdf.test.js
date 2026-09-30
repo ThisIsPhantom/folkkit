@@ -1,4 +1,5 @@
 import {beforeAll,expect,test} from 'vitest'
+import process from 'node:process'
 import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs'
 import {exampleApplicationProject} from './applicationModel.js'
 import {applyApplicationTemplate} from './applicationTemplates.js'
@@ -27,3 +28,12 @@ test('local photo is embedded in exported PDF',async()=>{
  const {PDFDocument,PDFName}=await import('pdf-lib');const doc=await PDFDocument.load(bytes)
  expect(doc.getPage(0).node.Resources().lookup(PDFName.of('XObject')).keys().length).toBeGreaterThan(0)
 })
+test.each(['openSans','notoSans','notoSerif'])('%s uses embedded local fonts with independently readable PDF text',async family=>{
+ const {readFile}=await import('node:fs/promises')
+ const local=await createApplicationFonts([family],url=>readFile(process.cwd()+'/public'+url))
+ const p=exampleApplicationProject();p.resume.design.font=family
+ const bytes=await exportApplicationPdf(p,['resume'],local)
+ const task=getDocument({data:bytes.slice(),useSystemFonts:false});const pdf=await task.promise
+ const content=await (await pdf.getPage(1)).getTextContent();expect(content.items.map(i=>i.str).join(' ')).toContain('Mira Muster')
+ expect(Object.values(content.styles).some(s=>s.fontFamily)).toBe(true);await task.destroy()
+},15000)

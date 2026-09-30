@@ -2,6 +2,15 @@ import {expect,test,vi} from 'vitest'
 import {screen,fireEvent,waitFor} from '@testing-library/react'
 import {renderWithProviders} from '../../test/renderWithProviders.jsx'
 import ApplicationStudioPage from './ApplicationStudioPage.jsx'
+test('design exposes two-column layout, photo placement and six font families',()=>{
+ renderWithProviders(<ApplicationStudioPage active/>);fireEvent.click(screen.getByRole('tab',{name:'Gestaltung'}))
+ fireEvent.change(screen.getByLabelText('Spaltenlayout'),{target:{value:'two'}})
+ expect(screen.getByLabelText('Spaltenlayout')).toHaveValue('two')
+ expect(screen.getByLabelText('Spaltenabstand')).toBeInTheDocument()
+ fireEvent.change(screen.getByLabelText('Fotoposition'),{target:{value:'left'}});expect(screen.getByLabelText('Fotoposition')).toHaveValue('left')
+ const size=screen.getByLabelText('Fotogrösse');fireEvent.change(size,{target:{value:'145'}});fireEvent.blur(size);expect(screen.getByLabelText('Fotogrösse')).toHaveValue(145)
+ expect(screen.getByLabelText('Schrift').querySelectorAll('option')).toHaveLength(6)
+})
 test('external content appears in preview and template/design changes preserve it',async()=>{
  renderWithProviders(<ApplicationStudioPage active/>);
  fireEvent.change(screen.getByLabelText('Vollständiger Name'),{target:{value:'Mira Test'}})

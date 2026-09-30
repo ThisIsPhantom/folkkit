@@ -1,5 +1,5 @@
 import {inspectLogoHeader} from '../qr/qrModel.js'
-import { applicationDesign, applyApplicationTemplate } from './applicationTemplates.js'
+import { applicationDesign, applyApplicationTemplate, applicationFontFamilies } from './applicationTemplates.js'
 export const applicationLimits = Object.freeze({ file:5*1024*1024, pixels:12*1000*1000, entries:100, characters:100000, pages:20 })
 export const applicationSectionTypes = ['profile','experience','education','skills','languages','projects','engagement','custom','spacer','rule','pageBreak']
 const personFields = ['name','title','email','phone','address','website','linkedin','citizenship']
@@ -8,7 +8,7 @@ export function applicationId() { return globalThis.crypto.randomUUID() }
 export function emptyApplicationEntry() { return {id:applicationId(),...Object.fromEntries(entryFields.map(k=>[k,''])),visible:true,style:{}} }
 const titles = { de:['Profil','Berufserfahrung','Ausbildung','Kenntnisse','Sprachen','Projekte','Engagement & Verantwortung'], en:['Profile','Work experience','Education','Skills','Languages','Projects','Engagement & responsibility'] }
 export function createApplicationProject(locale='de',date=new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Zurich'})) {
- return {version:1,person:Object.fromEntries(personFields.map(k=>[k,''])),photo:null,resume:{design:applicationDesign(),sections:applicationSectionTypes.slice(0,7).map((type,i)=>({id:applicationId(),type,title:titles[locale==='en'?'en':'de'][i],visible:true,entries:[emptyApplicationEntry()],style:{}}))},letter:{recipient:'',date,place:'',subject:'',salutation:locale==='en'?'Dear hiring team,':'Sehr geehrte Damen und Herren',paragraphs:[{id:applicationId(),text:'',style:{}}],closing:locale==='en'?'Kind regards':'Freundliche Grüsse',design:applicationDesign()}}
+ return {version:1,person:Object.fromEntries(personFields.map(k=>[k,''])),photo:null,resume:{design:applicationDesign(),sections:applicationSectionTypes.slice(0,7).map((type,i)=>({id:applicationId(),type,column:'auto',title:titles[locale==='en'?'en':'de'][i],visible:true,entries:[emptyApplicationEntry()],style:{}}))},letter:{recipient:'',date,place:'',subject:'',salutation:locale==='en'?'Dear hiring team,':'Sehr geehrte Damen und Herren',paragraphs:[{id:applicationId(),text:'',style:{}}],closing:locale==='en'?'Kind regards':'Freundliche Grüsse',design:applicationDesign()}}
 }
 function contrast(hex) {
  const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4)
@@ -35,9 +35,11 @@ export function validateApplicationProject(value) {
  const design=v=>{
   if(!v||!v.margins)return bad('design')
   const base=applicationDesign();const out={}
-  for(const [k,opts] of Object.entries({template:['ats','modern','editorial','swiss'],pageFormat:['a4','letter'],font:['helvetica','times'],header:['plain','accent','editorial','classic'],photoShape:['round','rectangle']}))out[k]=opts.includes(v[k])?v[k]:bad(k)
+  for(const [k,opts] of Object.entries({template:['ats','modern','editorial','swiss'],pageFormat:['a4','letter'],font:applicationFontFamilies,header:['plain','accent','editorial','classic'],photoShape:['round','rectangle']}))out[k]=opts.includes(v[k])?v[k]:bad(k)
   out.margins=Object.fromEntries(['top','right','bottom','left'].map(k=>[k,number(v.margins[k],18,90,k)]))
-  for(const [k,r] of Object.entries({fontSize:[8,18],lineHeight:[1,2],paragraphGap:[0,60],sectionGap:[0,60],entryGap:[0,60],dateWidth:[60,150],photoSize:[36,110]}))out[k]=number(v[k],...r,k)
+  for(const [k,r] of Object.entries({fontSize:[8,18],lineHeight:[1,2],paragraphGap:[0,60],sectionGap:[0,60],entryGap:[0,60],dateWidth:[60,150],photoSize:[24,180]}))out[k]=number(v[k],...r,k)
+  for(const [k,opts] of Object.entries({layout:['single','two'],photoPosition:['left','right']}))out[k]=opts.includes(v[k]??base[k])?(v[k]??base[k]):bad(k)
+  for(const [k,r] of Object.entries({columnGap:[12,48],leftColumnWidth:[35,65],photoOffsetX:[0,48],photoOffsetY:[0,90]}))out[k]=number(v[k]??base[k],...r,k)
   out.accent=color(v.accent,'accent');out.textColor=color(v.textColor,'textColor');out.showPhoto=boolean(v.showPhoto??base.showPhoto)
   return out
  }
@@ -48,7 +50,7 @@ export function validateApplicationProject(value) {
   const sections=value.resume.sections.map(s=>{
    if(!s||!applicationSectionTypes.includes(s.type)||!Array.isArray(s.entries)||s.entries.length>100){bad('section');return null}
    const es=s.entries.map(e=>{entries++;return {id:id(e.id),...Object.fromEntries(entryFields.map(k=>[k,string(e[k],k)])),visible:boolean(e.visible),style:style(e.style)}})
-   return {id:id(s.id),type:s.type,title:string(s.title,'heading'),visible:boolean(s.visible),entries:es,style:style(s.style)}
+   return {id:id(s.id),type:s.type,column:['auto','full','left','right'].includes(s.column??'auto')?(s.column??'auto'):bad('column'),title:string(s.title,'heading'),visible:boolean(s.visible),entries:es,style:style(s.style)}
   })
   const l=value.letter
   if(!Array.isArray(l?.paragraphs)||l.paragraphs.length>100)return {ok:false,issues:[{code:'invalidProject',blocking:true}]}
@@ -76,7 +78,7 @@ export function updateApplicationProject(project,a) {
  else if(a.type==='deleteParagraph')p.letter.paragraphs=p.letter.paragraphs.filter(p=>p.id!==a.id)
  else if(a.type==='moveParagraph')p.letter.paragraphs=moved(p.letter.paragraphs,a.id,a.direction)
  else if(a.type==='duplicateParagraph'){const i=p.letter.paragraphs.findIndex(p=>p.id===a.id);if(i>=0)p.letter.paragraphs.splice(i+1,0,{...p.letter.paragraphs[i],id:applicationId()})}
- else if(a.type==='section'&&s&&['title','visible'].includes(a.field))s[a.field]=a.value
+ else if(a.type==='section'&&s&&['title','visible','column'].includes(a.field))s[a.field]=a.value
  else if(a.type==='entry'&&e&&[...entryFields,'visible'].includes(a.field))e[a.field]=a.value
  else if(a.type==='addEntry'&&s)s.entries.push(emptyApplicationEntry())
  else if(a.type==='duplicateEntry'&&e){const i=s.entries.indexOf(e);s.entries.splice(i+1,0,{...e,id:applicationId()})}
@@ -85,7 +87,7 @@ export function updateApplicationProject(project,a) {
  else if(a.type==='duplicateSection'&&s){const i=p.resume.sections.indexOf(s);p.resume.sections.splice(i+1,0,{...s,id:applicationId(),entries:s.entries.map(e=>({...e,id:applicationId()}))})}
  else if(a.type==='moveSection')p.resume.sections=moved(p.resume.sections,a.sectionId,a.direction)
  else if(a.type==='deleteSection')p.resume.sections=p.resume.sections.filter(s=>s.id!==a.sectionId)
- else if(a.type==='addSection'&&applicationSectionTypes.includes(a.sectionType))p.resume.sections.push({id:applicationId(),type:a.sectionType,title:a.title||'',visible:true,entries:['spacer','rule','pageBreak'].includes(a.sectionType)?[]:[emptyApplicationEntry()],style:a.sectionType==='spacer'?{after:18}:{}})
+ else if(a.type==='addSection'&&applicationSectionTypes.includes(a.sectionType))p.resume.sections.push({id:applicationId(),type:a.sectionType,column:'auto',title:a.title||'',visible:true,entries:['spacer','rule','pageBreak'].includes(a.sectionType)?[]:[emptyApplicationEntry()],style:a.sectionType==='spacer'?{after:18}:{}})
  else if(a.type==='design'){if(a.field==='margins'&&['top','right','bottom','left'].includes(a.side))p[kind].design.margins[a.side]=a.value;else if(Object.hasOwn(p[kind].design,a.field))p[kind].design[a.field]=a.value}
  else if(a.type==='style'){
   const target=a.kind==='letter'?p.letter.paragraphs.find(p=>p.id===a.id):(e||s)

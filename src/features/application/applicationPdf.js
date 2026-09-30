@@ -10,7 +10,9 @@ export async function exportApplicationPdf(project,kinds,metrics){
  const layouts=kinds.map(kind=>layoutApplication(project,kind,metrics));const issue=layouts.flatMap(l=>l.issues).find(i=>i.blocking);if(issue)throw applicationError(issue.code)
  try{
   const doc=await PDFDocument.create();doc.setCreator('Folkkit');doc.setProducer('Folkkit · local application studio')
-  const fonts=Object.fromEntries(await Promise.all(Object.entries(applicationFontNames).map(async([key,name])=>[key,await doc.embedFont(name)])))
+  const used=[...new Set(layouts.flatMap(l=>l.pages.flatMap(p=>p.runs.map(r=>r.font))))]
+  if(used.some(key=>metrics[key]?.applicationBytes)){const {default:fontkit}=await import('@pdf-lib/fontkit');doc.registerFontkit(fontkit)}
+  const fonts=Object.fromEntries(await Promise.all(used.map(async key=>[key,await doc.embedFont(metrics[key]?.applicationBytes||applicationFontNames[key],metrics[key]?.applicationBytes?{subset:true}:{})])))
   const photo=project.photo?await (project.photo.mime==='image/jpeg'?doc.embedJpg(project.photo.data):doc.embedPng(project.photo.data)):null
   for(const layout of layouts)for(const data of layout.pages){
    const page=doc.addPage([data.width,data.height]);const annotations=[]

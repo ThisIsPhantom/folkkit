@@ -1,11 +1,46 @@
 import {test,expect} from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import {readFile} from 'node:fs/promises'
+import {Buffer} from 'node:buffer'
 import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs'
 
 async function useExample(page){await page.goto('/application');await expect(page.getByRole('tab',{name:'Inhalt',exact:true})).toBeVisible();await previewView(page);await page.getByRole('button',{name:'Mit Beispiel ausprobieren'}).click();await expect(page.locator('.app-preview text').first()).toHaveText('Mira Muster')}
 async function editView(page){const button=page.getByRole('button',{name:'Bearbeiten',exact:true});if(await button.isVisible())await button.click()}
 async function previewView(page){const button=page.getByRole('button',{name:'Vorschau',exact:true});if(await button.isVisible())await button.click()}
+
+test('two content columns, photo geometry and embedded fonts survive project and PDF export @matrix',async({page})=>{
+ await useExample(page);await editView(page)
+ const {onePixelPngBase64}=await import('../fixtures/coreFixtures.js')
+ await page.locator('input[accept="image/png,image/jpeg,image/webp"]').setInputFiles({name:'photo.png',mimeType:'image/png',buffer:Buffer.from(onePixelPngBase64,'base64')})
+ await expect(page.getByRole('button',{name:'Foto entfernen'})).toBeVisible()
+ await page.getByRole('button',{name:'Foto gestalten'}).click()
+ await page.getByLabel('Fotoposition').selectOption('left')
+ for(const [label,value] of [['Fotogrösse','145'],['Fotoabstand vom Seitenrand','9'],['Fotoabstand nach unten','16']]){await page.getByLabel(label,{exact:true}).fill(value);await page.getByLabel(label,{exact:true}).press('Tab')}
+ await page.getByLabel('Spaltenlayout').selectOption('two')
+ await previewView(page)
+ await expect(page.locator('.app-preview image').first()).toHaveAttribute('x','51')
+ await expect(page.locator('.app-preview image').first()).toHaveAttribute('y','56')
+ await expect(page.locator('.app-preview image').first()).toHaveAttribute('width','145')
+ const x=async name=>Number(await page.locator('.app-preview text').filter({hasText:new RegExp(`^${name}$`)}).first().getAttribute('x'))
+ expect(await x('Ausbildung')).toBeGreaterThan(await x('Berufserfahrung')+200)
+ await editView(page)
+ for(const [family,css] of [['openSans','Application Open Sans'],['notoSans','Application Noto Sans'],['notoSerif','Application Noto Serif']]){
+  await page.getByLabel('Schrift',{exact:true}).selectOption(family);await previewView(page)
+  await expect(page.locator('.app-preview text').first()).toHaveAttribute('font-family',css)
+  await page.evaluate(()=>document.fonts.ready);await editView(page)
+ }
+ const jsonDownload=page.waitForEvent('download');await page.getByRole('button',{name:'Projekt speichern',exact:true}).click();const json=await jsonDownload;const jsonPath=await json.path();const project=JSON.parse(await readFile(jsonPath,'utf8'))
+ expect(project.resume.design).toMatchObject({layout:'two',photoPosition:'left',photoSize:145,font:'notoSerif'})
+ const pdfDownload=page.waitForEvent('download');await page.getByRole('button',{name:'PDF herunterladen',exact:true}).click();const file=await pdfDownload
+ const task=getDocument({data:new Uint8Array(await readFile(await file.path())),useSystemFonts:false});const pdf=await task.promise;const items=(await (await pdf.getPage(1)).getTextContent()).items
+ expect(items.map(i=>i.str).join(' ')).toContain('Mira Muster')
+ expect(items.find(i=>i.str==='Ausbildung').transform[4]).toBeGreaterThan(items.find(i=>i.str==='Berufserfahrung').transform[4]+200)
+ await task.destroy()
+ page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Neues Projekt'}).click()
+ await page.locator('input[accept=".json,application/json"]').setInputFiles(jsonPath)
+ await expect(page.getByLabel('Spaltenlayout')).toHaveValue('two');await expect(page.getByLabel('Fotogrösse')).toHaveValue('145')
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
+})
 
 test('application editor, templates, project roundtrip and real PDF @matrix',async({page})=>{
  await useExample(page);await editView(page)

@@ -47,3 +47,11 @@ test('duplicate section preserves content and form with fresh section and entry 
  expect(q.resume.sections).toHaveLength(p.resume.sections.length+1)
  const copy=q.resume.sections[1];expect(copy.id).not.toBe(s.id);expect(copy.entries[0].id).not.toBe(s.entries[0].id);expect(copy.style).toEqual(s.style);expect(copy.entries[0].description).toBe('My content')
 })
+test('old projects receive layout defaults and new photo/layout options roundtrip',()=>{
+ const p=createApplicationProject();for(const kind of ['resume','letter'])for(const key of ['layout','columnGap','leftColumnWidth','photoPosition','photoOffsetX','photoOffsetY'])delete p[kind].design[key]
+ const old=validateApplicationProject(p);expect(old.ok).toBe(true);expect(old.project.resume.design.layout).toBe('single')
+ let next=updateApplicationProject(old.project,{type:'design',field:'layout',value:'two'})
+ next=updateApplicationProject(next,{type:'design',field:'photoSize',value:160});expect(next.resume.design.photoSize).toBe(160)
+ next.resume.sections[0].column='right';expect(validateApplicationProject(next).project.resume.sections[0].column).toBe('right')
+ next.resume.design.photoOffsetY=-1;expect(validateApplicationProject(next).ok).toBe(false)
+})

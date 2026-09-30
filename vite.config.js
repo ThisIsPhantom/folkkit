@@ -123,6 +123,7 @@ export default defineConfig({
     'globalThis.__FOLKKIT_COMMIT__': JSON.stringify(resolveBuildCommit()),
   },
   plugins: [
+    fontkitTablesPlugin(),
     react(),
     pruneHiddenBrowserConverters(),
     selfHostFFmpegWorkerFallback(),
@@ -140,6 +141,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          'fontkit-tables': ['folkkit:fontkit-tables'],
           'pdf-lib': ['pdf-lib'],
           'qrcode': ['qrcode'],
         },
@@ -152,3 +154,4 @@ export default defineConfig({
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
   },
 })
+import {fontkitTablesPlugin} from './scripts/split-fontkit-tables.mjs'

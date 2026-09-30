@@ -1,7 +1,16 @@
 import {PDFDocument,StandardFonts} from 'pdf-lib'
 import {applicationLimits} from './applicationModel.js'
-export const applicationFontNames={helvetica:StandardFonts.Helvetica,'helvetica-bold':StandardFonts.HelveticaBold,'helvetica-italic':StandardFonts.HelveticaOblique,times:StandardFonts.TimesRoman,'times-bold':StandardFonts.TimesRomanBold,'times-italic':StandardFonts.TimesRomanItalic}
-export async function createApplicationFonts(){const doc=await PDFDocument.create();return Object.fromEntries(await Promise.all(Object.entries(applicationFontNames).map(async([key,name])=>[key,await doc.embedFont(name)])))}
+export const applicationFontNames={helvetica:StandardFonts.Helvetica,'helvetica-bold':StandardFonts.HelveticaBold,'helvetica-italic':StandardFonts.HelveticaOblique,times:StandardFonts.TimesRoman,'times-bold':StandardFonts.TimesRomanBold,'times-italic':StandardFonts.TimesRomanItalic,courier:StandardFonts.Courier,'courier-bold':StandardFonts.CourierBold,'courier-italic':StandardFonts.CourierOblique}
+const localFamilies={openSans:'OpenSans',notoSans:'NotoSans',notoSerif:'NotoSerif'}
+export async function createApplicationFonts(families=[],load=async url=>{const response=await fetch(url);if(!response.ok)throw new Error('fontLoadFailed');return new Uint8Array(await response.arrayBuffer())}){
+ const doc=await PDFDocument.create();const fonts=Object.fromEntries(await Promise.all(Object.entries(applicationFontNames).map(async([key,name])=>[key,await doc.embedFont(name)])))
+ const selected=[...new Set(families)].filter(key=>localFamilies[key])
+ if(selected.length){const {default:fontkit}=await import('@pdf-lib/fontkit');doc.registerFontkit(fontkit)}
+ for(const family of selected)for(const [weight,suffix] of [['','Regular'],['-bold','Bold'],['-italic','Italic']]){
+  const bytes=new Uint8Array(await load(`/fonts/application/${localFamilies[family]}-${suffix}.ttf`));const font=await doc.embedFont(bytes,{subset:true});font.applicationBytes=bytes;fonts[family+weight]=font
+ }
+ return fonts
+}
 export function safeApplicationLink(value,kind='website'){
  try {const v=String(value).trim();if(!v)return undefined
   if(kind==='email')return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)?`mailto:${v}`:undefined
@@ -10,15 +19,16 @@ export function safeApplicationLink(value,kind='website'){
  }catch{return undefined}
 }
 export function layoutApplication(project,kind,fonts){
- const d=project[kind].design;const m=d.margins
+ const d=project[kind].design;const m={...d.margins}
  const [width,height]=d.pageFormat==='letter'?[612,792]:[595.28,841.89]
+ const characterSets=new Map(Object.entries(fonts).filter(([,font])=>font.applicationBytes).map(([key,font])=>[key,new Set(font.getCharacterSet())]))
  const pages=[],issues=[];let page,y=m.top,stopped=false
  function issue(code,target){if(!issues.some(i=>i.code===code&&i.target===target))issues.push({code,target,blocking:true})}
  function newPage(){const index=page?pages.indexOf(page)+1:0;if(index===applicationLimits.pages){issue('pageLimit',kind);stopped=true;return}if(pages[index])page=pages[index];else {page={width,height,runs:[],lines:[],images:[]};pages.push(page)}y=m.top}
  newPage()
- const available=width-m.left-m.right
+ let available=width-m.left-m.right
  function fontKey(weight){return weight&&weight!=='regular'?`${d.font}-${weight}`:d.font}
- function measure(text,size,key,target){try{return fonts[key].widthOfTextAtSize(text,size)}catch{issue('unsupportedCharacters',target);return 0}}
+ function measure(text,size,key,target){try{const font=fonts[key];if(font.applicationBytes){const supported=characterSets.get(key);if([...text].some(c=>!supported.has(c.codePointAt(0))))throw new Error('unsupported')}return font.widthOfTextAtSize(text,size)}catch{issue('unsupportedCharacters',target);return 0}}
  function wrap(text,w,size,key,target){
   const lines=[]
   for(const para of String(text).replace(/\r/g,'').split('\n')){
@@ -53,18 +63,19 @@ export function layoutApplication(project,kind,fonts){
  function rule(color=d.accent,thickness=1,gap=5){ensure(gap+thickness);if(stopped)return;page.lines.push({x1:m.left,y1:y,x2:width-m.right,y2:y,width:thickness,color});y+=gap}
  function gap(n){y+=n}
  const photo=project.photo&&d.showPhoto?project.photo:null
- const reserve=photo?d.photoSize+18:0
+ const reserve=photo?d.photoSize+18+(d.photoOffsetX||0):0
+ const headerX=photo&&d.photoPosition==='left'?m.left+reserve:m.left
  const headerY=y
- if(photo)page.images.push({x:width-m.right-d.photoSize,y,width:d.photoSize,height:d.photoSize,shape:d.photoShape,photo})
- text(project.person.name,{size:Math.min(28,d.fontSize*2.35),weight:'bold',color:d.accent,width:available-reserve})
- gap(3);text(project.person.title,{size:d.fontSize+1,width:available-reserve})
+ if(photo)page.images.push({x:d.photoPosition==='left'?m.left+(d.photoOffsetX||0):width-m.right-d.photoSize-(d.photoOffsetX||0),y:y+(d.photoOffsetY||0),width:d.photoSize,height:d.photoSize,shape:d.photoShape,photo})
+ text(project.person.name,{size:Math.min(28,d.fontSize*2.35),weight:'bold',color:d.accent,x:headerX,width:available-reserve})
+ gap(3);text(project.person.title,{size:d.fontSize+1,x:headerX,width:available-reserve})
  gap(7)
  const contactKeys=['email','phone','address','website','linkedin','citizenship']
- for(const key of contactKeys)if(project.person[key])text(project.person[key],{size:Math.max(8,d.fontSize-1),width:available-reserve,link:safeApplicationLink(project.person[key],key)})
- if(photo)y=Math.max(y,headerY+d.photoSize)
+ for(const key of contactKeys)if(project.person[key])text(project.person[key],{size:Math.max(8,d.fontSize-1),x:headerX,width:available-reserve,link:safeApplicationLink(project.person[key],key)})
+ if(photo)y=Math.max(y,headerY+d.photoSize+(d.photoOffsetY||0))
  gap(12);if(d.header==='accent'||d.header==='classic')rule(d.accent,d.header==='accent'?2:1,8)
  function entryGeometry(s,e){
-  const date=[e.start,e.end].filter(Boolean).join(' – '),isColumn=d.template!=='ats'&&['experience','education','projects','engagement'].includes(s.type)&&Boolean(date||e.location)
+  const date=[e.start,e.end].filter(Boolean).join(' – '),isColumn=d.layout!=='two'&&d.template!=='ats'&&['experience','education','projects','engagement'].includes(s.type)&&Boolean(date||e.location)
   const ex=isColumn?m.left+d.dateWidth+12:m.left,ew=isColumn?available-d.dateWidth-12:available
   const title=[e.title,e.organization].filter(Boolean).join(' · '),subtitle=isColumn?'':[date,e.location].filter(Boolean).join(' | ')
   const size=e.style.fontSize||d.fontSize,key=fontKey(e.style.weight)
@@ -84,13 +95,31 @@ export function layoutApplication(project,kind,fonts){
   for(const p of project.letter.paragraphs){styledText(p.text,p.style,{entryId:p.id});gap(d.paragraphGap)}
   gap(8);ensure(d.fontSize*d.lineHeight*2+8);text(project.letter.closing);gap(8);text(project.person.name,{weight:'bold'})
  }else{
+  const fullLeft=m.left,fullRight=m.right,fullWidth=available
+  const cursor=()=>({page,y})
+  const restore=c=>{page=c.page;y=c.y}
+  const later=(a,b)=>pages.indexOf(a.page)>pages.indexOf(b.page)?a:pages.indexOf(a.page)<pages.indexOf(b.page)?b:{page:a.page,y:Math.max(a.y,b.y)}
+  let leftCursor=cursor(),rightCursor=cursor()
   for(const s of project.resume.sections){
    if(stopped)break;if(!s.visible)continue
+   const two=d.layout==='two'
+   const lane=!two?'full':s.type==='pageBreak'?'full':s.column&&s.column!=='auto'?s.column:s.type==='profile'?'full':['skills','languages','education'].includes(s.type)?'right':'left'
+   m.left=fullLeft;m.right=fullRight;available=fullWidth
+   if(two){
+    if(lane==='full')restore(later(leftCursor,rightCursor))
+    else {
+     restore(lane==='left'?leftCursor:rightCursor)
+     const gap=d.columnGap??24,leftWidth=(fullWidth-gap)*(d.leftColumnWidth??60)/100
+     if(lane==='left'){available=leftWidth;m.right=width-fullLeft-leftWidth}
+     else {m.left=fullLeft+leftWidth+gap;available=fullWidth-leftWidth-gap}
+    }
+   }
+   const saveCursor=()=>{if(!two)return;if(lane==='full'){leftCursor=cursor();rightCursor=cursor()}else if(lane==='left')leftCursor=cursor();else rightCursor=cursor()}
    if(['spacer','rule','pageBreak'].includes(s.type)){
     if(s.type==='pageBreak'){if(page.runs.length||page.lines.length||page.images.length)newPage()}
     else if(s.type==='spacer'){ensure(s.style.after??18);gap(s.style.after??18)}
     else {gap(s.style.before||0);rule(s.style.color||d.accent,s.style.ruleWidth??1,s.style.ruleGap??5);gap(s.style.after||0)}
-    continue
+    saveCursor();continue
    }
    const entries=s.entries.filter(e=>e.visible&&[e.title,e.organization,e.location,e.start,e.end,e.description].some(x=>x.trim()))
    if(!entries.length)continue
@@ -113,6 +142,7 @@ export function layoutApplication(project,kind,fonts){
     if(isColumn){const sideIndex=pages.indexOf(sideEnd.page),mainIndex=pages.indexOf(page);if(sideIndex>mainIndex){page=sideEnd.page;y=sideEnd.y}else if(sideIndex===mainIndex)y=Math.max(y,sideEnd.y)}
     gap(d.entryGap+(e.style.after||0))
    }
+   saveCursor()
   }
  }
  return {pages,issues}

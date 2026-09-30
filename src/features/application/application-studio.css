@@ -107,3 +107,21 @@
 @media(prefers-reduced-motion:reduce){.application-studio button{transition:none}}
 .app-preview--zoom-65{--preview-width:387px}.app-preview--zoom-80{--preview-width:476px}.app-preview--zoom-100{--preview-width:595px}.app-preview--zoom-125{--preview-width:744px}.app-preview--zoom-150{--preview-width:893px}
 .app-preview--zoom-fit{--preview-width:595px;min-width:0}.app-preview--zoom-fit .app-paper{max-width:100%}
+
+@font-face { font-family: "Application Open Sans"; src: url("/fonts/application/OpenSans-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Application Open Sans"; src: url("/fonts/application/OpenSans-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Application Open Sans"; src: url("/fonts/application/OpenSans-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+
+@font-face { font-family: "Application Noto Sans"; src: url("/fonts/application/NotoSans-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Application Noto Sans"; src: url("/fonts/application/NotoSans-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Application Noto Sans"; src: url("/fonts/application/NotoSans-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+
+@font-face { font-family: "Application Noto Serif"; src: url("/fonts/application/NotoSerif-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Application Noto Serif"; src: url("/fonts/application/NotoSerif-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Application Noto Serif"; src: url("/fonts/application/NotoSerif-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }

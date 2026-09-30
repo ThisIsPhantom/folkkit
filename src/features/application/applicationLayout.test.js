@@ -3,6 +3,24 @@ import {createApplicationProject,exampleApplicationProject,updateApplicationProj
 import {applyApplicationTemplate} from './applicationTemplates.js'
 import {createApplicationFonts,layoutApplication} from './applicationLayout.js'
 let fonts;beforeAll(async()=>{fonts=await createApplicationFonts()})
+test('two content columns place skills beside experience and preserve overflowing text',()=>{
+ const p=exampleApplicationProject();p.resume.design.layout='two';p.resume.design.columnGap=24;p.resume.design.leftColumnWidth=60
+ p.resume.sections[2].visible=false
+ const job=p.resume.sections[1],skills=p.resume.sections[3];job.column='left';skills.column='right'
+ job.entries[0].description=Array.from({length:700},(_,i)=>`Job${i}`).join(' ')
+ skills.entries[0].description=Array.from({length:350},(_,i)=>`Skill${i}`).join(' ')
+ const l=layoutApplication(p,'resume',fonts);expect(l.issues).toEqual([])
+ const runs=l.pages.flatMap(page=>page.runs),left=runs.filter(r=>r.sectionId===job.id),right=runs.filter(r=>r.sectionId===skills.id)
+ expect(Math.min(...right.map(r=>r.x))).toBeGreaterThan(Math.max(...left.map(r=>r.x+r.width)))
+ expect(right[0].y).toBe(left[0].y)
+ const words=runs.flatMap(r=>r.text.split(/\s+/));for(const prefix of ['Job','Skill'])for(let i=0;i<(prefix==='Job'?700:350);i++)expect(words.filter(w=>w===prefix+i)).toHaveLength(1)
+})
+test('photo position, offset and enlarged size reserve header space',()=>{
+ const p=exampleApplicationProject();p.photo={data:'unused'};Object.assign(p.resume.design,{showPhoto:true,photoSize:145,photoPosition:'left',photoOffsetX:9,photoOffsetY:16})
+ const l=layoutApplication(p,'resume',fonts),image=l.pages[0].images[0],name=l.pages[0].runs[0]
+ expect(image).toMatchObject({x:51,y:56,width:145,height:145});expect(name.x).toBeGreaterThan(image.x+image.width)
+ const profile=l.pages[0].runs.find(r=>r.sectionId);expect(profile.y).toBeGreaterThan(image.y+image.height)
+})
 test.each(['ats','modern','editorial','swiss'])('%s layout has bounded runs and accurate page dimensions',id=>{
  const p=applyApplicationTemplate(exampleApplicationProject(), 'resume', id)
  for(const kind of ['resume','letter']){
