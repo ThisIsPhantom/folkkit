@@ -1,4 +1,5 @@
 const definitions = Object.freeze([
+  ['application-studio','applicationStudio'],
   ['qr-reader','qrReader'],['image-optimize','imageOptimize'],
   ['image-editor','imageEditor','image'],['audio-trim','audioTrim','audio'],['document-convert','documentConvert'],
 ])
