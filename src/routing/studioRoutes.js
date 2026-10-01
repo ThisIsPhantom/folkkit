@@ -10,6 +10,7 @@ export const coreDestinations = Object.freeze({
   calculate: '/calculate',
   image: '/image',
   audio: '/audio',
+  application: '/application',
 })
 
 const legacyCalculatorMap = Object.freeze({ 'percentage-calc': 'percent', 'aspect-ratio': 'aspect-ratio', 'bmi-calc': 'bmi', 'loan-calc': 'loan' })
@@ -28,6 +29,7 @@ export function calculatorSelection({ search = '', hash = '' }) {
 }
 
 const toolDestinations = Object.freeze({
+  'application-studio':'/application',
   'image-editor':'/image', 'audio-trim':'/audio', 'document-convert':'/convert?target=docx',
   'text-to-qr': '/qr', 'qr-to-text': '/qr?mode=read', 'qr-reader': '/qr?mode=read', 'image-optimize': '/convert?mode=optimize',
   'merge-pdf': '/pdf?action=merge', 'pdf-split': '/pdf?action=extract', 'pdf-extract-range': '/pdf?action=extract',

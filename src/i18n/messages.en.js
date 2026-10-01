@@ -1,3 +1,4 @@
+import applicationMessages from '../features/application/messages.en.js'
 import audioMessages from '../features/audio/messages.en.js'
 import imageMessages from '../features/image/messages.en.js'
 import qrMessages from '../features/qr/messages.en.js'
@@ -14,7 +15,9 @@ const messagesEn = Object.freeze({
   studioImage: imageMessages,
   studioAudio: audioMessages,
   studioPoll: pollMessages,
+  studioApplication: applicationMessages,
   shell: Object.freeze({
+    application: 'Applications',
     skip: 'Skip to content',
     home: 'Home',
     tools: 'More tools',
@@ -64,6 +67,8 @@ const messagesEn = Object.freeze({
     catalogLink: 'Discover more tools',
   }),
   catalog: Object.freeze({
+    applicationStudio: 'Application Studio',
+    applicationStudioDescription: 'Design a résumé and cover letter and export as PDF',
     imageEditor: 'Edit images',
     imageEditorDescription: 'Crop, rotate, add text and watermarks',
     audioTrim: 'Trim audio',

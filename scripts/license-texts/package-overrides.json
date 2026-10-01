@@ -34,5 +34,10 @@
     "Apache-2.0": [
       "scripts/license-texts/browser-wasi-shim-0.4.2-LICENSE-APACHE.txt"
     ]
+  },
+  "@pdf-lib/fontkit@1.1.1": {
+    "MIT": [
+      "scripts/license-texts/fontkit-1.1.1.txt"
+    ]
   }
 }

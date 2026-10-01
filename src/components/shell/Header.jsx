@@ -37,6 +37,7 @@ export default function Header({ route, onNavigate, locale, onLocaleChange, them
     { href: '/convert', route: 'convert', label: 'shell.convert' },
     { href: '/calculate', route: 'calculate', label: 'shell.calculate' },
     { href: '/poll', route: 'poll', label: 'shell.poll' },
+    { href: '/application', route: 'application', label: 'shell.application' },
     { href: '/tools', route: 'catalog', label: 'shell.tools' },
   ]
 

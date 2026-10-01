@@ -1,3 +1,4 @@
+import applicationMessages from '../features/application/messages.de.js'
 import audioMessages from '../features/audio/messages.de.js'
 import imageMessages from '../features/image/messages.de.js'
 import qrMessages from '../features/qr/messages.de.js'
@@ -14,7 +15,9 @@ const messagesDe = Object.freeze({
   studioImage: imageMessages,
   studioAudio: audioMessages,
   studioPoll: pollMessages,
+  studioApplication: applicationMessages,
   shell: Object.freeze({
+    application: 'Bewerbungen',
     skip: 'Zum Inhalt springen',
     home: 'Startseite',
     tools: 'Weitere Werkzeuge',
@@ -64,6 +67,8 @@ const messagesDe = Object.freeze({
     catalogLink: 'Weitere Werkzeuge entdecken',
   }),
   catalog: Object.freeze({
+    applicationStudio: 'Bewerbungs-Studio',
+    applicationStudioDescription: 'Lebenslauf und Anschreiben gestalten und als PDF exportieren',
     imageEditor: 'Bild bearbeiten',
     imageEditorDescription: 'Zuschneiden, drehen, Text und Wasserzeichen ergänzen',
     audioTrim: 'Audio schneiden',
