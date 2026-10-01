@@ -4,6 +4,7 @@ import qrMessages from '../features/qr/messages.de.js'
 import convertMessages from '../features/convert/messages.de.js'
 import pdfMessages from '../features/pdf/messages.de.js'
 import calculateMessages from '../features/calculate/messages.de.js'
+import pollMessages from '../features/poll/messages.de.js'
 
 const messagesDe = Object.freeze({
   ...qrMessages,
@@ -12,6 +13,7 @@ const messagesDe = Object.freeze({
   studioCalculate: calculateMessages,
   studioImage: imageMessages,
   studioAudio: audioMessages,
+  studioPoll: pollMessages,
   shell: Object.freeze({
     skip: 'Zum Inhalt springen',
     home: 'Startseite',
@@ -20,7 +22,7 @@ const messagesDe = Object.freeze({
     pdf: 'PDF',
     convert: 'Konvertieren',
     calculate: 'Rechner',
-    image: 'Bildeditor', audio: 'Audio schneiden',
+    image: 'Bildeditor', audio: 'Audio schneiden', poll: 'Umfrage',
     loading: 'Wird geladen …',
     loadError: 'Der Arbeitsbereich konnte nicht geladen werden.',
     retry: 'Erneut laden',

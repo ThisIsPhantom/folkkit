@@ -89,3 +89,16 @@ See [Contributing](docs/10-governance-and-contributing.md) and [Developer Guide]
 ## License
 
 [AGPL-3.0-only](LICENSE)
+
+## Shared polls (`/poll`)
+
+Doodle-style polls are the one Folkkit feature with server-side state. `server/api/poll.php` stores polls and answers in a single SQLite file (`server/api/data/`, or the directory in `FOLKKIT_POLL_DATA`). It needs PHP 8.1+ with `pdo_sqlite`, which Plesk provides.
+
+Local development uses two processes:
+
+```sh
+bun run dev:poll-api   # PHP API on 127.0.0.1:8787
+bun run dev            # Vite proxies /api to it
+```
+
+Anyone with the link can answer and see the results. An optional password restricts access. Participant addresses are visible only through the creator's admin link (`/poll/<id>#admin=<token>`).

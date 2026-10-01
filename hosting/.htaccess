@@ -1,5 +1,9 @@
 Options -Indexes
 
+<FilesMatch "\.(sqlite|sqlite-journal|sqlite-wal|sqlite-shm)$">
+  Require all denied
+</FilesMatch>
+
 <IfModule mod_mime.c>
   AddType text/javascript .js .mjs
   AddType application/wasm .wasm

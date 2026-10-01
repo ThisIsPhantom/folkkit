@@ -16,6 +16,8 @@ test.each([
   ['/', '?from=text&to=base64', '', 'workspace'],
   ['/', '', '#tool/text-to-qr', 'qr'],
   ['/tools', '', '', 'catalog'],
+  ['/poll', '', '', 'poll'],
+  ['/poll/AbCdEf_123', '', '#admin=token', 'poll'],
   ['/privacy', '', '', 'legal:privacy'],
   ['/open-source', '', '', 'legal:openSource'],
   ['/', '', '', 'home'],
