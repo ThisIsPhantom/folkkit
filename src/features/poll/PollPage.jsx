@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useState } from 'react'
 import { IconCopy, IconPlus, IconTrash } from '@tabler/icons-react'
 import { useI18n } from '../../i18n'
-import { answerValues, emptyOption, formatOption, parsePollLocation, pollRequest, tallyResponses } from './pollModel'
+import { answerValues, emptyOption, formatOption, parsePollLocation, pollRequest, retentionDays, tallyResponses } from './pollModel'
 import './poll.css'
 
 function adminStorageKey(id) {
@@ -49,6 +49,7 @@ function CreatePoll({ onCreated }) {
   const [description, setDescription] = useState('')
   const [options, setOptions] = useState(() => [emptyOption(), emptyOption()])
   const [password, setPassword] = useState('')
+  const [duration, setDuration] = useState(30)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
@@ -62,7 +63,7 @@ function CreatePoll({ onCreated }) {
     if (filled.length === 0) return setError('options')
     setBusy(true)
     try {
-      const created = await pollRequest({ action: 'create', title, description, options: filled, password })
+      const created = await pollRequest({ action: 'create', title, description, options: filled, password, retentionDays: duration })
       rememberAdminToken(created.id, created.adminToken)
       onCreated(created)
     } catch (failure) {
@@ -82,6 +83,13 @@ function CreatePoll({ onCreated }) {
       <div className="poll-field">
         <label htmlFor="poll-description">{t('studioPoll.description')}</label>
         <textarea id="poll-description" rows={2} maxLength={1000} value={description} onChange={event => setDescription(event.target.value)} />
+      </div>
+      <div className="poll-field">
+        <label htmlFor="poll-retention">{t('studioPoll.retention')}</label>
+        <select id="poll-retention" value={duration} aria-describedby="poll-retention-hint" onChange={event => setDuration(Number(event.target.value))}>
+          {retentionDays.map(days => <option key={days} value={days}>{t(days === 1 ? 'studioPoll.retentionDay' : 'studioPoll.retentionDays', { days })}</option>)}
+        </select>
+        <p className="studio-status" id="poll-retention-hint">{t('studioPoll.retentionHint')}</p>
       </div>
       <fieldset className="poll-options">
         <legend>{t('studioPoll.options')}</legend>
@@ -250,7 +258,7 @@ function Results({ poll, onDeleteResponse }) {
 }
 
 function PollView({ id, initialAdminToken, onNavigate }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const [adminToken] = useState(() => initialAdminToken || recallAdminToken(id))
   const [password, setPassword] = useState('')
   const [state, setState] = useState({ status: 'loading' })
@@ -270,6 +278,21 @@ function PollView({ id, initialAdminToken, onNavigate }) {
     fetchState('').then(next => { if (active) setState(next) })
     return () => { active = false }
   }, [id, initialAdminToken, fetchState])
+
+  const expiresAt = state.status === 'ready' ? state.poll.expiresAt : null
+  useEffect(() => {
+    if (!expiresAt) return
+    let timer
+    const check = () => {
+      const remaining = expiresAt * 1000 - Date.now()
+      if (remaining <= 0) setState({ status: 'error', error: 'expired' })
+      else timer = setTimeout(check, Math.min(remaining, 60000))
+    }
+    check()
+    const onVisible = () => { clearTimeout(timer); check() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => { clearTimeout(timer); document.removeEventListener('visibilitychange', onVisible) }
+  }, [expiresAt])
 
   if (state.status === 'loading') return <p role="status" className="studio-status">{t('studioPoll.loading')}</p>
   if (state.status === 'locked') return <PasswordGate error={state.error} onSubmit={async value => { setPassword(value); setState(await fetchState(value)) }} />
@@ -309,6 +332,7 @@ function PollView({ id, initialAdminToken, onNavigate }) {
       <header className="poll-header">
         <h1>{poll.title}{poll.admin && <span className="poll-badge">{t('studioPoll.adminBadge')}</span>}</h1>
         {poll.description && <p className="poll-description">{poll.description}</p>}
+        {poll.expiresAt && <p className="studio-status">{t('studioPoll.expiresOn', { date: new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'de-CH', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(poll.expiresAt * 1000)) })}</p>}
       </header>
       {poll.admin && (
         <section className="poll-card" aria-label={t('studioPoll.createdTitle')}>

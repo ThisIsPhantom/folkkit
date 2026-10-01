@@ -33,6 +33,8 @@ test('maps server and network errors to known codes', async () => {
   await expect(pollRequest({ action: 'get' }, offline)).rejects.toMatchObject({ code: 'network' })
   const denied = vi.fn().mockResolvedValue({ ok: false, status: 401, json: async () => ({ error: 'passwordWrong' }) })
   await expect(pollRequest({ action: 'get' }, denied)).rejects.toMatchObject({ code: 'passwordWrong' })
+  const expired = vi.fn().mockResolvedValue({ ok: false, status: 410, json: async () => ({ error: 'expired' }) })
+  await expect(pollRequest({ action: 'get' }, expired)).rejects.toMatchObject({ code: 'expired' })
   const odd = vi.fn().mockResolvedValue({ ok: false, status: 400, json: async () => ({ error: 'whatever' }) })
   await expect(pollRequest({ action: 'get' }, odd)).rejects.toMatchObject({ code: 'unknown' })
   const ok = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ id: 'x' }) })

@@ -1,5 +1,6 @@
 export const answerValues = Object.freeze(['yes', 'maybe', 'no'])
-const knownErrors = new Set(['required', 'tooLong', 'options', 'tooMany', 'answers', 'notFound', 'passwordRequired', 'passwordWrong', 'full', 'forbidden', 'network'])
+export const retentionDays = Object.freeze([1, 7, 30, 90])
+const knownErrors = new Set(['required', 'tooLong', 'options', 'tooMany', 'answers', 'notFound', 'expired', 'retention', 'passwordRequired', 'passwordWrong', 'full', 'forbidden', 'network'])
 
 export class PollError extends Error {
   constructor(code) {

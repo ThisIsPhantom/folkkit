@@ -2,6 +2,7 @@
 // Folkkit shared polls: minimal JSON API backed by one SQLite file.
 // Every request is a POST with a JSON body {"action": "...", ...}.
 declare(strict_types=1);
+require __DIR__ . '/pollStorage.php';
 
 const POLL_MAX_BODY = 32768;
 const POLL_MAX_OPTIONS = 40;
@@ -28,44 +29,6 @@ function fail(int $status, string $code): never {
   respond($status, ['error' => $code]);
 }
 
-function dataDirectory(): string {
-  $configured = getenv('FOLKKIT_POLL_DATA');
-  $directory = $configured !== false && $configured !== '' ? $configured : __DIR__ . '/data';
-  if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) fail(500, 'storage');
-  // Keep the database unreachable over HTTP when it lives below the web root.
-  $guard = $directory . '/.htaccess';
-  if (!is_file($guard)) @file_put_contents($guard, "Require all denied\nDeny from all\n");
-  return $directory;
-}
-
-function database(): PDO {
-  $pdo = new PDO('sqlite:' . dataDirectory() . '/polls.sqlite', null, null, [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-  ]);
-  $pdo->exec('PRAGMA foreign_keys = ON');
-  $pdo->exec('PRAGMA busy_timeout = 3000');
-  $pdo->exec('CREATE TABLE IF NOT EXISTS polls (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    options TEXT NOT NULL,
-    password_hash TEXT,
-    admin_hash TEXT NOT NULL,
-    created_at INTEGER NOT NULL
-  )');
-  $pdo->exec('CREATE TABLE IF NOT EXISTS responses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    poll_id TEXT NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    address TEXT NOT NULL,
-    answers TEXT NOT NULL,
-    created_at INTEGER NOT NULL
-  )');
-  $pdo->exec('CREATE INDEX IF NOT EXISTS responses_poll ON responses(poll_id)');
-  return $pdo;
-}
-
 function text(mixed $value, int $max, bool $required): string {
   if (!is_string($value)) $value = '';
   $value = trim(preg_replace('/[\x00-\x09\x0B-\x1F\x7F]/u', '', $value) ?? '');
@@ -84,6 +47,7 @@ function loadPoll(PDO $pdo, mixed $id): array {
   $statement->execute([$id]);
   $poll = $statement->fetch();
   if (!$poll) fail(404, 'notFound');
+  if (pollExpired($poll, time())) fail(410, 'expired');
   return $poll;
 }
 
@@ -118,6 +82,7 @@ function publicPoll(PDO $pdo, array $poll, bool $admin): array {
     'protected' => $poll['password_hash'] !== null,
     'admin' => $admin,
     'createdAt' => (int) $poll['created_at'],
+    'expiresAt' => $poll['expires_at'] === null ? null : (int) $poll['expires_at'],
     'responses' => $responses,
   ];
 }
@@ -132,6 +97,10 @@ try {
   $pdo = database();
   switch ($input['action'] ?? '') {
     case 'create': {
+      try {
+        $createdAt = time();
+        $expiresAt = retentionDeadline(array_key_exists('retentionDays', $input) ? $input['retentionDays'] : POLL_DEFAULT_RETENTION_DAYS, $createdAt);
+      } catch (InvalidArgumentException) { fail(422, 'retention'); }
       $title = text($input['title'] ?? '', POLL_TITLE_MAX, true);
       $description = text($input['description'] ?? '', POLL_DESCRIPTION_MAX, false);
       $rawOptions = $input['options'] ?? null;
@@ -150,9 +119,9 @@ try {
       if (!is_string($password) || strlen($password) > POLL_PASSWORD_MAX) fail(422, 'tooLong');
       $id = randomId(9);
       $adminToken = randomId(24);
-      $pdo->prepare('INSERT INTO polls (id, title, description, options, password_hash, admin_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-        ->execute([$id, $title, $description, json_encode($options, JSON_UNESCAPED_UNICODE), $password === '' ? null : password_hash($password, PASSWORD_DEFAULT), hash('sha256', $adminToken), time()]);
-      respond(201, ['id' => $id, 'adminToken' => $adminToken]);
+      $pdo->prepare('INSERT INTO polls (id, title, description, options, password_hash, admin_hash, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        ->execute([$id, $title, $description, json_encode($options, JSON_UNESCAPED_UNICODE), $password === '' ? null : password_hash($password, PASSWORD_DEFAULT), hash('sha256', $adminToken), $createdAt, $expiresAt]);
+      respond(201, ['id' => $id, 'adminToken' => $adminToken, 'expiresAt' => $expiresAt]);
     }
     case 'get': {
       $poll = loadPoll($pdo, $input['id'] ?? null);
@@ -192,6 +161,6 @@ try {
     default:
       fail(400, 'badRequest');
   }
-} catch (PDOException) {
+} catch (PDOException | RuntimeException) {
   fail(500, 'storage');
 }

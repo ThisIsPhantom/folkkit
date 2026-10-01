@@ -96,7 +96,7 @@ See [Contributing](docs/10-governance-and-contributing.md) and [Developer Guide]
 
 ## Shared polls (`/poll`)
 
-Doodle-style polls are the one Folkkit feature with server-side state. `server/api/poll.php` stores polls and answers in a single SQLite file (`server/api/data/`, or the directory in `FOLKKIT_POLL_DATA`). It needs PHP 8.1+ with `pdo_sqlite`, which Plesk provides.
+Doodle-style polls are the one Folkkit feature with server-side state. `server/api/poll.php` and `server/api/pollStorage.php` store polls and answers in a single SQLite file. PHP 8.1+ with `pdo_sqlite` and `mbstring` is required. Set `FOLKKIT_POLL_DATA` to a writable directory outside the webroot in production and local development; PHP's development server does not enforce `.htaccess`.
 
 Local development uses two processes:
 
@@ -106,5 +106,7 @@ bun run dev            # Vite proxies /api to it
 ```
 
 Anyone with the link can answer and see the results. An optional password restricts access. Participant addresses are visible only through the creator's admin link (`/poll/<id>#admin=<token>`).
+
+New polls expire after 1, 7, 30 (default), or 90 days. The API and open page reject expired polls immediately. Existing polls retain their previous lifetime; migration does not delete them. See [poll retention and Plesk maintenance](docs/poll-retention.md) for the required 15-minute cleanup task and weekly storage compaction. Automatic deletion requires that scheduled task to be installed and running; no live hosting task is installed by the source change.
 
 Im Bewerbungs-Studio lassen sich unter Gestaltung die Kontaktdaten im Kopfbereich auf eine, zwei oder drei Spalten verteilen. Kontaktsymbole und Symbole bei Abschnittsüberschriften sind getrennt ein-/ausblendbar und folgen der Akzent- beziehungsweise Elementfarbe. Instagram ist ein optionales Kontaktfeld. Vorschau und PDF verwenden dieselbe lokale Vektorgeometrie.
