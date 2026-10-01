@@ -54,3 +54,26 @@ test.each(['openSans','notoSans','notoSerif'])('%s uses embedded local fonts wit
  const content=await (await pdf.getPage(1)).getTextContent();expect(content.items.map(i=>i.str).join(' ')).toContain('Mira Muster')
  expect(Object.values(content.styles).some(s=>s.fontFamily)).toBe(true);await task.destroy()
 },15000)
+
+test('contact grid coordinates and links are retained in PDF for two and three columns',async()=>{
+ for(const headerColumns of ['two','three']){
+  const p=exampleApplicationProject();p.resume.design.headerColumns=headerColumns
+  p.person.linkedin='linkedin.com/in/mira';p.person.citizenship='Swiss'
+  const layout=layoutApplication(p,'resume',fonts),bytes=await exportApplicationPdf(p,['resume'],fonts)
+  const task=getDocument({data:bytes.slice(),useSystemFonts:true})
+  try{const pdf=await task.promise,page=await pdf.getPage(1),items=(await page.getTextContent()).items
+   for(const value of [p.person.email,p.person.phone,p.person.website,p.person.citizenship]){
+    const expected=layout.pages[0].runs.find(r=>r.text===value),actual=items.find(r=>r.str===value)
+    expect(actual.transform[4]).toBeCloseTo(expected.x,4);expect(actual.transform[5]).toBeCloseTo(layout.pages[0].height-expected.y,4)
+   }
+   expect((await page.getAnnotations()).some(a=>a.url==='https://example.com/')).toBe(true)
+  }finally{await task.destroy()}
+ }
+})
+
+test('vector icons add actual PDF drawing operators while keeping readable linked contact text',async()=>{
+ const p=exampleApplicationProject();p.person.instagram='instagram.com/mira'
+ const inspect=async()=>{const bytes=await exportApplicationPdf(p,['resume'],fonts),task=getDocument({data:bytes.slice(),useSystemFonts:true});try{const pdf=await task.promise,page=await pdf.getPage(1);return {operators:(await page.getOperatorList()).fnArray.length,text:(await page.getTextContent()).items.map(i=>i.str).join(' '),annotations:await page.getAnnotations()}}finally{await task.destroy()}}
+ const plain=await inspect();p.resume.design.showHeaderIcons=true;p.resume.design.showSectionIcons=true;const icons=await inspect()
+ expect(icons.operators).toBeGreaterThan(plain.operators+100);expect(icons.text).toContain(p.person.instagram);expect(icons.annotations.some(a=>a.url==='https://instagram.com/mira')).toBe(true)
+})

@@ -10,7 +10,7 @@ export const applicationTemplates = Object.freeze([
 ])
 export function applicationDesign(templateId='modern') {
  const t = applicationTemplates.find(t=>t.id===templateId) || applicationTemplates[1]
- return {template:t.id,pageFormat:'a4',margins:{top:40,right:42,bottom:40,left:42},font:t.font,fontSize:10.5,lineHeight:1.35,paragraphGap:7,sectionGap:17,entryGap:10,dateWidth:100,accent:t.accent,textColor:'#20272e',header:t.header,photoSize:t.id==='ats'?36:68,photoShape:'round',photoPosition:'right',photoOffsetX:0,photoOffsetY:0,layout:'single',columnGap:24,leftColumnWidth:60,showPhoto:t.id!=='ats',...structuredClone(t.settings||{})}
+ return {template:t.id,pageFormat:'a4',margins:{top:40,right:42,bottom:40,left:42},font:t.font,fontSize:10.5,lineHeight:1.35,paragraphGap:7,sectionGap:17,entryGap:10,dateWidth:100,accent:t.accent,textColor:'#20272e',header:t.header,photoSize:t.id==='ats'?36:68,photoShape:'round',photoPosition:'right',photoOffsetX:0,photoOffsetY:0,layout:'single',headerColumns:'one',showHeaderIcons:false,showSectionIcons:false,columnGap:24,leftColumnWidth:60,showPhoto:t.id!=='ats',...structuredClone(t.settings||{})}
 }
 export function applyApplicationTemplate(project,kind,id) {
  if (!['resume','letter'].includes(kind)||!applicationTemplates.some(t=>t.id===id)) return project

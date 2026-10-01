@@ -112,3 +112,27 @@ test('resume paragraph spacing changes description geometry without content loss
  expect(find(second)-find(first)).toBe(53)
  expect(second.pages.flatMap(p=>p.runs).filter(r=>r.entryId).map(r=>r.text)).toEqual(['First paragraph','Second paragraph'])
 })
+
+test('two and three contact columns preserve name width, links and the photo gap on both sides',()=>{
+ for(const headerColumns of ['two','three'])for(const photoPosition of ['left','right']){
+  const p=createApplicationProject();Object.assign(p.person,{name:'Test Person',title:'Engineer',email:'test@example.com',phone:'+41 77 000 00 00',address:'A long address that wraps in narrow contact columns',website:'example.com',linkedin:'linkedin.com/in/test',citizenship:'Swiss'})
+  Object.assign(p.resume.design,{headerColumns,photoPosition,photoSize:80,photoOffsetX:12,photoOffsetY:15});p.photo={data:'unused',width:512,height:512,mime:'image/png'}
+  const layout=layoutApplication(p,'resume',fonts);expect(layout.issues).toEqual([])
+  const {runs,images}=layout.pages[0];const contact=runs.filter(r=>r.size===Math.max(8,p.resume.design.fontSize-1));const cols=headerColumns==='two'?2:3
+  expect(new Set(contact.map(r=>r.x)).size).toBe(cols)
+  expect(contact[0].y).toBe(contact[1].y)
+  expect(contact.find(r=>r.text==='test@example.com').link).toBe('mailto:test@example.com')
+  for(const r of contact){if(photoPosition==='right')expect(r.x+r.width).toBeLessThanOrEqual(images[0].x-18+.01);else expect(r.x).toBeGreaterThanOrEqual(images[0].x+images[0].width+18)}
+  expect(layout.pages[0].lines[0].y1).toBeGreaterThan(images[0].y+images[0].height)
+ }
+})
+
+test('optional vector icons use accent colours and reserve space without hiding contact text',()=>{
+ const p=exampleApplicationProject();p.person.instagram='instagram.com/mira';p.resume.design.headerColumns='three'
+ expect(layoutApplication(p,'resume',fonts).pages.every(p=>!p.icons?.length)).toBe(true)
+ p.resume.design.showHeaderIcons=true;p.resume.design.showSectionIcons=true;p.resume.sections[0].style.color='#354b60'
+ const result=layoutApplication(p,'resume',fonts);expect(result.issues).toEqual([]);const icons=result.pages.flatMap(p=>p.icons)
+ expect(icons.some(i=>i.name==='instagram')).toBe(true);expect(icons.find(i=>i.sectionId===p.resume.sections[0].id).color).toBe('#354b60')
+ const page=result.pages[0],email=page.runs.find(r=>r.text===p.person.email),icon=icons.find(i=>i.name==='email');expect(email.x).toBeGreaterThan(icon.x+icon.size)
+ expect(icon.color).toBe(p.resume.design.accent)
+})

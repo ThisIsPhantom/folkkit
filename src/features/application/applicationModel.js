@@ -2,7 +2,7 @@ import {inspectLogoHeader} from '../qr/qrModel.js'
 import { applicationDesign, applyApplicationTemplate, applicationFontFamilies, applicationTemplates } from './applicationTemplates.js'
 export const applicationLimits = Object.freeze({ file:5*1024*1024, pixels:12*1000*1000, photoPixels:24*1000*1000, entries:100, characters:100000, pages:20 })
 export const applicationSectionTypes = ['profile','experience','education','skills','languages','projects','engagement','custom','spacer','rule','pageBreak']
-const personFields = ['name','title','email','phone','address','website','linkedin','citizenship']
+const personFields = ['name','title','email','phone','address','website','linkedin','instagram','citizenship']
 const entryFields = ['title','organization','location','start','end','description']
 export function applicationId() { return globalThis.crypto.randomUUID() }
 export function emptyApplicationEntry() { return {id:applicationId(),...Object.fromEntries(entryFields.map(k=>[k,''])),visible:true,style:{}} }
@@ -38,14 +38,14 @@ export function validateApplicationProject(value) {
   for(const [k,opts] of Object.entries({template:applicationTemplates.map(t=>t.id),pageFormat:['a4','letter'],font:applicationFontFamilies,header:['plain','accent','editorial','classic'],photoShape:['round','rectangle']}))out[k]=opts.includes(v[k])?v[k]:bad(k)
   out.margins=Object.fromEntries(['top','right','bottom','left'].map(k=>[k,number(v.margins[k],18,90,k)]))
   for(const [k,r] of Object.entries({fontSize:[8,18],lineHeight:[1,2],paragraphGap:[0,60],sectionGap:[0,60],entryGap:[0,60],dateWidth:[60,150],photoSize:[24,180]}))out[k]=number(v[k],...r,k)
-  for(const [k,opts] of Object.entries({layout:['single','two'],photoPosition:['left','right']}))out[k]=opts.includes(v[k]??base[k])?(v[k]??base[k]):bad(k)
+  for(const [k,opts] of Object.entries({layout:['single','two'],headerColumns:['one','two','three'],photoPosition:['left','right']}))out[k]=opts.includes(v[k]??base[k])?(v[k]??base[k]):bad(k)
   for(const [k,r] of Object.entries({columnGap:[12,48],leftColumnWidth:[35,65],photoOffsetX:[0,48],photoOffsetY:[0,90]}))out[k]=number(v[k]??base[k],...r,k)
-  out.accent=color(v.accent,'accent');out.textColor=color(v.textColor,'textColor');out.showPhoto=boolean(v.showPhoto??base.showPhoto)
+  out.accent=color(v.accent,'accent');out.textColor=color(v.textColor,'textColor');out.showPhoto=boolean(v.showPhoto??base.showPhoto);out.showHeaderIcons=boolean(v.showHeaderIcons??base.showHeaderIcons);out.showSectionIcons=boolean(v.showSectionIcons??base.showSectionIcons)
   return out
  }
  try {
   if(!value||value.version!==1)return {ok:false,issues:[{code:'invalidProject',blocking:true}]}
-  const person=Object.fromEntries(personFields.map(k=>[k,string(value.person?.[k],k)]))
+  const person=Object.fromEntries(personFields.map(k=>[k,string(k==='instagram'?(value.person?.[k]??''):value.person?.[k],k)]))
   if(!Array.isArray(value.resume?.sections)||value.resume.sections.length>100)return {ok:false,issues:[{code:'invalidProject',blocking:true}]}
   const sections=value.resume.sections.map(s=>{
    if(!s||!applicationSectionTypes.includes(s.type)||!Array.isArray(s.entries)||s.entries.length>100){bad('section');return null}
@@ -100,7 +100,7 @@ export function updateApplicationProject(project,a) {
 }
 export function exampleApplicationProject(locale='de', date) {
  const p=createApplicationProject(locale,date);const en=locale==='en'
- p.person={name:'Mira Muster',title:en?'Software Engineer · Digital solutions':'Software Engineer · Digitale Lösungen',email:'mira@example.com',phone:'+41 79 000 00 00',address:en?'Zürich, Switzerland':'Zürich, Schweiz',website:'example.com',linkedin:'',citizenship:''}
+ p.person={...p.person,name:'Mira Muster',title:en?'Software Engineer · Digital solutions':'Software Engineer · Digitale Lösungen',email:'mira@example.com',phone:'+41 79 000 00 00',address:en?'Zürich, Switzerland':'Zürich, Schweiz',website:'example.com',linkedin:'',citizenship:''}
  p.resume.sections[0].entries[0].description=en?'Software engineer with a focus on useful products, reliable systems and clear collaboration. I turn complex requirements into practical digital solutions.':'Software Engineer mit Fokus auf nützliche Produkte, zuverlässige Systeme und klare Zusammenarbeit. Ich übersetze komplexe Anforderungen in praxistaugliche digitale Lösungen.'
  p.resume.sections[1].entries[0]={...emptyApplicationEntry(),title:'Software Engineer',organization:'Beispiel AG',location:'Zürich',start:'2023',end:en?'Present':'heute',description:en?'• Developed accessible web applications with React and TypeScript.\n• Automated recurring workflows and improved test coverage.\n• Worked closely with product and design teams.':'• Entwicklung barrierearmer Webanwendungen mit React und TypeScript.\n• Automatisierung wiederkehrender Abläufe und Ausbau der Testabdeckung.\n• Enge Zusammenarbeit mit Produkt- und Designteams.'}
  p.resume.sections[2].entries[0]={...emptyApplicationEntry(),title:en?'BSc Computer Science':'BSc Informatik',organization:'Beispiel Hochschule',location:'Zürich',start:'2019',end:'2023',description:''}

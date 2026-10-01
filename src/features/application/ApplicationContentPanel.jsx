@@ -29,7 +29,7 @@ export default function ApplicationContentPanel({project,documentKind,onAction,o
  const [sectionType,setSectionType]=useState('custom')
  return <div className="app-content-panel" onBlur={event=>{if(['INPUT','TEXTAREA'].includes(event.target.tagName))onAction({type:'endGroup'})}}>
   <details className="app-card app-contact-card" open><summary><IconUser size={20} aria-hidden="true"/><span>{tr('contacts')}<small>{tr('contactsHint')}</small></span><IconChevronDown size={17} aria-hidden="true"/></summary><div className="app-card__body app-fields">
-   {['name','title','email','phone','address','website','linkedin','citizenship'].map(field=><ApplicationField key={field} label={tr(field==='title'?'titleField':field)} value={project.person[field]} onChange={value=>onAction({type:'person',field,value},`person-${field}`)}/>)}
+   {['name','title','email','phone','address','website','linkedin','instagram','citizenship'].map(field=><ApplicationField key={field} label={tr(field==='title'?'titleField':field)} value={project.person[field]} onChange={value=>onAction({type:'person',field,value},`person-${field}`)}/>)}
   </div></details>
   {documentKind==='letter'?<>
    <section className="app-card"><h2>{tr('letter')}</h2><div className="app-card__body app-fields">

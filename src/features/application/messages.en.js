@@ -1,4 +1,4 @@
-export default {
+export default {instagram:'Instagram (optional)',icons:'Icons',showHeaderIcons:'Show contact icons',showSectionIcons:'Show section heading icons',iconsHint:'Icons use your accent colour. A custom section heading colour also applies to its icon.',headerArea:'Header area',headerColumns:'Contact columns',threeColumns:'Three columns',headerColumnsHint:'Name and job title stay above. Contact details fill the selected columns row by row, with space reserved for the photo.',
  "designPhoto": "Style photo",
  "layout": "Column layout",
  "singleColumn": "One column",

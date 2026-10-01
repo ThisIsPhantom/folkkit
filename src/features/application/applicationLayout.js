@@ -24,7 +24,7 @@ export function layoutApplication(project,kind,fonts){
  const characterSets=new Map(Object.entries(fonts).filter(([,font])=>font.applicationBytes).map(([key,font])=>[key,new Set(font.getCharacterSet())]))
  const pages=[],issues=[];let page,y=m.top,stopped=false
  function issue(code,target){if(!issues.some(i=>i.code===code&&i.target===target))issues.push({code,target,blocking:true})}
- function newPage(){const index=page?pages.indexOf(page)+1:0;if(index===applicationLimits.pages){issue('pageLimit',kind);stopped=true;return}if(pages[index])page=pages[index];else {page={width,height,runs:[],lines:[],images:[]};pages.push(page)}y=m.top}
+ function newPage(){const index=page?pages.indexOf(page)+1:0;if(index===applicationLimits.pages){issue('pageLimit',kind);stopped=true;return}if(pages[index])page=pages[index];else {page={width,height,runs:[],lines:[],images:[],icons:[]};pages.push(page)}y=m.top}
  newPage()
  let available=width-m.left-m.right,activeLane='full'
  function fontKey(weight){return weight&&weight!=='regular'?`${d.font}-${weight}`:d.font}
@@ -53,9 +53,11 @@ export function layoutApplication(project,kind,fonts){
  function text(text,opts={}){
   if(!text?.trim()||stopped)return
   const size=opts.size||d.fontSize,key=fontKey(opts.weight),x=opts.x??m.left,w=opts.width??available,target=opts.entryId||opts.sectionId||kind
-  const lines=paragraphLines(text,w,size,key,target,opts.paragraphs),lineHeight=size*d.lineHeight
+  const iconSpace=opts.icon?size+5:0;let iconPending=!!opts.icon
+  const lines=paragraphLines(text,w-iconSpace,size,key,target,opts.paragraphs),lineHeight=size*d.lineHeight
   for(const {line,before} of lines){ensure(lineHeight+before);if(stopped)return;if(y>m.top)y+=before
-   if(line){const length=measure(line,size,key,target);let xx=x;if(opts.align==='center')xx+=(w-length)/2;else if(opts.align==='right')xx+=w-length
+   if(line){const length=measure(line,size,key,target);let xx=x+iconSpace;if(opts.align==='center')xx+=(w-iconSpace-length)/2;else if(opts.align==='right')xx+=w-iconSpace-length
+    if(iconPending){page.icons.push({name:opts.icon,x:xx-iconSpace,y,size,color:opts.iconColor||opts.color||d.accent,sectionId:opts.sectionId});iconPending=false}
     page.runs.push({text:line,x:xx,y:y+size,font:key,size,color:opts.color||d.textColor,width:length,link:opts.link,sectionId:opts.sectionId,entryId:opts.entryId})}
    y+=lineHeight
   }
@@ -70,8 +72,20 @@ export function layoutApplication(project,kind,fonts){
  text(project.person.name,{size:Math.min(28,d.fontSize*2.35),weight:'bold',color:d.accent,x:headerX,width:available-reserve})
  gap(3);text(project.person.title,{size:d.fontSize+1,x:headerX,width:available-reserve})
  gap(7)
- const contactKeys=['email','phone','address','website','linkedin','citizenship']
- for(const key of contactKeys)if(project.person[key])text(project.person[key],{size:Math.max(8,d.fontSize-1),x:headerX,width:available-reserve,link:safeApplicationLink(project.person[key],key)})
+ const contactKeys=['email','phone','address','website','linkedin','instagram','citizenship']
+ const contacts=contactKeys.filter(key=>project.person[key]?.trim()),columns={one:1,two:2,three:3}[d.headerColumns]||1
+ const contactGap=16,contactWidth=(available-reserve-contactGap*(columns-1))/columns,contactSize=Math.max(8,d.fontSize-1)
+ for(let i=0;i<contacts.length;i+=columns){
+  const row=contacts.slice(i,i+columns)
+  const rowHeight=Math.max(...row.map(key=>wrap(project.person[key],contactWidth-(d.showHeaderIcons?contactSize+5:0),contactSize,fontKey(),kind).length))*contactSize*d.lineHeight
+  ensure(rowHeight);const startPage=page,startY=y;let endPage=page,endY=y
+  for(const [column,key]of row.entries()){
+   page=startPage;y=startY
+   text(project.person[key],{size:contactSize,x:headerX+column*(contactWidth+contactGap),width:contactWidth,icon:d.showHeaderIcons?key:undefined,link:safeApplicationLink(project.person[key],key)})
+   if(pages.indexOf(page)>pages.indexOf(endPage)||(page===endPage&&y>endY)){endPage=page;endY=y}
+  }
+  page=endPage;y=endY
+ }
  if(photo)y=Math.max(y,headerY+d.photoSize+(d.photoOffsetY||0))
  gap(12);if(d.header==='accent'||d.header==='classic')rule(d.accent,d.header==='accent'?2:1,8)
  function entryGeometry(s,e){
@@ -126,10 +140,10 @@ export function layoutApplication(project,kind,fonts){
     saveCursor();continue
    }
    gap(d.sectionGap+(s.style.before||0));const headingSize=s.style.fontSize||d.fontSize+1.5
-   const headingHeight=wrap(s.title,available,headingSize,fontKey(s.style.weight||'bold'),s.id).length*headingSize*d.lineHeight+4+(d.template!=='ats'||s.style.ruleWidth?(s.style.ruleGap??5):0)+(s.style.after||0)
+   const headingHeight=wrap(s.title,available-(d.showSectionIcons?headingSize+5:0),headingSize,fontKey(s.style.weight||'bold'),s.id).length*headingSize*d.lineHeight+4+(d.template!=='ats'||s.style.ruleWidth?(s.style.ruleGap??5):0)+(s.style.after||0)
    const firstEstimate=entryGeometry(s,entries[0]).estimate,usableHeight=height-m.top-m.bottom
    ensure(headingHeight+(firstEstimate+headingHeight<=usableHeight?firstEstimate:d.fontSize*d.lineHeight*2))
-   text(s.style.uppercase?s.title.toUpperCase():s.title,{size:headingSize,weight:s.style.weight||'bold',color:s.style.color||d.accent,align:s.style.align,sectionId:s.id})
+   text(s.style.uppercase?s.title.toUpperCase():s.title,{size:headingSize,weight:s.style.weight||'bold',color:s.style.color||d.accent,align:s.style.align,sectionId:s.id,icon:d.showSectionIcons?s.type:undefined})
    gap(4);if(d.template!=='ats'||s.style.ruleWidth)rule(s.style.color||d.accent,s.style.ruleWidth??.7,s.style.ruleGap??5)
    gap(s.style.after||0)
    for(const [entryIndex,e] of entries.entries()){

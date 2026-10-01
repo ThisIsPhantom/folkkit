@@ -1,4 +1,4 @@
-export default {
+export default {instagram:'Instagram (optional)',icons:'Symbole',showHeaderIcons:'Kontaktsymbole anzeigen',showSectionIcons:'Symbole bei Überschriften anzeigen',iconsHint:'Symbole verwenden deine Akzentfarbe. Bei Überschriften gilt eine individuell gewählte Elementfarbe auch für das Symbol.',headerArea:'Kopfbereich',headerColumns:'Kontaktspalten',threeColumns:'Drei Spalten',headerColumnsHint:'Name und Berufstitel bleiben oben. Kontaktdaten verteilen sich zeilenweise auf die gewählte Spaltenzahl; der Platz für das Foto bleibt frei.',
  "designPhoto": "Foto gestalten",
  "layout": "Spaltenlayout",
  "singleColumn": "Eine Spalte",

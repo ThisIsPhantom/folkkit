@@ -65,3 +65,18 @@ test('old projects receive layout defaults and new photo/layout options roundtri
  next.resume.sections[0].column='right';expect(validateApplicationProject(next).project.resume.sections[0].column).toBe('right')
  next.resume.design.photoOffsetY=-1;expect(validateApplicationProject(next).ok).toBe(false)
 })
+
+test('header contact columns default for legacy projects and validate independently',()=>{
+ const p=createApplicationProject();delete p.resume.design.headerColumns
+ expect(validateApplicationProject(p).project.resume.design.headerColumns).toBe('one')
+ for(const value of ['two','three'])expect(updateApplicationProject(validateApplicationProject(p).project,{type:'design',kind:'resume',field:'headerColumns',value}).resume.design.headerColumns).toBe(value)
+ p.resume.design.headerColumns='four';expect(validateApplicationProject(p).ok).toBe(false)
+})
+
+test('optional icons and instagram retain legacy defaults and reject malformed settings',()=>{
+ const p=createApplicationProject();delete p.person.instagram;delete p.resume.design.showHeaderIcons;delete p.resume.design.showSectionIcons
+ const legacy=validateApplicationProject(p).project;expect(legacy.person.instagram).toBe('');expect(legacy.resume.design.showHeaderIcons).toBe(false);expect(legacy.resume.design.showSectionIcons).toBe(false)
+ legacy.person.instagram='instagram.com/danial';legacy.resume.design.showHeaderIcons=true;legacy.resume.design.showSectionIcons=true
+ expect(validateApplicationProject(legacy).project.person.instagram).toBe('instagram.com/danial')
+ legacy.resume.design.showHeaderIcons='yes';expect(validateApplicationProject(legacy).ok).toBe(false)
+})

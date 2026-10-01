@@ -83,3 +83,19 @@ test('numeric fields accept partial drafts and commit valid multi-digit values',
  fireEvent.change(input,{target:{value:'18'}});fireEvent.blur(input);expect(screen.getByLabelText('Oben')).toHaveValue(18)
  fireEvent.change(screen.getByLabelText('Oben'),{target:{value:'2'}});fireEvent.blur(screen.getByLabelText('Oben'));expect(screen.getByRole('alert').textContent).toContain('18')
 })
+
+test('header contact columns can be chosen independently for resume and letter',()=>{
+ renderWithProviders(<ApplicationStudioPage active/>);fireEvent.click(screen.getByRole('tab',{name:'Gestaltung'}))
+ fireEvent.change(screen.getByLabelText('Kontaktspalten'),{target:{value:'three'}});expect(screen.getByLabelText('Kontaktspalten')).toHaveValue('three')
+ fireEvent.click(screen.getByRole('button',{name:'Anschreiben',exact:true}));expect(screen.getByLabelText('Kontaktspalten')).toHaveValue('one')
+ fireEvent.change(screen.getByLabelText('Kontaktspalten'),{target:{value:'two'}});expect(screen.getByLabelText('Kontaktspalten')).toHaveValue('two')
+ fireEvent.click(screen.getByRole('button',{name:'Lebenslauf',exact:true}));expect(screen.getByLabelText('Kontaktspalten')).toHaveValue('three')
+})
+
+test('icon switches and instagram are editable and persist independently',()=>{
+ renderWithProviders(<ApplicationStudioPage active/>);fireEvent.change(screen.getByLabelText('Instagram (optional)'),{target:{value:'instagram.com/test'}})
+ fireEvent.click(screen.getByRole('tab',{name:'Gestaltung'}));const header=screen.getByLabelText('Kontaktsymbole anzeigen'),section=screen.getByLabelText('Symbole bei Überschriften anzeigen')
+ expect(header).not.toBeChecked();fireEvent.click(header);fireEvent.click(section);expect(header).toBeChecked();expect(section).toBeChecked()
+ fireEvent.click(screen.getByRole('button',{name:'Anschreiben',exact:true}));expect(screen.getByLabelText('Kontaktsymbole anzeigen')).not.toBeChecked();expect(screen.queryByLabelText('Symbole bei Überschriften anzeigen')).not.toBeInTheDocument()
+ fireEvent.click(screen.getByRole('button',{name:'Lebenslauf',exact:true}));expect(screen.getByLabelText('Kontaktsymbole anzeigen')).toBeChecked()
+})

@@ -236,3 +236,13 @@ Folio und Compact sowie Source Sans 3 / Source Serif 4 sind lokal integriert. He
 Die MCP-Ausbaustufen stehen in `docs/application-studio-next-steps.md`; ein Server wurde noch nicht implementiert. Änderungen bleiben lokal und uncommitted.
 
 Abschlusslauf vom 1. Oktober: Node 24.0.0, `vitest run --maxWorkers=2`: 118 Testdateien / 1054 Tests bestanden. Ein zuvor unter hoher Parallelität abgelaufener bestehender Sprachwechseltest bestand isoliert und im vollständigen Wiederholungslauf. Node 25.0.0 war wegen seines localStorage-Verhaltens für diese Testumgebung ungeeignet.
+
+## Kontaktspalten im Kopfbereich — 1. Oktober 2026
+
+Unabhängige ein-/zwei-/dreispaltige Kontaktanordnung für Lebenslauf und Anschreiben. Name/Berufstitel bleiben oberhalb; leere Kontaktfelder werden ausgelassen, lange Werte umbrechen innerhalb ihrer Spalte. Foto links/rechts und dessen Abstände bleiben reserviert. Alte Projektdateien importieren mit one. Unit-Regressionsfälle prüfen Modelldefaults, ungültige Werte, unabhängige Dokumentwahl, Zeilenumbruch, Fotoabstand und echte PDF-Koordinaten/Links. Abschluss: 118 Dateien / 1058 Tests bestanden, Lint und Build samt Bundle-/Same-Origin-Artefaktprüfung bestanden. Browserprüfung mit lokalem persönlichen Projekt für zwei/drei Spalten, keine Warnungen/Fehler. Vollständige automatisierte Browsermatrix und Axe nicht erneut ausgeführt. Persönliche Projektdateien und Bilder liegen ausschliesslich im ignorierten test-results-Verzeichnis.
+
+## Optionale Symbole — 1. Oktober 2026
+
+Originale lokale Liniengeometrie für E-Mail, Telefon, Adresse, Website, LinkedIn, Instagram, Staatsangehörigkeit und alle Inhaltsabschnittstypen. Kopf-/Abschnittssymbole unabhängig ein-/ausblendbar, standardmässig aus; Kontaktfarbe folgt der Akzentfarbe, Überschriftssymbole folgen einer individuellen Elementfarbe. Dekorative SVG-Symbole sind für Screenreader ausgeblendet; Kontakttext und PDF-Links bleiben erhalten. Iconbreite ist in Umbruch und Headerhöhe eingerechnet. PDF zeichnet dieselben Segmente ohne Emoji-Fonts oder Netzabrufe. Instagram wird als optionales Kontaktfeld importiert/exportiert.
+
+Verifiziert: 118 Dateien / 1062 Tests; Lint und Produktionsbuild samt Bundle-/Same-Origin-Prüfung bestanden. PDF.js prüft zusätzliche echte Zeichenoperatoren, extrahierbaren Instagram-Text und Linkannotation. Browser: beide Schalter, sichtbare Symbole, vollständiges Ausblenden, Bedienung per Leertaste, keine Konsolenwarnungen/-fehler. Vollständige Browser-/Axe-Matrix bleibt separat. Persönliche Vorschauartefakte bleiben ignoriert und lokal.

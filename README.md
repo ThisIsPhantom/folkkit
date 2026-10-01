@@ -106,3 +106,5 @@ bun run dev            # Vite proxies /api to it
 ```
 
 Anyone with the link can answer and see the results. An optional password restricts access. Participant addresses are visible only through the creator's admin link (`/poll/<id>#admin=<token>`).
+
+Im Bewerbungs-Studio lassen sich unter Gestaltung die Kontaktdaten im Kopfbereich auf eine, zwei oder drei Spalten verteilen. Kontaktsymbole und Symbole bei Abschnittsüberschriften sind getrennt ein-/ausblendbar und folgen der Akzent- beziehungsweise Elementfarbe. Instagram ist ein optionales Kontaktfeld. Vorschau und PDF verwenden dieselbe lokale Vektorgeometrie.
