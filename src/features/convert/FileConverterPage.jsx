@@ -1,4 +1,4 @@
-import { useCallback,useEffect,useRef,useState } from 'react'
+import { useCallback,useEffect,useLayoutEffect,useRef,useState } from 'react'
 import { useI18n } from '../../i18n/index.js'
 import { createConversionQueue,settingsRecipients } from './queue.js'
 import { convertFileItem,createZip } from './engine.js'
@@ -118,7 +118,8 @@ export default function FileConverterPage({ initialMode='convert',onModeChange,i
     if (!active) { queue.cancel(); zipController.current?.abort() }
   },[active,queue])
 
-  useEffect(() => {
+  // Complete focus in the removal commit before a stale passive effect can consume the request.
+  useLayoutEffect(() => {
     if (!focusAfterRemoval.current) return
     focusAfterRemoval.current = false
     if (active) {
