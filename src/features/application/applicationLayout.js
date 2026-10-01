@@ -1,7 +1,7 @@
 import {PDFDocument,StandardFonts} from 'pdf-lib'
 import {applicationLimits} from './applicationModel.js'
 export const applicationFontNames={helvetica:StandardFonts.Helvetica,'helvetica-bold':StandardFonts.HelveticaBold,'helvetica-italic':StandardFonts.HelveticaOblique,times:StandardFonts.TimesRoman,'times-bold':StandardFonts.TimesRomanBold,'times-italic':StandardFonts.TimesRomanItalic,courier:StandardFonts.Courier,'courier-bold':StandardFonts.CourierBold,'courier-italic':StandardFonts.CourierOblique}
-const localFamilies={openSans:'OpenSans',notoSans:'NotoSans',notoSerif:'NotoSerif'}
+const localFamilies={openSans:'OpenSans',notoSans:'NotoSans',notoSerif:'NotoSerif',sourceSans:'SourceSans3',sourceSerif:'SourceSerif4'}
 export async function createApplicationFonts(families=[],load=async url=>{const response=await fetch(url);if(!response.ok)throw new Error('fontLoadFailed');return new Uint8Array(await response.arrayBuffer())}){
  const doc=await PDFDocument.create();const fonts=Object.fromEntries(await Promise.all(Object.entries(applicationFontNames).map(async([key,name])=>[key,await doc.embedFont(name)])))
  const selected=[...new Set(families)].filter(key=>localFamilies[key])
@@ -26,7 +26,7 @@ export function layoutApplication(project,kind,fonts){
  function issue(code,target){if(!issues.some(i=>i.code===code&&i.target===target))issues.push({code,target,blocking:true})}
  function newPage(){const index=page?pages.indexOf(page)+1:0;if(index===applicationLimits.pages){issue('pageLimit',kind);stopped=true;return}if(pages[index])page=pages[index];else {page={width,height,runs:[],lines:[],images:[]};pages.push(page)}y=m.top}
  newPage()
- let available=width-m.left-m.right
+ let available=width-m.left-m.right,activeLane='full'
  function fontKey(weight){return weight&&weight!=='regular'?`${d.font}-${weight}`:d.font}
  function measure(text,size,key,target){try{const font=fonts[key];if(font.applicationBytes){const supported=characterSets.get(key);if([...text].some(c=>!supported.has(c.codePointAt(0))))throw new Error('unsupported')}return font.widthOfTextAtSize(text,size)}catch{issue('unsupportedCharacters',target);return 0}}
  function wrap(text,w,size,key,target){
@@ -75,7 +75,7 @@ export function layoutApplication(project,kind,fonts){
  if(photo)y=Math.max(y,headerY+d.photoSize+(d.photoOffsetY||0))
  gap(12);if(d.header==='accent'||d.header==='classic')rule(d.accent,d.header==='accent'?2:1,8)
  function entryGeometry(s,e){
-  const date=[e.start,e.end].filter(Boolean).join(' – '),isColumn=d.layout!=='two'&&d.template!=='ats'&&['experience','education','projects','engagement'].includes(s.type)&&Boolean(date||e.location)
+  const date=[e.start,e.end].filter(Boolean).join(' – '),isColumn=activeLane==='full'&&d.layout!=='two'&&d.template!=='ats'&&['experience','education','projects','engagement'].includes(s.type)&&Boolean(date||e.location)
   const ex=isColumn?m.left+d.dateWidth+12:m.left,ew=isColumn?available-d.dateWidth-12:available
   const title=[e.title,e.organization].filter(Boolean).join(' · '),subtitle=isColumn?'':[date,e.location].filter(Boolean).join(' | ')
   const size=e.style.fontSize||d.fontSize,key=fontKey(e.style.weight)
@@ -102,10 +102,14 @@ export function layoutApplication(project,kind,fonts){
   let leftCursor=cursor(),rightCursor=cursor()
   for(const s of project.resume.sections){
    if(stopped)break;if(!s.visible)continue
-   const two=d.layout==='two'
-   const lane=!two?'full':s.type==='pageBreak'?'full':s.column&&s.column!=='auto'?s.column:s.type==='profile'?'full':['skills','languages','education'].includes(s.type)?'right':'left'
+   const form=['spacer','rule','pageBreak'].includes(s.type)
+   const entries=s.entries.filter(e=>e.visible&&[e.title,e.organization,e.location,e.start,e.end,e.description].some(x=>x.trim()))
+   if(!form&&!entries.length)continue
+   const lane=s.type==='pageBreak'?'full':s.column&&s.column!=='auto'?s.column:d.layout!=='two'?'full':s.type==='profile'?'full':['skills','languages','education'].includes(s.type)?'right':'left'
+   activeLane=lane
    m.left=fullLeft;m.right=fullRight;available=fullWidth
-   if(two){
+   if(s.newBand){const start=later(leftCursor,rightCursor);leftCursor=start;rightCursor=start}
+   {
     if(lane==='full')restore(later(leftCursor,rightCursor))
     else {
      restore(lane==='left'?leftCursor:rightCursor)
@@ -114,15 +118,13 @@ export function layoutApplication(project,kind,fonts){
      else {m.left=fullLeft+leftWidth+gap;available=fullWidth-leftWidth-gap}
     }
    }
-   const saveCursor=()=>{if(!two)return;if(lane==='full'){leftCursor=cursor();rightCursor=cursor()}else if(lane==='left')leftCursor=cursor();else rightCursor=cursor()}
-   if(['spacer','rule','pageBreak'].includes(s.type)){
+   const saveCursor=()=>{if(lane==='full'){leftCursor=cursor();rightCursor=cursor()}else if(lane==='left')leftCursor=cursor();else rightCursor=cursor()}
+   if(form){
     if(s.type==='pageBreak'){if(page.runs.length||page.lines.length||page.images.length)newPage()}
     else if(s.type==='spacer'){ensure(s.style.after??18);gap(s.style.after??18)}
     else {gap(s.style.before||0);rule(s.style.color||d.accent,s.style.ruleWidth??1,s.style.ruleGap??5);gap(s.style.after||0)}
     saveCursor();continue
    }
-   const entries=s.entries.filter(e=>e.visible&&[e.title,e.organization,e.location,e.start,e.end,e.description].some(x=>x.trim()))
-   if(!entries.length)continue
    gap(d.sectionGap+(s.style.before||0));const headingSize=s.style.fontSize||d.fontSize+1.5
    const headingHeight=wrap(s.title,available,headingSize,fontKey(s.style.weight||'bold'),s.id).length*headingSize*d.lineHeight+4+(d.template!=='ats'||s.style.ruleWidth?(s.style.ruleGap??5):0)+(s.style.after||0)
    const firstEstimate=entryGeometry(s,entries[0]).estimate,usableHeight=height-m.top-m.bottom

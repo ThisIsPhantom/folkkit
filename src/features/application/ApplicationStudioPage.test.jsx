@@ -2,14 +2,28 @@ import {expect,test,vi} from 'vitest'
 import {screen,fireEvent,waitFor} from '@testing-library/react'
 import {renderWithProviders} from '../../test/renderWithProviders.jsx'
 import ApplicationStudioPage from './ApplicationStudioPage.jsx'
-test('design exposes two-column layout, photo placement and six font families',()=>{
+import {onePixelPngBase64} from '../../../tests/fixtures/coreFixtures.js'
+test('failed photo import clears preparation status and permits retry',async()=>{
+ const files=await import('./applicationFiles.js');const spy=vi.spyOn(files,'readApplicationPhoto').mockRejectedValue(Object.assign(new Error('photoPixelLimit'),{code:'photoPixelLimit'}))
+ try{renderWithProviders(<ApplicationStudioPage active/>);fireEvent.change(document.querySelector('input[accept="image/png,image/jpeg,image/webp"]'),{target:{files:[new File(['bad'],'photo.png',{type:'image/png'})]}})
+ await waitFor(()=>expect(screen.getByRole('alert')).toBeVisible());expect(screen.getByRole('status')).not.toHaveTextContent('Foto wird vorbereitet')
+ expect(screen.getByRole('button',{name:'Foto auswählen'})).not.toBeDisabled()
+ }finally{spy.mockRestore()}
+})
+test('photo alone opens the document preview',async()=>{
+ const files=await import('./applicationFiles.js');const spy=vi.spyOn(files,'readApplicationPhoto').mockResolvedValue({mime:'image/png',data:`data:image/png;base64,${onePixelPngBase64}`,width:1,height:1})
+ try{renderWithProviders(<ApplicationStudioPage active/>);fireEvent.change(document.querySelector('input[accept="image/png,image/jpeg,image/webp"]'),{target:{files:[new File(['photo'],'photo.png',{type:'image/png'})]}})
+ await waitFor(()=>expect(document.querySelector('.app-preview image')).not.toBeNull())
+ }finally{spy.mockRestore()}
+})
+test('design exposes two-column layout, photo placement and eight font families',()=>{
  renderWithProviders(<ApplicationStudioPage active/>);fireEvent.click(screen.getByRole('tab',{name:'Gestaltung'}))
  fireEvent.change(screen.getByLabelText('Spaltenlayout'),{target:{value:'two'}})
  expect(screen.getByLabelText('Spaltenlayout')).toHaveValue('two')
  expect(screen.getByLabelText('Spaltenabstand')).toBeInTheDocument()
  fireEvent.change(screen.getByLabelText('Fotoposition'),{target:{value:'left'}});expect(screen.getByLabelText('Fotoposition')).toHaveValue('left')
  const size=screen.getByLabelText('Fotogrösse');fireEvent.change(size,{target:{value:'145'}});fireEvent.blur(size);expect(screen.getByLabelText('Fotogrösse')).toHaveValue(145)
- expect(screen.getByLabelText('Schrift').querySelectorAll('option')).toHaveLength(6)
+ expect(screen.getByLabelText('Schrift').querySelectorAll('option')).toHaveLength(8)
 })
 test('external content appears in preview and template/design changes preserve it',async()=>{
  renderWithProviders(<ApplicationStudioPage active/>);

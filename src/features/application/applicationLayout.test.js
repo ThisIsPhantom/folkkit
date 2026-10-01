@@ -3,6 +3,43 @@ import {createApplicationProject,exampleApplicationProject,updateApplicationProj
 import {applyApplicationTemplate} from './applicationTemplates.js'
 import {createApplicationFonts,layoutApplication} from './applicationLayout.js'
 let fonts;beforeAll(async()=>{fonts=await createApplicationFonts()})
+
+test('explicit section columns work in a single-column document and full sections join both lanes',()=>{
+ const p=exampleApplicationProject();p.resume.sections=p.resume.sections.slice(0,5)
+ const [a,b,c,d,e]=p.resume.sections
+ for(const s of p.resume.sections){s.entries[0].description='Short content';s.entries[0].start='';s.entries[0].end='';s.entries[0].location=''}
+ a.column='left';b.column='right';c.column='full';d.column='left';e.column='right'
+ const result=layoutApplication(p,'resume',fonts);expect(result.issues).toEqual([])
+ const runs=result.pages[0].runs;const heading=s=>runs.find(r=>r.sectionId===s.id&&!r.entryId)
+ expect(heading(a).y).toBe(heading(b).y)
+ expect(heading(b).x).toBeGreaterThan(heading(a).x+200)
+ expect(heading(c).y).toBeGreaterThan(Math.max(...runs.filter(r=>[a.id,b.id].includes(r.sectionId)).map(r=>r.y)))
+ expect(heading(d).y).toBe(heading(e).y)
+ expect(heading(d).y).toBeGreaterThan(Math.max(...runs.filter(r=>r.sectionId===c.id).map(r=>r.y)))
+})
+
+test('a new column area waits for both overflowing lanes and starts the next pair together',()=>{
+ const p=exampleApplicationProject();p.resume.sections=p.resume.sections.slice(0,4)
+ const [a,b,c,d]=p.resume.sections
+ a.column='left';b.column='right';c.column='left';c.newBand=true;d.column='right'
+ a.entries[0].description=Array.from({length:100},(_,i)=>`Row${i}`).join('\n')
+ b.entries[0].description='Right side';c.entries[0].description='New left';d.entries[0].description='New right'
+ const result=layoutApplication(p,'resume',fonts);expect(result.issues).toEqual([])
+ const runs=result.pages.flatMap((p,index)=>p.runs.map(r=>({...r,position:index*1000+r.y})))
+ const heading=s=>runs.find(r=>r.sectionId===s.id&&!r.entryId)
+ expect(heading(c).position).toBeGreaterThan(Math.max(...runs.filter(r=>[a.id,b.id].includes(r.sectionId)).map(r=>r.position)))
+ expect(heading(d).position).toBe(heading(c).position)
+})
+
+test('an empty section cannot start a column area or move later content',()=>{
+ const p=exampleApplicationProject();p.resume.sections=p.resume.sections.slice(0,4)
+ const [a,b,empty,d]=p.resume.sections;a.column='left';b.column='right';d.column='right'
+ a.entries[0].description='Longer left column\n'.repeat(12)
+ empty.entries=[];empty.column='left'
+ const baseline=layoutApplication(p,'resume',fonts)
+ empty.newBand=true
+ expect(layoutApplication(p,'resume',fonts)).toEqual(baseline)
+})
 test('two content columns place skills beside experience and preserve overflowing text',()=>{
  const p=exampleApplicationProject();p.resume.design.layout='two';p.resume.design.columnGap=24;p.resume.design.leftColumnWidth=60
  p.resume.sections[2].visible=false

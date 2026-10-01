@@ -2,10 +2,20 @@ import { expect, test } from 'vitest'
 import { createApplicationProject, validateApplicationProject, updateApplicationProject } from './applicationModel.js'
 import { applyApplicationTemplate, applicationTemplates } from './applicationTemplates.js'
 
-test('four designs preserve every content field and stable ID', () => {
+test('section column areas roundtrip with defaults for legacy projects and reject invalid flags',()=>{
+ let p=createApplicationProject();const id=p.resume.sections[1].id
+ p=updateApplicationProject(p,{type:'section',sectionId:id,field:'newBand',value:true})
+ expect(p.resume.sections[1].newBand).toBe(true)
+ expect(validateApplicationProject(JSON.parse(JSON.stringify(p))).project.resume.sections[1].newBand).toBe(true)
+ delete p.resume.sections[1].newBand
+ expect(validateApplicationProject(p).project.resume.sections[1].newBand).toBe(false)
+ p.resume.sections[1].newBand='yes';expect(validateApplicationProject(p).ok).toBe(false)
+})
+
+test('all designs preserve every content field and stable ID', () => {
  const project = createApplicationProject('de', '2026-09-30')
  project.person.name = 'Mira Muster'; project.resume.sections[0].entries[0].description = 'Mein Profil'
- expect(applicationTemplates).toHaveLength(4)
+ expect(applicationTemplates).toHaveLength(6)
  for (const {id} of applicationTemplates) {
   const result = applyApplicationTemplate(project, 'resume', id)
   expect(result.person).toEqual(project.person)
