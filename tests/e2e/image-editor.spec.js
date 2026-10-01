@@ -481,14 +481,16 @@ for (const kind of ['watermark', 'text']) test(`image pixels follow a ${kind} ge
   if (kind === 'watermark') await page.getByLabel('Wasserzeichen hinzufügen', { exact: true }).setInputFiles(watermarkFixture())
   else { await page.getByLabel('Textinhalt', { exact: true }).fill('Text in Bewegung'); await page.getByRole('button', { name: 'Text hinzufügen', exact: true }).click() }
   const canvas = page.locator('.image-canvas-stage canvas')
-  await expect.poll(() => canvas.evaluate(node => {
-    const data = node.getContext('2d').getImageData(0, 0, node.width, node.height).data
+  // Empty transparent canvases and the original-only frame are not an element baseline.
+  let original
+  await expect.poll(async () => {
+    original = await canvas.evaluate(node => node.toDataURL())
+    const pixels = PNG.sync.read(Buffer.from(original.split(',')[1], 'base64')).data
     let ink = 0
-    for (let i = 0; i < data.length; i += 4) if (data[i + 1] < 250) ink++
+    for (let i = 0; i < pixels.length; i += 4) if (pixels[i + 3] > 0 && pixels[i + 1] < 250) ink++
     return ink
-  })).toBeGreaterThan(50)
+  }).toBeGreaterThan(50)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  const original = await canvas.evaluate(node => node.toDataURL())
   const x = page.getByLabel('X-Position', { exact: true }), initialX = await x.inputValue()
   const target = page.getByRole('button', { name: kind === 'watermark' ? 'local-watermark.png auswählen' : 'Text in Bewegung auswählen', exact: true })
   await page.screenshot({ path: testInfo.outputPath('image-before-gesture.png'), fullPage: true })

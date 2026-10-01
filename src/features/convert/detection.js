@@ -1,7 +1,7 @@
 import { CONVERT_LIMITS, conversionError } from './profiles.js'
 
 const extensions = { png: 'png', jpg: 'jpeg', jpeg: 'jpeg', webp: 'webp', pdf: 'pdf', mp3: 'mp3', wav: 'wav', wave: 'wav', flac: 'flac', ogg: 'ogg', oga: 'ogg', mp4: 'mp4', m4v: 'mp4', webm: 'webm', mov: 'mov', qt: 'mov' }
-const mimes = { 'image/png': 'png', 'image/jpeg': 'jpeg', 'image/jpg': 'jpeg', 'image/webp': 'webp', 'application/pdf': 'pdf', 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/wave': 'wav', 'audio/flac': 'flac', 'audio/x-flac': 'flac', 'audio/ogg': 'ogg', 'application/ogg': 'ogg', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' }
+const mimes = { 'image/png': 'png', 'image/jpeg': 'jpeg', 'image/jpg': 'jpeg', 'image/webp': 'webp', 'application/pdf': 'pdf', 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/wave': 'wav', 'audio/vnd.wave': 'wav', 'audio/flac': 'flac', 'audio/x-flac': 'flac', 'audio/ogg': 'ogg', 'application/ogg': 'ogg', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' }
 export async function readBytes(blob) {
   if (blob.arrayBuffer) return new Uint8Array(await blob.arrayBuffer())
   return new Promise((resolve, reject) => {

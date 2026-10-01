@@ -52,6 +52,14 @@ async function expectUnavailablePreview(page, capability) {
  await expect(page.locator('.audio-editor [role=alert]')).toHaveText('This browser cannot play the audio preview. You can still export the file.')
 }
 
+test('@matrix audio imports a signed WAV with the WebKit MIME alias',async({page})=>{
+ test.setTimeout(120000);await open(page)
+ await page.getByLabel('Choose audio',{exact:true}).setInputFiles({name:'sample.wav',mimeType:'audio/vnd.wave',buffer:readFileSync(fixture('wav'))})
+ await expect(page.locator('.audio-wave, .audio-editor [role=alert]')).toBeVisible({timeout:90000})
+ expect(await page.locator('.audio-editor [role=alert]').count(),'Signed WAV MIME alias must reach audio preparation').toBe(0)
+ await expect(page.locator('.audio-wave')).toBeVisible()
+ await expect(page.getByLabel('End (seconds)',{exact:true})).toHaveValue('1')
+})
 test('@matrix audio gestures playback cancel themes and accessibility under production CSP',async({page},info)=>{
  test.setTimeout(180000);const violations=[],external=[]
  await installAudioStartupState(page)
