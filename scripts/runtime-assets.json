@@ -1,8 +1,18 @@
 {
   "schemaVersion": 1,
   "fonts": {
-    "distributedFiles": [],
-    "note": "Folkkit distributes no font files. Its CSS uses system font stacks supplied by the user's operating system and browser."
+    "distributedFiles": [
+      "public/fonts/application/NotoSans-Bold.ttf",
+      "public/fonts/application/NotoSans-Italic.ttf",
+      "public/fonts/application/NotoSans-Regular.ttf",
+      "public/fonts/application/NotoSerif-Bold.ttf",
+      "public/fonts/application/NotoSerif-Italic.ttf",
+      "public/fonts/application/NotoSerif-Regular.ttf",
+      "public/fonts/application/OpenSans-Bold.ttf",
+      "public/fonts/application/OpenSans-Italic.ttf",
+      "public/fonts/application/OpenSans-Regular.ttf"
+    ],
+    "note": "Application Studio ships unmodified local Open Sans, Noto Sans and Noto Serif fonts for matching SVG and embedded PDF output."
   },
   "assets": [
     {
@@ -87,6 +97,35 @@
           "url": "https://github.com/pandoc/pandoc-wasm/tree/8955473ea57f4b9c3f5a6b3c3c9d2564e411deed"
         }
       ]
+    },
+    {
+      "id": "application-open-sans",
+      "component": "Open Sans application font",
+      "version": "1.10",
+      "paths": [
+        "public/fonts/application/OpenSans-*.ttf"
+      ],
+      "license": "Apache-2.0",
+      "sourceUrl": "https://github.com/googlefonts/opensans",
+      "licenseTextFiles": [
+        "scripts/license-texts/OpenSans.txt",
+        "scripts/license-texts/Apache-2.0-fonts.txt"
+      ],
+      "notices": []
+    },
+    {
+      "id": "application-noto",
+      "component": "Noto Sans and Noto Serif application fonts",
+      "version": "2.004",
+      "paths": [
+        "public/fonts/application/Noto*.ttf"
+      ],
+      "license": "OFL-1.1",
+      "sourceUrl": "https://github.com/notofonts/noto-fonts",
+      "licenseTextFiles": [
+        "scripts/license-texts/NotoFonts.txt"
+      ],
+      "notices": []
     }
   ]
 }

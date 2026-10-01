@@ -64,3 +64,8 @@ test.each(['docx','markdown','html'])('accepts the document target %s in convert
   expect(studioOptions('convert',{search:`?target=${target}`})).toEqual({mode:'convert',target,combine:false})
   expect(toolStudioHref('document-convert')).toBe('/convert?target=docx')
 })
+
+test('application studio has a direct and catalog destination',()=>{
+ expect(resolveAppRoute({pathname:'/application'})).toBe('application')
+ expect(toolStudioHref('application-studio')).toBe('/application')
+})

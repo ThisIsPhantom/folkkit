@@ -20,7 +20,8 @@ const PdfEditorPage = lazy(() => import('./features/pdf/PdfEditorPage.jsx'))
 const WorkspacePage = lazy(() => import('./pages/WorkspacePage.jsx'))
 const CalculatorPage = lazy(() => import('./features/calculate/CalculatorPage.jsx'))
 const editorPages = { image: lazy(() => import('./features/image/ImageEditorPage.jsx')), audio: lazy(() => import('./features/audio/AudioEditorPage.jsx')) }
-const retainedStudios = ['qr', 'convert', 'calculate', ...Object.keys(editorPages)]
+const ApplicationStudioPage = lazy(() => import('./features/application/ApplicationStudioPage.jsx'))
+const retainedStudios = ['qr', 'convert', 'calculate', 'application', ...Object.keys(editorPages)]
 
 const legalPages = Object.freeze({
   privacy: PrivacyPage,
@@ -144,6 +145,7 @@ export default function App() {
       {retainedStudios.filter(kind => studios[kind]).map(kind => <div key={kind} hidden={route !== kind} inert={route !== kind} className="studio-session">
         <ErrorBoundary onRetry={() => window.location.reload()}><Suspense fallback={<div className="studio-page studio-loading"><h1>{t(`shell.${kind}`)}</h1><p role="status">{t('shell.loading')}</p></div>}>
           {editorPages[kind] && createElement(editorPages[kind], { active:route === kind, fileRequest:fileRequest?.route === kind ? fileRequest : undefined, onFileRequestConsumed:consumeFileRequest })}
+          {kind === 'application' && <ApplicationStudioPage active={route === kind} />}
           {kind === 'qr' && <QrDesignerPage initialMode={studios.qr.mode} onModeChange={mode => navigate(`/qr?mode=${mode}`)} active={route === kind} />}
           {kind === 'convert' && <FileConverterPage editorKinds={Object.keys(editorPages)} onOpenEditor={(editor,file) => openStudioTool(editor === 'image' ? 'image-editor' : 'audio-trim',file)} initialMode={studios.convert.mode} initialTarget={studios.convert.target} initialCombine={studios.convert.combine} fileRequest={fileRequest?.route === 'convert' ? fileRequest : undefined} onFileRequestConsumed={consumeFileRequest} onModeChange={mode => navigate(`/convert?mode=${mode}`)} active={route === kind} />}
           {kind === 'calculate' && <CalculatorPage initialCalculator={studios.calculate.calculator} onSelectCalculator={id => { if (id !== studios.calculate.calculator) navigate(`/calculate?calculator=${id}`) }} />}
