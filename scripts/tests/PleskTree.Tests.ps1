@@ -68,6 +68,7 @@ function Invoke-Validator {
 }
 
 try {
+    & (Join-Path $PSScriptRoot 'PleskApplicationFonts.Tests.ps1')
     New-Item -ItemType Directory -Path $temporaryRoot -Force | Out-Null
 
     $validA = Join-Path $temporaryRoot 'valid-a'
