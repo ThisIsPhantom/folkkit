@@ -5,6 +5,7 @@ import qrMessages from '../features/qr/messages.en.js'
 import convertMessages from '../features/convert/messages.en.js'
 import pdfMessages from '../features/pdf/messages.en.js'
 import calculateMessages from '../features/calculate/messages.en.js'
+import pollMessages from '../features/poll/messages.en.js'
 
 const messagesEn = Object.freeze({
   ...qrMessages,
@@ -13,6 +14,7 @@ const messagesEn = Object.freeze({
   studioCalculate: calculateMessages,
   studioImage: imageMessages,
   studioAudio: audioMessages,
+  studioPoll: pollMessages,
   studioApplication: applicationMessages,
   shell: Object.freeze({
     application: 'Applications',
@@ -23,7 +25,7 @@ const messagesEn = Object.freeze({
     pdf: 'PDF',
     convert: 'Convert',
     calculate: 'Calculators',
-    image: 'Image editor', audio: 'Trim audio',
+    image: 'Image editor', audio: 'Trim audio', poll: 'Poll',
     loading: 'Loading …',
     loadError: 'This workspace could not be loaded.',
     retry: 'Reload',

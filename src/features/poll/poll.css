@@ -1,0 +1,52 @@
+/* Folkkit shared polls. */
+.poll-page { display: grid; gap: 1.25rem; max-width: 60rem; }
+.poll-card { display: grid; gap: 1rem; padding: 1.5rem; border: 1px solid var(--shell-border); border-radius: var(--radius-surface); background: var(--shell-raised); }
+.poll-card > button, .poll-danger { justify-self: start; display: inline-flex; align-items: center; gap: .4rem; }
+.poll-field { display: grid; gap: .35rem; }
+.poll-field .studio-status, .poll-copy .studio-status { margin: 0; }
+.poll-options { display: grid; gap: .6rem; margin: 0; padding: 0; border: 0; }
+.poll-options legend { margin-bottom: .5rem; font-size: .875rem; font-weight: 600; }
+.poll-options > button { justify-self: start; display: inline-flex; align-items: center; gap: .4rem; }
+.poll-options__row { display: grid; grid-template-columns: minmax(9rem, 12rem) minmax(0, 1fr) auto; gap: .5rem; }
+.poll-page .poll-icon-button { display: inline-grid; place-items: center; min-width: 2.5rem; padding: .4rem; }
+.poll-copy { display: grid; gap: .35rem; }
+.poll-copy__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; }
+.poll-copy__row button { display: inline-flex; align-items: center; gap: .4rem; }
+.poll-header h1 { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin: 0; }
+.poll-description { margin: .5rem 0 0; color: var(--ink-muted); white-space: pre-line; }
+.poll-badge { padding: .15rem .6rem; border-radius: 999px; font-size: .8125rem; font-weight: 600; letter-spacing: 0; color: var(--studio-accent); background: var(--studio-accent-soft); }
+.poll-vote__people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.poll-vote__people + .studio-status { margin: -.5rem 0 0; }
+.poll-vote__options { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.poll-vote__options li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; padding: .5rem 0; border-top: 1px solid var(--shell-border); }
+.poll-vote__label { font-weight: 600; }
+.poll-segment { display: inline-flex; gap: .25rem; }
+.poll-page .poll-segment button[data-answer="yes"][aria-pressed="true"] { color: var(--studio-accent); background: var(--studio-accent-soft); border-color: var(--studio-accent); }
+.poll-page .poll-segment button[data-answer="maybe"][aria-pressed="true"] { color: var(--studio-warning); background: var(--studio-warning-bg); border-color: var(--studio-warning); }
+.poll-page .poll-segment button[data-answer="no"][aria-pressed="true"] { color: var(--studio-danger); background: var(--studio-danger-bg); border-color: var(--studio-danger); }
+.poll-success { margin: 0; color: var(--studio-accent); }
+.poll-results__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem; }
+.poll-results__head h2 { margin: 0; }
+.poll-table-wrap { overflow-x: auto; }
+.poll-table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+.poll-table :is(th, td) { padding: .55rem .65rem; border-bottom: 1px solid var(--shell-border); text-align: center; vertical-align: middle; }
+.poll-table :is(thead th:first-child, tbody th, tfoot th) { text-align: left; }
+.poll-table thead th { font-size: .8125rem; font-weight: 600; color: var(--ink-muted); }
+.poll-table thead th.poll-best { color: var(--studio-accent); }
+.poll-best__badge { display: block; font-weight: 500; font-size: .75rem; }
+.poll-table tbody th { font-weight: 600; }
+.poll-address { display: block; font-weight: 400; font-size: .8125rem; color: var(--ink-muted); }
+.poll-table td[data-answer="yes"] { color: var(--studio-accent); background: var(--studio-accent-soft); font-weight: 600; }
+.poll-table td[data-answer="maybe"] { color: var(--studio-warning); background: var(--studio-warning-bg); }
+.poll-table td[data-answer="no"] { color: var(--ink-muted); }
+.poll-table tfoot td.poll-best strong { color: var(--studio-accent); }
+.poll-page .poll-danger { color: var(--studio-danger); border-color: var(--studio-danger); }
+
+@media (max-width: 640px) {
+  .poll-card { padding: 1rem; }
+  .poll-vote__people { grid-template-columns: 1fr; }
+  .poll-options__row { grid-template-columns: minmax(0, 1fr) auto; }
+  .poll-options__row input[type="date"] { grid-column: 1 / -1; }
+  .poll-options__row input:not([type="date"]) { grid-column: 1; }
+  .poll-copy__row { grid-template-columns: 1fr; }
+}

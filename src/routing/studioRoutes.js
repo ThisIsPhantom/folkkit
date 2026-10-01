@@ -66,6 +66,7 @@ export function resolveAppRoute({ pathname = '/', search = '', hash = '' }) {
   if (Object.values(coreDestinations).includes(pathname)) return pathname.slice(1)
   if (legalRoutes[pathname]) return `legal:${legalRoutes[pathname]}`
   if (pathname === '/tools') return 'catalog'
+  if (/^\/poll(?:\/[^/]*)?\/?$/.test(pathname)) return 'poll'
   const legacy = legacyStudioHref({ pathname, search, hash })
   if (legacy) return legacy.slice(1).split('?')[0]
   if (pathname === '/workspace' || search || hash.startsWith('#tool/')) return 'workspace'

@@ -19,6 +19,7 @@ const FileConverterPage = lazy(() => import('./features/convert/FileConverterPag
 const PdfEditorPage = lazy(() => import('./features/pdf/PdfEditorPage.jsx'))
 const WorkspacePage = lazy(() => import('./pages/WorkspacePage.jsx'))
 const CalculatorPage = lazy(() => import('./features/calculate/CalculatorPage.jsx'))
+const PollPage = lazy(() => import('./features/poll/PollPage.jsx'))
 const editorPages = { image: lazy(() => import('./features/image/ImageEditorPage.jsx')), audio: lazy(() => import('./features/audio/AudioEditorPage.jsx')) }
 const ApplicationStudioPage = lazy(() => import('./features/application/ApplicationStudioPage.jsx'))
 const retainedStudios = ['qr', 'convert', 'calculate', 'application', ...Object.keys(editorPages)]
@@ -45,6 +46,7 @@ export default function App() {
   const { locale, setLocale, t } = useI18n()
   const [route, setRoute] = useState(readRoute)
   const [studios, setStudios] = useState(() => retainedStudios.includes(route) ? { [route]: studioOptions(route, window.location) } : {})
+  const [pollLocation, setPollLocation] = useState(() => ({ pathname: window.location.pathname, hash: window.location.hash }))
   const [pdfOptions, setPdfOptions] = useState(() => studioOptions('pdf', window.location))
   const visitedHrefs = useRef({})
   const [fileRequest, setFileRequest] = useState(null)
@@ -76,6 +78,7 @@ export default function App() {
     if (canonical) history.replaceState(null, '', canonical)
     acceptedHref.current = `${window.location.pathname}${window.location.search}${window.location.hash}`
     setRoute(nextRoute)
+    if (nextRoute === 'poll') setPollLocation({ pathname: window.location.pathname, hash: window.location.hash })
     if (retainedStudios.includes(nextRoute)) {
       const options = studioOptions(nextRoute, window.location)
       setStudios(previous => ({ ...previous, [nextRoute]: options }))
@@ -151,10 +154,11 @@ export default function App() {
           {kind === 'calculate' && <CalculatorPage initialCalculator={studios.calculate.calculator} onSelectCalculator={id => { if (id !== studios.calculate.calculator) navigate(`/calculate?calculator=${id}`) }} />}
         </Suspense></ErrorBoundary>
       </div>)}
-      {['pdf', 'workspace'].includes(route) && <ErrorBoundary key={route} onRetry={() => window.location.reload()}>
+      {['pdf', 'workspace', 'poll'].includes(route) && <ErrorBoundary key={route} onRetry={() => window.location.reload()}>
         <Suspense fallback={<div className="studio-page studio-loading"><h1>{route === 'workspace' ? t('workspace.title') : t(`shell.${route}`)}</h1><p role="status"><span className="studio-spinner" aria-hidden="true" />{t('shell.loading')}</p></div>}>
           {route === 'pdf' && <PdfEditorPage initialAction={pdfOptions.action} fileRequest={fileRequest?.route === 'pdf' ? fileRequest : undefined} onFileRequestConsumed={consumeFileRequest} onDirtyChange={onPdfDirtyChange} />}
           {route === 'workspace' && <WorkspacePage onOpenTool={openStudioTool} />}
+          {route === 'poll' && <PollPage location={pollLocation} onNavigate={navigate} />}
         </Suspense>
       </ErrorBoundary>}
       {LegalPage && <LegalPage />}

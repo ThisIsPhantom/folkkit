@@ -117,6 +117,8 @@ self.addEventListener('activate', event => {
 export default defineConfig({
   base: '/',
   server: {
+    // Shared polls need the PHP API; run `bun run dev:poll-api` next to `bun run dev`.
+    proxy: { '/api': 'http://127.0.0.1:8787' },
     watch: { ignored: ['**/.superpowers/**', '**/test-results/**', resolve('.worktrees').replaceAll('\\', '/') + '/**', resolve('public/vendor').replaceAll('\\', '/') + '/**'] },
   },
   define: {
