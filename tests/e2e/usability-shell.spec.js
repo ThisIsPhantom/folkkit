@@ -79,7 +79,7 @@ test('catalog search and favorites work with keyboard, reload and empty results 
   await page.getByRole('combobox', { name: 'Kategorie', exact: true }).selectOption('image')
   await expect(page.getByRole('heading', { name: 'Keine passenden Werkzeuge', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Filter zurücksetzen', exact: true }).click()
-  await expect(page.getByRole('status')).toHaveText('50 von 50 Werkzeugen')
+  await expect(page.getByRole('status')).toHaveText('51 von 51 Werkzeugen')
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 })
 
@@ -158,7 +158,7 @@ test('catalog filters clear with results and removing favorites preserves keyboa
   await page.getByRole('button', { name: 'Filter zurücksetzen', exact: true }).click()
   await expect(search).toBeFocused()
   await expect(search).toHaveValue('')
-  await expect(page.locator('.catalog-list > li')).toHaveCount(50)
+  await expect(page.locator('.catalog-list > li')).toHaveCount(51)
   const favorites = page.getByRole('button', { name: 'Nur Favoriten', exact: true })
   await favorites.click()
   await expect(page.locator('.catalog-list > li')).toHaveCount(2)
