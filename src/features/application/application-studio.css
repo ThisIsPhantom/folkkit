@@ -125,3 +125,9 @@
 @font-face { font-family: "Application Noto Serif"; src: url("/fonts/application/NotoSerif-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
 
 @font-face { font-family: "Application Noto Serif"; src: url("/fonts/application/NotoSerif-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Application Source Sans 3"; src: url("/fonts/application/SourceSans3-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Application Source Sans 3"; src: url("/fonts/application/SourceSans3-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Application Source Sans 3"; src: url("/fonts/application/SourceSans3-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Application Source Serif 4"; src: url("/fonts/application/SourceSerif4-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Application Source Serif 4"; src: url("/fonts/application/SourceSerif4-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Application Source Serif 4"; src: url("/fonts/application/SourceSerif4-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }

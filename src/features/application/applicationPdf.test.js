@@ -6,6 +6,23 @@ import {applyApplicationTemplate} from './applicationTemplates.js'
 import {createApplicationFonts,layoutApplication} from './applicationLayout.js'
 import {exportApplicationPdf} from './applicationPdf.js'
 let fonts;beforeAll(async()=>{fonts=await createApplicationFonts()})
+
+test('mixed full and half width sections retain preview coordinates in the real PDF',async()=>{
+ const p=exampleApplicationProject();p.resume.sections=p.resume.sections.slice(0,5)
+ for(const [i,column] of ['left','right','full','left','right'].entries())p.resume.sections[i].column=column
+ const layout=layoutApplication(p,'resume',fonts)
+ const bytes=await exportApplicationPdf(p,['resume'],fonts)
+ const task=getDocument({data:bytes.slice(),useSystemFonts:true})
+ try{
+  const pdf=await task.promise;const items=(await(await pdf.getPage(1)).getTextContent()).items
+  for(const section of p.resume.sections){
+   const expected=layout.pages[0].runs.find(r=>r.sectionId===section.id&&!r.entryId)
+   const actual=items.find(i=>i.str===section.title)
+   expect(actual.transform[4]).toBeCloseTo(expected.x,4)
+   expect(actual.transform[5]).toBeCloseTo(layout.pages[0].height-expected.y,4)
+  }
+ }finally{await task.destroy()}
+})
 test('real text, ordered combined pages and safe link annotations',async()=>{
  const p=applyApplicationTemplate(exampleApplicationProject(),'resume','ats')
  const bytes=await exportApplicationPdf(p,['resume','letter'],fonts)

@@ -10,9 +10,15 @@
       "public/fonts/application/NotoSerif-Regular.ttf",
       "public/fonts/application/OpenSans-Bold.ttf",
       "public/fonts/application/OpenSans-Italic.ttf",
-      "public/fonts/application/OpenSans-Regular.ttf"
+      "public/fonts/application/OpenSans-Regular.ttf",
+      "public/fonts/application/SourceSans3-Regular.ttf",
+      "public/fonts/application/SourceSans3-Bold.ttf",
+      "public/fonts/application/SourceSans3-Italic.ttf",
+      "public/fonts/application/SourceSerif4-Regular.ttf",
+      "public/fonts/application/SourceSerif4-Bold.ttf",
+      "public/fonts/application/SourceSerif4-Italic.ttf"
     ],
-    "note": "Application Studio ships unmodified local Open Sans, Noto Sans and Noto Serif fonts for matching SVG and embedded PDF output."
+    "note": "Application Studio ships unmodified, locally hosted Open Sans, Noto Sans, Noto Serif, Source Sans 3 and Source Serif 4 for matching SVG and embedded PDF output."
   },
   "assets": [
     {
@@ -126,6 +132,34 @@
         "scripts/license-texts/NotoFonts.txt"
       ],
       "notices": []
+    },
+    {
+      "notices": [],
+      "sourceUrl": "https://github.com/adobe-fonts/source-sans/tree/ed1808970eb3c7301c9a523bee26473ba0bb62fa",
+      "paths": [
+        "public/fonts/application/SourceSans3-*.ttf"
+      ],
+      "id": "application-source-sans",
+      "component": "SourceSans3 application font (unmodified Adobe binaries)",
+      "licenseTextFiles": [
+        "scripts/license-texts/SourceSans3-OFL.txt"
+      ],
+      "version": "3.052",
+      "license": "OFL-1.1"
+    },
+    {
+      "notices": [],
+      "sourceUrl": "https://github.com/adobe-fonts/source-serif/tree/2823e993c53fca27c5c8749f529b56a5a7c77b6b",
+      "paths": [
+        "public/fonts/application/SourceSerif4-*.ttf"
+      ],
+      "id": "application-source-serif",
+      "component": "SourceSerif4 application font (unmodified Adobe binaries)",
+      "licenseTextFiles": [
+        "scripts/license-texts/SourceSerif4-OFL.txt"
+      ],
+      "version": "4.005",
+      "license": "OFL-1.1"
     }
   ]
 }

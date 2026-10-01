@@ -44,12 +44,12 @@ export default function ApplicationStudioPage({active=true}){
   try{const p=await readApplicationProject(file);if(mounted.current&&token===revision.current){resetProject(p);setStatus('opened')}}catch(e){if(mounted.current&&token===revision.current)setError(e.code||'invalidProject')}finally{if(mounted.current){setBusy(false);if(token!==revision.current)setStatus('')}}
  }
  async function importPhoto(e){const file=e.target.files?.[0];e.target.value='';if(!file)return;const token=++revision.current;setBusy(true);setError('');setStatus('photoBusy')
-  try{const photo=await readApplicationPhoto(file);if(mounted.current&&token===revision.current){dispatch({type:'commit',project:updateApplicationProject(project,{type:'photo',photo})});setStatus('')}}catch(e){if(mounted.current&&token===revision.current)setError(e.code||'invalidPhoto')}finally{if(mounted.current){setBusy(false);if(token!==revision.current)setStatus('')}}
+  try{const photo=await readApplicationPhoto(file);if(mounted.current&&token===revision.current){dispatch({type:'commit',project:updateApplicationProject(project,{type:'photo',photo})});setStatus('')}}catch(e){if(mounted.current&&token===revision.current)setError(e.code||'invalidPhoto')}finally{if(mounted.current){setBusy(false);setStatus('')}}
  }
  function save(){try{downloadApplicationBlob(serializeApplicationProject(project),'folkkit-bewerbung.json');setStatus('saved');setError('')}catch(e){setError(e.code||'invalidProject')}}
  async function exportPdf(kinds){if(!fonts||busy)return;const snapshot=project;setBusy(true);setError('');setStatus('working');try{const bytes=await exportApplicationPdf(snapshot,kinds,fonts);if(mounted.current){downloadApplicationBlob(new Blob([bytes],{type:'application/pdf'}),kinds.length===2?'bewerbung.pdf':`${kind==='resume'?'lebenslauf':'anschreiben'}.pdf`);setStatus('exported')}}catch(e){if(mounted.current)setError(e.code||'exportFailed')}finally{if(mounted.current)setBusy(false)}}
  const template=applicationTemplates.find(t=>t.id===project[kind].design.template)
- const hasContent=Object.values(project.person).some(Boolean)||project.resume.sections.some(s=>s.entries.some(e=>e.description||e.title))||project.letter.paragraphs.some(p=>p.text)
+ const hasContent=Boolean(project.photo)||Object.values(project.person).some(Boolean)||project.resume.sections.some(s=>s.entries.some(e=>e.description||e.title))||project.letter.paragraphs.some(p=>p.text)
  const fontsReady=fonts&&fonts[resumeFont]&&fonts[letterFont]
  const stale=layout===null
  const issues=layout?.issues||[]
